@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Literal
+from collections.abc import Collection, Sequence
+from typing import ClassVar, Literal
+
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -42,12 +44,16 @@ class LicensePlate(Component, tag="licenseplate"):
     open_forms: LicensePlateExtensions | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[LicensePlateValidatorKeys] | None = None
     validate: LicensePlateValidate | None = None
     validate_on: Literal["blur", "change"] = "blur"
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip", "default_value")
+    )
 
     def __post_init__(self):
         match (self.multiple, self.default_value):

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from datetime import date
-from typing import Literal
+from typing import ClassVar, Literal
+
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -124,13 +126,17 @@ class Date(Component, tag="date"):
     prefill: Prefill | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[DateValidatorKeys] | None = None
     validate: DateValidate | None = None
     validate_on: Literal["blur", "change"] = "blur"
     multiple: bool = False
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "placeholder", "tooltip", "default_value")
+    )
 
     def __post_init__(self):
         # TODO: remove the string types when we have proper date parsing

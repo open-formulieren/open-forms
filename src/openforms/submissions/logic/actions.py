@@ -5,18 +5,20 @@ from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, Self, TypedDict
+from typing import Any, Literal, Self, TypedDict
 from uuid import UUID
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 
+import structlog
 from glom import assign
 from json_logic import UNDEFINED_VALUE, jsonLogic
 
 from formio_types import AnyComponent, Children
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
+    FormioConfig,
     FormioConfigurationWrapper,
     FormioData,
     process_visibility,
@@ -34,6 +36,8 @@ from openforms.variables.service import resolve_key
 from ..models import Submission, SubmissionStep
 from .log_utils import log_errors
 from .service_fetching import perform_service_fetch
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ActionDetails(TypedDict):
@@ -145,7 +149,7 @@ class ActionOperation:
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -160,7 +164,8 @@ class ActionOperation:
 @dataclass
 class PropertyAction(ActionOperation):
     component: str
-    property_name: str
+    # TODO: our serializers do not validate these values yet
+    property_name: Literal["validate.required", "hidden", "disabled"]
     value: Any
 
     @property
@@ -201,7 +206,7 @@ class PropertyAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -219,14 +224,25 @@ class PropertyAction(ActionOperation):
         # the one we are currently evaluating. We don't have to do
         # anything in this case, because the clear-on-hide behaviour of that
         # component will be handled once the user has reached that step.
-        if self.component not in configuration:
+        if self.component not in config:
             return None
 
-        component = configuration[self.component]
+        component = config[self.component]
 
         # apply the state mutation immediately, so that it's visible to follow up
         # actions and rules operating on the same component.
-        component[self.property_name] = self.value
+        # TODO - ensure this is propagated
+        assert self.property_name == "hidden"
+        if hasattr(component, self.property_name):
+            setattr(component, self.property_name, self.value)
+        else:
+            logger.debug(
+                "invalid_component_property_assignment_attempted",
+                component=component.__class__.__name__,
+                key=component.key,
+                property=self.property_name,
+                submission_uuid=str(submission.uuid),
+            )
 
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
@@ -234,8 +250,8 @@ class PropertyAction(ActionOperation):
         process_visibility(
             [component],
             context,
-            configuration,
-            parent_hidden=configuration.is_hidden(component["key"], context),
+            config,
+            parent_hidden=config.is_hidden(component.key, context),
             data_for_visible_state=data_for_visible_state,
         )
         return None
@@ -425,7 +441,7 @@ class VariableAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -576,7 +592,7 @@ class SynchronizeVariablesAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -640,7 +656,7 @@ class ServiceFetchAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -717,7 +733,7 @@ class EvaluateDMNAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,

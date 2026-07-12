@@ -27,7 +27,7 @@ from ..nodes import ComponentNode
 
 @temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
-class FormNodeTests(TestCase):
+class VanillaComponentNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

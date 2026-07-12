@@ -4,10 +4,12 @@ Base building blocks for Formio component type definitions.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
-from typing import Annotated, Literal, TypeVar, dataclass_transform
+from collections.abc import Collection, Iterator, Mapping, MutableMapping
+from typing import Annotated, ClassVar, Literal, TypeVar, dataclass_transform
 
 import msgspec
+
+from openforms.typing import JSONValue
 
 __all__ = [
     "Key",
@@ -45,6 +47,9 @@ class FormioStructMeta(msgspec.StructMeta):
 type Key = Annotated[str, msgspec.Meta(pattern=r"^(\w|\w[\w.\-]*\w)$")]
 type MaybeEmptyKey = Annotated[str, msgspec.Meta(pattern=r"(^(\w|\w[\w.\-]*\w)$)|(^$)")]
 
+# TODO: this might be defined more narrowly?
+type TemplatableValue = JSONValue
+
 
 class Component(msgspec.Struct, metaclass=ComponentMeta):
     """
@@ -56,8 +61,25 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
     id: str = ""
     key: Key
 
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset()
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(key={self.key!r})"
+
+    def get_label(self) -> str:
+        return getattr(self, "label", "") or self.key
+
+    def iter_template_attributes(self) -> Iterator[tuple[str, TemplatableValue]]:
+        """
+        Return an iterator over the template-enabled attributes.
+
+        Each component type may support a number of attributes that are passed through
+        the template engine for evaluation in the current submission context.
+
+        Yields ``(attribute, template)`` tuples.
+        """
+        for attr in self.SUPPORTED_TEMPLATE_ATTRIBUTES:
+            yield (attr, getattr(self, attr))
 
 
 class FormioStruct(msgspec.Struct, metaclass=FormioStructMeta):

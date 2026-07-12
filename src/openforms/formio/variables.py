@@ -1,16 +1,16 @@
-from collections.abc import Collection, Iterator, Mapping
+from collections.abc import Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 
 from django.template import TemplateSyntaxError
 
 import structlog
+from typing_extensions import deprecated
 
-from openforms.formio.typing import FormioConfiguration
 from openforms.template import extract_variables_used, parse, render_from_string
 from openforms.typing import JSONValue
 from openforms.utils.helpers import recursively_apply_function
 
-from .datastructures import FormioConfigurationWrapper, FormioData
+from .datastructures import FormioConfig, FormioConfigurationWrapper, FormioData
 from .typing import Component
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -41,12 +41,14 @@ def render(formio_bit: JSONValue, context: dict) -> JSONValue:
     )
 
 
+@deprecated("replaced by AnyComponent.iter_template_attributes")
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
     """
     Return an iterator over the formio component properties that are template-enabled.
 
     Each item returns a tuple with the key and value of the formio component.
     """
+
     # no server-side template evaluation here
     if component["type"] == "softRequiredErrors":
         return
@@ -65,7 +67,7 @@ class ComponentTemplateSyntaxError:
 
 
 def get_configuration_template_syntax_errors(
-    configuration: FormioConfiguration,
+    components: Sequence[Component],
 ) -> Collection[ComponentTemplateSyntaxError]:
     """
     Check the Formio configuration for template syntax errors.
@@ -75,24 +77,22 @@ def get_configuration_template_syntax_errors(
     components are eventually validated.
     """
     errors: list[ComponentTemplateSyntaxError] = []
-    config_wrapper = FormioConfigurationWrapper(
-        configuration=configuration,
-        validate_unique_keys=False,
-    )
-    for component in config_wrapper:
-        for property_name, property_value in iter_template_properties(component):
+
+    formio_config = FormioConfig(name="<in-memory>", components=components)
+    for component in formio_config:
+        for property_name, property_value in component.iter_template_attributes():
             try:
                 recursively_apply_function(property_value, parse)
             except TemplateSyntaxError:
-                key = component["key"]
-                parents = config_wrapper.get_branch(key)[:-1]
+                key = component.key
+                parents = formio_config.get_parents(key)
                 errors.append(
                     ComponentTemplateSyntaxError(
                         key=key,
-                        label=component.get("label") or key,
+                        label=component.get_label(),
                         property_name=property_name,
                         parents_representation=" > ".join(
-                            (parent.get("label") or parent["key"]) for parent in parents
+                            parent.get_label() for parent in parents
                         ),
                     )
                 )

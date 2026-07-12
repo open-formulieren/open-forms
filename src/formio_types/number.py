@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Annotated, Literal
+from collections.abc import Collection, Sequence
+from typing import Annotated, ClassVar, Literal
 
+import msgspec
 from msgspec import Meta
 
 from ._base import (
@@ -44,10 +45,14 @@ class Number(Component, tag="number"):
     prefix: str = ""
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     suffix: str = ""
     tooltip: str = ""
     translated_errors: TranslatedErrors[NumberValidatorKeys] | None = None
     validate: NumberValidate | None = None
     validate_on: Literal["blur", "change"] = "blur"
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip", "default_value")
+    )

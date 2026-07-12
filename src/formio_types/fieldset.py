@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Literal
+from collections.abc import Collection
+from typing import ClassVar, Literal
 
 from ._base import BaseOpenFormsExtensions, Component, Conditional
 
@@ -19,3 +20,7 @@ class Fieldset(Component, tag="fieldset"):
     label: str
     open_forms: FieldsetExtensions | None = None
     tooltip: str = ""
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "tooltip")
+    )

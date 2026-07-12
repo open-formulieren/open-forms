@@ -457,7 +457,10 @@ class FormioData(UserDict):
             raise error
 
 
-def _calc_component_data_id(tree: Tree[AnyComponent], data: AnyComponent) -> str:
+def _calc_component_data_id(
+    tree: Tree[AnyComponent],
+    data: AnyComponent,
+) -> str:
     return data.key
 
 
@@ -472,6 +475,7 @@ def _build_component_tree(
 
 
 def _add_component_children(node: Node[AnyComponent], component: AnyComponent) -> None:
+    # TODO: defer this to the component registry?
     # recurse for components with children
     match component:
         case Fieldset():
@@ -488,7 +492,12 @@ def _add_component_children(node: Node[AnyComponent], component: AnyComponent) -
         # XXX: do we want to process the children here or not? Let's see how far we get
         # without doing so.
         case EditGrid():
-            pass
+            # add the children, but make sure to explicitly specify the data_id for
+            # scoped key lookups
+            parent_key = component.key
+            for child in component.components:
+                child_node = node.add(child, data_id=f"{parent_key}.{child.key}")
+                # _add_component_children(child_node, child)
 
         case _:
             pass
@@ -500,6 +509,7 @@ class FormioConfig:
     """
 
     _tree: Tree | None = None
+    _converted_components: Sequence[AnyComponent] | None = None
 
     def __init__(
         self,
@@ -508,6 +518,18 @@ class FormioConfig:
     ):
         self.name = name
         self._components = components
+
+    @property
+    def components(self) -> Sequence[AnyComponent]:
+        from .service import _fixup_component_properties
+
+        if self._converted_components is None:
+            self._converted_components = msgspec.convert(
+                self._components,
+                type=Sequence[AnyComponent],
+                dec_hook=_fixup_component_properties,
+            )
+        return self._converted_components
 
     @property
     def tree(self) -> Tree[AnyComponent]:
@@ -524,15 +546,8 @@ class FormioConfig:
 
         .. todo:: Wrap errors in DuplicateKeyError
         """
-        from .service import _fixup_component_properties
-
         if self._tree is None:
-            components = msgspec.convert(
-                self._components,
-                type=Sequence[AnyComponent],
-                dec_hook=_fixup_component_properties,
-            )
-            self._tree = _build_component_tree(self.name, components)
+            self._tree = _build_component_tree(self.name, self.components)
         return self._tree
 
     def __iter__(self) -> Iterator[AnyComponent]:
@@ -549,6 +564,21 @@ class FormioConfig:
         for node in self.tree:
             yield node.data
 
+    def iter_without_editgrid_children(self) -> Iterator[AnyComponent]:
+        # TODO: check if this is actually needed
+
+        def _iter_tree(
+            node: Node[AnyComponent] | Tree[AnyComponent],
+        ) -> Iterator[AnyComponent]:
+            for child in node.children:
+                component = child.data
+                yield component
+                if isinstance(component, EditGrid):
+                    continue
+                yield from _iter_tree(child)
+
+        yield from _iter_tree(self.tree)
+
     def __contains__(self, key: str) -> bool:
         node = self.tree.find(data_id=key)
         return node is not None
@@ -561,7 +591,7 @@ class FormioConfig:
 
     def get_parents(self, key: str) -> Sequence[AnyComponent]:
         """
-        Given a component key, return it's parent components.
+        Given a component key, return its parent components.
 
         Parents are ordered from root to leaf, excluding the component for which the
         parents are requested itself.

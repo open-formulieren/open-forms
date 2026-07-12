@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Literal
+from collections.abc import Collection
+from typing import ClassVar, Literal
+
+import msgspec
 
 from ._base import BaseOpenFormsExtensions, Component, Conditional, Registration
 
@@ -21,8 +24,10 @@ class Content(Component, tag="content"):
         None  # TODO: remove from TS types - is irrelevant
     )
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = False
 
     # keep track of the CSP post processing status...
     _csp_post_processing_done: bool = False
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(("html",))

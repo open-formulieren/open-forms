@@ -200,7 +200,7 @@ class ComponentNode[ComponentT: AnyComponent](Node):
         Yield the child components if this component is a container type.
         """
         for component in iter_components(configuration=self.component, recursive=False):
-            yield ComponentNode.build_node(
+            yield ComponentNode[AnyComponent].build_node(
                 step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,

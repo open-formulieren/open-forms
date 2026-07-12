@@ -63,7 +63,7 @@ from openforms.validations.service import PluginValidator
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..api.validators import MimeTypeValidator
-from ..datastructures import FormioConfigurationWrapper, FormioData
+from ..datastructures import FormioConfig, FormioData
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -107,7 +107,9 @@ class DefaultPlugin(BasePlugin[AnyComponent]):
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
-    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
+    def build_serializer_field(
+        self, component: AnyComponent, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
 
@@ -124,7 +126,7 @@ class TextFieldPlugin(BasePlugin[TextField]):
         return value
 
     def build_serializer_field(
-        self, component: TextField
+        self, component: TextField, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -202,7 +204,7 @@ class EmailPlugin(BasePlugin[Email]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Email
+        self, component: Email, parent_key_prefix: str
     ) -> serializers.EmailField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -290,7 +292,7 @@ class TimePlugin(BasePlugin[Time]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Time
+        self, component: Time, parent_key_prefix: str
     ) -> FormioTimeField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -347,7 +349,7 @@ class PhoneNumberPlugin(BasePlugin[PhoneNumber]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: PhoneNumber
+        self, component: PhoneNumber, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -504,7 +506,9 @@ class FilePlugin(BasePlugin[File]):
                 str(UploadFileType(mimetype).label) for mimetype in mimetypes
             ]
 
-    def build_serializer_field(self, component: File) -> serializers.ListField:
+    def build_serializer_field(
+        self, component: File, parent_key_prefix: str
+    ) -> serializers.ListField:
         max_number_of_files = component.max_number_of_files
         if max_number_of_files is None and not component.multiple:
             max_number_of_files = 1
@@ -572,7 +576,7 @@ class TextAreaPlugin(BasePlugin[Textarea]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Textarea
+        self, component: Textarea, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -609,7 +613,9 @@ class NumberPlugin(BasePlugin[Number]):
     data_type = FormVariableDataTypes.float
     empty_value = None
 
-    def build_serializer_field(self, component: Number) -> serializers.FloatField:
+    def build_serializer_field(
+        self, component: Number, parent_key_prefix: str
+    ) -> serializers.FloatField:
         # new builder no longer exposes this, but existing forms may have multiple set
         validate = component.validate
         required = validate is not None and validate.required
@@ -659,7 +665,9 @@ class CheckboxPlugin(BasePlugin[Checkbox]):
     data_type = FormVariableDataTypes.boolean
     empty_value = False
 
-    def build_serializer_field(self, component: Checkbox) -> serializers.BooleanField:
+    def build_serializer_field(
+        self, component: Checkbox, parent_key_prefix: str
+    ) -> serializers.BooleanField:
         validate = component.validate
         required = validate is not None and validate.required
 
@@ -744,7 +752,9 @@ class SelectBoxesPlugin(BasePlugin[Selectboxes]):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(self, component: Selectboxes) -> serializers.Serializer:
+    def build_serializer_field(
+        self, component: Selectboxes, parent_key_prefix: str
+    ) -> serializers.Serializer:
         validate = component.validate
         required = validate is not None and validate.required
 
@@ -844,7 +854,9 @@ class SelectPlugin(BasePlugin[Select]):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(self, component: Select) -> serializers.ChoiceField:
+    def build_serializer_field(
+        self, component: Select, parent_key_prefix: str
+    ) -> serializers.ChoiceField:
         validate = component.validate
         required = validate is not None and validate.required
         choices = [(value.value, value.label) for value in component.data.values]
@@ -893,7 +905,9 @@ class CurrencyPlugin(BasePlugin[Currency]):
     data_type = FormVariableDataTypes.float
     empty_value = None
 
-    def build_serializer_field(self, component: Currency) -> serializers.FloatField:
+    def build_serializer_field(
+        self, component: Currency, parent_key_prefix: str
+    ) -> serializers.FloatField:
         validate = component.validate
         required = validate is not None and validate.required
 
@@ -944,7 +958,9 @@ class RadioPlugin(BasePlugin[Radio]):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(self, component: Radio) -> serializers.ChoiceField:
+    def build_serializer_field(
+        self, component: Radio, parent_key_prefix: str
+    ) -> serializers.ChoiceField:
         """
         Convert a radio component to a serializer field.
 
@@ -985,7 +1001,9 @@ class SignaturePlugin(BasePlugin[Signature]):
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
-    def build_serializer_field(self, component: Signature) -> serializers.CharField:
+    def build_serializer_field(
+        self, component: Signature, parent_key_prefix: str
+    ) -> serializers.CharField:
         validate = component.validate
         required = validate is not None and validate.required
         return serializers.CharField(required=required, allow_blank=not required)
@@ -1010,7 +1028,9 @@ class ContentPlugin(BasePlugin[Content]):
     formatter = DefaultFormatter
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Content) -> serializers.Field:
+    def build_serializer_field(
+        self, component: Content, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
@@ -1059,6 +1079,8 @@ class EditGridField(serializers.Field):
     def __init__(self, **kwargs):
         self.registry = kwargs.pop("registry")
         self.components: Sequence[AnyComponent] = kwargs.pop("components", [])
+        self.parent_key_prefix: str = kwargs.pop("parent_key_prefix")
+        assert self.parent_key_prefix, "parent_key_prefix may not be empty"
         self.allow_empty = kwargs.pop("allow_empty", True)
         self.max_length = kwargs.pop("max_length", None)
         self.min_length = kwargs.pop("min_length", None)
@@ -1106,6 +1128,7 @@ class EditGridField(serializers.Field):
             # in play
             register=self.registry,
             context=self.context,
+            parent_key_prefix=self.parent_key_prefix,
             **kwargs,
         )
 
@@ -1161,14 +1184,22 @@ class EditGridPlugin(BasePlugin[EditGrid]):
 
         component.open_forms.translations = None
 
-    def build_serializer_field(self, component: EditGrid) -> EditGridField:
+    def build_serializer_field(
+        self, component: EditGrid, parent_key_prefix: str
+    ) -> EditGridField:
         validate = component.validate
         required = validate is not None and validate.required
         kwargs = {}
         if validate and (max_length := validate.max_length) is not None:
             kwargs["max_length"] = max_length
+
+        _parent_key_prefix = component.key
+        if parent_key_prefix:
+            _parent_key_prefix = f"{parent_key_prefix}.{_parent_key_prefix}"
+
         return EditGridField(
             components=component.components,
+            parent_key_prefix=_parent_key_prefix,
             registry=self.registry,
             required=required,
             allow_null=not required,
@@ -1206,12 +1237,14 @@ class EditGridPlugin(BasePlugin[EditGrid]):
     def apply_visibility(
         component: EditGrid,
         data: FormioData,
-        wrapper: FormioConfigurationWrapper,
+        config: FormioConfig,
         *,
         parent_hidden: bool,
         get_evaluation_data: GetEvaluationData | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
+        # FIXME - config probably needs to be updated to have parent keys prefixed?
+
         key = component.key
         # We only need to process children if the value was not already cleared.
         if key not in data:
@@ -1251,7 +1284,7 @@ class EditGridPlugin(BasePlugin[EditGrid]):
             process_visibility(
                 component.components,
                 item_data,
-                wrapper,
+                config,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=_get_evaluation_data,
                 data_for_visible_state=item_data_for_visible_state,
@@ -1265,14 +1298,16 @@ class EditGridPlugin(BasePlugin[EditGrid]):
 class ColumnsPlugin(BasePlugin[Columns]):
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Columns) -> serializers.Field:
+    def build_serializer_field(
+        self, component: Columns, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
     def apply_visibility(
         component: Columns,
         data: FormioData,
-        wrapper: FormioConfigurationWrapper,
+        config: FormioConfig,
         *,
         parent_hidden: bool,
         get_evaluation_data: GetEvaluationData | None = None,
@@ -1282,7 +1317,7 @@ class ColumnsPlugin(BasePlugin[Columns]):
             process_visibility(
                 column.components,
                 data,
-                wrapper,
+                config,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 data_for_visible_state=data_for_visible_state,
@@ -1300,14 +1335,16 @@ class ColumnsPlugin(BasePlugin[Columns]):
 class FieldsetPlugin(BasePlugin[Fieldset]):
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Fieldset) -> serializers.Field:
+    def build_serializer_field(
+        self, component: Fieldset, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
     def apply_visibility(
         component: Fieldset,
         data: FormioData,
-        wrapper: FormioConfigurationWrapper,
+        config: FormioConfig,
         *,
         parent_hidden: bool,
         get_evaluation_data: GetEvaluationData | None = None,
@@ -1318,7 +1355,7 @@ class FieldsetPlugin(BasePlugin[Fieldset]):
         process_visibility(
             component.components,
             data,
-            wrapper,
+            config,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
             data_for_visible_state=data_for_visible_state,

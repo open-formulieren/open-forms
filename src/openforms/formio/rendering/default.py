@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, NotRequired, TypedDict
 
@@ -13,11 +13,13 @@ from django.utils.translation import gettext, gettext_lazy as _
 from furl import furl
 
 from formio_types import (
+    BSN,
     TYPE_TO_TAG,
     AnyComponent,
     Children,
     Columns,
     Content,
+    Date,
     EditGrid,
     Fieldset,
     File,
@@ -26,9 +28,9 @@ from formio_types import (
     Select,
     Selectboxes,
     SoftRequiredErrors,
+    TextField,
 )
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
-from openforms.formio.typing import Component
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
@@ -166,7 +168,7 @@ class ColumnsNode(ContainerMixin[Columns], ComponentNode[Columns]):
         """
         for index, column in enumerate(self.component.columns):
             for component in column.components:
-                yield ComponentNode.build_node(
+                yield ComponentNode[AnyComponent].build_node(
                     step_data=self.step_data,
                     component=component,
                     renderer=self.renderer,
@@ -337,7 +339,7 @@ class EditGridGroupNode(ContainerMixin[EditGrid], ComponentNode[EditGrid]):
 
     def get_children(self) -> Iterator[ComponentNode]:
         for component in self.component.components:
-            yield ComponentNode.build_node(
+            yield ComponentNode[AnyComponent].build_node(
                 step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,
@@ -452,36 +454,15 @@ class PartnersGroupNode(ComponentNode[Partners]):
         return f"{self._base_label} {self.group_index + 1}"
 
     def get_children(self) -> Iterator[ComponentNode]:
-        components: list[Component] = [
-            {
-                "type": "bsn",
-                "key": "bsn",
-                "label": gettext("BSN"),
-            },
-            {
-                "type": "textfield",
-                "key": "initials",
-                "label": gettext("Initials"),
-            },
-            {
-                "type": "textfield",
-                "key": "affixes",
-                "label": gettext("Affixes"),
-            },
-            {
-                "type": "textfield",
-                "key": "lastName",
-                "label": gettext("Lastname"),
-            },
-            {
-                "type": "date",
-                "key": "dateOfBirth",
-                "label": gettext("Date of birth"),
-            },
+        components: Sequence[AnyComponent] = [
+            BSN(key="bsn", label=gettext("BSN")),
+            TextField(key="initials", label=gettext("Initials")),
+            TextField(key="affixes", label=gettext("Affixes")),
+            TextField(key="lastName", label=gettext("Lastname")),
+            Date(key="dateOfBirth", label=gettext("Date of birth")),
         ]
-
         for component in components:
-            yield ComponentNode.build_node(
+            yield ComponentNode[AnyComponent].build_node(
                 step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,
@@ -580,26 +561,13 @@ class ChildrenGroupNode(ComponentNode[Children]):
         return f"{self._base_label} {self.label_index + 1}"
 
     def get_children(self) -> Iterator[ComponentNode]:
-        components: list[Component] = [
-            {
-                "type": "bsn",
-                "key": "bsn",
-                "label": gettext("BSN"),
-            },
-            {
-                "type": "textfield",
-                "key": "firstNames",
-                "label": gettext("Firstnames"),
-            },
-            {
-                "type": "date",
-                "key": "dateOfBirth",
-                "label": gettext("Date of birth"),
-            },
+        components: Sequence[AnyComponent] = [
+            BSN(key="bsn", label=gettext("BSN")),
+            TextField(key="firstNames", label=gettext("Firstnames")),
+            Date(key="dateOfBirth", label=gettext("Date of birth")),
         ]
-
         for component in components:
-            yield ComponentNode.build_node(
+            yield ComponentNode[AnyComponent].build_node(
                 step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,

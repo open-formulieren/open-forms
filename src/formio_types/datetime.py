@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from datetime import datetime
-from typing import Literal, Self, assert_never
+from typing import ClassVar, Literal, Self, assert_never
 
-from msgspec import field
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -138,7 +138,7 @@ class DateTime(Component, tag="datetime"):
     # TODO not relevant anymore in new renderer
     custom_options: PickerCustomOptions = PickerCustomOptions()
     date_picker: DateTimePickerConfig | None = None
-    default_value: FormioDateTime | None = field(
+    default_value: FormioDateTime | None = msgspec.field(
         default_factory=lambda: FormioDateTime(actual_value=None)
     )
     description: str = ""
@@ -152,13 +152,17 @@ class DateTime(Component, tag="datetime"):
     prefill: Prefill | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[DateTimeValidatorKeys] | None = None
     validate: DateTimeValidate | None = None
     validate_on: Literal["blur", "change"] = "blur"
     multiple: bool = False
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "placeholder", "tooltip", "default_value")
+    )
 
     def __post_init__(self):
         match (self.multiple, self.default_value):

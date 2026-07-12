@@ -42,7 +42,7 @@ from openforms.variables.constants import FormVariableDataTypes
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-    from .datastructures import FormioConfigurationWrapper, FormioData
+    from .datastructures import FormioConfig, FormioData
     from .visibility import GetEvaluationData
 
 
@@ -140,7 +140,9 @@ class BasePlugin[ComponentT: AnyComponent](AbstractBasePlugin, abc.ABC):
         pass  # noop by default, specific component types can extend the base behaviour
 
     @abc.abstractmethod
-    def build_serializer_field(self, component: ComponentT) -> serializers.Field:
+    def build_serializer_field(
+        self, component: ComponentT, parent_key_prefix: str
+    ) -> serializers.Field:
         """Translate a component configuration into a serializer."""
 
     @staticmethod
@@ -176,7 +178,7 @@ class BasePlugin[ComponentT: AnyComponent](AbstractBasePlugin, abc.ABC):
     def apply_visibility(
         component: ComponentT,
         data: FormioData,
-        wrapper: FormioConfigurationWrapper,
+        config: FormioConfig,
         *,
         parent_hidden: bool,
         get_evaluation_data: GetEvaluationData | None = None,
@@ -188,7 +190,8 @@ class BasePlugin[ComponentT: AnyComponent](AbstractBasePlugin, abc.ABC):
 
         :param component: Component configuration.
         :param data: Data used for processing.
-        :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param config: Wrapped formio configuration, ready for  component lookups by
+          keys that are referenced in conditional expressions.
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
@@ -292,7 +295,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         self,
         component: AnyComponent,
         data: FormioData,
-        wrapper: FormioConfigurationWrapper,
+        config: FormioConfig,
         *,
         parent_hidden: bool,
         get_evaluation_data: Callable | None = None,
@@ -316,7 +319,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         plugin.apply_visibility(
             component,
             data,
-            wrapper,
+            config,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
             data_for_visible_state=data_for_visible_state,
@@ -394,7 +397,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             component_plugin: BasePlugin[AnyComponent] = self[component_type]
             component_plugin.localize(component, language_code, enabled=enabled)
 
-    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
+    def build_serializer_field(
+        self, component: AnyComponent, parent_key_prefix: str
+    ) -> serializers.Field:
         """
         Translate a given component into a single serializer field, suitable for
         input validation.
@@ -404,7 +409,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # behaviour of accepting any JSON value.
         component_type = TYPE_TO_TAG[type(component)]
         component_plugin: BasePlugin[AnyComponent] = self[component_type]
-        return component_plugin.build_serializer_field(component)
+        return component_plugin.build_serializer_field(
+            component, parent_key_prefix=parent_key_prefix
+        )
 
     def as_json_data(
         self, component: AnyComponent, value: VariableValue

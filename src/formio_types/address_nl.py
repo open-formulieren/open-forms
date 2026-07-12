@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Literal
+from collections.abc import Collection, Sequence
+from typing import ClassVar, Literal
+
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -78,8 +80,12 @@ class AddressNL(Component, tag="addressNL"):
     open_forms: AddressNLExtensions | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[AddressNLValidatorKeys] | None = None
     validate: AddressNLValidate | None = None
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip", "default_value")
+    )

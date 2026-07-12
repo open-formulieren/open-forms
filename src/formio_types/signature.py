@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Literal
+from collections.abc import Collection
+from typing import ClassVar, Literal
+
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -38,8 +41,12 @@ class Signature(Component, tag="signature"):
     open_forms: SignatureExtensions | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[SignatureValidatorKeys] | None = None
     validate: SignatureValidate | None = None
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip", "default_value")
+    )

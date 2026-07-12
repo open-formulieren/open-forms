@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import Literal
+from collections.abc import Collection, Mapping
+from typing import ClassVar, Literal
 
 from ._base import (
     Component,
@@ -63,3 +63,7 @@ class EditGrid(Component, tag="editgrid"):
     save_row: str = ""
     tooltip: str = ""
     validate: EditGridValidate | None = None
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "group_label", "tooltip", "default_value")
+    )

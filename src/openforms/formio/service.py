@@ -25,7 +25,12 @@ from formio_types.datetime import FormioDateTime
 from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.variables.constants import FormVariableDataTypes
 
-from .datastructures import DuplicateKeyError, FormioConfigurationWrapper, FormioData
+from .datastructures import (
+    DuplicateKeyError,
+    FormioConfig,
+    FormioConfigurationWrapper,
+    FormioData,
+)
 from .dynamic_config import (
     get_translated_custom_error_messages,
     localize_components,
@@ -33,7 +38,10 @@ from .dynamic_config import (
     rewrite_formio_components_for_request,
 )
 from .registry import ComponentRegistry, register
-from .serializers import build_serializer as _build_serializer
+from .serializers import (
+    FORMIO_CONFIG_CONTEXT_KEY,
+    build_serializer as _build_serializer,
+)
 from .typing import Component
 from .utils import (
     get_branch_representation,
@@ -238,13 +246,16 @@ def build_serializer(
 
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
+
+    The context is automatically updated to pass in the necessary formio config from the
+    provided components.
     """
-    _components: Sequence[AnyComponent] = msgspec.convert(
-        components,
-        type=Sequence[AnyComponent],
-        dec_hook=_fixup_component_properties,
+    formio_config = FormioConfig(name="<serializer config>", components=components)
+    kwargs.setdefault("context", {})
+    kwargs["context"][FORMIO_CONFIG_CONTEXT_KEY] = formio_config
+    return _build_serializer(
+        components=formio_config.components, register=_register or register, **kwargs
     )
-    return _build_serializer(_components, register=_register or register, **kwargs)
 
 
 def as_json_data(

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Annotated, Literal
+from collections.abc import Collection, Sequence
+from typing import Annotated, ClassVar, Literal
 
+import msgspec
 from msgspec import Meta
 
 from ._base import (
@@ -48,13 +49,17 @@ class Textarea(Component, tag="textarea"):
     rows: Annotated[int, Meta(ge=1)] | None = None
     show_char_count: bool = False
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[TextareaValidatorKeys] | None = None
     validate: TextareaValidate | None = None
     validate_on: Literal["blur", "change"] = "blur"
     multiple: bool = False
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "placeholder", "tooltip", "default_value")
+    )
 
     def __post_init__(self):
         match (self.multiple, self.default_value):

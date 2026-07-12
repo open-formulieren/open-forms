@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from datetime import date
-from typing import Literal
+from typing import ClassVar, Literal
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -35,3 +35,7 @@ class Children(Component, tag="children"):
     open_forms: ChildrenExtensions | None = None
     registration: Registration | None = None
     tooltip: str = ""
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip")
+    )

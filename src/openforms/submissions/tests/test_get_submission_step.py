@@ -152,7 +152,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         class TextFieldPlugin(BasePlugin[TextField]):
             formatter = TextFieldFormatter
 
-            def build_serializer_field(self, component):
+            def build_serializer_field(self, component, parent_key_prefix):
                 raise NotImplementedError()
 
             def mutate_config_dynamically(self, component, submission, data):
@@ -795,7 +795,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         class CustomType(BasePlugin):
             formatter = TextFieldFormatter
 
-            def build_serializer_field(self, component):
+            def build_serializer_field(self, component, parent_key_prefix):
                 raise NotImplementedError()
 
             def mutate_config_dynamically(self, component, submission, data):

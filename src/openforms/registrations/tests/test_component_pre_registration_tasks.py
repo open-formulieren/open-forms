@@ -29,13 +29,13 @@ register = ComponentRegistry()
 
 @register("textfield")
 class NoHook(BasePlugin[TextField]):
-    def build_serializer_field(self, component):
+    def build_serializer_field(self, component, parent_key_prefix):
         raise NotImplementedError()
 
 
 @register("email")
 class Hook(BasePlugin[Email]):
-    def build_serializer_field(self, component):
+    def build_serializer_field(self, component, parent_key_prefix):
         raise NotImplementedError()
 
     @staticmethod
@@ -47,7 +47,7 @@ class Hook(BasePlugin[Email]):
 
 @register("number")
 class FailHook(BasePlugin[Number]):
-    def build_serializer_field(self, component):
+    def build_serializer_field(self, component, parent_key_prefix):
         raise NotImplementedError()
 
     @staticmethod

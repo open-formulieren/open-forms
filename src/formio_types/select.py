@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Mapping, Sequence
-from typing import Literal, assert_never
+from collections.abc import Collection, Iterator, Mapping, Sequence
+from typing import ClassVar, Literal, assert_never
+
+import msgspec
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -12,6 +14,7 @@ from ._base import (
     FormioStruct,
     Option,
     Registration,
+    TemplatableValue,
     TranslatedErrors,
 )
 
@@ -75,12 +78,16 @@ class Select(Component, tag="select"):
     open_forms: SelectExtensions | None = None
     registration: Registration | None = None
     show_in_email: bool = False
-    show_in_pdf: bool = True
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
     show_in_summary: bool = True
     tooltip: str = ""
     translated_errors: TranslatedErrors[SelectValidatorKeys] | None = None
     validate: SelectValidate | None = None
     multiple: bool = False
+
+    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
+        ("label", "description", "tooltip", "default_value")
+    )
 
     def __post_init__(self):
         if self.open_forms is None:
@@ -111,3 +118,8 @@ class Select(Component, tag="select"):
                 raise ValueError(
                     "You must pass a string default_value when multiple=False"
                 )
+
+    def iter_template_attributes(self) -> Iterator[tuple[str, TemplatableValue]]:
+        yield from super().iter_template_attributes()
+        # FIXME: this does not support mutation yet, only parsing/validation
+        yield ("data", msgspec.to_builtins(self.data))

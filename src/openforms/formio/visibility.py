@@ -16,7 +16,7 @@ from .registry import register
 from .typing import Component
 
 if TYPE_CHECKING:
-    from .datastructures import FormioConfig, FormioConfigurationWrapper, FormioData
+    from .datastructures import FormioConfig, FormioData
 
 
 class GetEvaluationData(Protocol):
@@ -101,10 +101,16 @@ def is_hidden(
             compare_value,
         )
     else:
+        trigger_component_value: VariableValue = (
+            v if (v := data.get(trigger_component_key, None)) is not None else ""
+        )
+        # FIXME: this works by coincidence during our input validation...
         # when the 'when' reference is broken, we don't have a component to interpret
         # the compare value. In that case, default to the empty string, which is what
         # formio does when it has no value for a component.
-        triggered = compare_value == ""
+        # TODO: define 'default' component type and use that as fallback, the registry
+        # already accounts for it
+        triggered = trigger_component_value == compare_value
 
     # Note that we return whether the component is hidden, not shown, so we invert the
     # return value
@@ -114,7 +120,7 @@ def is_hidden(
 def process_visibility(
     components: Sequence[AnyComponent] | Sequence[Component],
     data: FormioData,
-    wrapper: FormioConfigurationWrapper,
+    config: FormioConfig,
     *,
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
@@ -127,10 +133,11 @@ def process_visibility(
 
     Note that the data mutations are applied directly.
 
-    :param configuration: Configuration-like: can be a Formio configuration, component,
-      or column.
+    :param components: Components to process.
+    :param config: Wrapped formio configuration, ready for processing and component
+      lookups by key. Used for the root component nodes to start conditional evaluation
+      and as component key lookup store for keys referenced in conditional expressions.
     :param data: Data used for processing.
-    :param wrapper: Formio configuration wrapper. Required for component lookup.
     :param parent_hidden: Indicates whether the parent component was hidden. Note that
       the conditional will not be evaluated at all when this is set to ``True``.
     :param get_evaluation_data: Function used to get the evaluation data used during
@@ -138,7 +145,6 @@ def process_visibility(
     :param data_for_visible_state: The data used to restore values when flipping
       visibility states.
     """
-    from .datastructures import FormioConfig
     from .service import _convert_legacy_component
 
     # process legacy structures into their msgspec equivalents, as this is the top-level
@@ -158,12 +164,7 @@ def process_visibility(
         hidden = parent_hidden or is_hidden(
             component,
             get_evaluation_data(data) if get_evaluation_data else data,
-            # XXX convert FormioConfigurationWrapper to FormioConfig, but be careful that
-            # downstream call mutations will not be reflected upstream!
-            FormioConfig(
-                name="<converted from FormioConfigurationWrapper>",
-                components=wrapper.configuration["components"],
-            ),
+            config,
         )
 
         # Need to check whether the component holds submission data, as we do not have
@@ -188,7 +189,7 @@ def process_visibility(
         register.apply_visibility(
             component,
             data,
-            wrapper,
+            config,
             parent_hidden=hidden,
             get_evaluation_data=get_evaluation_data,
             data_for_visible_state=data_for_visible_state,

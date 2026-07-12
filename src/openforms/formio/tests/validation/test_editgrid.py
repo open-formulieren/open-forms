@@ -4,14 +4,16 @@ from django.test import SimpleTestCase, tag
 
 from rest_framework import serializers
 
-from formio_types import TextField
+from formio_types import EditGrid, TextField
 from openforms.formio.constants import DataSrcOptions
+from openforms.formio.datastructures import FormioConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
 
 from ...components.vanilla import EditGridField
 from ...registry import register
-from ...service import build_serializer
+from ...serializers import FORMIO_CONFIG_CONTEXT_KEY
+from ...service import _dump_to_legacy_component, build_serializer
 from ...typing import EditGridComponent, FieldsetComponent
 from .helpers import extract_error, validate_formio_data
 
@@ -157,10 +159,7 @@ class EditGridValidationTests(SimpleTestCase):
         data: JSONObject = {
             "toplevel": [{"nested": "i am valid"}],
         }
-        context = {
-            "submission": SubmissionFactory.build(),
-            "configuration": {"components": [component]},
-        }
+        context = {"submission": SubmissionFactory.build()}
 
         serializer = build_serializer(
             components=[component], data=data, context=context
@@ -311,10 +310,7 @@ class EditGridValidationTests(SimpleTestCase):
                 {"naamWerkgever": "ABC", "nettoLoon": 5, "periodeNettoLoon": "maand"}
             ],
         }
-        context = {
-            "submission": SubmissionFactory.build(),
-            "configuration": {"components": components},
-        }
+        context = {"submission": SubmissionFactory.build()}
         serializer = build_serializer(components=components, data=data, context=context)
 
         is_valid = serializer.is_valid()
@@ -359,9 +355,9 @@ class EditGridValidationTests(SimpleTestCase):
             self.assertEqual(error.code, "required")
 
         with self.subTest("valid"):
-            invalid_data: JSONValue = {"editgrid": [{"textfield1": "NO_SHOW_FIELD_2"}]}
+            valid_data: JSONValue = {"editgrid": [{"textfield1": "NO_SHOW_FIELD_2"}]}
 
-            is_valid, errors = validate_formio_data(component, invalid_data)
+            is_valid, errors = validate_formio_data(component, valid_data)
 
             self.assertTrue(is_valid)
 
@@ -475,14 +471,19 @@ class EditGridFieldTests(SimpleTestCase):
     """
 
     def test_invalid_type_provided(self):
-        editgrid_components = [
-            {"type": "textfield", "key": "textfield", "label": "Text field"}
-        ]
+        editgrid_components = [TextField(key="textfield", label="Text field")]
+        editgrid_component = EditGrid(
+            key="editgrid",
+            label="editgrid",
+            group_label="Item",
+            components=editgrid_components,
+        )
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
                 components=editgrid_components,
+                parent_key_prefix=editgrid_component.key,
             )
 
         invalid_values = (False, {}, 123, "foo")
@@ -491,17 +492,10 @@ class EditGridFieldTests(SimpleTestCase):
                 serializer = Serializer(
                     data={"editgrid": value},
                     context={
-                        "configuration": {
-                            "components": [
-                                {
-                                    "type": "editgrid",
-                                    "key": "editgrid",
-                                    "label": "editgrid",
-                                    "groupLabel": "Item",
-                                    "components": editgrid_components,
-                                }
-                            ]
-                        }
+                        FORMIO_CONFIG_CONTEXT_KEY: FormioConfig(
+                            name="dummy",
+                            components=[_dump_to_legacy_component(editgrid_component)],
+                        ),
                     },
                 )
 
@@ -512,31 +506,29 @@ class EditGridFieldTests(SimpleTestCase):
                 self.assertEqual(error.code, "not_a_list")
 
     def test_empty_disallowed(self):
-        editgrid_components = [
-            {"type": "textfield", "key": "textfield", "label": "Text field"}
-        ]
+        editgrid_components = [TextField(key="textfield", label="Text field")]
+        editgrid_component = EditGrid(
+            key="editgrid",
+            label="editgrid",
+            group_label="Item",
+            components=editgrid_components,
+        )
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
                 components=editgrid_components,
+                parent_key_prefix=editgrid_component.key,
                 allow_empty=False,
             )
 
         serializer = Serializer(
             data={"editgrid": []},
             context={
-                "configuration": {
-                    "components": [
-                        {
-                            "type": "editgrid",
-                            "key": "editgrid",
-                            "label": "editgrid",
-                            "groupLabel": "Item",
-                            "components": editgrid_components,
-                        }
-                    ]
-                }
+                FORMIO_CONFIG_CONTEXT_KEY: FormioConfig(
+                    name="dummy",
+                    components=[_dump_to_legacy_component(editgrid_component)],
+                ),
             },
         )
 
@@ -548,11 +540,18 @@ class EditGridFieldTests(SimpleTestCase):
 
     def test_min_length(self):
         editgrid_components = [TextField(key="textfield", label="Text field")]
+        editgrid_component = EditGrid(
+            key="editgrid",
+            label="editgrid",
+            group_label="Item",
+            components=editgrid_components,
+        )
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
                 components=editgrid_components,
+                parent_key_prefix=editgrid_component.key,
                 allow_empty=False,
                 min_length=3,
             )
@@ -560,17 +559,10 @@ class EditGridFieldTests(SimpleTestCase):
         serializer = Serializer(
             data={"editgrid": [{"textfield": "foo"}]},
             context={
-                "configuration": {
-                    "components": [
-                        {
-                            "type": "editgrid",
-                            "key": "editgrid",
-                            "label": "editgrid",
-                            "groupLabel": "Item",
-                            "components": editgrid_components,
-                        }
-                    ]
-                }
+                FORMIO_CONFIG_CONTEXT_KEY: FormioConfig(
+                    name="dummy",
+                    components=[_dump_to_legacy_component(editgrid_component)],
+                ),
             },
         )
 
@@ -582,11 +574,18 @@ class EditGridFieldTests(SimpleTestCase):
 
     def test_max_length(self):
         editgrid_components = [TextField(key="textfield", label="Text field")]
+        editgrid_component = EditGrid(
+            key="editgrid",
+            label="editgrid",
+            group_label="Item",
+            components=editgrid_components,
+        )
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
                 components=editgrid_components,
+                parent_key_prefix=editgrid_component.key,
                 allow_empty=False,
                 max_length=3,
             )
@@ -594,17 +593,10 @@ class EditGridFieldTests(SimpleTestCase):
         serializer = Serializer(
             data={"editgrid": [{"textfield": "foo"}] * 4},
             context={
-                "configuration": {
-                    "components": [
-                        {
-                            "type": "editgrid",
-                            "key": "editgrid",
-                            "label": "editgrid",
-                            "groupLabel": "Item",
-                            "components": editgrid_components,
-                        }
-                    ]
-                }
+                FORMIO_CONFIG_CONTEXT_KEY: FormioConfig(
+                    name="dummy",
+                    components=[_dump_to_legacy_component(editgrid_component)],
+                ),
             },
         )
 
@@ -616,11 +608,18 @@ class EditGridFieldTests(SimpleTestCase):
 
     def test_to_representation(self):
         editgrid_components = [TextField(key="bar", label="Bar")]
+        editgrid_component = EditGrid(
+            key="editgrid",
+            label="editgrid",
+            group_label="Item",
+            components=editgrid_components,
+        )
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
                 components=editgrid_components,
+                parent_key_prefix=editgrid_component.key,
             )
 
         Foo = namedtuple("Foo", "bar")
@@ -628,17 +627,10 @@ class EditGridFieldTests(SimpleTestCase):
         serializer = Serializer(
             instance={"editgrid": foos},
             context={
-                "configuration": {
-                    "components": [
-                        {
-                            "type": "editgrid",
-                            "key": "editgrid",
-                            "label": "editgrid",
-                            "groupLabel": "Item",
-                            "components": editgrid_components,
-                        }
-                    ]
-                }
+                FORMIO_CONFIG_CONTEXT_KEY: FormioConfig(
+                    name="dummy",
+                    components=[_dump_to_legacy_component(editgrid_component)],
+                ),
             },
         )
 

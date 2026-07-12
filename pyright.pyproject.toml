@@ -37,6 +37,8 @@ include = [
     "src/openforms/formio/formatters/",
     "src/openforms/formio/rendering/default.py",
     "src/openforms/formio/rendering/nodes.py",
+    "src/openforms/formio/rendering/tests/test_component_node.py",
+    "src/openforms/formio/rendering/tests/test_custom_formio_components.py",
     "src/openforms/formio/rendering/tests/test_vanilla_formio_components.py",
     "src/openforms/formio/serializers.py",
     "src/openforms/formio/service.py",

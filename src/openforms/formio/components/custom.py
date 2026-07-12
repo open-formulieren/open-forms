@@ -135,7 +135,7 @@ class DatePlugin(BasePlugin[Date]):
         component.placeholder = _("dd-mm-yyyy")
 
     def build_serializer_field(
-        self, component: Date
+        self, component: Date, parent_key_prefix: str
     ) -> FormioDateField | serializers.ListField:
         """
         Accept date values.
@@ -232,7 +232,7 @@ class DatetimePlugin(BasePlugin[DateTime]):
         component.placeholder = _("dd-mm-yyyy HH:mm")
 
     def build_serializer_field(
-        self, component: DateTime
+        self, component: DateTime, parent_key_prefix: str
     ) -> FormioDateTimeField | serializers.ListField:
         """
         Accept datetime values.
@@ -318,7 +318,7 @@ class MapPlugin(BasePlugin[Map]):
         component.initial_center.lng = Lon(config.form_map_default_longitude)
 
     def build_serializer_field(
-        self, component: Map
+        self, component: Map, parent_key_prefix: str
     ) -> GeoJsonGeometryPolymorphicSerializer:
         validate = component.validate
         required = validate is not None and validate.required
@@ -379,7 +379,7 @@ class PostcodePlugin(BasePlugin[Postcode]):
         return value
 
     def build_serializer_field(
-        self, component: Postcode
+        self, component: Postcode, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -440,7 +440,9 @@ class NPFamilyMembersPlugin(BasePlugin[NpFamilyMembers]):
     data_type = FormVariableDataTypes.object
     empty_value = {}
 
-    def build_serializer_field(self, component: NpFamilyMembers) -> serializers.Field:
+    def build_serializer_field(
+        self, component: NpFamilyMembers, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
@@ -536,7 +538,7 @@ class BSNPlugin(BasePlugin[BSN]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: BSN
+        self, component: BSN, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -705,7 +707,9 @@ class AddressNLPlugin(BasePlugin[AddressNL]):
         "autoPopulated": False,
     }
 
-    def build_serializer_field(self, component: AddressNL) -> AddressValueSerializer:
+    def build_serializer_field(
+        self, component: AddressNL, parent_key_prefix: str
+    ) -> AddressValueSerializer:
         validate = component.validate
         required = validate is not None and validate.required
 
@@ -874,7 +878,9 @@ class PartnersPlugin(BasePlugin[Partners]):
     data_subtype = FormVariableDataTypes.partners
     empty_value = []
 
-    def build_serializer_field(self, component: Partners) -> PartnerListField:
+    def build_serializer_field(
+        self, component: Partners, parent_key_prefix: str
+    ) -> PartnerListField:
         return PartnerListField(component=component)
 
     @staticmethod
@@ -1047,7 +1053,9 @@ class ChildrenPlugin(BasePlugin[Children]):
     data_subtype = FormVariableDataTypes.children
     empty_value = []
 
-    def build_serializer_field(self, component: Children) -> ChildListField:
+    def build_serializer_field(
+        self, component: Children, parent_key_prefix: str
+    ) -> ChildListField:
         return ChildListField(component=component)
 
     @staticmethod
@@ -1104,7 +1112,9 @@ class CosignV2Plugin(BasePlugin[CosignV2]):
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
-    def build_serializer_field(self, component: CosignV2) -> serializers.EmailField:
+    def build_serializer_field(
+        self, component: CosignV2, parent_key_prefix: str
+    ) -> serializers.EmailField:
         validate = component.validate
         required = validate is not None and validate.required
         return serializers.EmailField(required=required, allow_blank=not required)
@@ -1126,7 +1136,7 @@ class IbanPlugin(BasePlugin[Iban]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Iban
+        self, component: Iban, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -1159,7 +1169,7 @@ class LicensePlatePlugin(BasePlugin[LicensePlate]):
     empty_value = ""
 
     def build_serializer_field(
-        self, component: LicensePlate
+        self, component: LicensePlate, parent_key_prefix: str
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
         required = validate is not None and validate.required
@@ -1287,7 +1297,7 @@ class CustomerProfilePlugin(BasePlugin[CustomerProfile]):
     data_subtype = FormVariableDataTypes.object
 
     def build_serializer_field(
-        self, component: CustomerProfile
+        self, component: CustomerProfile, parent_key_prefix: str
     ) -> DigitalAddressSerializer:
         required = (
             validate.required if (validate := component.validate) is not None else False
@@ -1355,7 +1365,7 @@ class SoftRequiredErrorsPlugin(BasePlugin[SoftRequiredErrors]):
     holds_submission_data = False
 
     def build_serializer_field(
-        self, component: SoftRequiredErrors
+        self, component: SoftRequiredErrors, parent_key_prefix: str
     ) -> serializers.Field:
         raise NotImplementedError()
 
@@ -1368,7 +1378,9 @@ class SoftRequiredErrorsPlugin(BasePlugin[SoftRequiredErrors]):
 class CoSignPlugin(BasePlugin[CosignV1]):
     holds_submission_data = False
 
-    def build_serializer_field(self, component: CosignV1) -> serializers.Field:
+    def build_serializer_field(
+        self, component: CosignV1, parent_key_prefix: str
+    ) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod

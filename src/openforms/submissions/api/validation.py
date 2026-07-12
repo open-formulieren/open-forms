@@ -132,10 +132,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
                 step_data_serializer = build_serializer(
                     configuration["components"],
                     data=data.data,
-                    context={
-                        "submission": submission,
-                        "configuration": configuration,
-                    },
+                    context={"submission": submission},
                 )
                 if not step_data_serializer.is_valid():
                     step_errors["data"] = (  # pyright: ignore[reportArgumentType]
