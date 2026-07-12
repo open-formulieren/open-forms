@@ -1,6 +1,7 @@
 from django.urls import reverse
 
 from openforms.config.models import Theme
+from openforms.emails.utils import sanitize_content
 from openforms.forms.api.serializers import FormSerializer
 from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
 from openforms.forms.import_export.typing import (
@@ -190,6 +191,9 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
         value = self.set_theme(value)
         value = self.set_category(value)
 
+        # We remove all unknown domains from the email templates
+        value = self.sanitize_email_templates(value)
+
         return super().to_internal_value(value)
 
     def set_theme(self, value: JSONObject) -> JSONObject:
@@ -211,5 +215,44 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
             value["category"] = category_url
         else:
             value["category"] = None
+
+        return value
+
+    def sanitize_email_templates(self, value: JSONObject) -> JSONObject:
+        # Sanitize confirmation email templates
+        if value.get("confirmation_email_template", None) is not None:
+            email_template = value["confirmation_email_template"]
+
+            if email_template.get("content") is not None:
+                email_template["content"] = sanitize_content(email_template["content"])
+
+            if email_template.get("cosign_content") is not None:
+                email_template["cosign_content"] = sanitize_content(
+                    email_template["cosign_content"]
+                )
+
+            for translation in email_template.get("translations", {}).values():
+                if translation.get("content") is not None:
+                    translation["content"] = sanitize_content(translation["content"])
+
+                if translation.get("cosign_content") is not None:
+                    translation["cosign_content"] = sanitize_content(
+                        translation["cosign_content"]
+                    )
+
+        # Sanitize email registration backend email templates
+        for registration in value.get("registration_backends", []):
+            if registration["backend"] == "email":
+                options = registration["options"]
+
+                if options.get("email_content_template_html") is not None:
+                    options["email_content_template_html"] = sanitize_content(
+                        options["email_content_template_html"]
+                    )
+
+                if options.get("email_content_template_text") is not None:
+                    options["email_content_template_text"] = sanitize_content(
+                        options["email_content_template_text"]
+                    )
 
         return value
