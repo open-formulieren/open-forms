@@ -28,4 +28,10 @@ class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
 
 
 class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
-    pass
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if "order" not in value:
+            value["order"] = 0
+
+        return super().to_internal_value(value)

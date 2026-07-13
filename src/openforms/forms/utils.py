@@ -18,7 +18,6 @@ from rest_framework.test import APIRequestFactory
 
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
-from openforms.forms.constants import FormTypeChoices
 from openforms.import_export.serializers import (
     FormDefinitionExportSerializer,
     FormDefinitionImportSerializer,
@@ -31,7 +30,10 @@ from openforms.import_export.serializers import (
     FormVariableExportSerializer,
     FormVariableImportSerializer,
 )
-from openforms.import_export.typing import FormExportOptions, FormImportOptions
+from openforms.import_export.typing import (
+    FormExportOptions,
+    FormImportOptions,
+)
 from openforms.import_export.utils import (
     get_additional_form_configuration_data,
 )
@@ -54,13 +56,19 @@ from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 logger = structlog.stdlib.get_logger(__name__)
 
 
-IMPORT_ORDER = {
-    "formDefinitions": FormDefinition,
-    "forms": Form,
-    "formSteps": FormStep,
-    "formVariables": FormVariable,
-    "formLogic": FormLogic,
-}
+IMPORT_ORDER = (
+    "product",
+    "theme",
+    "category",
+    "wmsTileLayers",
+    "wmtsTileLayers",
+    "yiviAttributeGroups",
+    "formDefinitions",
+    "forms",
+    "formSteps",
+    "formVariables",
+    "formLogic",
+)
 
 SERIALIZERS = {
     "formDefinitions": FormDefinitionImportSerializer,
@@ -184,7 +192,7 @@ def import_form(
 ) -> Form | None:
     import_data = {}
     with zipfile.ZipFile(import_file, "r") as zip_file:
-        for resource in IMPORT_ORDER.keys():
+        for resource in IMPORT_ORDER:
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
@@ -206,6 +214,7 @@ def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: b
 
     # if there is an existing form definition, but it's not being related to the same
     # form, then we need to create a copy
+    # if new form, existing is used, existing is not reusable
     if not for_existing_form and existing.used_in.exists() and not existing.is_reusable:
         return None
 
@@ -231,24 +240,9 @@ def import_form_data(
 
     created_form = None
 
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
-
     _form_definitions = []
 
-    for resource in IMPORT_ORDER.keys():
+    for resource in IMPORT_ORDER:
         if resource not in import_data:
             continue
 
@@ -266,31 +260,10 @@ def import_form_data(
                 entry["uuid"] = str(uuid4())
 
             if resource == "forms":
-                # we can only extract a category UUID from the URL here, but that requires
-                # an exact match and we currently don't provide import/export functionality
-                # for categories. Relying on ID/Name is not much better than guesswork either,
-                # so we always import forms with NO category at all to prevent import errors.
-                # See #1774 for one such example of an error.
-                entry["category"] = None
-                # theme overrides cannot be imported, since the theme records/FKs have to
-                # exist in the target environment. Importing/exporting themes is also not
-                # possible at this time, so we reset the theme and admins need to update
-                # the imported form.
-                entry["theme"] = None
-
-                # forms before v4.0 do not have the type field so in case we import an
-                # old appointment form we have to make sure that the form has the right
-                # type configured (by default is regular)
-                if appointment_options := entry.get("appointment_options"):
-                    if appointment_options.get("is_appointment"):
-                        entry["type"] = FormTypeChoices.appointment
-
                 # check for file components in the form definitions and move
                 # registration options to the backend registration options
+                # @TODO Implement on FormDefinitionImportSerializer?
                 move_file_registration_options(entry, _form_definitions)
-
-            if resource == "forms" and not existing_form_instance:
-                entry["active"] = False
 
             serializer_kwargs = {
                 "data": entry,
@@ -306,7 +279,9 @@ def import_form_data(
                 existing_form_definition_instance = check_form_definition(
                     old_uuid,
                     entry,
-                    for_existing_form=existing_form_instance is not None,
+                    for_existing_form=False,
+                    # @TODO is this needed?
+                    # for_existing_form=existing_form_instance is not None,
                 )
                 if existing_form_definition_instance:
                     # The form definition that is being imported is identical to
@@ -326,6 +301,7 @@ def import_form_data(
             if resource in ("formVariables", "formLogic"):
                 # by now, the form resource has been created (or it was an existing one)
                 _form = existing_form_instance or created_form
+                # @TODO inspect serializers for why this is needed.
                 serializer_kwargs["context"].update(
                     {
                         "forms": {str(_form.uuid): _form},
@@ -342,6 +318,7 @@ def import_form_data(
                     # better not import these, we don't know where this came from.
                     # services and ids may point to different things
                     # in different OF instances.
+                    # @TODO move to import serializers?
                     del entry["service_fetch_configuration"]
 
             if resource == "formLogic":
@@ -359,15 +336,13 @@ def import_form_data(
 
             deserialized = serializer(**serializer_kwargs)
 
-            if resource == "formLogic" and "order" not in entry:
-                entry["order"] = 0
-
             try:
                 is_create = (
                     deserialized.instance is None or not deserialized.instance.pk
                 )
                 deserialized.is_valid(raise_exception=True)
 
+                # @TODO Move to FormDefinitionImportSerializer. Maybe a generic post_import()?
                 if resource == "formDefinitions":
                     apply_component_conversions(
                         deserialized.validated_data["configuration"]
@@ -377,6 +352,7 @@ def import_form_data(
                         deserialized.validated_data["configuration"]
                     )
 
+                # @TODO move to FormLogicImportSerializer.
                 if resource == "formLogic":
                     clear_old_service_fetch_config(deserialized.validated_data)
 
@@ -384,6 +360,7 @@ def import_form_data(
                 if resource == "forms":
                     created_form = deserialized.instance
                 if resource == "formSteps":
+                    # @TODO move to FormStepImportSerializer?
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.
                     FormVariable.objects.create_for_form(created_form)

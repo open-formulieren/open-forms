@@ -6,6 +6,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import get_netloc_allowlist, sanitize_content
 from openforms.emails.validators import subdomains
 from openforms.forms.api.serializers import FormSerializer
+from openforms.forms.constants import FormTypeChoices
 from openforms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
@@ -138,7 +139,20 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
         value = instance.copy()
         value = self.handle_unknown_domains(value)
 
+        # When importing a form, it should be non-active by default
+        value["active"] = False
+
         return super().to_internal_value(value)
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
+        # forms before v4.0 do not have the type field so in case we import an
+        # old appointment form we have to make sure that the form has the right
+        # type configured (by default is regular)
+        if appointment_options := value.get("appointment_options"):
+            if appointment_options.get("is_appointment"):
+                value["type"] = FormTypeChoices.appointment
+
+        return value
 
     def handle_unknown_domains(self, value: JSONObject) -> JSONObject:
         if (import_options := self.get_import_options()) is None:
