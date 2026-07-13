@@ -418,6 +418,49 @@ class EditGridValidationTests(SimpleTestCase):
 
             self.assertTrue(is_valid)
 
+    @tag("gh-6447")
+    def test_conditional_resolves_to_component_specific_test(self):
+        component: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid with nested conditional",
+            "groupLabel": "item",
+            "components": [
+                # uses selectboxes because the value comparison is special and requires
+                # the registry to work
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes 1",
+                    "values": [  # type: ignore
+                        {"value": "a", "label": "A"},
+                        {"value": "b", "label": "B"},
+                    ],
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield2",
+                    "label": "text field 2",
+                    "validate": {"required": True},
+                    "conditional": {  # type: ignore
+                        "eq": "a",
+                        "show": True,
+                        "when": "editgrid.selectboxes",
+                    },
+                },
+            ],
+        }
+
+        invalid_data: JSONValue = {
+            "editgrid": [{"selectboxes": {"a": True, "b": False}}]
+        }
+
+        is_valid, errors = validate_formio_data(component, invalid_data)
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors["editgrid"][0], "textfield2")
+        self.assertEqual(error.code, "required")
+
 
 class EditGridFieldTests(SimpleTestCase):
     """
