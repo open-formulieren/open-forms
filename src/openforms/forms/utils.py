@@ -36,6 +36,7 @@ from openforms.import_export.typing import (
 )
 from openforms.import_export.utils import (
     get_additional_form_configuration_data,
+    import_additional_form_configuration_data,
 )
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
@@ -241,6 +242,11 @@ def import_form_data(
     created_form = None
 
     _form_definitions = []
+
+    # Import additional data
+    import_additional_form_configuration_data(
+        resources=import_data, import_options=import_options
+    )
 
     for resource in IMPORT_ORDER:
         if resource not in import_data:
