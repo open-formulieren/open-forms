@@ -129,21 +129,6 @@ def import_form_data(
 
     created_form = None
 
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
-
     _form_definitions = []
 
     for resource in IMPORT_ORDER.keys():
