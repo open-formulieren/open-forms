@@ -1,39 +1,56 @@
 .. _example_single_step_form:
 
-=============================
-Single step form (with logic)
-=============================
+==============================
+Eénstapsformulier (met logica)
+==============================
 
-.. warning::  Logic evaluation for a single step form is performed after submission and
-   only in the backend. This means that the user cannot see any data processed by the
-   logic rules (in the backend) during the form submission.
+Formulieren die slechts uit één stap bestaan zijn geoptimaliseerd voor extreem
+laagdrempelige formulieren, bijvoorbeeld om te voldoen aan WMEBV-eisen om makkelijk
+digitaal contact op te nemen.
 
-Form creation
-=============
+.. tip:: Formulierlogica bij éénstapsformulieren wordt enkel aan het eind van de
+   inzending uitgevoerd, wanneer de gebruiker de inzending afgerond heeft. Er is dus
+   geen logica mogelijk *tijdens* het invullen.
 
-1. Create a form with the following data:
+Formulier maken
+===============
 
-  * **Name**: Single step form demo
-  * **Type**: single step
+#. Maak een formulier aan met de volgende gegevens:
+
+  * **Naam**: Demo éénstapsformulier
+  * **Type**: Enkele stap
   
   .. image:: _assets/form-type.png
 
-1. Navigate to the **Steps and fields** tab and add a new (single) step.
-2. Add a component (an email for example). It's not so important as this will not play
-   a role in our example.
-3. Navigate to the **Variables** tab and the **User defined** sub tab.
-4. Add one variable with the name *department* (default type of string).
-5. Navigate to the **Logic** tab and add the following advanced logic rule:
-   
+#. Klik op het tabblad **Stappen en velden** en voeg een nieuwe (de enige) stap toe.
+#. Sleep een component (bijvoorbeeld *e-mail*) in de stap. Het maakt niet uit wat voor
+   component je kiest voor dit voorbeeld.
+#. Klik op het tabblad **Variabelen**. Klik hierbinnen op het tabblad
+   **Gebruikersvariabelen**.
+#. Voeg een variabele toe door op **Variabele toevoegen** link te klikken, en voer in:
+
+   * **Naam**: *Afdeling*
+   * **Datatype**: laat de standaardwaarde (tekst) staan
+
+#. Klik op het tabblad **Logica** en voeg een geavanceerde logicaregel toe:
+
    .. image:: _assets/single_step_logic.png
 
-   .. note:: This is an example of a logic rule where we can populate the variable with
-             data based on the form url. In our example if the form url contains */test*
-             then we will have *a@example.com* as the value of variable *department*,
-             otherwise we will have the fallback which is *b@example.com*.
+   .. note:: Deze logicaregel berekent waar de inzending heen moet. Op basis van de vaste
+      variabele ``form_url`` kan afgeleid worden vanaf welke pagina de inzending komt,
+      en op basis daarvan wordt het e-mailadres van de juiste afdeling gezet in de
+      gebruikersvariabele. Deze variabele kan vervolgens gebruikt worden in de
+      registratie-instellingen.
 
-6. Click **Save** at the bottom to save the form completely.
+      In dit voorbeeld wordt het e-mailadres ingesteld op ``a@example.com`` zodra
+      de bronpagina de URL ``*/test*`` bevat, en in alle andere gevallen wordt de
+      standaardwaarde ``b@example.com`` gebruikt.
 
-The above form gives the opportunity to the form admin/builder to populate user defined
-variables based on the value of the static variable **form_url** and the logic action.
-This can be used in combination with all the available form variables.
+#. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
+
+Je kan nu het formulier bekijken.
+
+Dit formulier is erg geschikt voor eenvoudige contactformulieren die op pagina's van de
+gemeentewebsite ingesloten worden. Op basis van de ``form_url``-variabele kan de
+inzending meteen naar de juiste afdeling gerouteerd worden voor de opvolging en
+behandeling.

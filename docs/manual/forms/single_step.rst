@@ -1,24 +1,38 @@
 .. _manual_single_step:
 
-================
-Single step form
-================
+===========
+Enkele stap
+===========
 
-Open Forms supports three different types of form since version 4.0 (``regular``, ``appointment``
-and ``single step``). The last one can be used when only one step and an anonymous user
-are necessary (*consider an embedded contact form as an example*). This type of form can
-be configured in the admin page by selecting the ``single step`` type.
+Open Formulieren kent drie soorten formulieren: *standaard*, *afspraak* en *enkele stap*.
 
-This type of form can make use of logic rules but only the following actions are available:
+.. versionadded:: 4.0
 
-1. Set the registration backend to use for the submission
-2. Change the value of a variable/component
-3. Evaluate DMN
+   De éénstapsformulieren zijn nieuw sinds Open Formulieren 4.0.
 
-.. warning::  Logic evaluation for a single step form is performed after submission and
-   only in the backend.
+Formulieren die slechts uit één stap bestaan zijn geoptimaliseerd voor extreem
+laagdrempelige formulieren waarbij gebruikers niet dienen in te loggen en gelijk het
+formulier kunnen beginnen invullen - zonder startpagina dus. Bijvoorbeeld een
+contactformulier wat ingesloten wordt in de publieke website op productpagina's.
 
-The first one is used in the already known way. The other two can only be used in combination
-with **user defined variables**.
+Dit type formulier kan ingesteld worden door bij formuliertype "enkele stap" te
+selecteren.
 
-See :ref:`single step logic <example_single_step_form>` for a detailed form/example.
+Logica
+======
+
+Formulierlogica is beperkt beschikbaar - je kan enkel logica instellen die op het eind
+van de inzending uitgevoerd wordt, voornamelijk gericht op het juist afhandelen van
+de registratie. Enkel de volgende acties zijn beschikbaar:
+
+1. Zet registratieplugin voor de inzending
+2. Zet de waarde van een variabele/component
+3. DMN evalueren
+
+.. note:: Voor éénstapsformulieren wordt de logica altijd in de backend aan het eind van
+   de inzending uitgevoerd.
+
+.. warning:: Voor het zetten van de waarde van een variabele en evalueren van DMN kan je
+   enkel gebruik maken van **gebruikersvariabelen**.
+
+Zie :ref:`example_single_step_form` voor een volledig voorbeeld.
