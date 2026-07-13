@@ -27,7 +27,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client
-from .constants import SummaryDocumentChoices
+from .constants import CaseObjectTypeChoices, SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .typing import RegistrationOptions
 
@@ -97,6 +97,41 @@ class FileComponentOptionsSerializer(serializers.Serializer):
             "name is used."
         ),
         allow_blank=True,
+    )
+
+
+class ObjectOverigeSerializer(serializers.Serializer):
+    overige_data = serializers.CharField(
+        label=_("Overige data"),
+        help_text=_(
+            "Data for the 'overige' object in a free format. You can use form variables here."
+        ),
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
+    )
+
+
+class CaseObjectSerializer(serializers.Serializer):
+    # in the future this field can be turned to Discriminator for PolymorphicSerializer
+    # but for now it will over-complicate things without benefits, so let's do KISS
+    case_object_type = serializers.ChoiceField(
+        label=_("Case object type"),
+        choices=CaseObjectTypeChoices.choices,
+        help_text=_("Type of the case object. Now only 'overige' value is supported."),
+    )
+    case_object_type_overige = serializers.CharField(
+        label=_("Case object type overige"),
+        max_length=100,
+        allow_blank=True,
+        help_text=_("Description of the 'overige' case object type."),
+    )
+    case_object_identification = ObjectOverigeSerializer(
+        label=_("Case object identification"),
+        help_text=_(
+            "Data, which describes the object. The shape depends on the 'case_object_type'. "
+            "Now only 'overige' data shape is supported."
+        ),
     )
 
 
@@ -295,6 +330,13 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "level. If unspecified, the backend configuration is used."
         ),
         allow_null=False,
+    )
+    # Zaakobjecten
+    case_objects = CaseObjectSerializer(
+        many=True,
+        label=_("Case Objects"),
+        required=False,
+        help_text=_("List of case objects."),
     )
 
     def _handle_import(self, attrs) -> None:

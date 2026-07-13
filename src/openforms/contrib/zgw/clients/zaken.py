@@ -1,3 +1,6 @@
+from collections.abc import Mapping
+from typing import Any
+
 from django.utils import timezone
 
 import structlog
@@ -135,7 +138,7 @@ class ZakenClient(LoggingMixin, NLXClient):
 
         return response.json()
 
-    def create_zaakobject(
+    def create_zaakobject_with_object(
         self, zaak: dict, object: str, objecttype_version: str
     ) -> dict:
         data = {
@@ -147,6 +150,25 @@ class ZakenClient(LoggingMixin, NLXClient):
                 "schema": ".jsonSchema",
                 "objectData": ".record.data",
             },
+        }
+
+        response = self.post("zaakobjecten", json=data)
+        response.raise_for_status()
+
+        return response.json()
+
+    def create_zaakobject_with_object_identification(
+        self,
+        zaak: dict,
+        object_type: str,
+        object_type_overige: str,
+        object_identification: Mapping[str, Any],
+    ) -> dict:
+        data = {
+            "zaak": zaak["url"],
+            "objectType": object_type,
+            "objectTypeOverige": object_type_overige,
+            "objectIdentificatie": object_identification,
         }
 
         response = self.post("zaakobjecten", json=data)

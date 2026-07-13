@@ -31,6 +31,21 @@ class FileComponentOptions(TypedDict, total=False):
     title: str
 
 
+class ObjectOverige(TypedDict):
+    # in the ZGW API `overige_data` is of "Any" format, but we treat it as
+    # a string, since we display it as a TextArea in the UI
+    overige_data: str
+
+
+CaseObjectType = Literal["overige"]
+
+
+class CaseObject(TypedDict):
+    case_object_type: CaseObjectType
+    case_object_type_overige: str
+    case_object_identification: ObjectOverige
+
+
 class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
     catalogue: CatalogueOption
@@ -68,3 +83,4 @@ class RegistrationOptions(TypedDict):
     admin enforcing key uniqueness for *all* components in the form, which is stricter
     than vanilla Formio.
     """
+    case_objects: NotRequired[list[CaseObject]]

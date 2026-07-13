@@ -815,6 +815,9 @@ kan deze allemaal individueel gebruiken in de sjablonen.
 ZGW API registratie
 ===================
 
+Zaken
+-----
+
 De ZGW API-registratiebackend maakt een zaak aan in de geconfigureerde Zaken API met de gegevens van een
 inzending. Een verkort voorbeeld van de JSON die naar de Zaken API wordt gestuurd:
 
@@ -835,6 +838,29 @@ Je kunt de volgende kenmerken in sjablonen instellen:
 
 - ``omschrijving``
 - ``toelichting``
+
+Zaakobjecten
+============
+
+Op het tabblad “Zaakobjecten” kun je de kenmerken configureren van de zaakobjecten die tijdens
+het registratieproces zijn aangemaakt.
+
+Een voorbeeld van de JSON die naar de Zaken API wordt gestuurd:
+
+.. code:: json
+
+    {
+      "zaak": "http://zaken-example.nl/zaken/api/v1/zaaken/123",
+      "objectType": "overige",
+      "objectTypeOverige": "gebouw in aanbouw",
+      "objectIdentificatie": {
+        "overigeData": "naam: Centrum Roxmeer"
+      }
+    }
+
+Je kunt de volgende kenmerken in sjablonen instellen:
+
+- ``overigeData``
 
 .. note ::
 

@@ -55,12 +55,18 @@ from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .constants import SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
-from .typing import CatalogueOption, RegistrationOptions
+from .typing import CaseObjectType, CatalogueOption, ObjectOverige, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "zgw-create-zaak"
+
+
+# All case object attributes inside CaseObjectIdentification object, which support templating
+TEMPLATED_CASE_OBJECT_ATTRIBUTES: Mapping[CaseObjectType, list[str]] = {
+    "overige": ["overige_data"]
+}
 
 
 class VariablesProperties(TypedDict):
@@ -204,6 +210,25 @@ def transform_addressnl_to_verblijfsadres(value):
         "aoaHuisletter": value.get("houseLetter") or "",
         "aoaHuisnummertoevoeging": value.get("houseNumberAddition") or "",
     }
+
+
+def render_case_object_identification(
+    case_object_type: CaseObjectType,
+    case_object_identification: ObjectOverige,
+    context: ZaakTemplateContext,
+) -> ObjectOverige:
+    """
+    Render case_object_identification with templated attributes using the provided context.
+    """
+    result = case_object_identification.copy()
+
+    templated_attributes = TEMPLATED_CASE_OBJECT_ATTRIBUTES[case_object_type]
+    for attribute in templated_attributes:
+        result[attribute] = render_from_string(
+            result[attribute], context, backend=openforms_backend
+        )
+
+    return result
 
 
 @register(PLUGIN_IDENTIFIER)
@@ -781,7 +806,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             result["zaakobject"] = execute_unless_result_exists(
                 partial(
-                    zaken_client.create_zaakobject,
+                    zaken_client.create_zaakobject_with_object,
                     zaak,
                     result["objects_api_object"]["url"],
                     objecttype_version.url,
@@ -838,6 +863,34 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         created_zaakeigenschap,
                         missing=dict,
                     )
+
+        # register configured case objects
+        if case_objects := options.get("case_objects"):
+            context = _get_template_context(submission)
+            for i, case_object in enumerate(case_objects):
+                created_zaakobject = execute_unless_result_exists(
+                    partial(
+                        zaken_client.create_zaakobject_with_object_identification,
+                        zaak,
+                        object_type=case_object["case_object_type"],
+                        object_type_overige=case_object["case_object_type_overige"],
+                        object_identification=render_case_object_identification(
+                            case_object_type=case_object["case_object_type"],
+                            case_object_identification=case_object[
+                                "case_object_identification"
+                            ],
+                            context=context,
+                        ),
+                    ),
+                    submission,
+                    f"intermediate.zaakobjecten.{i}",
+                )
+                assign(
+                    result,
+                    f"zaakobjecten.{i}",
+                    created_zaakobject,
+                    missing=dict,
+                )
 
         submission.registration_result = result
         submission.save()

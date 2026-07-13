@@ -864,6 +864,11 @@
     "description": "Required error message",
     "originalDefault": "This field is required."
   },
+  "Dvovhl": {
+    "defaultMessage": "Zaakobject toevoegen",
+    "description": "Add case object (mapping) button",
+    "originalDefault": "Add case object"
+  },
   "DxGKNm": {
     "defaultMessage": "Logica",
     "description": "Logic fieldset title",
@@ -1414,6 +1419,16 @@
     "defaultMessage": "'Wijzigen' tekst",
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
+  },
+  "M4Kbw3": {
+    "defaultMessage": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken.",
+    "description": "ZGW APIs registration options 'overigeData' help text",
+    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
+  },
+  "M765u8": {
+    "defaultMessage": "Beschrijving van het objecttype",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type description"
   },
   "M8nTet": {
     "defaultMessage": "Geeft aan of de gebruiker het formulier kan verzenden en of de overzichtspagina getoond wordt als het formulier niet verzonden kan worden. Inzenden is altijd toegestaan voor de `enkele stap` formulieren.",
@@ -2084,6 +2099,11 @@
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
   },
+  "ZJQmio": {
+    "defaultMessage": "Zaakobject {count}",
+    "description": "ZGW APIs registration: case objects fieldset title",
+    "originalDefault": "Case object {count}"
+  },
   "ZP5B/v": {
     "defaultMessage": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier.",
     "description": "Form 'BRP Personen processing header value' field help text",
@@ -2138,6 +2158,11 @@
     "defaultMessage": "Gekoppeld aan het {geometryPath}-attribuut",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
+  },
+  "aE4IrY": {
+    "defaultMessage": "Overige data",
+    "description": "ZGW APIs registration options 'overigeData' label",
+    "originalDefault": "Overige data"
   },
   "aXJpiI": {
     "defaultMessage": "Dit veld is verplicht.",
@@ -2797,6 +2822,11 @@
     "description": "Email registration options 'toEmails' label",
     "originalDefault": "The email addresses to which the submission details will be sent"
   },
+  "l/D4PL": {
+    "defaultMessage": "Objecttype",
+    "description": "ZGW APIs registration options 'caseObjectType' label",
+    "originalDefault": "Object type"
+  },
   "l1fi1t": {
     "defaultMessage": "(ontbrekende informatie)",
     "description": "JSON editor: unknown FormIO component key",
@@ -2911,6 +2941,11 @@
     "defaultMessage": "Sjabloon emailinhoud (HTML)",
     "description": "Email registration options 'emailContentTemplateHtml' label",
     "originalDefault": "Email content template HTML"
+  },
+  "nXKEYN": {
+    "defaultMessage": "Zaakobjecten ({count})",
+    "description": "ZGW APIs registration backend options, 'case objects' tab label",
+    "originalDefault": "Case objects ({count})"
   },
   "nYePys": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de objecttypeversies.",
@@ -3082,6 +3117,11 @@
     "defaultMessage": "Indien aangevinkt, dan worden geen controles uitgevoerd of de (ingelogde) gebruiker toegang heeft op het gerefereerde object. Valideer dat de objecten geen privacy-gevoelige gegevens bevatten voor je dit aanvinkt!",
     "description": "Objects API registration: skipOwnershipCheck helpText",
     "originalDefault": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!"
+  },
+  "qntXTt": {
+    "defaultMessage": "Beschrijving van het objecttype ‘overige’.",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' help text",
+    "originalDefault": "Description of the 'overige' object type."
   },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
@@ -3358,6 +3398,11 @@
     "defaultMessage": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de {catalogueLabel, select, empty {ingestelde} other {''{catalogueLabel}''} } catalogus in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+  },
+  "vhmWn1": {
+    "defaultMessage": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund.",
+    "description": "ZGW APIs registration options 'caseObjectType' help text",
+    "originalDefault": "Type of the case object. Now only 'overige' value is supported."
   },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
