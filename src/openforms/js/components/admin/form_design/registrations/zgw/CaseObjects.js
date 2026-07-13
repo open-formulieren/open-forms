@@ -124,9 +124,6 @@ const CaseObjectFieldset = ({index, caseObjectTypeChoices, onDelete}) => {
   const [{value: caseObjectTypeValue}] = useField(`${prefix}.caseObjectType`);
   const ObjectIdentificationFields = CASE_OBJECT_TYPES_FIELDS[caseObjectTypeValue];
 
-  const formik = useFormikContext();
-  console.log('Formik values:', formik.values);
-
   return (
     <Fieldset
       title={

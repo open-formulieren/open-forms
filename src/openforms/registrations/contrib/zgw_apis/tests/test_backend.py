@@ -3286,7 +3286,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
-        # we need to patch the ZGW client `create_zaakobject` method so that we can
+        # we need to patch the ZGW client `create_zaakobject_with_object` method so that we can
         # fix up the object URL since Open Zaak validates the format and needs to resolve
         # this inside the container network
         original_create_zaakobject = ZakenClient.create_zaakobject_with_object
