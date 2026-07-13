@@ -116,18 +116,18 @@ class CaseObjectSerializer(serializers.Serializer):
     # in the future this field can be turned to Discriminator for PolymorphicSerializer
     # but for now it will over-complicate things without benefits, so let's do KISS
     case_object_type = serializers.ChoiceField(
-        label=_("object type"),
+        label=_("Case object type"),
         choices=CaseObjectTypeChoices.choices,
         help_text=_("Type of the case object. Now only 'overige' value is supported."),
     )
     case_object_type_overige = serializers.CharField(
-        label=_("Object type overige"),
+        label=_("Case object type overige"),
         max_length=100,
         allow_blank=True,
         help_text=_("Description of the 'overige' case object type."),
     )
     case_object_identification = ObjectOverigeSerializer(
-        label=_("Object identification"),
+        label=_("Case object identification"),
         help_text=_(
             "Data, which describes the object. The shape depends on the 'case_object_type'. "
             "Now only 'overige' data shape is supported."

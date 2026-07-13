@@ -276,11 +276,6 @@
     "description": "StUF-ZDS extraElement serializeListToCsv label",
     "originalDefault": "Comma-separate list values"
   },
-  "4iYhbx": {
-    "defaultMessage": "Objecttype overige",
-    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
-    "originalDefault": "Object type overige"
-  },
   "4sFGgA": {
     "defaultMessage": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -1429,6 +1424,11 @@
     "defaultMessage": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken.",
     "description": "ZGW APIs registration options 'overigeData' help text",
     "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
+  },
+  "M765u8": {
+    "defaultMessage": "Beschrijving van het objecttype",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type description"
   },
   "M8nTet": {
     "defaultMessage": "Geeft aan of de gebruiker het formulier kan verzenden en of de overzichtspagina getoond wordt als het formulier niet verzonden kan worden. Inzenden is altijd toegestaan voor de `enkele stap` formulieren.",

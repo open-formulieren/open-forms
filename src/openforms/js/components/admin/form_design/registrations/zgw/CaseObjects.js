@@ -99,7 +99,7 @@ const CaseObjectTypeOverige = ({index}) => {
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'caseObjectTypeOverige' label"
-            defaultMessage="Object type overige"
+            defaultMessage="Object type description"
           />
         }
         helpText={

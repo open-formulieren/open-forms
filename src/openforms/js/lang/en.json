@@ -274,11 +274,6 @@
     "description": "StUF-ZDS extraElement serializeListToCsv label",
     "originalDefault": "Comma-separate list values"
   },
-  "4iYhbx": {
-    "defaultMessage": "Object type overige",
-    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
-    "originalDefault": "Object type overige"
-  },
   "4sFGgA": {
     "defaultMessage": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -1418,6 +1413,11 @@
     "defaultMessage": "Data for the 'overige' case object in a free format. You can use form variables here.",
     "description": "ZGW APIs registration options 'overigeData' help text",
     "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
+  },
+  "M765u8": {
+    "defaultMessage": "Object type description",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type description"
   },
   "M8nTet": {
     "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",

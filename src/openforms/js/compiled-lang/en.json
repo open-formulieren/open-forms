@@ -653,12 +653,6 @@
       "value": "Comma-separate list values"
     }
   ],
-  "4iYhbx": [
-    {
-      "type": 0,
-      "value": "Object type overige"
-    }
-  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -2937,6 +2931,12 @@
     {
       "type": 0,
       "value": "Data for the 'overige' case object in a free format. You can use form variables here."
+    }
+  ],
+  "M765u8": [
+    {
+      "type": 0,
+      "value": "Object type description"
     }
   ],
   "M8nTet": [

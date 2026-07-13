@@ -653,12 +653,6 @@
       "value": "Door komma's gescheiden waarden"
     }
   ],
-  "4iYhbx": [
-    {
-      "type": 0,
-      "value": "Objecttype overige"
-    }
-  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -2924,6 +2918,12 @@
     {
       "type": 0,
       "value": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken."
+    }
+  ],
+  "M765u8": [
+    {
+      "type": 0,
+      "value": "Beschrijving van het objecttype"
     }
   ],
   "M8nTet": [
