@@ -7,7 +7,11 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.service import FormioData
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.tests.factories import FormLogicFactory, FormVariableFactory
+from openforms.forms.tests.factories import (
+    FormLogicFactory,
+    FormVariableFactory,
+)
+from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...form_logic import evaluate_form_logic
@@ -216,3 +220,43 @@ class ServiceFetchWithActionsTest(TestCase):
 
         self.assertEqual(len(m.request_history), 2)
         self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")
+
+    @requests_mock.Mocker(case_sensitive=True)
+    def test_with_undefined_variable_from_service_fetch(self, m):
+        submission = SubmissionFactory.from_components([])
+        fetch_config = ServiceFetchConfigurationFactory.create(
+            service=self.service,
+            path="get",
+            cache_timeout=30,
+            data_mapping_type=DataMappingTypes.json_logic,
+            mapping_expression={"var": "foo"},
+        )
+        FormVariableFactory.create(
+            key="someVariable",
+            form=submission.form,
+            service_fetch_configuration=fetch_config,
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            order=1,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "someVariable",
+                    "action": {
+                        "name": "Fetch some field from some server",
+                        "type": LogicActionTypes.fetch_from_service,
+                    },
+                }
+            ],
+        )
+        submission.form.apply_logic_analysis()
+
+        m.get("https://httpbin.org/get", json={})
+
+        evaluate_form_logic(submission, submission.submissionstep_set.first())
+
+        variables_data = submission.variables_state.get_data(include_unsaved=True)
+
+        self.assertEqual(variables_data, {"someVariable": ""})

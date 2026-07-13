@@ -652,7 +652,7 @@ maykin-common==0.20.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-json-logic-py==0.14.0
+maykin-json-logic-py==0.16.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

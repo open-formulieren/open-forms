@@ -48,7 +48,7 @@ def get_options_from_variable(
     component: Component, data: FormioData, submission: Submission
 ) -> list[tuple[str, str]] | None:
     items_expression = glom(component, "openForms.itemsExpression")
-    items_array = jsonLogic(items_expression, data.data)
+    items_array = jsonLogic(items_expression, data.data, use_var_undefined=True)  # pyright: ignore[reportArgumentType]
     if not items_array:
         return
 

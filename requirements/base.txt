@@ -349,7 +349,7 @@ maykin-2fa==2.1.0
     #   maykin-common
 maykin-common==0.20.0
     # via -r requirements/base.in
-maykin-json-logic-py==0.14.0
+maykin-json-logic-py==0.16.0
     # via -r requirements/base.in
 maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
