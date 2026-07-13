@@ -435,10 +435,9 @@ class VariableAction(ActionOperation):
                 context.data,  # pyright: ignore[reportArgumentType]
                 use_var_undefined=True,
             )
-            # variables with None/null values are returned as UNDEFINED_VALUE when
-            # use_var_undefined is set to True and they are missing from the context
-            # entirely. If they are present in the context and None, then the output
-            # will be None.
+            # variables are returned as UNDEFINED_VALUE when use_var_undefined is set to
+            # True and they are missing from the context entirely. If they are present in
+            # the context and None, then the output will be None.
             if result is UNDEFINED_VALUE:
                 return {}
 

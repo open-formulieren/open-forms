@@ -82,10 +82,9 @@ def perform_service_fetch(
             value = jq.compile(expression).input(raw_value).first()
         case DataMappingTypes.json_logic, expression:
             value = jsonLogic(expression, raw_value, use_var_undefined=True)
-            # variables with None/null values are returned as UNDEFINED_VALUE when
-            # use_var_undefined is set to True and they are missing from the context
-            # entirely. If they are present in the context and None, then the output
-            # will be None.
+            # variables are returned as UNDEFINED_VALUE when use_var_undefined is set to
+            # True and they are missing from the context entirely. If they are present in
+            # the context and None, then the output will be None.
             if value is UNDEFINED_VALUE:
                 return None
         case _:
