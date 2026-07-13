@@ -1053,11 +1053,13 @@ class EditGridField(serializers.Field):
         ]
 
     def _build_child(self, **kwargs):
+        assert "context" not in kwargs
         return build_serializer(
             components=self.components,
             # XXX: check out type annotations here, there's some co/contra variance
             # in play
             register=self.registry,
+            context=self.context,
             **kwargs,
         )
 

@@ -343,6 +343,7 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             context={
                 **self.context,
                 "submission": attrs["submission"],
+                "configuration": {"components": contact_details_meta},
             },
         )
         if not contact_details_serializer.is_valid():
