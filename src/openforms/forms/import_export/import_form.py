@@ -34,6 +34,7 @@ from .serializers import (
     FormVariableImportSerializer,
 )
 from .typing import FormImportOptions
+from .utils import import_additional_form_configuration_data
 
 EXPECTED_RESOURCES = (
     "forms",
@@ -41,6 +42,10 @@ EXPECTED_RESOURCES = (
     "formSteps",
     "formVariables",
     "formLogic",
+    "product",
+    "wmsTileLayers",
+    "wmtsTileLayers",
+    "yiviAttributeGroups",
 )
 
 
@@ -79,6 +84,13 @@ def import_form_data(
 
     request = _get_mock_request()
     created_form: Form | None = None
+
+    # Import additional data
+    import_additional_form_configuration_data(
+        resources=import_data,
+        import_options=import_options,
+        uuid_mapping=uuid_mapping,
+    )
 
     if (forms_data := import_data.get("forms")) is not None:
         created_form = _import_form_resource(

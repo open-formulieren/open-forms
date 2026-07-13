@@ -3671,16 +3671,33 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(MapWMSTileLayer.objects.count(), 0)
         self.assertEqual(AttributeGroup.objects.count(), 0)
 
-    def test_import_with_options_include_all_additional_form_configuration(self):
+    def test_import_with_options_include_all_additional_form_configuration_create_new(
+        self,
+    ):
+        # Every OF instance has a couple default WMTS- and WMS-tile layers.
+        # For more accurate and easier testing, we should start at zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
         product = ProductFactory.create()
         theme = ThemeFactory.create(design_token_values={"key": "token"})
         category = CategoryFactory.create()
 
-        wmtsMap1 = MapTileLayerFactory.create()
-        wmtsMap2 = MapTileLayerFactory.create()
-        wmsMap1 = MapWMSTileLayerFactory.create()
-        wmsMap2 = MapWMSTileLayerFactory.create()
-        wmsMap3 = MapWMSTileLayerFactory.create()
+        wmtsMap1 = MapTileLayerFactory.create(
+            identifier="wmts-map-1", url="https://example.wmts.1.com", label="wmtsMap1"
+        )
+        wmtsMap2 = MapTileLayerFactory.create(
+            identifier="wmts-map-2", url="https://example.wmts.2.com", label="wmtsMap2"
+        )
+        wmsMap1 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.1.com", name="wmsMap1"
+        )
+        wmsMap2 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.2.com", name="wmsMap2"
+        )
+        wmsMap3 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.3.com", name="wmsMap3"
+        )
 
         yiviAttributeGroup1 = AttributeGroupFactory.create(
             attributes=["first_name", "last_name"]
@@ -3878,6 +3895,21 @@ class ImportExportTests(TempdirMixin, TestCase):
                 },
             ],
         )
+
+        # The configuration of the WMS and WMTS tile layers hasn't changed
+        wmts_layer_1 = imported_wmts_layers.get(identifier="wmts-map-1")
+        wmts_layer_2 = imported_wmts_layers.get(identifier="wmts-map-2")
+        self.assertEqual(wmts_layer_1.url, "https://example.wmts.1.com")
+        self.assertEqual(wmts_layer_1.label, "wmtsMap1")
+        self.assertEqual(wmts_layer_2.url, "https://example.wmts.2.com")
+        self.assertEqual(wmts_layer_2.label, "wmtsMap2")
+
+        wms_layer_1 = imported_wms_layers.get(name="wmsMap1")
+        wms_layer_2 = imported_wms_layers.get(name="wmsMap2")
+        wms_layer_3 = imported_wms_layers.get(name="wmsMap3")
+        self.assertEqual(wms_layer_1.url, "https://example.wms.1.com")
+        self.assertEqual(wms_layer_2.url, "https://example.wms.2.com")
+        self.assertEqual(wms_layer_3.url, "https://example.wms.3.com")
 
     def test_import_with_options_include_all_additional_form_configuration_reuses_already_existing_objects(
         self,
