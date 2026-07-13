@@ -47,14 +47,16 @@ class StepDataSerializer(serializers.Serializer):
         if not hasattr(self, "initial_data"):
             return
 
-        config_wrapper = FormioConfigurationWrapper(configuration)
+        assert self.context
+        assert "configuration_wrapper" in self.context
+        config_wrapper: FormioConfigurationWrapper = self.context[
+            "configuration_wrapper"
+        ]
 
         values = FormioData(self.initial_data)
 
         # loop over all components and delegate application to the registry
         for component in iter_components(configuration, recurse_into_editgrid=False):
-            # XXX: is_visible_in_frontend does not understand editgrid at all yet, which
-            # is a broader issue, but also manifests here.
             is_visible = config_wrapper.is_visible_in_frontend(component["key"], values)
 
             # we don't have to do anything when the component is visible, regular
@@ -146,6 +148,12 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
+    if context := kwargs.get("context"):
+        assert isinstance(context, dict) and "configuration" in context
+        context.setdefault(
+            "configuration_wrapper",
+            FormioConfigurationWrapper(context["configuration"]),
+        )
     fields: dict[str, FieldOrNestedFields] = {}
 
     config: FormioConfiguration = {"components": components}
