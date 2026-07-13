@@ -106,10 +106,12 @@ const FormIOBuilder = ({
 
   if (onComponentMutated) {
     extraProps.onSaveComponent = (...args) => {
-      onComponentMutated('changed', ...args);
+      const [component, originalComponent, , , , isNew] = args;
+      onComponentMutated('changed', component, originalComponent, isNew);
     };
     extraProps.onDeleteComponent = (...args) => {
-      onComponentMutated('removed', ...args);
+      const [component] = args;
+      onComponentMutated('removed', component);
     };
   }
 
