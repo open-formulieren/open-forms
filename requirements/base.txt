@@ -88,7 +88,7 @@ defusedxml==0.7.1
     # via -r requirements/base.in
 diff-match-patch==20241021
     # via django-import-export
-django==5.2.15
+django==5.2.16
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -499,7 +499,7 @@ pydantic==2.12.5
     #   pydantic-settings
 pydantic-core==2.41.5
     # via pydantic
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
     # via django-setup-configuration
 pydyf==0.12.1
     # via weasyprint
@@ -535,11 +535,10 @@ python-ipware==3.0.0
     # via django-ipware
 python-magic==0.4.27
     # via -r requirements/base.in
-pytz==2025.2
+pytz==2026.2
     # via
     #   django-yubin
     #   flower
-    #   zeep
 pyyaml==6.0.3
     # via
     #   drf-spectacular
@@ -688,7 +687,7 @@ vine==5.1.0
     #   kombu
 wcwidth==0.6.0
     # via prompt-toolkit
-weasyprint==68.1
+weasyprint==69.0
     # via
     #   -r requirements/base.in
     #   maykin-common
@@ -708,7 +707,7 @@ xmlsec==1.3.17
     # via maykin-python3-saml
 xmltodict==1.0.3
     # via -r requirements/base.in
-zeep==4.3.2
+zeep==4.3.3
     # via -r requirements/base.in
 zgw-consumers==2.0.2
     # via -r requirements/base.in
