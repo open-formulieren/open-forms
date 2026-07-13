@@ -2754,6 +2754,11 @@
     "description": "Show form button",
     "originalDefault": "Show form"
   },
+  "k7rSAg": {
+    "defaultMessage": "Remove default value",
+    "description": "Remove default value icon title",
+    "originalDefault": "Remove default value"
+  },
   "k9CT3p": {
     "defaultMessage": "Whether to show a link to the main website on the confirmation page.",
     "description": "Display main website link help text",
@@ -2763,6 +2768,11 @@
     "defaultMessage": "Plugin configuration: Worldline",
     "description": "Worldline options modal title",
     "originalDefault": "Plugin configuration: Worldline"
+  },
+  "kH2P8O": {
+    "defaultMessage": "Default value:",
+    "description": "Default value input label",
+    "originalDefault": "Default value:"
   },
   "kHn5Yw": {
     "defaultMessage": "Edit definition",
@@ -3068,6 +3078,11 @@
     "defaultMessage": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+  },
+  "qFgPMJ": {
+    "defaultMessage": "Default value",
+    "description": "Add default value button text",
+    "originalDefault": "Default value"
   },
   "qUYLVg": {
     "defaultMessage": "Product & payment",

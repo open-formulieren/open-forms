@@ -5953,6 +5953,12 @@
       "value": "Toon formulier"
     }
   ],
+  "k7rSAg": [
+    {
+      "type": 0,
+      "value": "Verwijder standaardwaarde"
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -5969,6 +5975,12 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Worldline"
+    }
+  ],
+  "kH2P8O": [
+    {
+      "type": 0,
+      "value": "Standaardwaarde:"
     }
   ],
   "kHn5Yw": [
@@ -6679,6 +6691,12 @@
     {
       "type": 0,
       "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
+    }
+  ],
+  "qFgPMJ": [
+    {
+      "type": 0,
+      "value": "Standaardwaarde"
     }
   ],
   "qUYLVg": [

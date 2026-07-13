@@ -271,9 +271,13 @@ For these components, the new behavior will be to remove the value from the data
 during logic evaluation. This means that any subsequent logic rules that compare the variable
 to the empty/default value of the component, can no longer trigger.
 
-Note that if you want a rule to execute whether a component is hidden or not, it is possible to
-add a default value to the variable expression that will be used when the value is not present
-in the data. For example:
+Note that if you want a rule to execute whether a component is hidden or not, it is possible
+to add a default value that will be used when the value is not present in the data. For simple
+logic rules, we have added an additional input field in the JSON logic trigger. These fields
+can be shown with a button, and removed with a "X" icon per individual logic rule.
+
+For advanced logic rules, this means adding a default value to the variable expression, like in the
+following example:
 
 .. code:: json
 
@@ -286,8 +290,7 @@ in the data. For example:
      ]
    }
 
-The above example requires the logic rule to be advanced, though. To make this conversion relatively easy for
-existing rules, it is now possible to convert a simple logic rule to an advanced one by clicking the wand icon
+Furthermore, it is now possible to convert a simple logic rule to an advanced one by clicking the wand icon
 beneath the delete icon of the rule. The icon will then convert into one with sparkles to indicate an advanced
 logic rule as usual. Note that this switch cannot be undone.
 
