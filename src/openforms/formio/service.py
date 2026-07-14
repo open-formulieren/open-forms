@@ -30,7 +30,7 @@ from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import (
-    get_readable_path_from_configuration_path,
+    get_branch_representation,
     iter_components,
 )
 from .variables import extract_variables_from_template_properties, inject_variables
@@ -56,7 +56,7 @@ __all__ = [
     "as_json_schema",
     "process_visibility",
     "get_component_empty_value",
-    "get_readable_path_from_configuration_path",
+    "get_branch_representation",
     "holds_submission_data",
     "is_hidden",
     "get_component_datatype",

@@ -1054,11 +1054,6 @@
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
   },
-  "GjQdpb": {
-    "defaultMessage": ", at location \"{location}\"",
-    "description": "Formio configuration backend validation error location suffix",
-    "originalDefault": ", at location \"{location}\""
-  },
   "GjcAY2": {
     "defaultMessage": "Null",
     "description": "JSON variable type \"null\" representation",
@@ -2023,11 +2018,6 @@
     "defaultMessage": "Save",
     "description": "Admin save submit button",
     "originalDefault": "Save"
-  },
-  "YbnFnL": {
-    "defaultMessage": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}",
-    "description": "Formio configuration backend validation error for specific component property",
-    "originalDefault": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}"
   },
   "YdHbH9": {
     "defaultMessage": "Decision definition version",

@@ -16,7 +16,7 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.service import (
     DuplicateKeyError,
     FormioConfigurationWrapper,
-    get_readable_path_from_configuration_path,
+    get_branch_representation,
 )
 from openforms.formio.typing.base import Component
 from openforms.prefill.contrib.customer_interactions.constants import (
@@ -378,18 +378,9 @@ class FormSerializer(serializers.ModelSerializer):
             for configuration in configurations.values():
                 if component_key not in configuration:
                     continue
-
-                paths = [
-                    path
-                    for path, component in configuration.flattened_by_path.items()
-                    if component["key"] == component_key
-                ]
-
-                for path in paths:
-                    readable_path = get_readable_path_from_configuration_path(
-                        configuration.configuration, path
-                    )
-                    readable_paths.append(readable_path)
+                branch = configuration.get_branch(component_key)
+                readable_path = get_branch_representation(branch)
+                readable_paths.append(readable_path)
 
             error_message = _('"{duplicate_key}" (in {paths})').format(
                 duplicate_key=component_key, paths=", ".join(readable_paths)

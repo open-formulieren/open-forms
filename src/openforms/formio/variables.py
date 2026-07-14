@@ -1,16 +1,17 @@
-from collections.abc import Iterator
+from collections.abc import Collection, Iterator
+from dataclasses import dataclass
 
 from django.template import TemplateSyntaxError
 
 import structlog
 
+from openforms.formio.typing import FormioConfiguration
 from openforms.template import extract_variables_used, parse, render_from_string
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONValue
 from openforms.utils.helpers import recursively_apply_function
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
-from .utils import flatten_by_path
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -45,23 +46,48 @@ def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONVa
         yield (property_name, property_value)
 
 
-def validate_configuration(configuration: JSONObject) -> dict[str, str]:
+@dataclass
+class ComponentTemplateSyntaxError:
+    key: str
+    label: str
+    property_name: str  # one of SUPPORTED_TEMPLATE_PROPERTIES
+    parents_representation: str  # E.g. "My fieldset > My editgrid"
+
+
+def get_configuration_template_syntax_errors(
+    configuration: FormioConfiguration,
+) -> Collection[ComponentTemplateSyntaxError]:
     """
     Check the Formio configuration for template syntax errors.
 
-    Returns a mapping of component key and (json) path of the component within the
-    configuration for the components that have template syntax errors.
+    Returns metadata of where template syntax errors occur. It is assumed that the
+    component key uniqueness validation happens before or after, to ensure that all
+    components are eventually validated.
     """
-    flattened_components = flatten_by_path(configuration)
-
-    errored_components = {}
-    for path, component in flattened_components.items():
+    errors: list[ComponentTemplateSyntaxError] = []
+    config_wrapper = FormioConfigurationWrapper(
+        configuration=configuration,
+        validate_unique_keys=False,
+    )
+    for component in config_wrapper:
         for property_name, property_value in iter_template_properties(component):
             try:
                 recursively_apply_function(property_value, parse)
             except TemplateSyntaxError:
-                errored_components[component["key"]] = f"{path}.{property_name}"
-    return errored_components
+                key = component["key"]
+                parents = config_wrapper.get_branch(key)[:-1]
+                errors.append(
+                    ComponentTemplateSyntaxError(
+                        key=key,
+                        label=component.get("label") or key,
+                        property_name=property_name,
+                        parents_representation=" > ".join(
+                            (parent.get("label") or parent["key"]) for parent in parents
+                        ),
+                    )
+                )
+
+    return errors
 
 
 def inject_variables(

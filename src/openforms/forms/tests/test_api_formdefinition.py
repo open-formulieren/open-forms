@@ -48,7 +48,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
 
@@ -107,7 +113,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
         url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
@@ -571,7 +583,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
 
@@ -693,24 +711,20 @@ class FormDefinitionsAPITests(APITestCase):
 
             with self.subTest("text1 error"):
                 self.assertEqual(error_text1["code"], "invalid-template-syntax")
-                self.assertEqual(
-                    error_text1["name"],
-                    "configuration.components.0.description",
-                )
+                self.assertEqual(error_text1["name"], "configuration.componentErrors")
+                self.assertIn("text1", error_text1["reason"])
 
             with self.subTest("fieldset error"):
                 self.assertEqual(error_fieldset["code"], "invalid-template-syntax")
                 self.assertEqual(
-                    error_fieldset["name"],
-                    "configuration.components.1.label",
+                    error_fieldset["name"], "configuration.componentErrors"
                 )
+                self.assertIn("fieldset1", error_fieldset["reason"])
 
             with self.subTest("text2 error"):
                 self.assertEqual(error_text2["code"], "invalid-template-syntax")
-                self.assertEqual(
-                    error_text2["name"],
-                    "configuration.components.1.components.0.label",
-                )
+                self.assertEqual(error_text2["name"], "configuration.componentErrors")
+                self.assertIn("text2", error_text2["reason"])
 
     def test_filter_by_reusable(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])

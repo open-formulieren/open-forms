@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Sequence
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
-from openforms.formio.service import get_readable_path_from_configuration_path
-from openforms.formio.typing import FormioConfiguration
-from openforms.formio.utils import flatten_by_path
-from openforms.formio.variables import validate_configuration
-from openforms.typing import JSONObject
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    get_branch_representation,
+)
+from openforms.formio.typing import Component, FormioConfiguration
+from openforms.formio.variables import get_configuration_template_syntax_errors
 
 if TYPE_CHECKING:
     from openforms.forms.models import FormDefinition
@@ -26,7 +28,7 @@ def validate_not_deleted(form):
 
 
 def validate_form_definition_is_reusable(
-    form_definition: "FormDefinition",
+    form_definition: FormDefinition,
     new_value: bool | None = None,
 ) -> None:
     """
@@ -46,74 +48,92 @@ def validate_form_definition_is_reusable(
         )
 
 
-def validate_template_expressions(configuration: JSONObject) -> None:
+def validate_template_expressions(configuration: FormioConfiguration) -> None:
     """
     Validate that any template expressions in supported properties are correct.
 
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errored_components = validate_configuration(configuration)
-    if not errored_components:
+    errors = get_configuration_template_syntax_errors(configuration)
+    if not errors:
         return
 
-    all_errors = []
-
-    for key, path in errored_components.items():
-        component_path, field = path.rsplit(".", 1)
-        err = ValidationError(
-            _(
-                "The component '{key}' (at JSON path '{path}') has template syntax "
-                "errors in the field '{field}'."
-            ).format(key=key, path=component_path, field=field),
-            code="invalid-template-syntax",
+    location_error_template = _(', at location "{location}"')
+    error_template = _(
+        'The component "{label}" (with key "{key}"{location}) has a problem in '
+        'the field "{property}": there are template syntax errors in the expression.'
+    )
+    error_details: list[ValidationError] = []
+    for error in errors:
+        location = error.parents_representation
+        error_message = error_template.format(
+            label=error.label,
+            key=error.key,
+            location=location_error_template.format(location=location)
+            if location
+            else "",
+            property=error.property_name,
         )
-        all_errors.append(err)
+        error_details.append(
+            ValidationError(
+                error_message,
+                code="invalid-template-syntax",
+            )
+        )
 
-    raise ValidationError(all_errors)
-
-
-class FormDefinitionLike(Protocol):
-    configuration: FormioConfiguration
-    name: str
-
-
-@dataclass
-class FakeFormDefinition:
-    configuration: FormioConfiguration
-    name: str = ""
+    raise ValidationError(error_details)
 
 
-def validate_no_duplicate_keys(
-    configuration: FormioConfiguration,
-) -> None:
-    form_definition = FakeFormDefinition(configuration=configuration)
-    validate_no_duplicate_keys_across_steps(form_definition, other_form_definitions=[])
+def validate_no_duplicate_keys(configuration: FormioConfiguration) -> None:
+    duplicates = FormioConfigurationWrapper.get_duplicates(configuration)
+    errors = [
+        _('"{duplicate_key}" (in {paths})').format(
+            duplicate_key=duplicate_key,
+            paths=", ".join([get_branch_representation(branch) for branch in branches]),
+        )
+        for duplicate_key, branches in duplicates.items()
+    ]
+    if errors:
+        raise ValidationError(
+            _("Detected duplicate keys in configuration: {errors}").format(
+                errors=get_text_list(errors, ", ")
+            )
+        )
 
 
 def validate_no_duplicate_keys_across_steps(
-    current_form_definition: FormDefinitionLike,
-    other_form_definitions: Sequence[FormDefinitionLike],
+    current_form_definition: FormDefinition,
+    other_form_definitions: Sequence[FormDefinition],
 ):
     """
     Validate that there are no duplicate keys in a configuration.
 
-    This is important in the case of repeating groups, because no variables are created for the components inside the
-    repeating group, so there is no database constraint for the keys to be unique. However, non-unique keys cause
-    problems in the case of file components.
-
-    #TODO This is a bandaid, this problem should be fixed properly in #2728
+    This is important in the case of repeating groups, because no variables are created
+    for the components inside the repeating group, so there is no database constraint
+    for the keys to be unique. However, non-unique keys cause problems in the case of
+    file components.
     """
-    component_path_map = defaultdict(list)
+    component_parents: defaultdict[
+        str,  # possibly duplicated component key
+        list[
+            tuple[
+                Sequence[Component],  # tree branch from root to (duplicated) component
+                FormDefinition,  # form definition the component is in
+            ]
+        ],
+    ] = defaultdict(list)
+
     duplicate_keys = []
     for form_definition in [current_form_definition, *other_form_definitions]:
-        for configuration_path, component in flatten_by_path(
-            form_definition.configuration
-        ).items():
+        # when validating accross multiple form definitions, each individual
+        # configuration should already have been validated not to contain any duplicates
+        config_wrapper = FormioConfigurationWrapper(form_definition.configuration)
+        for component in config_wrapper:
             key = component["key"]
-            component_path_map[key].append((configuration_path, form_definition))
-
-            if key not in duplicate_keys and len(component_path_map[key]) > 1:
+            branch = config_wrapper.get_branch(key)
+            component_parents[key].append((branch, form_definition))
+            if key not in duplicate_keys and len(component_parents[key]) > 1:
                 duplicate_keys.append(key)
 
     if not duplicate_keys:
@@ -126,17 +146,15 @@ def validate_no_duplicate_keys_across_steps(
         if all(
             [
                 form_definition != current_form_definition
-                for path, form_definition in component_path_map[duplicate_key]
+                for _, form_definition in component_parents[duplicate_key]
             ]
         ):
             continue
 
         # The readable path is in format "prefix > parent component > child component"
         readable_paths = [
-            get_readable_path_from_configuration_path(
-                form_definition.configuration, configuration_path, form_definition.name
-            )
-            for configuration_path, form_definition in component_path_map[duplicate_key]
+            get_branch_representation(branch, prefix=form_definition.name)
+            for branch, form_definition in component_parents[duplicate_key]
         ]
         errors.append(
             _('"{duplicate_key}" (in {paths})').format(

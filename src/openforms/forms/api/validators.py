@@ -2,15 +2,15 @@ from typing import Any
 
 from django.utils.translation import gettext as _
 
-from glom import assign
 from json_logic.meta import JSONLogicExpression, Operation
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.utils import get_plugin
+from openforms.formio.typing import FormioConfiguration
 from openforms.formio.utils import iter_components
-from openforms.formio.variables import validate_configuration
+from openforms.formio.variables import get_configuration_template_syntax_errors
 from openforms.typing import JSONObject
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.service import get_static_variables
@@ -196,22 +196,32 @@ class RequireAppointmentsPlugin:
             )
 
 
-def validate_template_expressions(configuration: JSONObject) -> None:
+def validate_template_expressions(configuration: FormioConfiguration) -> None:
     """
     Validate that any template expressions in supported properties are correct.
 
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errored_components = validate_configuration(configuration)
-    if not errored_components:
+    errors = get_configuration_template_syntax_errors(configuration)
+    if not errors:
         return
 
-    all_errors = {}
-    error = ErrorDetail(
-        _("There are template syntax errors in the expression."),
-        code="invalid-template-syntax",
+    location_error_template = _(', at location "{location}"')
+    error_template = _(
+        'The component "{label}" (with key "{key}"{location}) has a problem in '
+        'the field "{property}": there are template syntax errors in the expression.'
     )
-    for path in errored_components.values():
-        assign(all_errors, path, error, missing=dict)
-    raise serializers.ValidationError(all_errors)
+    error_details: list[ErrorDetail] = []
+    for error in errors:
+        location = error.parents_representation
+        error_message = error_template.format(
+            label=error.label,
+            key=error.key,
+            location=location_error_template.format(location=location)
+            if location
+            else "",
+            property=error.property_name,
+        )
+        error_details.append(ErrorDetail(error_message, code="invalid-template-syntax"))
+    raise serializers.ValidationError({"componentErrors": error_details})

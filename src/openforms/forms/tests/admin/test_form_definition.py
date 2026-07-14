@@ -1,6 +1,7 @@
 import json
 
 from django.urls import reverse
+from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
@@ -145,11 +146,16 @@ class TestFormDefinitionAdmin(WebTest):
         self.assertEqual(submit_response.status_code, 200)
         errors = submit_response.context["adminform"].errors
         expected_error = _(
-            "The component '{key}' (at JSON path '{path}') has template syntax errors "
-            "in the field '{field}'."
-        ).format(key="invalidTemplate", path="components.0", field="label")
+            'The component "{label}" (with key "{key}"{location}) has a problem in '
+            'the field "{property}": there are template syntax errors in the expression.'
+        ).format(
+            key="invalidTemplate",
+            label="{% bad tag and syntax %}",
+            property="label",
+            location="",
+        )
         self.assertEqual(errors["configuration"], [expected_error])
-        self.assertContains(submit_response, expected_error.replace("'", "&#x27;"))
+        self.assertContains(submit_response, escape(expected_error))
 
     def test_updating_formio_configuration_fixes_form_variables(self):
         fd = FormDefinitionFactory.create(
