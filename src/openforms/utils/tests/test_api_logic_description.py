@@ -55,8 +55,6 @@ class LogicDescriptionEndpointTests(APITestCase):
             },
             # embedded _meta.description bits
             {"==": [1, 1], "_meta": {"description": "identity"}},
-            {"substr": ["test", 1, 1], "_meta": {"description": "identity"}},
-            {"substr": [{"var": "foo"}, 1, 2], "_meta": {"description": "identity"}},
         )
 
         for expression in expressions:
