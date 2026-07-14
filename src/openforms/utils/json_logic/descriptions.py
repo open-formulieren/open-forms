@@ -359,3 +359,8 @@ def op_rdelta(*args) -> str:
             raise ValueError(
                 "Unexpected amount of arguments. Expected 1-6 got {len(args)}: {args!r}"
             )
+
+
+@add_boilerplate()
+def op_substr(text, start, length=None):
+    return gettext("a substring of {text}").format(text=text)

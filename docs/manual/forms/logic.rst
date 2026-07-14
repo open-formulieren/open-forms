@@ -241,7 +241,6 @@ waar de JSON-logic op werkt).
     * all
     * none
     * some
-    * substr
 
 .. _Python versie van JSON Logic: https://github.com/maykinmedia/json-logic-py
 

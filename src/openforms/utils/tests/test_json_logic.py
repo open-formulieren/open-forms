@@ -64,7 +64,6 @@ class RuleDescriptionTests(SimpleTestCase):
         "all",
         "none",
         "some",
-        "substr",
     )
 
     def test_rule_generation(self):

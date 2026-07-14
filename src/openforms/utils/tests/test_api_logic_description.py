@@ -40,6 +40,8 @@ class LogicDescriptionEndpointTests(APITestCase):
         expressions = (
             # simple expression
             {"==": [{"var": "foo"}, "bar"]},
+            {"substr": ["test", 1, 2]},
+            {"substr": [{"var": "foo"}, 1, 2]},
             # nested expression
             {
                 "!": [

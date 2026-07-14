@@ -34,6 +34,7 @@ from .descriptions import (
     op_or,
     op_rdelta,
     op_reduce,
+    op_substr,
     op_subtraction,
     op_sum,
     op_today,
@@ -82,6 +83,7 @@ OPERATION_DESCRIPTION_BUILDERS: dict[str, DescriptionGeneratorProtocol] = {
     "date": op_date,
     "datetime": op_datetime,
     "rdelta": op_rdelta,
+    "substr": op_substr,
 }
 
 

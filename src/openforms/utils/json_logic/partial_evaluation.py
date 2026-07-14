@@ -25,7 +25,7 @@ def partially_evaluate_json_logic(
     and date-related objects, and in turn changing the behavior of the expression.
 
     The following operations are not supported (by `jsonLogic`): 'filter', 'all',
-    'some', 'none', and 'substr'.
+    'some', and 'none'.
 
     An example (note that we apply a normalization to wrap all arguments of an operator
     in a list):
