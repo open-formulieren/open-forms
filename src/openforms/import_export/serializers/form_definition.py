@@ -1,3 +1,6 @@
+import structlog
+
+from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.import_export.typing import (
@@ -10,6 +13,8 @@ from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
 
 from .base import BaseExportSerializer, BaseImportSerializer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def clear_wms_tile_layers(representation: JSONObject):
@@ -95,3 +100,34 @@ class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSeriali
             cleanup=remove_prefill_from_component_configuration,
         ),
     )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        # @TODO this was AFTER validation. So maybe in a to_representation call?
+        self.apply_component_conversions(value["configuration"])
+        self.apply_definition_conversions(value["configuration"])
+
+        return super().to_internal_value(value)
+
+    def apply_component_conversions(self, configuration: JSONObject):
+        """
+        Apply the known formio component conversions to the entire form definition.
+        """
+        log = logger.bind(action="forms.apply_component_conversions")
+        for component in iter_components(configuration):
+            if not (component_type := component.get("type")):  # pragma: no cover
+                continue
+            if not (converters := CONVERTERS.get(component_type)):
+                continue
+            for identifier, apply_converter in converters.items():
+                log.debug(
+                    "apply_converter",
+                    component_type=component_type,
+                    identifier=identifier,
+                )
+                apply_converter(component)
+
+    def apply_definition_conversions(self, configuration: JSONObject):
+        for converter in DEFINITION_CONVERTERS:
+            converter(configuration)

@@ -16,8 +16,6 @@ import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
-from openforms.formio.utils import iter_components
 from openforms.import_export.serializers import (
     FormDefinitionExportSerializer,
     FormDefinitionImportSerializer,
@@ -47,11 +45,10 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
-from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
 from .api.datastructures import FormVariableWrapper
-from .constants import EXPORT_META_KEY, LogicActionTypes
+from .constants import EXPORT_META_KEY
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -348,20 +345,6 @@ def import_form_data(
                 )
                 deserialized.is_valid(raise_exception=True)
 
-                # @TODO Move to FormDefinitionImportSerializer. Maybe a generic post_import()?
-                if resource == "formDefinitions":
-                    apply_component_conversions(
-                        deserialized.validated_data["configuration"]
-                    )
-
-                    apply_definition_conversions(
-                        deserialized.validated_data["configuration"]
-                    )
-
-                # @TODO move to FormLogicImportSerializer.
-                if resource == "formLogic":
-                    clear_old_service_fetch_config(deserialized.validated_data)
-
                 instance = deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
@@ -410,28 +393,6 @@ def import_form_data(
     return created_form
 
 
-def apply_component_conversions(configuration):
-    """
-    Apply the known formio component conversions to the entire form definition.
-    """
-    log = logger.bind(action="forms.apply_component_conversions")
-    for component in iter_components(configuration):
-        if not (component_type := component.get("type")):  # pragma: no cover
-            continue
-        if not (converters := CONVERTERS.get(component_type)):
-            continue
-        for identifier, apply_converter in converters.items():
-            log.debug(
-                "apply_converter", component_type=component_type, identifier=identifier
-            )
-            apply_converter(component)
-
-
-def apply_definition_conversions(configuration: JSONObject) -> None:
-    for converter in DEFINITION_CONVERTERS:
-        converter(configuration)
-
-
 def remove_key_from_dict(dictionary, key):
     for dict_key in list(dictionary.keys()):
         if key == dict_key:
@@ -442,21 +403,6 @@ def remove_key_from_dict(dictionary, key):
             for value in dictionary[dict_key]:
                 if isinstance(value, dict):
                     remove_key_from_dict(value, key)
-
-
-def clear_old_service_fetch_config(rule: dict) -> None:
-    for action in rule["actions"]:
-        if action["action"]["type"] != LogicActionTypes.fetch_from_service:
-            continue
-
-        if "value" not in action["action"] or action["action"]["value"] == "":
-            continue
-
-        # See comment above in `import_form_data` where we check if the variable has a
-        # `service_fetch_configuration` attribute.
-        # We can't reliably relate the service fetch configured to an existing configuration.
-        # So we don't add any existing service fetch config to the variables
-        action["action"]["value"] = ""
 
 
 class FileComponentOptions(TypedDict, total=False):
