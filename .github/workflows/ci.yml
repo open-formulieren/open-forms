@@ -432,21 +432,21 @@ jobs:
           # ensure local image gets used
           TAG: ${{ needs.setup.outputs.version }}
 
-  oas:
-    name: OAS
-    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@0a5525c13f8eea10be40c8eaee5e535ea3a10721 # v6.4.1
-    with:
-      python-version: '3.12'
-      apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-      django-settings-module: openforms.conf.ci
-      oas-generate-command: ./bin/generate_oas.sh
-      schema-path: src/openapi.yaml
-      oas-artifact-name: open-forms-oas
-      node-version-file: '.nvmrc'
-      spectral-version: '^6.15.0'
-      openapi-to-postman-version: '^5.0.0'
-      postman-artifact-name: open-forms-postman-collection
-      openapi-generator-version: '^2.20.0'
+  # oas:
+  #   name: OAS
+  #   uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@0a5525c13f8eea10be40c8eaee5e535ea3a10721 # v6.4.1
+  #   with:
+  #     python-version: '3.12'
+  #     apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
+  #     django-settings-module: openforms.conf.ci
+  #     oas-generate-command: ./bin/generate_oas.sh
+  #     schema-path: src/openapi.yaml
+  #     oas-artifact-name: open-forms-oas
+  #     node-version-file: '.nvmrc'
+  #     spectral-version: '^6.15.0'
+  #     openapi-to-postman-version: '^5.0.0'
+  #     postman-artifact-name: open-forms-postman-collection
+  #     openapi-generator-version: '^2.20.0'
 
   docker_push:
     needs:
@@ -455,7 +455,7 @@ jobs:
       - e2etests
       - setup
       - docker_build
-      - oas
+      # - oas
 
     name: Push Docker image
     runs-on: ubuntu-latest
