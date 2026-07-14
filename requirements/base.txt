@@ -612,7 +612,7 @@ six==1.17.0
     #   mail-parser
     #   orderedmultidict
     #   python-dateutil
-soupsieve==2.8.3
+soupsieve==2.8.4
     # via beautifulsoup4
 sqids==0.5.2
     # via -r requirements/base.in

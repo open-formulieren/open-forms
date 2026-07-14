@@ -1065,7 +1065,7 @@ snowballstemmer==3.0.1
     # via sphinx
 sortedcontainers==2.4.0
     # via hypothesis
-soupsieve==2.8.3
+soupsieve==2.8.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
