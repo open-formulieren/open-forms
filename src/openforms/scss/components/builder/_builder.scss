@@ -90,6 +90,14 @@ div.flatpickr-calendar.open {
 
 .formio-builder-wrapper {
   padding-top: 10px;
+
+  // Remove additional padding and margin from the components list
+  .offb-components-list {
+    ul {
+      padding: 0;
+      margin: 0;
+    }
+  }
 }
 
 [ref='editForm'],
