@@ -48,3 +48,16 @@ class FormVariableImportSerializer(FormVariableSerializer, BaseImportSerializer)
             cleanup=remove_prefill_from_variable,
         ),
     )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if "service_fetch_configuration" in value:
+            # The transferring between systems case is very tricky
+            # better not import these, we don't know where this came from.
+            # services and ids may point to different things
+            # in different OF instances.
+            # @TODO should not happen by version restore
+            del value["service_fetch_configuration"]
+
+        return super().to_internal_value(value)

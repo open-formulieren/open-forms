@@ -1,10 +1,8 @@
 import json
-import random
-import string
 import zipfile
-from collections.abc import Collection
-from typing import Any, Required, TypedDict
-from uuid import uuid4
+from collections.abc import Callable, Collection
+from dataclasses import dataclass
+from typing import Any, Literal, Required, TypedDict
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
@@ -14,9 +12,11 @@ from django.utils.translation import override
 
 import structlog
 from rest_framework.exceptions import ValidationError
+from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
 from openforms.import_export.serializers import (
+    BaseImportSerializer,
     FormDefinitionExportSerializer,
     FormDefinitionImportSerializer,
     FormExportSerializer,
@@ -49,7 +49,7 @@ from openforms.variables.constants import FormVariableSources
 
 from .api.datastructures import FormVariableWrapper
 from .constants import EXPORT_META_KEY
-from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
+from .models import Form, FormDefinition, FormLogic, FormStep
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -68,12 +68,105 @@ IMPORT_ORDER = (
     "formLogic",
 )
 
-SERIALIZERS = {
-    "formDefinitions": FormDefinitionImportSerializer,
-    "forms": FormImportSerializer,
-    "formSteps": FormStepImportSerializer,
-    "formLogic": FormLogicImportSerializer,
-    "formVariables": FormVariableImportSerializer,
+
+@dataclass(frozen=True)
+class ImportSerializerConfig:
+    serializer: type[BaseImportSerializer]
+    serializer_kwargs: Callable[
+        [dict[str, Any], Form | None, FormImportOptions, Request],
+        [dict[str, Any]],
+    ]
+    type: Literal["form", "formDefinition", "formStep", "formVariable", "formLogic"]
+
+
+def get_serializer_kwargs(
+    data: dict[str, Any],
+    form: Form | None,
+    import_options: FormImportOptions,
+    request: Request,
+) -> dict[str, Any]:
+    return {
+        "data": data,
+        "context": {
+            "request": request,
+            "form": form,
+            "is_import": True,
+            "import_options": import_options,
+        },
+    }
+
+
+def get_form_variable_serializer_kwargs(
+    data: dict[str, Any],
+    form: Form | None,
+    import_options: FormImportOptions,
+    request: Request,
+) -> dict[str, Any]:
+    kwargs = get_serializer_kwargs(data, form, import_options, request)
+    kwargs["context"] = {
+        **kwargs["context"],
+        "forms": ({str(form.uuid): form}),
+        "form_definitions": {
+            str(fd.uuid): fd
+            for fd in FormDefinition.objects.filter(formstep__form=form)
+        },
+    }
+    return kwargs
+
+
+def get_form_logic_serializer_kwargs(
+    data: dict[str, Any],
+    form: Form | None,
+    import_options: FormImportOptions,
+    request: Request,
+) -> dict[str, Any]:
+    kwargs = get_serializer_kwargs(data, form, import_options, request)
+    kwargs["context"] = {
+        **kwargs["context"],
+        "forms": ({str(form.uuid): form}),
+        "form_definitions": {
+            str(fd.uuid): fd
+            for fd in FormDefinition.objects.filter(formstep__form=form)
+        },
+        "form_variables": FormVariableWrapper(form),
+        "form_steps": {
+            form_step.uuid: form_step
+            for form_step in form.formstep_set.all().order_by("order")
+        },
+    }
+    return kwargs
+
+
+"""
+Serializer configuration for the import process. The key is the name of the resource
+in the import file, and the value is the serializer class and serializer kwargs.
+"""
+IMPORT_SERIALIZER_CONFIGS: dict[str, ImportSerializerConfig] = {
+    "forms": ImportSerializerConfig(
+        serializer=FormImportSerializer,
+        serializer_kwargs=get_serializer_kwargs,
+        type="form",
+    ),
+    "formDefinitions": ImportSerializerConfig(
+        serializer=FormDefinitionImportSerializer,
+        serializer_kwargs=get_serializer_kwargs,
+        type="formDefinition",
+    ),
+    "formSteps": ImportSerializerConfig(
+        serializer=FormStepImportSerializer,
+        serializer_kwargs=get_serializer_kwargs,
+        type="formStep",
+    ),
+    "formVariables": ImportSerializerConfig(
+        serializer=FormVariableImportSerializer,
+        serializer_kwargs=get_form_variable_serializer_kwargs,
+        type="formVariable",
+    ),
+    "formLogic": ImportSerializerConfig(
+        serializer=FormLogicImportSerializer,
+        serializer_kwargs=get_form_logic_serializer_kwargs,
+        type="formLogic",
+    ),
 }
 
 
@@ -235,17 +328,15 @@ def import_form_data(
     uuid_mapping = {}
 
     request = _get_mock_request()
-
     created_form = None
-
-    _form_definitions = []
+    form_definitions = []
 
     # Import additional data
     import_additional_form_configuration_data(
         resources=import_data, import_options=import_options
     )
 
-    for resource in IMPORT_ORDER:
+    for resource in IMPORT_SERIALIZER_CONFIGS:
         if resource not in import_data:
             continue
 
@@ -253,142 +344,32 @@ def import_form_data(
         for old, new in uuid_mapping.items():
             data = data.replace(old, new)
 
-        try:
-            serializer = SERIALIZERS[resource]
-        except KeyError:
-            raise ValidationError(f"Unknown resource {resource}")
-
+        serializer_config = IMPORT_SERIALIZER_CONFIGS[resource]
         for entry in json.loads(data):
-            if old_uuid := entry.get("uuid"):
-                entry["uuid"] = str(uuid4())
+            old_uuid = entry.get("uuid")
 
-            if resource == "forms":
-                # check for file components in the form definitions and move
-                # registration options to the backend registration options
-                # @TODO Implement on FormDefinitionImportSerializer?
-                move_file_registration_options(entry, _form_definitions)
-
-            serializer_kwargs = {
-                "data": entry,
-                "context": {
-                    "request": request,
-                    "form": created_form,
-                    "is_import": True,
-                    "import_options": import_options,
-                },
-            }
-
-            if resource == "formDefinitions":
-                existing_form_definition_instance = check_form_definition(
-                    old_uuid,
-                    entry,
-                    for_existing_form=False,
-                    # @TODO is this needed?
-                    # for_existing_form=existing_form_instance is not None,
+            deserialized = serializer_config.serializer(
+                **serializer_config.serializer_kwargs(
+                    entry, created_form, import_options, request
                 )
-                if existing_form_definition_instance:
-                    # The form definition that is being imported is identical to
-                    # the existing form definition with the same UUID, use
-                    # existing instead of creating new definition. This may be
-                    # both single and multiple use (is_reusable=True) form
-                    # definitions, depending on whether it's for an existing form or not.
-                    # Note that the mapping will include the same UUID  here often,
-                    # which is okay for find-and-replace.
-                    serializer_kwargs["instance"] = existing_form_definition_instance
-                    entry["uuid"] = old_uuid
-                    uuid_mapping[old_uuid] = old_uuid
-
-            if resource == "forms" and existing_form_instance:
-                serializer_kwargs["instance"] = existing_form_instance
-
-            if resource in ("formVariables", "formLogic"):
-                # by now, the form resource has been created (or it was an existing one)
-                _form = existing_form_instance or created_form
-                # @TODO inspect serializers for why this is needed.
-                serializer_kwargs["context"].update(
-                    {
-                        "forms": {str(_form.uuid): _form},
-                        "form_definitions": {
-                            str(fd.uuid): fd
-                            for fd in FormDefinition.objects.filter(
-                                formstep__form=_form
-                            )
-                        },
-                    }
-                )
-                if "service_fetch_configuration" in entry:
-                    # The transferring between systems case is very tricky
-                    # better not import these, we don't know where this came from.
-                    # services and ids may point to different things
-                    # in different OF instances.
-                    # @TODO move to import serializers?
-                    del entry["service_fetch_configuration"]
-
-            if resource == "formLogic":
-                # by now, the form resource has been created (or it was an existing one)
-                _form = existing_form_instance or created_form
-                serializer_kwargs["context"].update(
-                    {
-                        "form_variables": FormVariableWrapper(_form),
-                        "form_steps": {
-                            form_step.uuid: form_step
-                            for form_step in _form.formstep_set.all().order_by("order")
-                        },
-                    }
-                )
-
-            deserialized = serializer(**serializer_kwargs)
+            )
 
             try:
-                is_create = (
-                    deserialized.instance is None or not deserialized.instance.pk
-                )
                 deserialized.is_valid(raise_exception=True)
 
                 instance = deserialized.save()
-                if resource == "forms":
-                    created_form = deserialized.instance
-                if resource == "formSteps":
-                    # @TODO move to FormStepImportSerializer?
-                    # Once the form steps have been created, we create the component FormVariables
-                    # based on the form definition configurations.
-                    FormVariable.objects.create_for_form(created_form)
-                if resource == "formDefinitions":
-                    _form_definitions.append(instance)
-                if resource == "formDefinitions" and is_create:
-                    uuid_mapping[old_uuid] = str(instance.uuid)
+                if serializer_config.type == "form" and created_form is None:
+                    created_form = instance
+                if serializer_config.type == "formDefinition":
+                    form_definitions.append(instance)
 
-                # The FormSerializer/FormStepSerializer/FormLogicSerializer have the uuid as a read only field.
-                # So the mapping between the old uuid and the new needs to be done after the instance is saved.
                 if hasattr(deserialized.instance, "uuid") and "uuid" in entry:
                     uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
             except ValidationError as e:
-                if (
-                    resource == "forms"
-                    and "slug" in e.detail
-                    and e.detail["slug"][0].code == "unique"
-                ):
-                    entry["slug"] = (
-                        f"{entry['slug']}-{''.join(random.choices(string.hexdigits, k=6))}"
-                    )
+                raise e
 
-                    deserialized = serializer(
-                        data=entry,
-                        context={
-                            "request": request,
-                            "form": created_form,
-                            "is_import": True,
-                            "import_options": import_options,
-                        },
-                        instance=existing_form_instance,
-                    )
-                    deserialized.is_valid(raise_exception=True)
-                    deserialized.save()
-                    created_form = deserialized.instance
-                    uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
-
-                else:
-                    raise e
+        if serializer_config.type == "formDefinition":
+            move_file_registration_options(created_form, form_definitions)
 
     return created_form
 
@@ -414,12 +395,12 @@ class FileComponentOptions(TypedDict, total=False):
 
 
 def move_file_registration_options(
-    form_data: dict, form_definitions: Collection[FormDefinition]
+    form: Form, form_definitions: Collection[FormDefinition]
 ):
     relevant_backends = [
         backend
-        for backend in form_data.get("registration_backends", [])
-        if backend.get("backend")
+        for backend in form.registration_backends.all()
+        if backend.backend
         in (
             OBJECTS_API_PLUGIN_IDENTIFIER,
             STUF_ZDS_PLUGIN_IDENTIFIER,
@@ -473,14 +454,17 @@ def move_file_registration_options(
     files_for_stuf_zds = [o for opts in files if (o := _file_for_stuf_zds(opts))]
 
     for backend in relevant_backends:
-        options = backend.get("options") or {}
+        options = backend.options
         if "files" in options:
             continue
 
-        plugin_id = backend.get("backend")
+        plugin_id = backend.backend
         if plugin_id in (OBJECTS_API_PLUGIN_IDENTIFIER, ZGW_APIS_PLUGIN_IDENTIFIER):
             options["files"] = files
         elif plugin_id == STUF_ZDS_PLUGIN_IDENTIFIER:
             options["files"] = files_for_stuf_zds
         else:  # pragma: no cover
             raise ValueError(f"Unknown registration plugin '{plugin_id}'.")
+
+        # Persist the changes made to the registration backend
+        backend.save()

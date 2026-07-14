@@ -1,3 +1,5 @@
+import random
+import string
 from urllib.parse import urlsplit
 
 from mail_cleaner.constants import URL_REGEX
@@ -7,6 +9,7 @@ from openforms.emails.utils import get_netloc_allowlist, sanitize_content
 from openforms.emails.validators import subdomains
 from openforms.forms.api.serializers import FormSerializer
 from openforms.forms.constants import FormTypeChoices
+from openforms.forms.models import Form
 from openforms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
@@ -141,6 +144,12 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
 
         # When importing a form, it should be non-active by default
         value["active"] = False
+
+        # Make sure the slug is unique
+        if Form.objects.filter(slug=value.get("slug")).first() is not None:
+            value["slug"] = (
+                f"{value['slug']}-{''.join(random.choices(string.hexdigits, k=6))}"
+            )
 
         return super().to_internal_value(value)
 

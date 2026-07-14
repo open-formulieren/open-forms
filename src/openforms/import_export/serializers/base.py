@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from rest_framework import serializers
 
 from openforms.import_export.typing import (
@@ -77,6 +79,7 @@ class BaseImportSerializer(serializers.Serializer):
 
     def to_internal_value(self, instance):
         value = instance.copy()
+        value = self.set_new_uuid(value)
         value = self.apply_backwards_compatibility(value)
 
         value = self.remove_excluded_form_configuration(value)
@@ -84,7 +87,11 @@ class BaseImportSerializer(serializers.Serializer):
 
         return super().to_internal_value(value)
 
-    def apply_backwards_compatibility(self, value: dict[str, Any]) -> dict[str, Any]:
+    def set_new_uuid(self, value: JSONObject) -> JSONObject:
+        value["uuid"] = uuid4()
+        return value
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
         return value
 
     def remove_excluded_form_configuration(self, value: JSONObject) -> JSONObject:

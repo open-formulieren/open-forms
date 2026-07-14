@@ -1,3 +1,4 @@
+from .base import BaseImportSerializer
 from .form import FormExportSerializer, FormImportSerializer
 from .form_definition import (
     FormDefinitionExportSerializer,
@@ -8,6 +9,7 @@ from .form_step import FormStepExportSerializer, FormStepImportSerializer
 from .form_variable import FormVariableExportSerializer, FormVariableImportSerializer
 
 __all__ = [
+    "BaseImportSerializer",
     "FormExportSerializer",
     "FormImportSerializer",
     "FormDefinitionExportSerializer",

@@ -104,9 +104,9 @@ class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSeriali
     def to_internal_value(self, instance):
         value = instance.copy()
 
-        # @TODO this was AFTER validation. So maybe in a to_representation call?
-        self.apply_component_conversions(value["configuration"])
-        self.apply_definition_conversions(value["configuration"])
+        if configuration := value.get("configuration"):
+            self.apply_component_conversions(configuration)
+            self.apply_definition_conversions(configuration)
 
         return super().to_internal_value(value)
 
