@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import structlog
 from glom import Coalesce, Path, glom
@@ -12,9 +11,6 @@ from typing_extensions import TypeIs
 from openforms.typing import JSONObject
 
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
-
-if TYPE_CHECKING:
-    from .datastructures import FormioData
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.formio.utils")
@@ -77,7 +73,7 @@ def iter_components(
             )
 
 
-def iterate_components_with_configuration_path(
+def _iterate_components_with_configuration_path(
     configuration: ComponentLike, prefix: str = "components", recursive=True
 ) -> Iterator[tuple[str, Component]]:
     for index, component in enumerate(iter_components(configuration, recursive=False)):
@@ -91,11 +87,11 @@ def iterate_components_with_configuration_path(
         if has_columns and recursive:
             for col_index, column in enumerate(component["columns"]):
                 nested_prefix = f"{full_path}.columns.{col_index}.components"
-                yield from iterate_components_with_configuration_path(
+                yield from _iterate_components_with_configuration_path(
                     column, prefix=nested_prefix
                 )
         elif has_components and recursive:
-            yield from iterate_components_with_configuration_path(
+            yield from _iterate_components_with_configuration_path(
                 component, prefix=f"{full_path}.components"
             )
 
@@ -116,7 +112,7 @@ def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
     JSON path as key and the component as value in the returned mapping.
     """
 
-    result = dict(iterate_components_with_configuration_path(configuration))
+    result = dict(_iterate_components_with_configuration_path(configuration))
     return result
 
 
@@ -285,86 +281,3 @@ def conform_to_mask(value: str, mask: str) -> str:
             )
 
     return "".join(result)
-
-
-@dataclass
-class ComponentWithDataItem:
-    component: JSONObject
-    upload_info: JSONObject
-    data_path: str
-    configuration_path: str
-
-
-def iterate_data_with_components(
-    configuration: JSONObject,
-    data: FormioData,
-    data_path: str = "",
-    configuration_path: str = "components",
-    filter_types: list[str] = None,
-) -> Iterator[ComponentWithDataItem] | None:
-    """
-    Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
-    and the path within the submission data.
-
-    For example, for a configuration with components:
-
-    .. code:: json
-
-        [
-            {"key": "surname", "type": "textfield"},
-            {"key": "pets", "type": "editgrid", "components": [{"key": "name", "type": "textfield"}]}
-        ]
-
-    And a submission data:
-
-    .. code:: json
-
-        {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
-
-    For the "Qui" item of the repeating group this function would yield:
-    ``ComponentWithDataItem({"key": "name", "type": "textfield"}, "Qui", "pets", "pets.0.name")``.
-    """
-    if configuration.get("type") == "columns":
-        for index, column in enumerate(configuration["columns"]):
-            child_configuration_path = f"{configuration_path}.columns.{index}"
-            yield from iterate_data_with_components(  # type: ignore
-                column, data, data_path, child_configuration_path, filter_types
-            )
-
-    parent_type = configuration.get("type")
-    if parent_type == "editgrid":
-        parent_path = (
-            f"{data_path}.{configuration['key']}" if data_path else configuration["key"]
-        )
-        group_data = data.get(parent_path, [])
-        for index in range(len(group_data)):
-            yield from iterate_data_with_components(  # type: ignore
-                {"components": configuration.get("components", [])},
-                data,
-                data_path=f"{parent_path}.{index}",
-                configuration_path=f"{configuration_path}.components",
-                filter_types=filter_types,
-            )
-    else:
-        base_configuration_path = configuration_path
-        if parent_type == "fieldset":
-            base_configuration_path += ".components"
-        for index, child_component in enumerate(configuration.get("components", [])):
-            child_configuration_path = f"{base_configuration_path}.{index}"
-            yield from iterate_data_with_components(  # type: ignore
-                child_component, data, data_path, child_configuration_path, filter_types
-            )
-
-    filter_out = (parent_type not in filter_types) if filter_types else False
-    if "key" in configuration and not filter_out:
-        component_data_path = (
-            f"{data_path}.{configuration['key']}" if data_path else configuration["key"]
-        )
-        component_data = data.get(component_data_path)
-        if component_data is not None:
-            yield ComponentWithDataItem(  # type: ignore
-                configuration,
-                component_data,
-                component_data_path,
-                configuration_path,
-            )

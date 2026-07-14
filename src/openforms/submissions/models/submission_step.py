@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import uuid
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -10,6 +13,11 @@ from frozendict import frozendict
 
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormDefinition, FormStep
+
+if TYPE_CHECKING:
+    from openforms.submissions.models.submission_files import (
+        SubmissionFileAttachmentManager,
+    )
 
 
 def _make_frozen(obj):
@@ -120,6 +128,8 @@ class SubmissionStep(models.Model):  # noqa: DJ008
         blank=True,
         null=True,
     )
+
+    attachments: SubmissionFileAttachmentManager
 
     # can be modified by logic evaluations/checks
     _can_submit = True

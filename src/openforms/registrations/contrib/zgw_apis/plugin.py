@@ -673,8 +673,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
                 # look up registration overrides for the component that this file was
                 # uploaded for
-                if (file_component := attachment.component) is not None and (
-                    overrides := file_options.get(file_component["key"])
+                if (
+                    overrides := file_options.get(attachment.component_key)
                 ) is not None:
                     if _document_type_description := overrides.get(
                         "document_type_description"
@@ -707,11 +707,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     f"intermediate.documents.{attachment.id}.document",  # type: ignore
                 )
 
-                key: str = (
-                    attachment._component_data_path
-                    or attachment.submission_variable.key
+                submission_uploads[attachment.data_path].append(
+                    attachment_document["url"]
                 )
-                submission_uploads[key].append(attachment_document["url"])
 
                 execute_unless_result_exists(
                     partial(

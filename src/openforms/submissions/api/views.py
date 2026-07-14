@@ -15,7 +15,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 from openforms.submissions.models.email_verification import EmailVerification
 
-from ..models import TemporaryFileUpload
+from ..models import SubmissionFileAttachment, TemporaryFileUpload
 from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
 from .renderers import FileRenderer
 from .serializers import EmailVerificationSerializer, VerifyEmailSerializer
@@ -72,10 +72,11 @@ class TemporaryFileView(DestroyAPIView):
             mimetype=upload.content_type,
         )
 
+    @transaction.atomic()
     def perform_destroy(self, instance):
         # delete files from disc as well if they had been already
         # saved when trying to access the next form step
-        instance.attachments.all().delete()
+        SubmissionFileAttachment.objects.filter(temporary_file=instance).delete()
         instance.delete()
 
 

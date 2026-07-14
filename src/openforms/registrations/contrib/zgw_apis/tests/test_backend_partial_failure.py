@@ -177,7 +177,7 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="attachment1.jpg",
-            form_key="field1",
+            submission_variable__key="field1",
         )
 
         relate_document_call_count = 0

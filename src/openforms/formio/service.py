@@ -32,7 +32,6 @@ from .typing import Component
 from .utils import (
     get_readable_path_from_configuration_path,
     iter_components,
-    iterate_data_with_components,
 )
 from .variables import extract_variables_from_template_properties, inject_variables
 from .visibility import is_hidden, process_visibility
@@ -51,7 +50,6 @@ __all__ = [
     "rewrite_formio_components_for_request",
     "FormioConfigurationWrapper",
     "FormioData",
-    "iterate_data_with_components",
     "build_serializer",
     "rewrite_formio_components",
     "as_json_data",

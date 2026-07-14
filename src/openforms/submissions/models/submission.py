@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
@@ -49,7 +48,6 @@ if TYPE_CHECKING:
     from openforms.payments.models import SubmissionPaymentManager
 
     from .submission_files import (
-        SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,
     )
     from .submission_report import SubmissionReport
@@ -780,11 +778,6 @@ class Submission(models.Model):
     @property
     def attachments(self) -> SubmissionFileAttachmentQuerySet:
         return self.get_attachments()
-
-    def get_merged_attachments(self) -> Mapping[str, list[SubmissionFileAttachment]]:
-        if not hasattr(self, "_merged_attachments"):
-            self._merged_attachments = self.get_attachments().as_form_dict()
-        return self._merged_attachments
 
     def get_email_confirmation_recipients(self) -> list[str]:
         from openforms.appointments.service import get_email_confirmation_recipients

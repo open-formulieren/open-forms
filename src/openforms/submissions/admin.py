@@ -423,13 +423,14 @@ class SubmissionAdmin(admin.ModelAdmin):
         submission = self.get_object(request, object_id)
         if submission is None:
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
+        assert isinstance(submission, Submission)
         audit_logger.info(
             "submission_details_view_admin",
             submission_uuid=str(submission.uuid),
             user=request.user.username,
         )
         extra_context = {
-            "attachments": submission.get_merged_attachments(),
+            "attachments": (submission.get_attachments().order_by("_data_path", "pk")),
             "image_components": IMAGE_COMPONENTS,
         }
         return super().change_view(
@@ -591,7 +592,7 @@ class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
         "uuid",
         "submission_step",
         "submission_variable",
-        "form_key_display",
+        "component_key",
         "created_on",
         "original_name",
         "get_display_name",
@@ -608,26 +609,16 @@ class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
         "get_display_name",
         "created_on",
         "file_size",
-        "form_key_display",
+        "component_key",
     )
     date_hierarchy = "created_on"
 
     private_media_fields = ("content",)
     private_media_view_class = SubmissionFileAttachmentMediaView
 
-    def file_size(self, obj):
+    @admin.display(description=_("File size"))
+    def file_size(self, obj: SubmissionFileAttachment):
         return filesizeformat(obj.content.size)
-
-    file_size.short_description = _("File size")
-
-    def form_key_display(self, obj):
-        if obj.submission_variable:
-            return obj.submission_variable.key
-        else:
-            # this shouldn't happen but the field is nullable
-            return "<legacy>"
-
-    form_key_display.short_description = _("Form key")
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -19,7 +19,7 @@ from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
 
 from ..datastructures import FormioData
-from ..utils import iterate_components_with_configuration_path
+from ..utils import iter_components
 from ..visibility import is_hidden
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
@@ -92,10 +92,6 @@ class FieldSetNode(ContainerMixin, ComponentNode):
     display_value: str = ""
 
     @property
-    def prefix(self) -> str:
-        return f"{self.configuration_path}.components" or "components"
-
-    @property
     def label(self) -> str:
         header_hidden = self.component.get("hideHeader", False)
         if header_hidden:
@@ -135,14 +131,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
             }
         """
         for index, column in enumerate(self.component["columns"]):
-            for (
-                configuration_path,
-                component,
-            ) in iterate_components_with_configuration_path(
-                configuration=column,
-                prefix=f"{self.configuration_path}.columns.{index}",
-                recursive=False,
-            ):
+            for component in iter_components(configuration=column, recursive=False):
                 yield ComponentNode.build_node(
                     step_data=self.step_data,
                     component=component,
@@ -154,7 +143,6 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                         if self.json_renderer_path
                         else f"{self.key}.{index}"
                     ),
-                    configuration_path=configuration_path,
                 )
 
 
@@ -196,26 +184,29 @@ class FileNode(ComponentNode):
         if self.mode != RenderModes.registration:
             return super().display_value
 
-        files = []
-        attachments = self.renderer.submission.get_merged_attachments()
-        value = attachments.get(self.configuration_path)
+        # determine the data path to this file component, from the root of the
+        # submission data
+        data_path = f"{self.path}.{self.key}" if self.path else self.key
 
-        if value:
-            for submission_file_attachment in value:
-                component_path = f"{self.path}.{self.key}" if self.path else self.key
-                if submission_file_attachment._component_data_path != component_path:
-                    continue
+        # filter the uploads done for this particular file component
+        attachments = [
+            attachment
+            for attachment in self.renderer.submission.attachments
+            if attachment.data_path == data_path
+        ]
+        files: list[tuple[furl, str]] = []
 
-                display_name = submission_file_attachment.get_display_name()
-                download_link = build_absolute_uri(
-                    reverse(
-                        "submissions:attachment-download",
-                        kwargs={"uuid": submission_file_attachment.uuid},
-                    )
+        for attachment in attachments:
+            display_name = attachment.get_display_name()
+            download_link = build_absolute_uri(
+                reverse(
+                    "submissions:attachment-download",
+                    kwargs={"uuid": attachment.uuid},
                 )
-                url = furl(download_link)
-                url.args["hash"] = submission_file_attachment.content_hash
-                files.append((url, display_name))
+            )
+            url = furl(download_link)
+            url.args["hash"] = attachment.content_hash
+            files.append((url, display_name))
 
         if self.as_html:
             return format_html_join(
@@ -302,7 +293,6 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 group_index=node_index,
                 path=path,
                 json_renderer_path=json_renderer_path,
-                configuration_path=f"{self.configuration_path}.components",
             )
 
 
@@ -314,11 +304,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     default_label: str = _("Item")
 
     def get_children(self) -> Iterator[ComponentNode]:
-        for configuration_path, component in iterate_components_with_configuration_path(
-            configuration=self.component,
-            prefix=self.configuration_path or "components",
-            recursive=False,
-        ):
+        for component in iter_components(configuration=self.component, recursive=False):
             yield ComponentNode.build_node(
                 step_data=self.step_data,
                 component=component,
@@ -327,7 +313,6 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 path=f"{self.path}.{self.group_index}",
                 json_renderer_path=f"{self.json_renderer_path}.{self.group_index}",
                 parent_node=self,
-                configuration_path=configuration_path,
             )
 
     def __post_init__(self):
@@ -343,6 +328,16 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
     def render(self) -> str:
         return f"{self.indent}{self.label}"
+
+    @property
+    def html_id(self) -> str:
+        """
+        Calculate the unique HTML ID for this node/component.
+
+        Typically used in the submission PDF to set up accessibility links between
+        sections and titles/labels.
+        """
+        return f"{self.path}.{self.group_index}"
 
 
 @register("softRequiredErrors")

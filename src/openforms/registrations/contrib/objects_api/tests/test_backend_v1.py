@@ -581,8 +581,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="some-attachment.jpg",
-            form_key="fileUpload",
-            _component_configuration_path="components.0",
+            submission_variable__key="fileUpload",
         )
         options: RegistrationOptionsV1 = {
             "version": 1,

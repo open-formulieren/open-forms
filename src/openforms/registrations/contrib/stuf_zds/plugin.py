@@ -594,17 +594,14 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 attachment_doc_id = execute_unless_result_exists(
                     client.create_document_identificatie,
                     submission,
-                    f"intermediate.document_nummers.{attachment.id}",  # type: ignore
+                    f"intermediate.document_nummers.{attachment.pk}",
                     default="",
                 )
 
                 title: str = ""
                 if (
-                    (file_component := attachment.component) is not None
-                    and (overrides := file_options.get(file_component["key"]))
-                    is not None
-                    and (_title := overrides.get("title"))
-                ):
+                    overrides := file_options.get(attachment.component_key)
+                ) is not None and (_title := overrides.get("title")):
                     title = _title
 
                 execute_unless_result_exists(
@@ -616,7 +613,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                         title=title,
                     ),
                     submission,
-                    f"intermediate.documents_created.{attachment.id}",  # type: ignore
+                    f"intermediate.documents_created.{attachment.pk}",
                     default=False,
                     result=True,
                 )

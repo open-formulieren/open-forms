@@ -23,12 +23,11 @@ class AppointmentRenderer(Renderer):
 
         components: list[Component] = appointment.contact_details_meta
         data = FormioData(appointment.contact_details)
-        for index, component in enumerate(components):
+        for component in components:
             child_node = ComponentNode.build_node(
                 step_data=data,
                 component=component,
                 renderer=self,
-                configuration_path=f"{index}",
             )
             yield from child_node
 

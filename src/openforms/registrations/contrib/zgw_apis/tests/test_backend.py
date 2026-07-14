@@ -22,6 +22,7 @@ from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.contrib.zgw.clients.zaken import CRS_HEADERS, ZakenClient
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
@@ -36,6 +37,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.variables.constants import FormVariableDataTypes
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
@@ -1929,10 +1931,18 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                     "type": "textfield",
                     "key": "someText",
                     "label": "Some text",
-                }
+                },
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ],
             submitted_data={
                 "someText": "Foo",
+                "file": [SubmittedFileFactory.build()],
             },
             bsn="123456782",
             completed=True,
@@ -1940,7 +1950,10 @@ class FileAttachmentTests(BaseRegistrationTestCase):
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
             with_report=True,
         )
-        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            submission_variable__key="file",
+        )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2001,10 +2014,18 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                     "type": "textfield",
                     "key": "someText",
                     "label": "Some text",
-                }
+                },
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ],
             submitted_data={
                 "someText": "Foo",
+                "file": [SubmittedFileFactory.build()],
             },
             bsn="123456782",
             completed=True,
@@ -2012,7 +2033,10 @@ class FileAttachmentTests(BaseRegistrationTestCase):
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
             with_report=True,
         )
-        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            submission_variable__key="file",
+        )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2047,7 +2071,7 @@ class FileAttachmentTests(BaseRegistrationTestCase):
             zios = client.get(
                 "zaakinformatieobjecten", params={"zaak": zaak_url}
             ).json()
-            # one for the PDF, one for the attachment
+            # one for the attachment
             self.assertEqual(len(zios), 1)
 
             with get_documents_client(self.zgw_group) as documents_client:
@@ -2125,14 +2149,12 @@ class FileAttachmentTests(BaseRegistrationTestCase):
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment1.jpg",
-            form_key="field1",
-            _component_configuration_path="components.0",
+            submission_variable__key="field1",
         )
         attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment2.jpg",
-            form_key="field2",
-            _component_configuration_path="components.1",
+            submission_variable__key="field2",
         )
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -2280,8 +2302,7 @@ class FileAttachmentTests(BaseRegistrationTestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             content_type="image/png",
-            form_key="file",
-            _component_configuration_path="components.0",
+            submission_variable__key="file",
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -3502,34 +3523,35 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.1",
-            _component_data_path="file",
+            component_key="file",
+            _data_path="file",
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="fileMultiple",
+            submission_variable__key="fileMultiple",
             submission_step=submission.steps[0],
             file_name="test_file2.txt",
             original_name="test_file2.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.2",
-            _component_data_path="fileMultiple",
+            component_key="fileMultiple",
+            _data_path="fileMultiple",
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="editgrid",
+            submission_variable__key="editgrid",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             submission_step=submission.steps[0],
             file_name="test_file3.txt",
             original_name="test_file3.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.3.components.1",
-            _component_data_path="editgrid.0.editgridFile",
+            component_key="editgridFile",
+            _data_path="editgrid.0.editgridFile",
         )
 
         options: RegistrationOptions = {
