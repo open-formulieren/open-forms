@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("objects_api", "0006_alter_objectsapigroupconfig_catalogue_domain"),
         ("forms", "0001_initial_to_v320"),
-        ("yivi_oidc", "0005_data_migrate_set_attributegroup_uuid"),
+        ("yivi_oidc", "0001_initial_to_v340"),
     ]
 
     operations = [

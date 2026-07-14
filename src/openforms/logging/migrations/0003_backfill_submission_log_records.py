@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
     dependencies = [
         ("logging", "0002_avgtimelinelogproxy"),
-        ("submissions", "0002_v230_to_v300"),
+        ("submissions", "0001_initial_to_v330"),
         ("contenttypes", "0002_remove_content_type_name"),
     ]
 

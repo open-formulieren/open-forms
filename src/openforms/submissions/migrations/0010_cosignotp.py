@@ -8,10 +8,7 @@ import openforms.submissions.models.cosign
 
 class Migration(migrations.Migration):
     dependencies = [
-        (
-            "submissions",
-            "0009_submissionvaluevariable_submission_variable_data_type_is_not_subtype_exclusive",
-        ),
+        ("submissions", "0001_initial_to_v330"),
     ]
 
     operations = [

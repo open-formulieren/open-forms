@@ -11,7 +11,7 @@ import openforms.appointments.fields
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("submissions", "0001_initial_to_openforms_v230"),
+        ("submissions", "0001_initial_to_v330"),
     ]
 
     operations = [

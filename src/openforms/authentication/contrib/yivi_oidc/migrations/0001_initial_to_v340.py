@@ -8,15 +8,6 @@ import django_jsonform.models.fields
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("yivi_oidc", "0001_initial"),
-        ("yivi_oidc", "0002_move_data_oidc"),
-        ("yivi_oidc", "0003_delete_yiviopenidconnectconfig"),
-        ("yivi_oidc", "0004_attributegroup_uuid"),
-        ("yivi_oidc", "0005_data_migrate_set_attributegroup_uuid"),
-        ("yivi_oidc", "0006_alter_attributegroup_uuid"),
-    ]
-
     dependencies = [
         ("mozilla_django_oidc_db", "0006_oidcprovider_oidcclient"),
         (
