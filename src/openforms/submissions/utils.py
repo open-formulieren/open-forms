@@ -128,7 +128,7 @@ def _session_lock(session: SessionBase, key: str):
 
 def append_to_session_list(session: SessionBase, session_key: str, value: Any) -> None:
     with _session_lock(session, session_key):
-        active = session.get(session_key, [])
+        active = session.get(session_key) or []
         if value not in active:
             active.append(value)
             session[session_key] = active
@@ -138,7 +138,7 @@ def remove_from_session_list(
     session: SessionBase, session_key: str, value: Any
 ) -> None:
     with _session_lock(session, session_key):
-        active = session.get(session_key, [])
+        active = session.get(session_key) or []
         if value in active:
             active.remove(value)
             session[session_key] = active
