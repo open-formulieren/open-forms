@@ -156,7 +156,10 @@ class EditGridValidationTests(SimpleTestCase):
         data: JSONObject = {
             "toplevel": [{"nested": "i am valid"}],
         }
-        context = {"submission": SubmissionFactory.build()}
+        context = {
+            "submission": SubmissionFactory.build(),
+            "configuration": {"components": [component]},
+        }
 
         serializer = build_serializer(
             components=[component], data=data, context=context
@@ -307,7 +310,10 @@ class EditGridValidationTests(SimpleTestCase):
                 {"naamWerkgever": "ABC", "nettoLoon": 5, "periodeNettoLoon": "maand"}
             ],
         }
-        context = {"submission": SubmissionFactory.build()}
+        context = {
+            "submission": SubmissionFactory.build(),
+            "configuration": {"components": components},
+        }
         serializer = build_serializer(components=components, data=data, context=context)
 
         is_valid = serializer.is_valid()
@@ -468,18 +474,35 @@ class EditGridFieldTests(SimpleTestCase):
     """
 
     def test_invalid_type_provided(self):
+        editgrid_components = [
+            {"type": "textfield", "key": "textfield", "label": "Text field"}
+        ]
+
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=editgrid_components,
             )
 
         invalid_values = (False, {}, 123, "foo")
         for value in invalid_values:
             with self.subTest(invalid_value=value):
-                serializer = Serializer(data={"editgrid": value})
+                serializer = Serializer(
+                    data={"editgrid": value},
+                    context={
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "editgrid",
+                                    "key": "editgrid",
+                                    "label": "editgrid",
+                                    "groupLabel": "Item",
+                                    "components": editgrid_components,
+                                }
+                            ]
+                        }
+                    },
+                )
 
                 is_valid = serializer.is_valid()
 
@@ -488,16 +511,33 @@ class EditGridFieldTests(SimpleTestCase):
                 self.assertEqual(error.code, "not_a_list")
 
     def test_empty_disallowed(self):
+        editgrid_components = [
+            {"type": "textfield", "key": "textfield", "label": "Text field"}
+        ]
+
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=editgrid_components,
                 allow_empty=False,
             )
 
-        serializer = Serializer(data={"editgrid": []})
+        serializer = Serializer(
+            data={"editgrid": []},
+            context={
+                "configuration": {
+                    "components": [
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid",
+                            "label": "editgrid",
+                            "groupLabel": "Item",
+                            "components": editgrid_components,
+                        }
+                    ]
+                }
+            },
+        )
 
         is_valid = serializer.is_valid()
 
@@ -506,17 +546,34 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "empty")
 
     def test_min_length(self):
+        editgrid_components = [
+            {"type": "textfield", "key": "textfield", "label": "Text field"}
+        ]
+
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=editgrid_components,
                 allow_empty=False,
                 min_length=3,
             )
 
-        serializer = Serializer(data={"editgrid": [{"textfield": "foo"}]})
+        serializer = Serializer(
+            data={"editgrid": [{"textfield": "foo"}]},
+            context={
+                "configuration": {
+                    "components": [
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid",
+                            "label": "editgrid",
+                            "groupLabel": "Item",
+                            "components": editgrid_components,
+                        }
+                    ]
+                }
+            },
+        )
 
         is_valid = serializer.is_valid()
 
@@ -525,17 +582,34 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "min_length")
 
     def test_max_length(self):
+        editgrid_components = [
+            {"type": "textfield", "key": "textfield", "label": "Text field"}
+        ]
+
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=editgrid_components,
                 allow_empty=False,
                 max_length=3,
             )
 
-        serializer = Serializer(data={"editgrid": [{"textfield": "foo"}] * 4})
+        serializer = Serializer(
+            data={"editgrid": [{"textfield": "foo"}] * 4},
+            context={
+                "configuration": {
+                    "components": [
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid",
+                            "label": "editgrid",
+                            "groupLabel": "Item",
+                            "components": editgrid_components,
+                        }
+                    ]
+                }
+            },
+        )
 
         is_valid = serializer.is_valid()
 
@@ -544,15 +618,32 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "max_length")
 
     def test_to_representation(self):
+        editgrid_components = [{"type": "textfield", "key": "bar", "label": "Bar"}]
+
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[{"type": "textfield", "key": "bar", "label": "Bar"}],
+                components=editgrid_components,
             )
 
         Foo = namedtuple("Foo", "bar")
         foos = [Foo(bar="first"), Foo(bar="second")]
-        serializer = Serializer(instance={"editgrid": foos})
+        serializer = Serializer(
+            instance={"editgrid": foos},
+            context={
+                "configuration": {
+                    "components": [
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid",
+                            "label": "editgrid",
+                            "groupLabel": "Item",
+                            "components": editgrid_components,
+                        }
+                    ]
+                }
+            },
+        )
 
         data = serializer.data
 

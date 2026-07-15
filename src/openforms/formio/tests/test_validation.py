@@ -10,7 +10,10 @@ from ..typing import Component, RadioComponent, TextFieldComponent
 
 
 def validate_formio_data(components: list[Component], data: JSONValue) -> None:
-    context = {"submission": SubmissionFactory.build()}
+    context = {
+        "submission": SubmissionFactory.build(),
+        "configuration": {"components": components},
+    }
     serializer = build_serializer(components=components, data=data, context=context)
     serializer.is_valid(raise_exception=True)
 
