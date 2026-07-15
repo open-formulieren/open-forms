@@ -11,7 +11,7 @@ format which typically defines one or more decision tables that can be evaluated
 In Open Forms it is possible to use form logic rules that call a DMN engine to
 evaluate decision tables. The result of the evaluation can be used to update the value of variables in the form.
 
-For the developer documentation about DMN, see :ref:`developers_backend_modules_dmn`.
+For the developer documentation about DMN, see :ref:`developers_backend_plugins_dmn`.
 
 -----------------
 Available plugins

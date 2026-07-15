@@ -15,10 +15,10 @@ through mechanism to prevent the user from waiting for feedback for too long.
 
 Globally, the various actions and plugin categories are processed in order:
 
-#. If applicable, an :ref:`appointment <developers_appointment_plugins>` is
+#. If applicable, an :ref:`appointment <developers_backend_plugins_appointment>` is
    created. If this fails, the submission is blocked and the user sees an error
    message and can try again.
-#. Pre-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
+#. Pre-registration step. Each :ref:`registration plugin <developers_backend_plugins_registration>` can perform
    pre-registration task, like for example generating and setting a submission reference ID. If no registration backend
    is configured, then an internal ID is generated and set on the submission.
 #. Component pre-registration step. A group of tasks run in parallel for all components that implement the
@@ -26,14 +26,14 @@ Globally, the various actions and plugin categories are processed in order:
    after all component pre-registration tasks are completed.
 #. A PDF is created that the user can download.
    This PDF is also uploaded to most
-   :ref:`registration backends <developers_registration_plugins>`, depending
+   :ref:`registration backends <developers_backend_plugins_registration>`, depending
    on the plugin.
-#. If a :ref:`registration backend <developers_registration_plugins>` is configured, the submission is registered.
+#. If a :ref:`registration backend <developers_backend_plugins_registration>` is configured, the submission is registered.
 #. The confirmation page is shown, containing appointment information if
    applicable and the registration or internal ID. If payment is due, a payment
    link is also shown to start the payment process.
 #. If the user clicks on the payment link, the
-   :ref:`payment process <developers_payment_plugins>` starts. If this process
+   :ref:`payment process <developers_backend_plugins_payment>` starts. If this process
    is not completed in a reasonable amount of time, it is assumed the user did
    not pay. If payment is completed within or after the timeout, the
    registration is updated with the payment status.

@@ -106,7 +106,7 @@ Formio integration
 The renderers extend to the FormIO component types.
 
 You can :ref:`extend <developers_extending>` your custom FormIO types by using the
-register hook, the mechanism is identical to the usual :ref:`plugin system <plugins_index>`.
+register hook, the mechanism is identical to the usual :ref:`plugin system <developers_backend_plugins_index>`.
 
 **Example**
 
