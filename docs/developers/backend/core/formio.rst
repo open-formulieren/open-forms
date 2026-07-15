@@ -167,8 +167,8 @@ Public API - ``openforms.formio.service``
 Extending
 ---------
 
-Using our :ref:`usual extension pattern <developers_extending>` you can register your
-own types.
+Using our :ref:`usual plugins pattern <developers_backend_plugins_index>` you can
+register your own types.
 
 Extensions should inherit from :class:`openforms.formio.registry.BasePlugin` or
 implement the same protocol(s) and be registered with their form.io type:
