@@ -27,8 +27,6 @@ familiarize yourself with the design principles.
    frontend/index
    embedding
    sdk/index
-   plugins/index
-   extending
    extensions
    checklists
    i18n

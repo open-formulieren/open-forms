@@ -53,15 +53,19 @@ Core
     file-uploads
     service-fetch
 
-Modules
+Plugins
 =======
 
 .. toctree::
     :maxdepth: 1
 
-    modules/index
-    modules/authentication
-    modules/dmn
+    plugins/index
+    plugins/authentication
+    plugins/prefill
+    plugins/dmn
+    plugins/payment
+    plugins/appointment
+    plugins/registration
 
 General purpose functionality
 =============================

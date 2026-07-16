@@ -48,7 +48,7 @@ Other keys that frequently occur are:
     context.
 
 ``module``
-    An identifier for the :ref:`module <developers_backend_modules_index>`
+    An identifier for the :ref:`module <developers_backend_plugins_index>`
     (feature-set) in Open Forms. Often used in conjunction with ``plugin``.
 
 ``plugin``

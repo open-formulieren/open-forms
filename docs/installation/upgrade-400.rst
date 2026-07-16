@@ -506,3 +506,20 @@ You can obtain the amount of records in your instance with a simple SQL query:
     select count(*) from submissions_submissionfileattachment;
 
 From these samples, we recommend planning for 0.9-1.2 seconds per 1000 files.
+
+Extensions are no longer public API
+===================================
+
+.. note:: Relevant for: third party extension developers.
+
+Prior to Open Forms 4.0 we avoided breaking changes in extension interfaces for the
+various :ref:`modules <developers_backend_plugins_index>` like prefill, registration,
+payment, DMN...
+
+This causes maintenance overhead and blocks us from performing necessary technical debt
+cleanup actions, while we haven't received any signal ever that anyone actually uses
+these interfaces.
+
+As of Open Forms 4.0, the interfaces keep existing, but are no longer documented public
+API and will no longer be subject to our semantic versioning policy, meaning that
+breaking changes to extension interfaces may be introduced in regular minor releases.

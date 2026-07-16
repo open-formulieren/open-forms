@@ -1,35 +1,54 @@
-.. _developers_backend_modules_authentication:
+.. _developers_backend_plugins_authentication:
 
 ==============
 Authentication
 ==============
 
 The authentication module provides plugins to establish the identity of end-users
-filling out a form. Identifying attributes can then be used by
-:ref:`developers_prefill_plugins` to retrieve additional details of the citizen or
-company. Depending on the authentication plugin used, a certain level of assurance
-regarding the authentication strength can be obtained as well, increasing trust for
-higher levels.
+filling out a form. They implement the actual login flow for end-users at the beginning
+of a form submission.
 
-.. contents:: :local:
+Identifying attributes can then be used by :ref:`developers_backend_plugins_prefill` to
+retrieve additional details of the citizen or company. Depending on the authentication
+plugin used, a certain level of assurance regarding the authentication strength can be
+obtained as well, increasing trust for higher levels.
+
+In the form builder, it's possible to specify which plugins are available for
+authentication. Some plugins allow additional form-specific configuration.
+
+.. contents::
+   :local:
    :depth: 2
+   :backlinks: none
 
 Python API
 ==========
 
-The public API serves as an abstraction over the various plugins.
+Module interface
+----------------
 
-**Reference**
+The module-level API serves as an abstraction over the various plugins.
 
 .. automodule:: openforms.authentication.service
    :members:
 
+Plugin interface
+----------------
 
-Plugin developer reference
---------------------------
+Authentication plugins must inherit from the base plugin.
 
-See the :ref:`Python API <developers_authentication_plugins_python_api>`.
+Plugins that use the OpenID Connect (OIDC) protocol should inherit from the OIDC plugin
+base :class:`openforms.contrib.auth_oidc.plugin.OIDCAuthentication`.
 
+**Plugin base API**
+
+.. automodule:: openforms.authentication.base
+   :members:
+
+**Plugin Generic OIDC class**
+
+.. autoclass:: openforms.contrib.auth_oidc.plugin.OIDCAuthentication
+   :members:
 
 Available implementations
 =========================

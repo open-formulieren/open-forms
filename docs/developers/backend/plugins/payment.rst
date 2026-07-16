@@ -1,15 +1,51 @@
-.. _developers_plugins_payment_worldline:
+.. _developers_backend_plugins_payment:
 
-========================
-Worldline payment plugin
-========================
+=======
+Payment
+=======
+
+When a form submission requires payment, then the user will initiate the payment module
+once the submission is completed. The payment module plugins implement specific payment
+provider integrations into Open Forms.
+
+.. contents::
+   :local:
+   :depth: 2
+   :backlinks: none
+
+Python API
+==========
+
+Module interface
+----------------
+
+The module-level API serves as an abstraction over the various plugins.
+
+.. automodule:: openforms.payments.services
+   :members:
+
+Plugin interface
+----------------
+
+Payment plugins must inherit from the base plugin.
+
+**Plugin base API**
+
+.. automodule:: openforms.payments.base
+   :members:
+
+Available implementations
+=========================
+
+Worldline
+---------
 
 Developers can setup a local environment to test the Worldline payment plugin. See
 :ref:`configuration_payment_worldline` on how to setup a **Worldline merchant** and
 configure webhooks with the **Worldine Webhook configuration**.
 
 Testing webhooks with Ngrok
-===========================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To locally test webhooks a service like https://ngrok.com can be used. To generate
 an **Auth Token** for local usage you will have to signup for an account. The following
