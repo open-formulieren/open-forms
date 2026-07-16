@@ -565,7 +565,7 @@ class AttributesV2(models.TextChoices):
         _("Gezag > Minderjarige > Leeftijd"),
     )
 
-    #gezag.ouders is an array
+    # gezag.ouders is an array
     gezag_ouders = (
         "gezag.ouders",
         _("Gezag > Ouders"),
