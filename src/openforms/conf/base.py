@@ -1128,6 +1128,7 @@ SELF_CERTIFI_DIR = config(
 # Django Cookie-Consent
 #
 COOKIE_CONSENT_NAME = "cookie_consent"
+COOKIE_CONSENT_LOG_ENABLED: bool = config("COOKIE_CONSENT_LOG_ENABLED", default=False)
 
 #
 # Mozilla Django OIDC (DB) settings
