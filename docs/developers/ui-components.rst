@@ -175,8 +175,7 @@ with responsiveness:
 * ``formio-builder`` -> no helper available
 * ``open-forms`` (backend) -> use ``src/openforms/scss/lib/{bem,responsive}``, usually
   through relative imports.
-* remainder -> use ``microscope-sass/lib/bem``, but keep in mind that ``microscope-sass``
-  is deprecated and being phased out.
+* remainder -> use ``@bbt/bem`` - we're replacing microscope-sass' version with it
 
 Example usage:
 
