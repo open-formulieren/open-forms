@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="use_external_cmp",
             field=models.BooleanField(
                 default=False,
-                help_text="Enable when using an external Consent Management Platform (through a tag manager). When this is checked, the built-in cookie consent notice will be shown.",
+                help_text="Enable when using an external Consent Management Platform (through a tag manager). When this is checked, the built-in cookie consent notice will not be shown.",
                 verbose_name="use external CMP",
             ),
         ),

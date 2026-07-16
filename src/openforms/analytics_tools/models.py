@@ -329,7 +329,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         help_text=_(
             "Enable when using an external Consent Management Platform (through a tag "
             "manager). When this is checked, the built-in cookie consent notice will "
-            "be shown."
+            "not be shown."
         ),
     )
     force_tag_manager_usage = models.BooleanField(

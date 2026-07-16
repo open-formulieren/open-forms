@@ -12,7 +12,7 @@ class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (
-            _("Analytics cookies group"),
+            _("General settings"),
             {
                 "fields": (
                     "analytics_cookie_consent_group",
