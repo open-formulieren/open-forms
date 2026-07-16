@@ -164,6 +164,15 @@ class AttributesV2(models.TextChoices):
     )
 
     # Nationaliteiten
+    nationaliteiten = (
+        "nationaliteiten",
+        _("Nationaliteiten"),
+    )
+
+    # As Nationaliteiten is returned as an Array, prefilling directly with one (sub-)key does not work (yet).
+    # Retrieving this information can be done by prefilling a uservar with the main key (nationaliteiten) and
+    # processing it in the formlogic
+
     nationaliteiten_type = (
         "nationaliteiten.type",
         _("Nationaliteiten > Type"),
@@ -530,6 +539,15 @@ class AttributesV2(models.TextChoices):
     )
 
     # Gezag
+    gezag = (
+        "gezag",
+        _("Gezag"),
+    )
+
+    # As Gezag is returned as an Array, prefilling directly with one (sub-)key does not work (yet).
+    # Retrieving this information can be done by prefilling a uservar with the main key (gezag) and processing it in
+    # the formlogic
+
     gezag_type = (
         "gezag.type",
         _("Gezag > Type"),
@@ -546,6 +564,13 @@ class AttributesV2(models.TextChoices):
         "gezag.minderjarige.leeftijd",
         _("Gezag > Minderjarige > Leeftijd"),
     )
+
+    #gezag.ouders is an array
+    gezag_ouders = (
+        "gezag.ouders",
+        _("Gezag > Ouders"),
+    )
+
     gezag_ouders_burgerservicenummer = (
         "gezag.ouders.burgerservicenummer",
         _("Gezag > Ouders > Burgerservicenummer"),
@@ -562,6 +587,13 @@ class AttributesV2(models.TextChoices):
         "gezag.ouder.naam.volledigeNaam",
         _("Gezag > Ouder > Naam > Volledige Naam"),
     )
+
+    # gezag.derden is an array
+    gezag_derden = (
+        "gezag.derden",
+        _("Gezag > Derden"),
+    )
+
     gezag_derde_type = (
         "gezag.derde.type",
         _("Gezag > Derde > Type"),
@@ -650,6 +682,15 @@ class AttributesV2(models.TextChoices):
     )
 
     # Kinderen
+    kinderen = (
+        "kinderen",
+        _("Kinderen"),
+    )
+
+    # As Kinderen is returned as an Array, prefilling directly with one (sub-)key does not work (yet).
+    # Retrieving this information can be done by prefilling a uservar with the main key (kinderen) and processing it in
+    # the formlogic
+
     kinderen_burgerservicenummer = (
         "kinderen.burgerservicenummer",
         _("Kinderen > Burgerservicenummer"),
@@ -724,6 +765,15 @@ class AttributesV2(models.TextChoices):
     )
 
     # Ouders
+    ouders = (
+        "ouders",
+        _("Ouders"),
+    )
+
+    # As Ouders is returned as an Array, prefilling directly with one (sub-)key does not work (yet).
+    # Retrieving this information can be done by prefilling a uservar with the main key (ouders) and processing it in
+    # the formlogic
+
     ouders_burgerservicenummer = (
         "ouders.burgerservicenummer",
         _("Ouders > Burgerservicenummer"),
@@ -834,6 +884,15 @@ class AttributesV2(models.TextChoices):
     )
 
     # Partners
+    partners = (
+        "partners",
+        _("Partners"),
+    )
+
+    # As Partners is returned as an Array, prefilling directly with one (sub-)key does not work (yet).
+    # Retrieving this information can be done by prefilling a uservar with the main key (partners) and processing it in
+    # the formlogic
+
     partners_burgerservicenummer = (
         "partners.burgerservicenummer",
         _("Partners > Burgerservicenummer"),
