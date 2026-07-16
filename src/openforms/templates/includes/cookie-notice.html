@@ -3,7 +3,7 @@
 {% url 'cookie_consent_cookie_group_list' as manage_url %}
 {% url 'cookie_consent_status' as status_url %}
 
-{% if request.path != manage_url %}
+{% if request.path != manage_url and not use_external_cmp %}
 
     {% all_cookie_groups 'cookie-consent__cookie-groups' %}
 

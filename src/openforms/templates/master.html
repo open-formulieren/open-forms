@@ -81,7 +81,7 @@
     {% endblock %}
 
     {% block footer %}
-        {% include "includes/cookie-notice.html" with analytics_varname=analytics_varname %}
+        {% include "includes/cookie-notice.html" with analytics_varname=analytics_varname use_external_cmp=analytics_tools_config.use_external_cmp %}
         {% include "includes/page-footer.html" %}
     {% endblock %}
 

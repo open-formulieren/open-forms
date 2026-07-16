@@ -1,8 +1,9 @@
 from io import StringIO
 
 from django.core.management import call_command
-from django.test import override_settings, tag
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from asgiref.sync import sync_to_async
@@ -119,6 +120,44 @@ class CookieNoticeTests(E2ETestCase):
                 await expect(
                     page.locator(f'css=script[src="{expected_script_src}"]')
                 ).to_be_attached()
+
+
+@override_settings(CACHES=NOOP_CACHES)
+class CookieNoticeConfigurationTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # load some default cookie groups and cookies
+        call_command("loaddata", "cookie_consent", stdout=StringIO())
+
+    def test_cookie_notice_can_be_disabled(self):
+        config = AnalyticsToolsConfiguration.get_solo()
+        config.analytics_cookie_consent_group = CookieGroup.objects.get(
+            varname="analytical"
+        )
+        config.save()
+        form = FormFactory.create()
+        url = reverse("forms:form-detail", kwargs={"slug": form.slug})
+        expected_html_attribute = format_html(
+            'aria-label="{label}"', label=_("Cookie notice")
+        )
+
+        with self.subTest("enable analytical cookies"):
+            config.use_external_cmp = False
+            config.save()
+
+            response = self.client.get(url)
+
+            self.assertContains(response, expected_html_attribute)
+
+        with self.subTest("disable analytical cookies"):
+            config.use_external_cmp = True
+            config.save()
+
+            response = self.client.get(url)
+
+            self.assertNotContains(response, expected_html_attribute)
 
 
 @override_settings(CACHES=NOOP_CACHES)

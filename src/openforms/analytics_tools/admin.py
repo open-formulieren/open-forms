@@ -16,6 +16,7 @@ class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             {
                 "fields": (
                     "analytics_cookie_consent_group",
+                    "use_external_cmp",
                     "force_tag_manager_usage",
                 )
             },

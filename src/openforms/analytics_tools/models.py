@@ -300,6 +300,15 @@ class AnalyticsToolsConfiguration(SingletonModel):
             "loaded only if this cookie group is accepted by the end-user."
         ),
     )
+    use_external_cmp = models.BooleanField(
+        _("use external CMP"),
+        default=False,
+        help_text=_(
+            "Enable when using an external Consent Management Platform (through a tag "
+            "manager). When this is checked, the built-in cookie consent notice will "
+            "be shown."
+        ),
+    )
     force_tag_manager_usage = models.BooleanField(
         _("force enable tag manager(s)"),
         default=False,
