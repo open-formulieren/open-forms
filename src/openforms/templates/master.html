@@ -42,6 +42,10 @@
     {% endfor %}
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
+    {# If tag managers are forcibly enabled, load the necessary scripts/snippets, even without consent #}
+    {% if analytics_tools_config.force_tag_manager_usage %}
+        {% include "analytics_tools/forced_tag_managers_head.html" with analytics_tools_config=analytics_tools_config %}
+    {% endif %}
 </head>
 
 <body class="utrecht-page">

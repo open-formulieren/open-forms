@@ -35,6 +35,7 @@ class AnalyticsToolsRenderingTest(WebTest):
         """Assert that the Google Analytics script is rendered"""
 
         # Enable and configure Google analytics
+        self.config.force_tag_manager_usage = False
         self.config.enable_google_analytics = True
         self.config.gtm_code = "GTM-XXXX"
         self.config.ga_code = "UA-XXXXX-Y"
@@ -52,6 +53,22 @@ class AnalyticsToolsRenderingTest(WebTest):
             scripts = form_page.pyquery("script[nonce]")
             for script in scripts:
                 self.assertTrue(bool(script.attrib["nonce"]))
+
+    def test_google_tag_manager_rendering_with_external_cmp_solution(self):
+        self.config.force_tag_manager_usage = True
+        self.config.enable_google_analytics = False
+        self.config.gtm_code = "GTM-XXXX"
+        self.config.ga_code = ""
+        self.config.save()
+
+        form_page = self.app.get(self.url)
+
+        google_tag_manager = form_page.pyquery("#google-tag-manager")
+        self.assertTrue(google_tag_manager.is_("script"))
+        # check that the element is *not* in a <template> element which is inert
+        self.assertFalse(
+            form_page.pyquery("template.analytics-scripts #google-tag-manager")
+        )
 
     def test_matomo_rendering(self):
         """Assert that the Matomo script is rendered"""

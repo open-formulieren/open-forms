@@ -1,0 +1,4 @@
+{% comment %}
+  Expects the ``analytics_tools_config`` and ``request`` context variables to exist.
+{% endcomment %}
+{% if analytics_tools_config.gtm_code %}{% include "analytics_tools/google_tag_manager.html" %}{% endif %}
