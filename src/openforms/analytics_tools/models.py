@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from cookie_consent.models import CookieGroup
 from solo.models import SingletonModel
 
 from .constants import AnalyticsTools
@@ -312,7 +313,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         ),
     )
 
-    analytics_cookie_consent_group = models.ForeignKey(
+    analytics_cookie_consent_group = models.ForeignKey[CookieGroup](
         "cookie_consent.CookieGroup",
         on_delete=models.SET_NULL,
         null=True,
@@ -348,7 +349,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_matomo_enabled(self) -> bool:
-        return (
+        return bool(
             self.matomo_url
             and self.matomo_site_id
             and self.enable_matomo_site_analytics
@@ -357,7 +358,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_url
             and self.piwik_site_id
             and self.enable_piwik_site_analytics
@@ -366,7 +367,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_pro_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_pro_url
             and self.piwik_pro_site_id
             and self.enable_piwik_pro_site_analytics
@@ -375,7 +376,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_pro_tag_manager_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_pro_url
             and self.piwik_pro_site_id
             and self.enable_piwik_pro_tag_manager
@@ -384,7 +385,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_siteimprove_enabled(self) -> bool:
-        return (
+        return bool(
             self.siteimprove_id
             and self.enable_siteimprove_analytics
             and self.analytics_cookie_consent_group
@@ -393,7 +394,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
     @property
     def is_google_analytics_enabled(self) -> bool:
         ga_or_gtm_configured = bool(self.ga_code) or bool(self.gtm_code)
-        return (
+        return bool(
             ga_or_gtm_configured
             and self.enable_google_analytics
             and self.analytics_cookie_consent_group
