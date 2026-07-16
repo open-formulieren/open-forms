@@ -300,6 +300,17 @@ class AnalyticsToolsConfiguration(SingletonModel):
             "loaded only if this cookie group is accepted by the end-user."
         ),
     )
+    force_tag_manager_usage = models.BooleanField(
+        _("force enable tag manager(s)"),
+        default=False,
+        help_text=_(
+            "Force the tag manager scripts to run, even if no cookie consent is given "
+            "or individual tools are not enabled. You typically need this when you are "
+            "using an external Consent Management Platform (CMP) through a tag "
+            "manager. Be careful when you enable this, as incorrect configuration may "
+            "have privacy and/or legal implications."
+        ),
+    )
 
     class Meta:
         verbose_name = _("Analytics tools configuration")

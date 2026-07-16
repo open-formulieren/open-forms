@@ -11,7 +11,15 @@ from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
-        (_("Analytics cookies group"), {"fields": ("analytics_cookie_consent_group",)}),
+        (
+            _("Analytics cookies group"),
+            {
+                "fields": (
+                    "analytics_cookie_consent_group",
+                    "force_tag_manager_usage",
+                )
+            },
+        ),
         (
             _("Analytics: Google"),
             {
