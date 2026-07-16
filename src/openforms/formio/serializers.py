@@ -50,7 +50,11 @@ class StepDataSerializer(serializers.Serializer):
         if not hasattr(self, "initial_data"):
             return
 
-        config_wrapper = FormioConfigurationWrapper(configuration)
+        assert self.context
+        assert "configuration_wrapper" in self.context
+        config_wrapper: FormioConfigurationWrapper = self.context[
+            "configuration_wrapper"
+        ]
 
         values = FormioData(self.initial_data)
 
@@ -61,8 +65,6 @@ class StepDataSerializer(serializers.Serializer):
             if not register.holds_submission_data(component):
                 continue
 
-            # XXX: is_hidden does not understand editgrid at all yet, which
-            # is a broader issue, but also manifests here.
             is_hidden = config_wrapper.is_hidden(component["key"], values)
 
             # we don't have to do anything when the component is visible, regular
@@ -150,6 +152,12 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
+    if context := kwargs.get("context"):
+        assert isinstance(context, dict) and "configuration" in context
+        context.setdefault(
+            "configuration_wrapper",
+            FormioConfigurationWrapper(context["configuration"]),
+        )
     fields: dict[str, FieldOrNestedFields] = {}
 
     config: FormioConfiguration = {"components": components}
