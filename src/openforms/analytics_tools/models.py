@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -29,8 +31,8 @@ class ToolConfiguration:
 
     def has_enabled_toggled(
         self,
-        original_config: "AnalyticsToolsConfiguration",
-        current_config: "AnalyticsToolsConfiguration",
+        original_config: AnalyticsToolsConfiguration,
+        current_config: AnalyticsToolsConfiguration,
     ) -> bool:
         was_enabled = getattr(original_config, self.enable_field_name)
         is_now_enabled = getattr(current_config, self.enable_field_name)
@@ -38,10 +40,28 @@ class ToolConfiguration:
         return was_enabled != is_now_enabled
 
 
+class TagManagerToolConfiguration(ToolConfiguration):
+    def has_enabled_toggled(
+        self,
+        original_config: AnalyticsToolsConfiguration,
+        current_config: AnalyticsToolsConfiguration,
+    ) -> bool:
+        normal_behaviour_toggled = super().has_enabled_toggled(
+            original_config, current_config
+        )
+        if normal_behaviour_toggled:
+            return True
+
+        was_tag_manager_forcibly_enabled = original_config.force_tag_manager_usage
+        is_tag_manager_now_forcibly_enabled = current_config.force_tag_manager_usage
+        # XOR to detect toggle
+        return was_tag_manager_forcibly_enabled != is_tag_manager_now_forcibly_enabled
+
+
 DYNAMIC_TOOL_CONFIGURATION = {
-    AnalyticsTools.google_analytics: ToolConfiguration(
+    AnalyticsTools.google_analytics: TagManagerToolConfiguration(
         enable_field_name="enable_google_analytics",
-        is_enabled_property="is_google_analytics_enabled",
+        is_enabled_property="is_google_tag_manager_enabled",
     ),
     AnalyticsTools.matomo: ToolConfiguration(
         enable_field_name="enable_matomo_site_analytics",
@@ -61,6 +81,8 @@ DYNAMIC_TOOL_CONFIGURATION = {
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
+    # standard behaviour, TagManagerToolConfiguration is not necessary because there's
+    # already an explicit flag for piwik pro tag manager vs. analytics
     AnalyticsTools.piwik_pro_tag_manager: ToolConfiguration(
         enable_field_name="enable_piwik_pro_tag_manager",
         is_enabled_property="is_piwik_pro_tag_manager_enabled",
@@ -376,6 +398,11 @@ class AnalyticsToolsConfiguration(SingletonModel):
             and self.enable_google_analytics
             and self.analytics_cookie_consent_group
         )
+
+    @property
+    def is_google_tag_manager_enabled(self) -> bool:
+        force_enabled = self.force_tag_manager_usage and self.gtm_code
+        return force_enabled or self.is_google_analytics_enabled
 
     @property
     def is_govmetric_enabled(self) -> bool:

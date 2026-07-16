@@ -27,8 +27,8 @@ class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
         ]
 
     def test_google_analytics_properly_enabled(self):
-        self.config.gtm_code = self.ga_code
-        self.config.ga_code = self.gtm_code
+        self.config.gtm_code = self.gtm_code
+        self.config.ga_code = self.ga_code
         self.config.enable_google_analytics = True
         self.config.save()
 
@@ -51,8 +51,8 @@ class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
                     self.fail(f"Unexpected exception : {e}")
 
     def test_google_analytics_properly_disabled(self):
-        self.config.gtm_code = self.ga_code
-        self.config.ga_code = self.gtm_code
+        self.config.gtm_code = self.gtm_code
+        self.config.ga_code = self.ga_code
 
         # creation of cookies
         self.config.enable_google_analytics = True
@@ -105,3 +105,21 @@ class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
                 self.config.clean()
             except ValidationError as exc:
                 raise self.failureException("config is valid") from exc
+
+    def test_force_google_tag_manager_without_enabling_analytics_creates_csp_settings(
+        self,
+    ):
+        self.config.gtm_code = self.gtm_code
+        self.config.ga_code = ""
+        self.config.enable_google_analytics = False
+        self.config.force_tag_manager_usage = True
+        self.config.save()
+
+        for csp in self.json_csp:
+            with self.subTest("Test creation of CSP", setting=csp):
+                qs = CSPSetting.objects.filter(
+                    value=csp["value"],
+                    directive=csp["directive"],
+                    identifier=AnalyticsTools.google_analytics,
+                )
+                self.assertTrue(qs.exists())
