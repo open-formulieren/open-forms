@@ -81,5 +81,27 @@ class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
     def test_google_analytics_enabled_but_related_fields_are_not(self):
         self.config.enable_google_analytics = True
 
-        with self.assertRaises(ValidationError):
-            self.config.clean()
+        with self.subTest("no fields configured"):
+            self.config.ga_code = ""
+            self.config.gtm_code = ""
+
+            with self.assertRaises(ValidationError):
+                self.config.clean()
+
+        with self.subTest("only GA configured"):
+            self.config.ga_code = self.ga_code
+            self.config.gtm_code = ""
+
+            try:
+                self.config.clean()
+            except ValidationError as exc:
+                raise self.failureException("config is valid") from exc
+
+        with self.subTest("only GTM configured"):
+            self.config.ga_code = ""
+            self.config.gtm_code = self.gtm_code
+
+            try:
+                self.config.clean()
+            except ValidationError as exc:
+                raise self.failureException("config is valid") from exc

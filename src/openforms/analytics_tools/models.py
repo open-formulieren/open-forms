@@ -350,9 +350,9 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_google_analytics_enabled(self) -> bool:
+        ga_or_gtm_configured = bool(self.ga_code) or bool(self.gtm_code)
         return (
-            self.ga_code
-            and self.gtm_code
+            ga_or_gtm_configured
             and self.enable_google_analytics
             and self.analytics_cookie_consent_group
         )
