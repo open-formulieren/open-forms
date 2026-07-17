@@ -22,6 +22,8 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
     "description",
     "html",
     "placeholder",
+    "values",  # component-types: radio/selectBoxes
+    "data",  # component-type: select
     "tooltip",
 )
 
