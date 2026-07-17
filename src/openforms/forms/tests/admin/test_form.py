@@ -732,6 +732,8 @@ class FormAdminImportExportTests(WebTest):
                 {
                     "uuid": str(category.uuid),
                     "name": category.name,
+                    "path": category.path,
+                    "depth": str(category.depth),
                 }
             ],
         )

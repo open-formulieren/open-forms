@@ -333,7 +333,7 @@ def import_form_data(
 
     # Import additional data
     import_additional_form_configuration_data(
-        resources=import_data, import_options=import_options
+        resources=import_data, import_options=import_options, uuid_mapping=uuid_mapping
     )
 
     for resource in IMPORT_SERIALIZER_CONFIGS:

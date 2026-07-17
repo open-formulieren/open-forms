@@ -765,6 +765,8 @@ class ImportExportAPITests(APITestCase):
                 {
                     "uuid": str(category.uuid),
                     "name": category.name,
+                    "path": category.path,
+                    "depth": str(category.depth),
                 }
             ],
         )
