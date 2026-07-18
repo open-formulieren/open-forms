@@ -26,6 +26,10 @@ from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
+from openforms.import_export.typing import (
+    EXPORT_FORM_CONFIGURATION_CHOICES,
+    AdditionalFormConfigurationOptions,
+)
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -653,6 +657,29 @@ FormSerializer.__doc__ = FormSerializer.__doc__.format(
         [f"`{field}`" for field in FormSerializer._get_admin_field_names()]
     )
 )
+
+
+class FormAPIExportRequestSerializer(serializers.Serializer):
+    remove_sensitive_content = serializers.BooleanField(
+        required=False,
+        help_text=_(
+            "Whether sensative form configuration should be anonymized during exporting."
+        ),
+    )
+    form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=EXPORT_FORM_CONFIGURATION_CHOICES,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+    )
+    additional_form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file content."
+        ),
+    )
 
 
 class FormImportSerializer(serializers.Serializer):
