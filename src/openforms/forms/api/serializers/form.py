@@ -766,6 +766,39 @@ class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+    form_configuration = serializers.MultipleChoiceField(
+        choices=FormConfigurationOptions.choices,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+        required=False,
+    )
+    reuse_form_definitions = serializers.BooleanField(
+        label=_("Re-use form definitions"),
+        required=False,
+        initial=True,
+        help_text=_(
+            "Whether to re-use existing form definitions or create new form definitions "
+            "for each form definition in the import file. (If no matching reusable form "
+            "definition is found, a new one will be created.)"
+        ),
+    )
+    additional_form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file "
+            "content."
+        ),
+    )
+    theme = serializers.UUIDField(
+        required=False,
+        help_text=_("Which theme should be used for the imported forms."),
+    )
+    category = serializers.UUIDField(
+        required=False,
+        help_text=_("Which category should be applied to the imported forms."),
+    )
 
 
 class FormImportResponseSerializer(serializers.Serializer):

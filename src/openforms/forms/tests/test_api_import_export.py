@@ -1083,7 +1083,10 @@ class ImportExportAPITests(APITestCase):
         url = reverse("api:forms-import")
         response = self.client.post(
             url,
-            {"file": f},
+            {
+                "file": f,
+                "reuse_form_definitions": True,
+            },
             format="multipart",
             HTTP_AUTHORIZATION=f"Token {self.token.key}",
             HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
