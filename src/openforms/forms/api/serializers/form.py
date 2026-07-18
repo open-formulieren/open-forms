@@ -29,6 +29,9 @@ from openforms.formio.typing import Component
 from openforms.import_export.typing import (
     EXPORT_FORM_CONFIGURATION_CHOICES,
     AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    LinksToUnknownDomainsOptions,
+    ReusableFormDefinitionsOptions,
 )
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
@@ -685,6 +688,39 @@ class FormAPIExportRequestSerializer(serializers.Serializer):
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
+    )
+    form_configuration = serializers.MultipleChoiceField(
+        choices=FormConfigurationOptions.choices,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+        required=False,
+    )
+    reusable_form_definitions = serializers.ChoiceField(
+        required=False,
+        choices=ReusableFormDefinitionsOptions.choices,
+        help_text=_(
+            "Whether to reuse existing form definitions or create new ones for each "
+            "form definition in the import file. "
+            "To determine whether a form definition is a duplicate, the title and "
+            "configuration are compared. If no comparable form definition exists, a new "
+            "form definition is created regardless of the choice."
+        ),
+    )
+    links_to_unknown_domains = serializers.ChoiceField(
+        required=False,
+        help_text=_(
+            "What to do with links in email templates to domains that are not accepted "
+            "in the global configuration."
+        ),
+        choices=LinksToUnknownDomainsOptions.choices,
+    )
+    additional_form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file content."
+        ),
     )
 
 
