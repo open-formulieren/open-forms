@@ -290,34 +290,6 @@ def import_form(
     return import_form_data(import_data, existing_form_instance, import_options)
 
 
-def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: bool):
-    """
-    Import a form definition with a given UUID.
-
-    If the UUID is already present, check if the configuration is the same or not. If
-    it's the same, the existing record is updated, otherwise a new form definition is
-    created.
-    """
-    existing = FormDefinition.objects.filter(uuid=uuid).first()
-    # no existing record -> let the import flow create one
-    if existing is None:
-        return None
-
-    # if there is an existing form definition, but it's not being related to the same
-    # form, then we need to create a copy
-    # if new form, existing is used, existing is not reusable
-    if not for_existing_form and existing.used_in.exists() and not existing.is_reusable:
-        return None
-
-    # Compare hashes to check if form fields configuration changed or not. If there are
-    # changes, the import data should be created as a new record.
-    existing_fd_hash = existing.get_hash()
-    imported_fd_hash = FormDefinition(configuration=attrs["configuration"]).get_hash()
-    if existing_fd_hash == imported_fd_hash:
-        return existing
-    return None
-
-
 @transaction.atomic
 @override(language=settings.LANGUAGE_CODE)
 def import_form_data(
@@ -348,10 +320,14 @@ def import_form_data(
         for entry in json.loads(data):
             old_uuid = entry.get("uuid")
 
+            instance = serializer_config.serializer.resolve_instance(
+                entry, import_options
+            )
             deserialized = serializer_config.serializer(
                 **serializer_config.serializer_kwargs(
                     entry, created_form, import_options, request
-                )
+                ),
+                instance=instance,
             )
 
             try:

@@ -1369,7 +1369,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         export_form(form.pk, archive_name=self.filepath)
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.get()
@@ -1413,7 +1418,12 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1580,7 +1590,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         export_form(form.pk, archive_name=self.filepath)
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()
@@ -1961,7 +1976,10 @@ class ImportExportTests(TempdirMixin, TestCase):
         export_form(form.pk, archive_name=self.filepath)
 
         converters = {"textfield": {"add_foo": add_foo}}
-        with patch("openforms.forms.utils.CONVERTERS", new=converters):
+        with patch(
+            "openforms.import_export.serializers.form_definition.CONVERTERS",
+            new=converters,
+        ):
             import_form(import_file=self.filepath)
 
         imported_form = Form.objects.exclude(pk=form.pk).get()

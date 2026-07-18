@@ -3,11 +3,14 @@ import structlog
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.models import FormDefinition
 from openforms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
+    FormImportOptions,
+    ReusableFormDefinitionsOptions,
 )
 from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
@@ -100,6 +103,28 @@ class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSeriali
             cleanup=remove_prefill_from_component_configuration,
         ),
     )
+
+    @staticmethod
+    def resolve_instance(
+        value: JSONObject, import_options: FormImportOptions | None
+    ) -> FormDefinition | None:
+        if import_options is None:
+            return None
+
+        match import_options.reusable_form_definitions:
+            case ReusableFormDefinitionsOptions.create_new:
+                return None
+
+            case ReusableFormDefinitionsOptions.reuse_existing:
+                return FormDefinition.objects.filter(
+                    configuration=value.get("configuration"),
+                    is_reusable=True,
+                ).first()
+
+            case _:
+                raise RuntimeError(
+                    f"Form definition import option {import_options.reusable_form_definitions} is not supported"
+                )
 
     def to_internal_value(self, instance):
         value = instance.copy()

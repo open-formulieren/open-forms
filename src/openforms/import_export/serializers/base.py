@@ -77,9 +77,17 @@ class BaseImportSerializer(serializers.Serializer):
         AdditionalFormConfigurationCleanup
     ] = ()
 
+    @staticmethod
+    def resolve_instance(value: JSONObject, import_options: FormImportOptions | None):
+        return None
+
     def to_internal_value(self, instance):
         value = instance.copy()
-        value = self.set_new_uuid(value)
+
+        # When importing an existing instance, we should not overwrite the uuid
+        if not self.instance:
+            value = self.set_new_uuid(value)
+
         value = self.apply_backwards_compatibility(value)
 
         value = self.remove_excluded_form_configuration(value)

@@ -24,6 +24,7 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.import_export.typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
+    ReusableFormDefinitionsOptions,
 )
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
@@ -1087,7 +1088,10 @@ class ImportExportAPITests(APITestCase):
         url = reverse("api:forms-import")
         response = self.client.post(
             url,
-            {"file": f},
+            {
+                "file": f,
+                "reusable_form_definitions": ReusableFormDefinitionsOptions.reuse_existing,
+            },
             format="multipart",
             HTTP_AUTHORIZATION=f"Token {self.token.key}",
             HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
