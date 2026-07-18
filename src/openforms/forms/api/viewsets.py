@@ -62,6 +62,7 @@ from .serializers import (
     FormVersionSerializer,
 )
 from .serializers.form import (
+    FormAPIExportRequestSerializer,
     FormImportResponseSerializer,
     FormJsonSchemaOptionsSerializer,
 )
@@ -423,7 +424,10 @@ class FormViewSet(viewsets.ModelViewSet):
         },
     )
     @action(
-        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
+        detail=True,
+        methods=["post"],
+        authentication_classes=(TokenAuthentication,),
+        serializer_class=FormAPIExportRequestSerializer,
     )
     def export(self, request, *args, **kwargs):
         """
@@ -436,7 +440,14 @@ class FormViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
 
-        export_form(instance.id, response=response)
+        serializer = self.get_serializer_class()(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        export_form(
+            instance.id,
+            response=response,
+            export_options=serializer.as_export_options(),
+        )
 
         response["Content-Length"] = len(response.content)
         return response
