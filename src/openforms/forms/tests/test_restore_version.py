@@ -8,10 +8,27 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
+from openforms.authentication.tests.factories import AttributeGroupFactory
+from openforms.config.models import MapTileLayer, MapWMSTileLayer, Theme
+from openforms.config.tests.factories import (
+    MapTileLayerFactory,
+    MapWMSTileLayerFactory,
+    ThemeFactory,
+)
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.forms.models import Category, FormDefinition, FormStep, FormVersion
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
+from openforms.prefill.constants import IdentifierRoles
+from openforms.products.models import Product
+from openforms.products.tests.factories import ProductFactory
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..models import FormDefinition, FormStep, FormVersion
 from .factories import (
+    CategoryFactory,
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
@@ -324,6 +341,374 @@ class RestoreVersionTest(TestCase):
             },
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)
+
+    def test_full_form_save_and_restore(self):
+        """
+        Tests that all form configuration that receives dedicated attention from the
+        import/export is correctly saved and restored.
+
+        Ensuring all configuration is kept, especially the product, theme, category, and
+        service fetch. (@TODO service fetch is not yet implemented)
+        """
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmts_tile_layer = MapTileLayerFactory.create()
+        wms_tile_layer = MapWMSTileLayerFactory.create()
+
+        yivi_attribute_group = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [yivi_attribute_group.uuid],
+            },
+            internal_remarks="Some internal remark that should be kept",
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["abc@xyz.com"]},
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wms_tile_layer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        # Validate the initial setup
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 6)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 2)
+        self.assertEqual(AttributeGroup.objects.count(), 1)
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # Validate that no new additional data was created
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 6)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 2)
+        self.assertEqual(AttributeGroup.objects.count(), 1)
+
+        # Validate product, theme and category
+        self.assertEqual(form.product.uuid, product.uuid)
+        self.assertEqual(form.theme.uuid, theme.uuid)
+        self.assertEqual(form.category.uuid, category.uuid)
+
+        # Validate payment backend
+        self.assertEqual(form.payment_backend, "worldline")
+        self.assertEqual(form.payment_backend_options["merchant"], merchant.pspid)
+
+        # Validate auth backend
+        self.assertEqual(form.auth_backends.count(), 1)
+        auth_backend = form.auth_backends.first()
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["authentication_options"], [AuthAttribute.bsn]
+        )
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            [str(yivi_attribute_group.uuid)],
+        )
+
+        # Validate registration backend and sensitive data was kept
+        self.assertEqual(
+            form.internal_remarks,
+            "Some internal remark that should be kept",
+        )
+        self.assertEqual(form.registration_backends.count(), 1)
+        registration_backend = form.registration_backends.first()
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(registration_backend.options["to_emails"], ["abc@xyz.com"])
+
+        # Validate map component tile layer configuration
+        fd = form.formstep_set.first().form_definition
+        map_component = fd.configuration["components"][1]
+        self.assertEqual(map_component["type"], "map")
+        self.assertEqual(
+            map_component["tileLayerIdentifier"], wmts_tile_layer.identifier
+        )
+        self.assertEqual(len(map_component["overlays"]), 1)
+        self.assertEqual(map_component["overlays"][0]["uuid"], str(wms_tile_layer.uuid))
+
+    def test_form_restore_creating_new_resources_when_existing_have_been_altered(self):
+        product = ProductFactory.create(name="old product name", price=10)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+        )
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        with self.subTest("Modify used product"):
+            product.name = "new product name"
+            product.price = 20
+            product.save()
+            self.assertEqual(Product.objects.count(), 1)
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # Because the product was updated after the version was made, a new product is
+        # created which represents the product state from before the version
+        self.assertEqual(Product.objects.count(), 2)
+        new_product = Product.objects.last()
+        self.assertEqual(form.product.uuid, new_product.uuid)
+        self.assertEqual(new_product.name, "old product name")
+        self.assertEqual(new_product.price, 10)
+
+    def test_form_restore_creating_new_resources_when_existing_have_been_altered_with_slug_identifier(
+        self,
+    ):
+        # Make sure that we start without any wmts tile layers
+        MapTileLayer.objects.all().delete()
+        self.assertEqual(MapTileLayer.objects.count(), 0)
+
+        wmts_tile_layer = MapTileLayerFactory.create(
+            identifier="test-wmts-identifier",
+            url="test-wmts-url.com",
+            label="test-wmts-label",
+        )
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
+                        "overlays": [],
+                    },
+                ],
+            },
+        )
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        with self.subTest("Modify used wmts tile layer"):
+            wmts_tile_layer.label = "new label"
+            wmts_tile_layer.url = "some-different-url.com"
+            wmts_tile_layer.save()
+            self.assertEqual(Product.objects.count(), 1)
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # Because the wmts tile layer was updated after the version was made, a new wmts
+        # tile layer is created which represents the previous state.
+        self.assertEqual(MapTileLayer.objects.count(), 2)
+        new_wmts_tile_layer = MapTileLayer.objects.last()
+        map = form.formstep_set.first().form_definition.configuration["components"][0]
+
+        self.assertEqual(map["tileLayerIdentifier"], new_wmts_tile_layer.identifier)
+        self.assertEqual(new_wmts_tile_layer.label, "test-wmts-label")
+        self.assertEqual(new_wmts_tile_layer.url, "test-wmts-url.com")
+
+    def test_form_restore_using_resource_with_similar_data(self):
+        product1 = ProductFactory.create(name="product 1", price=1)
+        product2 = ProductFactory.create(name="product 2", price=2)
+
+        form = FormFactory.create(generate_minimal_setup=True, product=product1)
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        with self.subTest("Modify products"):
+            # Swap the product data
+            product1.name = "product 2"
+            product1.price = 2
+            product1.save()
+            product2.name = "product 1"
+            product2.price = 1
+            product2.save()
+
+        # Restore the form
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # No new products were created
+        self.assertEqual(Product.objects.count(), 2)
+        # Product 2 is now used, as it has the same data as product 1 had when the form
+        # version was made.
+        self.assertEqual(form.product.uuid, product2.uuid)
+
+    def test_form_restore_using_resource_with_similar_data_and_slug_identifier(self):
+        # Make sure that we start without any wmts tile layers
+        MapTileLayer.objects.all().delete()
+        self.assertEqual(MapTileLayer.objects.count(), 0)
+
+        wmts_tile_layer1 = MapTileLayerFactory.create(
+            identifier="test-wmts-identifier",
+            url="test-wmts-url.com",
+            label="test-wmts-label",
+        )
+        wmts_tile_layer2 = MapTileLayerFactory.create(
+            identifier="test-wmts-identifier2",
+            url="test-wmts-url2.com",
+            label="test-wmts-label2",
+        )
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer1.identifier,
+                        "overlays": [],
+                    },
+                ],
+            },
+        )
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        with self.subTest("Modify wmts tile layers"):
+            # Swap the wmts tile layer data
+            wmts_tile_layer1.label = "test-wmts-label2"
+            wmts_tile_layer1.url = "test-wmts-url2.com"
+            wmts_tile_layer1.save()
+            wmts_tile_layer2.label = "test-wmts-label"
+            wmts_tile_layer2.url = "test-wmts-url.com"
+            wmts_tile_layer2.save()
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # No new wmts tile layers should have been created
+        self.assertEqual(MapTileLayer.objects.count(), 2)
+        # wmts_tile_layer2 is now used, as it has the same data as wmts_tile_layer1 had
+        # when the form version was made.
+        map = form.formstep_set.first().form_definition.configuration["components"][0]
+
+        self.assertEqual(map["tileLayerIdentifier"], wmts_tile_layer2.identifier)
+
+    def test_form_restore_active_state_is_correctly_kept(self):
+        for initial_active_state in (True, False):
+            with self.subTest(data=initial_active_state):
+                form = FormFactory.create(
+                    generate_minimal_setup=True, active=initial_active_state
+                )
+
+                version = FormVersionFactory.create(form=form)
+                self.assertNotEqual(version.export_blob, {})
+
+                # Change active state after version was made
+                form.active = not initial_active_state
+                form.save()
+
+                # Restore it
+                form.restore_old_version(version.uuid)
+
+                # get all fresh DB records
+                form.refresh_from_db()
+
+                # Assert active state has not been changed
+                self.assertEqual(form.active, initial_active_state)
 
 
 FORM_STEP = [
