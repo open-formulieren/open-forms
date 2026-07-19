@@ -321,7 +321,7 @@ def import_form_data(
             old_uuid = entry.get("uuid")
 
             instance = serializer_config.serializer.resolve_instance(
-                entry, import_options
+                entry, import_options, existing_form_instance
             )
             deserialized = serializer_config.serializer(
                 **serializer_config.serializer_kwargs(

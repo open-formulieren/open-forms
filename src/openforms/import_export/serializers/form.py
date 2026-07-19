@@ -15,6 +15,7 @@ from openforms.import_export.typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
+    FormImportOptions,
     LinksToUnknownDomainsOptions,
 )
 from openforms.typing import JSONObject
@@ -137,6 +138,14 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
             cleanup=exclude_auth_backends,
         ),
     )
+
+    @staticmethod
+    def resolve_instance(
+        value: JSONObject,
+        import_options: FormImportOptions | None,
+        existing_form_instance: Form | None,
+    ) -> Form | None:
+        return existing_form_instance
 
     def to_internal_value(self, instance):
         value = instance.copy()

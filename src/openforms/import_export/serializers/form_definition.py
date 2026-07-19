@@ -3,7 +3,7 @@ import structlog
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
-from openforms.forms.models import FormDefinition
+from openforms.forms.models import FormDefinition, Form
 from openforms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
@@ -106,7 +106,9 @@ class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSeriali
 
     @staticmethod
     def resolve_instance(
-        value: JSONObject, import_options: FormImportOptions | None
+        value: JSONObject,
+        import_options: FormImportOptions | None,
+        existing_form_instance: Form | None,
     ) -> FormDefinition | None:
         if import_options is None:
             return None

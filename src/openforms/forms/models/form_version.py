@@ -8,6 +8,11 @@ from django.utils.formats import localize
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _
 
+from ...import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormExportOptions,
+)
 from .form import Form
 
 User = get_user_model()
@@ -23,7 +28,25 @@ class FormVersionManager(models.Manager):
         # circular dependencies
         from ..utils import form_to_json
 
-        form_json = form_to_json(form.id)
+        form_json = form_to_json(
+            form.id,
+            export_options=FormExportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                remove_sensitive_content=False,
+            ),
+        )
         if not description:
             version_number = self.filter(form=form).count() + 1
             description = _("Version {number}").format(number=version_number)

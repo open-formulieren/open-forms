@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from rest_framework import serializers
 
+from openforms.forms.models import Form
 from openforms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
@@ -78,7 +79,11 @@ class BaseImportSerializer(serializers.Serializer):
     ] = ()
 
     @staticmethod
-    def resolve_instance(value: JSONObject, import_options: FormImportOptions | None):
+    def resolve_instance(
+        value: JSONObject,
+        import_options: FormImportOptions | None,
+        existing_form_instance: Form | None,
+    ):
         return None
 
     def to_internal_value(self, instance):

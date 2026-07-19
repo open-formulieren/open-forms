@@ -32,6 +32,13 @@ from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
+from openforms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormImportOptions,
+    LinksToUnknownDomainsOptions,
+    ReusableFormDefinitionsOptions,
+)
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -733,7 +740,28 @@ class Form(models.Model):
         # it will be replaced with the import data.
         self.__delete_current_form_configuration(form_version.form)
 
-        restored_form = import_form_data(old_version_data, form_version.form)
+        restored_form = import_form_data(
+            old_version_data,
+            form_version.form,
+            import_options=FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing,
+                links_to_unknown_domains=LinksToUnknownDomainsOptions.remove,
+            ),
+        )
 
         self.__after_restore_corrections(restored_form, old_version_data)
 
