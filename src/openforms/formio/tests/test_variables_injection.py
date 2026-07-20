@@ -204,3 +204,60 @@ class VariableInjectionTests(SimpleTestCase):
             configuration["components"][0]["html"],
             "<p>I am hidden</p>{{ missingFields }}{% now %}",
         )
+
+    def test_components_with_choices(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "radio",
+                    "type": "radio",
+                    "label": "radio",
+                    "openForms": {"dataSrc": "manual"},
+                    "values": [
+                        {
+                            "value": "1",
+                            "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
+                        },
+                        {"value": "2", "label": "2"},
+                    ],
+                },
+                {
+                    "key": "selectboxes",
+                    "type": "selectboxes",
+                    "label": "selectboxes",
+                    "openForms": {"dataSrc": "manual"},
+                    "values": [
+                        {
+                            "value": "1",
+                            "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
+                        },
+                        {"value": "2", "label": "2"},
+                    ],
+                },
+                {
+                    "key": "select",
+                    "type": "select",
+                    "label": "select",
+                    "openForms": {"dataSrc": "manual"},
+                    "data": {
+                        "values": [
+                            {
+                                "value": "1",
+                                "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
+                            },
+                            {"value": "2", "label": "2"},
+                        ]
+                    },
+                },
+            ]
+        }
+
+        inject_variables(
+            FormioConfigurationWrapper(configuration), FormioData({"var": "foo"})
+        )
+
+        self.assertEqual(configuration["components"][0]["values"][0]["label"], "1")
+        self.assertEqual(configuration["components"][1]["values"][0]["label"], "1")
+        self.assertEqual(
+            configuration["components"][2]["data"]["values"][0]["label"], "1"
+        )
