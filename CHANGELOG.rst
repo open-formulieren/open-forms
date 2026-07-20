@@ -14,6 +14,67 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.5 (2026-07-20)
+===================
+
+Regular bugfix release.
+
+**Bugfixes**
+
+* Upgraded to SDK 3.5.5, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6082`] Fixed creating a digital address in Open Klant for one-time use from
+  existing (but non-default) customer profile addresses.
+* [:backend:`6155`] Fixed missing registry hooks for ``customerProfile`` component.
+* [:backend:`6113`, :backend:`5730`] Fixed broken table markup on introduction page
+  and/or start page.
+* [Sentry#482931] Fixed type error when session data contains ``None``.
+* [:backend:`6447`] Fixed visibility calculation during formio validation in editgrid
+  components.
+* [:backend:`6425`] Added fix-script to bulk-assign the "disabled/read-only" property to
+  fieldset and columns children when the layout component itself is targeted in logic.
+
+  Execute this in an app container using:
+
+  .. code-block:: bash
+
+      # in the container via ``docker exec`` or ``kubectl exec``:
+      python /app/bin/fix_disabled_logic_in_layout_components.py
+
+* [:backend:`6459`] Fixed broken templating in radio/selectboxes/select options.
+
+**Migration tooling**
+
+* [:backend:`6304`] Added a check for inconsistent file-level registration options.
+
+  In an app container, execute:
+
+  .. code-block:: bash
+
+      # in the container via ``docker exec`` or ``kubectl exec``:
+      python /app/bin/report_file_component_inconsistent_catalogues.py
+
+* [:backend:`6275`] Updated the new clear-on-hide behaviour check script to detect
+  additional affected cases, such as DMN input variables.
+* [:backend:`6391`] Implemented UI in simple logic rules to set a fallback value for
+  possibly undefined variables in triggers.
+
+3.4.11 (2026-07-20)
+===================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.4.5, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6082`] Fixed creating a digital address in Open Klant for one-time use from
+  existing (but non-default) customer profile addresses.
+* [:backend:`6155`] Fixed missing registry hooks for ``customerProfile`` component.
+* [:backend:`6113`, :backend:`5730`] Fixed broken table markup on introduction page
+  and/or start page.
+* [Sentry#482931] Fixed type error when session data contains ``None``.
+* [:backend:`6447`] Fixed visibility calculation during formio validation in editgrid
+  components.
+
 4.0.0-alpha.1 (2026-06-22)
 ==========================
 
