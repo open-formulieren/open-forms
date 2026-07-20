@@ -49,11 +49,11 @@ class GlobalConfigurationManager(models.Manager):
 class GlobalConfiguration(SingletonModel):
     email_template_netloc_allowlist = ArrayField(
         models.CharField(max_length=1000),
-        verbose_name=_("allowed email domain names"),
+        verbose_name=_("allowed email (sub)domain names"),
         help_text=_(
-            "Provide a list of allowed domains (without 'https://www')."
+            "Provide a list of allowed (sub)domains (without 'https://www')."
             "Hyperlinks in a (confirmation) email are removed, unless the "
-            "domain is provided here."
+            "(sub)domain is provided here."
         ),
         blank=True,
         default=list,
