@@ -326,7 +326,7 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="01-01-2024",
             api_value="2024-01-01",
-            expected_ui_error="De datum moet op of na 2024-03-13 zijn.",
+            expected_ui_error="De datum moet op of na 13 maart 2024 zijn.",
         )
 
     def test_max_date_fixed_value(self):
@@ -355,7 +355,7 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="01-01-2025",
             api_value="2025-01-01",
-            expected_ui_error="De datum moet op of voor 2024-03-13 zijn.",
+            expected_ui_error="De datum moet op of voor 13 maart 2024 zijn.",
         )
 
 
