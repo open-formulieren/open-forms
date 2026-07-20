@@ -21,13 +21,13 @@ const OverigeFields = ({index}) => {
         required
         label={
           <FormattedMessage
-            description="ZGW APIs registration options 'overigeData' label"
-            defaultMessage="Overige data"
+            description="ZGW APIs registration options 'caseObjectIdentification.overigeData' label"
+            defaultMessage="Other data"
           />
         }
         helpText={
           <FormattedMessage
-            description="ZGW APIs registration options 'overigeData' help text"
+            description="ZGW APIs registration options 'caseObjectIdentification.overigeData' help text"
             defaultMessage={`Data for the 'overige' case object in a free format. You can use form variables here.`}
           />
         }
@@ -64,7 +64,7 @@ const CaseObjectType = ({index, options}) => {
         helpText={
           <FormattedMessage
             description="ZGW APIs registration options 'caseObjectType' help text"
-            defaultMessage={`Type of the case object. Now only 'overige' value is supported.`}
+            defaultMessage={`Type of the case object. Currently only the value 'overige' is supported.`}
           />
         }
       >
@@ -99,7 +99,7 @@ const CaseObjectTypeOverige = ({index}) => {
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'caseObjectTypeOverige' label"
-            defaultMessage="Object type description"
+            defaultMessage="Object type 'other' description"
           />
         }
         helpText={

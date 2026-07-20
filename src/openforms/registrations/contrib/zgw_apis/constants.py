@@ -8,4 +8,4 @@ class SummaryDocumentChoices(models.TextChoices):
 
 
 class CaseObjectTypeChoices(models.TextChoices):
-    overige = "overige", _("Overige")
+    overige = "overige", _("Other")
