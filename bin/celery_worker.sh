@@ -10,6 +10,7 @@ WORKER_NAME=${CELERY_WORKER_NAME:="${QUEUE}"@%n}
 
 # Set defaults for OTEL
 export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-worker-"${QUEUE}"}"
+export CELERY_WORKER_MAX_TASKS_PER_CHILD=${CELERY_WORKER_MAX_TASKS_PER_CHILD:-100}
 
 echo "Starting celery worker $WORKER_NAME with queue $QUEUE"
 # unset this if NOT using a process pool
