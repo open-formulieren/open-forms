@@ -113,22 +113,15 @@ def extract_variables_from_template_properties(component: Component) -> set[str]
     Extract all variables used in the template expressions of the relevant properties.
 
     Relevant properties: label, groupLabel, legend, defaultValue, description, html,
-    placeholder, and tooltip.
+    placeholder, tooltip, data (select), values (radio and selectboxes).
 
     :param component: Component to extract variables from.
     :return: Set of variable names, empty if no variables were extracted.
     """
     variables: set[str] = set()
     for _property_name, property_value in iter_template_properties(component):
-        match property_value:
-            case str():
-                variables.update(extract_variables_used(property_value))
-            case [str(), *_]:
-                # Value could be a list of expressions because of
-                # `multiple: True`.
-                for v in property_value:
-                    variables.update(extract_variables_used(v))
-            case _:
-                pass
+        recursively_apply_function(
+            property_value, lambda v: variables.update(extract_variables_used(v))
+        )
 
     return variables

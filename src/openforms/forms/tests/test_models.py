@@ -627,6 +627,52 @@ class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
         )
         self.assertTrue(step.is_backend_logic_evaluation_required)
 
+    def test_template_expression_in_select_component_options(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "select",
+                        "key": "select",
+                        "label": "Select",
+                        "openForms": {"dataSrc": "manual"},
+                        "data": {
+                            "values": [
+                                {
+                                    "value": "a",
+                                    "label": "{% if someVar == 'foo' %}A{% else %}Not A{% endif %}",
+                                },
+                                {"value": "b", "label": "B"},
+                            ]
+                        },
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
+    def test_template_expression_in_radio_component_options(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "openForms": {"dataSrc": "manual"},
+                        "values": [
+                            {
+                                "value": "a",
+                                "label": "{% if someVar == 'foo' %}A{% else %}Not A{% endif %}",
+                            },
+                            {"value": "b", "label": "B"},
+                        ],
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
 
 class FormLogicTests(TestCase):
     def test_block_form_logic_trigger_step_other_form(self):
