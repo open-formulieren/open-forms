@@ -2913,18 +2913,6 @@
       "value": "Affixes"
     }
   ],
-  "M4Kbw3": [
-    {
-      "type": 0,
-      "value": "Data for the 'overige' case object in a free format. You can use form variables here."
-    }
-  ],
-  "M765u8": [
-    {
-      "type": 0,
-      "value": "Object type description"
-    }
-  ],
   "M8nTet": [
     {
       "type": 0,
@@ -4461,12 +4449,6 @@
       "value": " attribute"
     }
   ],
-  "aE4IrY": [
-    {
-      "type": 0,
-      "value": "Overige data"
-    }
-  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -5003,6 +4985,12 @@
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "dQxy1P": [
+    {
+      "type": 0,
+      "value": "Data for the 'overige' case object in a free format. You can use form variables here."
     }
   ],
   "dV8M5q": [
@@ -7173,6 +7161,12 @@
       "value": "Error"
     }
   ],
+  "uWdt+2": [
+    {
+      "type": 0,
+      "value": "Type of the case object. Currently only the value 'overige' is supported."
+    }
+  ],
   "uaHUFc": [
     {
       "type": 0,
@@ -7303,12 +7297,6 @@
     {
       "type": 0,
       "value": "Custom error messages"
-    }
-  ],
-  "vhmWn1": [
-    {
-      "type": 0,
-      "value": "Type of the case object. Now only 'overige' value is supported."
     }
   ],
   "viEfGU": [
@@ -7451,6 +7439,12 @@
     {
       "type": 0,
       "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+    }
+  ],
+  "wqYvPU": [
+    {
+      "type": 0,
+      "value": "Other data"
     }
   ],
   "wqhr+0": [
@@ -7687,6 +7681,12 @@
     {
       "type": 0,
       "value": "Maximum height"
+    }
+  ],
+  "yxcU+O": [
+    {
+      "type": 0,
+      "value": "Object type 'other' description"
     }
   ],
   "z0FW+t": [

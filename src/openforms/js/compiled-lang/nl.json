@@ -2900,18 +2900,6 @@
       "value": "Voorvoegsels"
     }
   ],
-  "M4Kbw3": [
-    {
-      "type": 0,
-      "value": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken."
-    }
-  ],
-  "M765u8": [
-    {
-      "type": 0,
-      "value": "Beschrijving van het objecttype"
-    }
-  ],
   "M8nTet": [
     {
       "type": 0,
@@ -4445,12 +4433,6 @@
       "value": "-attribuut"
     }
   ],
-  "aE4IrY": [
-    {
-      "type": 0,
-      "value": "Overige data"
-    }
-  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -4991,6 +4973,12 @@
     {
       "type": 0,
       "value": "Annuleren"
+    }
+  ],
+  "dQxy1P": [
+    {
+      "type": 0,
+      "value": "Gegevens voor het 'overige' objecttype in een vrije indeling. Je kunt hier formuliervariabelen gebruiken."
     }
   ],
   "dV8M5q": [
@@ -7157,6 +7145,12 @@
       "value": "Fout"
     }
   ],
+  "uWdt+2": [
+    {
+      "type": 0,
+      "value": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund."
+    }
+  ],
   "uaHUFc": [
     {
       "type": 0,
@@ -7287,12 +7281,6 @@
     {
       "type": 0,
       "value": "Foutmeldingen"
-    }
-  ],
-  "vhmWn1": [
-    {
-      "type": 0,
-      "value": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund."
     }
   ],
   "viEfGU": [
@@ -7435,6 +7423,12 @@
     {
       "type": 0,
       "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden."
+    }
+  ],
+  "wqYvPU": [
+    {
+      "type": 0,
+      "value": "Overige data"
     }
   ],
   "wqhr+0": [
@@ -7671,6 +7665,12 @@
     {
       "type": 0,
       "value": "Maximale hoogte"
+    }
+  ],
+  "yxcU+O": [
+    {
+      "type": 0,
+      "value": "Beschrijving van het 'overige' objecttype"
     }
   ],
   "z0FW+t": [
