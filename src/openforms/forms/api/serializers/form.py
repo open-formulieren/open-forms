@@ -701,10 +701,8 @@ class FormImportSerializer(serializers.Serializer):
         choices=ReusableFormDefinitionsOptions.choices,
         help_text=_(
             "Whether to reuse existing form definitions or create new ones for each "
-            "form definition in the import file. "
-            "To determine whether a form definition is a duplicate, the title and "
-            "configuration are compared. If no comparable form definition exists, a new "
-            "form definition is created regardless of the choice."
+            "form definition in the import file. If no similar form definition exists, "
+            "a new form definition is created."
         ),
     )
     links_to_unknown_domains = serializers.ChoiceField(
