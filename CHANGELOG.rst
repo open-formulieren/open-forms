@@ -14,6 +14,22 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.4.11 (2026-07-20)
+===================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.4.5, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6082`] Fixed creating a digital address in Open Klant for one-time use from
+  existing (but non-default) customer profile addresses.
+* [:backend:`6155`] Fixed missing registry hooks for ``customerProfile`` component.
+* [:backend:`6113`, :backend:`5730`] Fixed broken table markup on introduction page
+  and/or start page.
+* [Sentry#482931] Fixed type error when session data contains ``None``.
+* [:backend:`6447`] Fixed visibility calculation during formio validation in editgrid
+  components.
+
 3.4.10 (2026-06-19)
 ===================
 
