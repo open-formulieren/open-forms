@@ -1476,7 +1476,10 @@ paths:
       - forms
       requestBody:
         content:
-          '*/*':
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormImport'
+          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/FormImport'
         required: true
@@ -6860,6 +6863,22 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AdditionalFormConfigurationEnum:
+      enum:
+      - product
+      - wmsTileLayers
+      - wmtsTileLayers
+      - yiviAttributeGroups
+      - theme
+      - category
+      type: string
+      description: |-
+        * `product` - Product
+        * `wmsTileLayers` - WMS-tile layers
+        * `wmtsTileLayers` - WMTS-tile layers
+        * `yiviAttributeGroups` - Yivi attribute groups
+        * `theme` - Theme
+        * `category` - Category
     AddressSearchResult:
       type: object
       properties:
@@ -8073,6 +8092,18 @@ components:
           title: authentication backend options
       required:
       - backend
+    FormConfigurationEnum:
+      enum:
+      - registrationBackends
+      - prefill
+      - paymentBackend
+      - authBackends
+      type: string
+      description: |-
+        * `registrationBackends` - Registration backends
+        * `prefill` - Prefill
+        * `paymentBackend` - Payment backend
+        * `authBackends` - Authentication backends
     FormData:
       type: object
       properties:
@@ -8388,6 +8419,35 @@ components:
           format: uri
           description: The file that contains the form, form definitions and form
             steps.
+        formConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormConfigurationEnum'
+          description: Which form configuration should be included in the export file
+            content.
+        reusableFormDefinitions:
+          allOf:
+          - $ref: '#/components/schemas/ReusableFormDefinitionsEnum'
+          description: |-
+            Whether to reuse existing form definitions or create new ones for each form definition in the import file. If no similar form definition exists, a new form definition is created.
+
+            * `reuseExisting` - Reuse existing form definitions
+            * `createNew` - Create all new form definitions
+        linksToUnknownDomains:
+          allOf:
+          - $ref: '#/components/schemas/LinksToUnknownDomainsEnum'
+          description: |-
+            What to do with links in email templates to domains that are not accepted in the global configuration.
+
+            * `ignore` - Keep links to unknown domains as-is
+            * `remove` - Remove the links to unknown domains
+            * `accept` - Accept all unknown domains
+        additionalFormConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalFormConfigurationEnum'
+          description: Which additional form configuration should be included in the
+            export file content.
       required:
       - file
     FormImportResponse:
@@ -9287,6 +9347,16 @@ components:
       required:
       - lat
       - lng
+    LinksToUnknownDomainsEnum:
+      enum:
+      - ignore
+      - remove
+      - accept
+      type: string
+      description: |-
+        * `ignore` - Keep links to unknown domains as-is
+        * `remove` - Remove the links to unknown domains
+        * `accept` - Accept all unknown domains
     Location:
       type: object
       properties:
@@ -10423,6 +10493,14 @@ components:
       description: |-
         * `failed` - Failed, should return to the start of the form.
         * `success` - Success, proceed to confirmation page.
+    ReusableFormDefinitionsEnum:
+      enum:
+      - reuseExisting
+      - createNew
+      type: string
+      description: |-
+        * `reuseExisting` - Reuse existing form definitions
+        * `createNew` - Create all new form definitions
     RijksDriehoek:
       type: object
       properties:
