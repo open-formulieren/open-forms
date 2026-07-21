@@ -55,7 +55,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
     && rm -rf /tmp/node/bin/npm /tmp/node/lib/node_modules
 
 # Stage 2 - Install frontend deps and build assets
-FROM node:20-bookworm-slim AS frontend-build
+FROM node:24-bookworm-slim AS frontend-build
 
 WORKDIR /app
 
