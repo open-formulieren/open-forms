@@ -199,25 +199,27 @@ def get_component_empty_value(component: AnyComponent | Component) -> JSONValue:
     attributes={"span.type": "app", "span.subtype": "formio"},
 )
 def get_dynamic_configuration(
-    config_wrapper: FormioConfigurationWrapper,
+    config: FormioConfig,
     submission: Submission,
     data: FormioData | None = None,
-) -> FormioConfigurationWrapper:
+) -> FormioConfig:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
 
     The configuration is modified in the context of the provided ``submission``
     parameter.
     """
+    assert isinstance(config, FormioConfig), "INVALID CALL SITE"
+
     # Avoid circular imports
     from openforms.prefill.service import inject_prefill
 
-    rewrite_formio_components(config_wrapper, submission=submission, data=data)
+    rewrite_formio_components(config, submission=submission, data=data)
 
     # Add to each component the custom errors in the current locale
-    get_translated_custom_error_messages(config_wrapper, submission.language_code)
+    get_translated_custom_error_messages(config, submission.language_code)
     localize_components(
-        config_wrapper,
+        config,
         submission.language_code,
         enabled=submission.form.translation_enabled,
     )
@@ -228,12 +230,9 @@ def get_dynamic_configuration(
     # the default value key and then pass it through :func:`inject_variables`. However,
     # this is still complicated in the form designer for non-text input defaults such
     # as checkboxes/dropdowns/radios/...
-    inject_prefill(config_wrapper, submission)
+    inject_prefill(config, submission)
 
-    # reset cache... the hooks above mutate stuff and references are broken that way.
-    # TODO: fix before merging msgspec branch!
-    config_wrapper._cached_component_map = None
-    return config_wrapper
+    return config
 
 
 def build_serializer(

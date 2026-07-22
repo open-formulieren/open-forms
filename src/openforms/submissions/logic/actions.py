@@ -19,7 +19,6 @@ from formio_types import AnyComponent, Children
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
     FormioConfig,
-    FormioConfigurationWrapper,
     FormioData,
     process_visibility,
 )
@@ -138,9 +137,7 @@ class ActionOperation:
         """
         raise NotImplementedError()
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         """
         Implements the side effects of the action operation.
         """
@@ -195,12 +192,12 @@ class PropertyAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
-        if self.component not in configuration:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
+        if self.component not in config:
             return None
-        component = configuration[self.component]
+        component = config[self.component]
+        # FIXME
+        # breakpoint()
         assign(component, self.property_name, self.value, missing=dict)
 
     def eval(
@@ -282,9 +279,7 @@ class DisableNextAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         assert step.form_step is not None
         if str(step.form_step.uuid) == self.form_step_identifier:
             step.can_submit = False
@@ -327,9 +322,7 @@ class StepNotApplicableAction(ActionOperation):
         # `SubmissionStepViewSet.update`.
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         execution_state = (
             step.submission.load_execution_state()
         )  # typically cached already
@@ -380,9 +373,7 @@ class StepApplicableAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         execution_state = (
             step.submission.load_execution_state()
         )  # typically cached already
@@ -812,9 +803,7 @@ class SetRegistrationBackendAction(ActionOperation):
         # this action does not influence any submission data while filling out the form.
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         step.submission.finalised_registration_backend_key = (
             self.registration_backend_key
         )

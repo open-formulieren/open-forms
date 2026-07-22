@@ -8,11 +8,12 @@ from opentelemetry import trace
 from openforms.formio.datastructures import FormioConfig
 from openforms.formio.service import (
     FormioData,
+    dump_to_legacy,
     get_dynamic_configuration,
     inject_variables,
     process_visibility,
 )
-from openforms.formio.typing import FormioConfiguration
+from openforms.formio.typing import Component, FormioConfiguration
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -84,8 +85,6 @@ def evaluate_form_logic(
     """
     # grab the configuration that will be mutated
     assert step.form_step is not None
-    # dual wielding mode! until we can fully replace the non-msgspec datastructure
-    config_wrapper = step.form_step.form_definition.configuration_wrapper
     formio_config = step.form_step.form_definition.formio_config
     assert isinstance(formio_config, FormioConfig)
     # 1. we have `submission` and `step` available and ...
@@ -97,7 +96,8 @@ def evaluate_form_logic(
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
-        return config_wrapper.configuration
+        components: list[Component] = dump_to_legacy(formio_config.components)
+        return {"components": components}
 
     # 3. Load the (variables) state
     submission_variables_state = submission.variables_state
@@ -143,7 +143,7 @@ def evaluate_form_logic(
 
     # 6. Evaluate the logic rules in order
     rules = get_rules_to_evaluate(submission, step)
-    mutation_operations = []
+    mutation_operations: list[ActionOperation] = []
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules.
@@ -170,18 +170,18 @@ def evaluate_form_logic(
 
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
-    config_wrapper = get_dynamic_configuration(
-        config_wrapper,
+    formio_config = get_dynamic_configuration(
+        formio_config,
         submission=submission,
         data=data_for_evaluation,
     )
 
     # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
-        mutation.apply(step, config_wrapper)
+        mutation.apply(step, formio_config)
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_for_evaluation)
+    inject_variables(formio_config, data_for_evaluation)
 
     # 7.3 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
@@ -210,7 +210,8 @@ def evaluate_form_logic(
 
     step._form_logic_evaluated = True
 
-    return config_wrapper.configuration
+    components: list[Component] = dump_to_legacy(formio_config.components)
+    return {"components": components}
 
 
 def evaluate_conditional_logic(config: FormioConfig, data: FormioData):
