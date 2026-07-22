@@ -1415,16 +1415,6 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
-  "M4Kbw3": {
-    "defaultMessage": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken.",
-    "description": "ZGW APIs registration options 'overigeData' help text",
-    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
-  },
-  "M765u8": {
-    "defaultMessage": "Beschrijving van het objecttype",
-    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
-    "originalDefault": "Object type description"
-  },
   "M8nTet": {
     "defaultMessage": "Geeft aan of de gebruiker het formulier kan verzenden en of de overzichtspagina getoond wordt als het formulier niet verzonden kan worden. Inzenden is altijd toegestaan voor de `enkele stap` formulieren.",
     "description": "Form submissionAllowed field help text",
@@ -2149,11 +2139,6 @@
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
   },
-  "aE4IrY": {
-    "defaultMessage": "Overige data",
-    "description": "ZGW APIs registration options 'overigeData' label",
-    "originalDefault": "Overige data"
-  },
   "aXJpiI": {
     "defaultMessage": "Dit veld is verplicht.",
     "description": "Field required error",
@@ -2345,6 +2330,11 @@
     "defaultMessage": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de {catalogueLabel, select, empty {ingestelde} other {''{catalogueLabel}''} } catalogus en {caseType, select, empty {gekozen} other {''{caseType}''} } zaaktype in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
+  },
+  "dQxy1P": {
+    "defaultMessage": "Gegevens voor het 'overige' objecttype in een vrije indeling. Je kunt hier formuliervariabelen gebruiken.",
+    "description": "ZGW APIs registration options 'caseObjectIdentification.overigeData' help text",
+    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
   },
   "dV8M5q": {
     "defaultMessage": "Een herkenbare naam voor deze plugin en configuratie.",
@@ -3354,6 +3344,11 @@
     "description": "JSON registration options 'path' helpText",
     "originalDefault": "Path relative to the Service API root."
   },
+  "uWdt+2": {
+    "defaultMessage": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund.",
+    "description": "ZGW APIs registration options 'caseObjectType' help text",
+    "originalDefault": "Type of the case object. Currently only the value 'overige' is supported."
+  },
   "uaHUFc": {
     "defaultMessage": "Geboortedatum",
     "description": "Synchronize action, children component, dateOfBirth property label",
@@ -3403,11 +3398,6 @@
     "defaultMessage": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de {catalogueLabel, select, empty {ingestelde} other {''{catalogueLabel}''} } catalogus in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
-  },
-  "vhmWn1": {
-    "defaultMessage": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund.",
-    "description": "ZGW APIs registration options 'caseObjectType' help text",
-    "originalDefault": "Type of the case object. Now only 'overige' value is supported."
   },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -3473,6 +3463,11 @@
     "defaultMessage": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden.",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
     "originalDefault": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+  },
+  "wqYvPU": {
+    "defaultMessage": "Overige data",
+    "description": "ZGW APIs registration options 'caseObjectIdentification.overigeData' label",
+    "originalDefault": "Other data"
   },
   "x+ORaW": {
     "defaultMessage": "Deactiveren op",
@@ -3581,6 +3576,11 @@
     "defaultMessage": "Kinderen-omschrijving",
     "description": "ZGW APIs registration options 'childrenDescription' label",
     "originalDefault": "Children description"
+  },
+  "yxcU+O": {
+    "defaultMessage": "Beschrijving van het 'overige' objecttype",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type 'other' description"
   },
   "z0FW+t": {
     "defaultMessage": "Veldnaam",

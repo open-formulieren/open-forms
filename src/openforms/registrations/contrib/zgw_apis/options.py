@@ -102,7 +102,7 @@ class FileComponentOptionsSerializer(serializers.Serializer):
 
 class ObjectOverigeSerializer(serializers.Serializer):
     overige_data = serializers.CharField(
-        label=_("Overige data"),
+        label=_("Other data"),
         help_text=_(
             "Data for the 'overige' object in a free format. You can use form variables here."
         ),
@@ -118,10 +118,12 @@ class CaseObjectSerializer(serializers.Serializer):
     case_object_type = serializers.ChoiceField(
         label=_("Case object type"),
         choices=CaseObjectTypeChoices.choices,
-        help_text=_("Type of the case object. Now only 'overige' value is supported."),
+        help_text=_(
+            "Type of the case object. Currently only the value 'overige' is supported."
+        ),
     )
     case_object_type_overige = serializers.CharField(
-        label=_("Case object type overige"),
+        label=_("Case object type 'other' description"),
         max_length=100,
         allow_blank=True,
         help_text=_("Description of the 'overige' case object type."),
@@ -130,7 +132,7 @@ class CaseObjectSerializer(serializers.Serializer):
         label=_("Case object identification"),
         help_text=_(
             "Data, which describes the object. The shape depends on the 'case_object_type'. "
-            "Now only 'overige' data shape is supported."
+            "Currently only the 'overige' data shape is supported."
         ),
     )
 

@@ -14,6 +14,104 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.0-alpha.2 (2026-07-22)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**Breaking changes**
+
+* [:backend:`6275`] Changed the behaviour of "clear-on-hide" in logic evaluation - values cleared
+  because the component is hidden are now completely absent from the logic evaluation context.
+  Before, they would get the component default or empty value for logic evaluation.
+* [:backend:`6164`] Removed deprecated code (please review the instructions in the documentation
+  under **Installation** > **Upgrade details to Open Forms 4.0.0** for all the necessary details):
+
+  - [:backend:`4939`] Removed legacy ``zaaktype`` and ``documenttype`` URL-based
+    configuration options for the Objects API and ZGW APIs registration plugins.
+  - [:backend:`5769`] The plugin interfaces for extensions are now private API and no longer
+    subject to our semantic versioning policy.
+
+**New features**
+
+* [:backend:`5764`] Single step forms:
+
+  - [:backend:`6350`] Added option to hide the form title.
+  - [:backend:`6398`] Added the ``form_url`` static variable, containing metadata about where a
+    form submission was started.
+  - [:backend:`6399`] Single step forms can now change variable values and evaluate DMN using logic
+    actions.
+
+* [:backend:`6281`] Implemented import converters for file registration options.
+* [:backend:`6343`] You can now add 'overige' case objects in the ZGW APIs registration plugin.
+* [:backend:`6380`] The ``substr`` JSON logic operator is now available in logic rules.
+* [:backend:`5377`] Exposed a lot of additional Haal Centraal BRP Personen bevragen prefill
+  attributes.
+
+**Bugfixes**
+
+* Re-introduced the ``DISABLE_2FA`` environment variable.
+* [:backend:`6254`] Fixed pre-3.5 imports of forms that contain logic rules with
+  "trigger from step" options.
+* [:backend:`6155`] Fixed missing registry hooks for ``customerProfile`` component.
+* [:backend:`6113`, :backend:`5730`] Fixed broken table markup on introduction page
+  and/or start page.
+* [Sentry#482931] Fixed type error when session data contains ``None``.
+* [:backend:`6447`] Fixed visibility calculation during formio validation in ``editgrid``
+  components.
+* [:backend:`6459`] Fixed templating usage in ``radio``, ``select`` and ``selectboxes`` components.
+
+**Project maintenance**
+
+* Updated upgrade check to require version 3.5.4 before upgrading to 4.0.0.
+* [:backend:`6126`] Hardened CI workflows to protect against supply chain attacks.
+* Updated 4.0.0 upgrade notes and form documentation.
+* Added Open Forms branding to the admin interface.
+* Added protections to prevent admin users from modifying their own permissions when they can
+  manage (other) admin users.
+* Updated backend dependencies to their latest versions:
+
+  - django
+  - lxml
+  - lxml-html-clean
+  - maykin-json-logic-py
+  - pydantic-settings
+  - pytz
+  - soupsieve
+  - vcrpy
+  - weasyprint
+  - zeep
+
+* Updated frontend dependencies:
+
+  - Bumped @open-formulieren/design-tokens to 0.68.1.
+
+* Cleaned up squashed migrations for Yivi attributes, worldline and submission.
+* Disabled OAS CI action due to security concerns.
+* [:backend:`2713`] Clean up submission file attachment handling and formio configuration path
+  usage.
+* Replaced ``microscope-sass/lib/bem`` with ``@bbt/bem``.
+* Added a default for the maximum amount of tasks that may be executed by a celery worker child.
+
+**Migration tooling**
+
+* [:backend:`6304`] Added a check for inconsistent file-level registration options.
+
+  In an app container, execute:
+
+  .. code-block:: bash
+
+      # in the container via ``docker exec`` or ``kubectl exec``:
+      python /app/bin/report_file_component_inconsistent_catalogues.py
+
+* [:backend:`6275`] Updated the new clear-on-hide behaviour check script to detect
+  additional affected cases, such as DMN input variables.
+* [:backend:`6391`] Implemented UI in simple logic rules to set a fallback value for
+  possibly undefined variables in triggers.
+
 3.5.5 (2026-07-20)
 ===================
 

@@ -1404,16 +1404,6 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
-  "M4Kbw3": {
-    "defaultMessage": "Data for the 'overige' case object in a free format. You can use form variables here.",
-    "description": "ZGW APIs registration options 'overigeData' help text",
-    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
-  },
-  "M765u8": {
-    "defaultMessage": "Object type description",
-    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
-    "originalDefault": "Object type description"
-  },
   "M8nTet": {
     "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",
     "description": "Form submissionAllowed field help text",
@@ -2129,11 +2119,6 @@
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
   },
-  "aE4IrY": {
-    "defaultMessage": "Overige data",
-    "description": "ZGW APIs registration options 'overigeData' label",
-    "originalDefault": "Overige data"
-  },
   "aXJpiI": {
     "defaultMessage": "This field is required.",
     "description": "Field required error",
@@ -2323,6 +2308,11 @@
     "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
+  },
+  "dQxy1P": {
+    "defaultMessage": "Data for the 'overige' case object in a free format. You can use form variables here.",
+    "description": "ZGW APIs registration options 'caseObjectIdentification.overigeData' help text",
+    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
   },
   "dV8M5q": {
     "defaultMessage": "A recognisable name for this backend configuration.",
@@ -3329,6 +3319,11 @@
     "description": "JSON registration options 'path' helpText",
     "originalDefault": "Path relative to the Service API root."
   },
+  "uWdt+2": {
+    "defaultMessage": "Type of the case object. Currently only the value 'overige' is supported.",
+    "description": "ZGW APIs registration options 'caseObjectType' help text",
+    "originalDefault": "Type of the case object. Currently only the value 'overige' is supported."
+  },
   "uaHUFc": {
     "defaultMessage": "Date of birth",
     "description": "Synchronize action, children component, dateOfBirth property label",
@@ -3378,11 +3373,6 @@
     "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
-  },
-  "vhmWn1": {
-    "defaultMessage": "Type of the case object. Now only 'overige' value is supported.",
-    "description": "ZGW APIs registration options 'caseObjectType' help text",
-    "originalDefault": "Type of the case object. Now only 'overige' value is supported."
   },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
@@ -3448,6 +3438,11 @@
     "defaultMessage": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
     "originalDefault": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+  },
+  "wqYvPU": {
+    "defaultMessage": "Other data",
+    "description": "ZGW APIs registration options 'caseObjectIdentification.overigeData' label",
+    "originalDefault": "Other data"
   },
   "x+ORaW": {
     "defaultMessage": "Deactivate on",
@@ -3553,6 +3548,11 @@
     "defaultMessage": "Children description",
     "description": "ZGW APIs registration options 'childrenDescription' label",
     "originalDefault": "Children description"
+  },
+  "yxcU+O": {
+    "defaultMessage": "Object type 'other' description",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type 'other' description"
   },
   "z0FW+t": {
     "defaultMessage": "Field name",
