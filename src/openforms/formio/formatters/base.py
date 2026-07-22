@@ -71,9 +71,9 @@ class FormatterBase[T: AnyComponent]:
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 
-        formatted_values = list(
+        formatted_values = [
             force_str(self.format(component, value)) for value in values
-        )
+        ]
 
         # Check if formatted_values isn't empty
         if len(formatted_values) == 0:

@@ -70,6 +70,12 @@ class PreRegistrationHookProtocol[ComponentT: AnyComponent](Protocol):
     ) -> ComponentPreRegistrationResult: ...
 
 
+class TemplateCallbackError(Exception):
+    def __init__(self, property_path: str, *args, **kwargs):
+        self.property_path = property_path
+        super().__init__(*args, **kwargs)
+
+
 class BasePlugin[ComponentT: AnyComponent](AbstractBasePlugin, abc.ABC):
     """
     Base class for Formio component plugins.

@@ -103,6 +103,7 @@ include = [
     "src/openforms/submissions/logic/actions.py",
     "src/openforms/submissions/metrics.py",
     "src/openforms/submissions/query.py",
+    "src/openforms/submissions/rendering/nodes.py",
     "src/openforms/submissions/report.py",
     "src/openforms/submissions/tests/form_logic/test_get_rules_to_evaluate.py",
     "src/openforms/submissions/tests/form_logic/test_rule_analysis.py",

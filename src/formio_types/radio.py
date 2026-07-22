@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Collection, Iterator, Mapping, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from typing import ClassVar, Literal, assert_never
 
 import msgspec
@@ -14,7 +14,6 @@ from ._base import (
     FormioStruct,
     Option,
     Registration,
-    TemplatableValue,
     TranslatedErrors,
 )
 
@@ -101,8 +100,3 @@ class Radio(Component, tag="radio"):
                     # self.values = []
             case _:
                 assert_never(self.open_forms.data_src)
-
-    def iter_template_attributes(self) -> Iterator[tuple[str, TemplatableValue]]:
-        yield from super().iter_template_attributes()
-        # FIXME: this does not support mutation yet, only parsing/validation
-        yield ("values", msgspec.to_builtins(self.values))

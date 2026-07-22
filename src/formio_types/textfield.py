@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Sequence
-from typing import Annotated, ClassVar, Literal
+from collections.abc import Callable, Sequence
+from typing import Annotated, Literal, assert_never
 
 import msgspec
 
@@ -15,6 +15,7 @@ from ._base import (
     Registration,
     TranslatedErrors,
 )
+from ._templating import TestWithTrace
 
 type TextfieldValidatorKeys = Literal["required", "maxLength", "pattern"]
 
@@ -61,10 +62,6 @@ class TextField(Component, tag="textfield"):
     validate_on: Literal["blur", "change"] = "blur"
     multiple: bool = False
 
-    SUPPORTED_TEMPLATE_ATTRIBUTES: ClassVar[Collection[str]] = frozenset(
-        ("label", "description", "placeholder", "tooltip", "default_value")
-    )
-
     def __post_init__(self):
         match (self.multiple, self.default_value):
             case True, str():
@@ -75,3 +72,31 @@ class TextField(Component, tag="textfield"):
                 raise ValueError(
                     "You must pass a string default_value when multiple=False"
                 )
+
+    def render_templates(self, do_render: Callable[[str], str]) -> None:
+        self.label = do_render(self.label)
+        self.description = do_render(self.description)
+        self.placeholder = do_render(self.placeholder)
+        self.tooltip = do_render(self.tooltip)
+
+        match self.default_value:
+            case str():
+                self.default_value = do_render(self.default_value)
+            case Sequence():
+                self.default_value = [do_render(v) for v in self.default_value]
+            case _:  # pragma: no cover
+                assert_never(self.default_value)
+
+    def test_templates(self, test_with_trace: TestWithTrace) -> None:
+        test_with_trace(self.label, attribute="label")
+        test_with_trace(self.description, attribute="description")
+        test_with_trace(self.placeholder, attribute="placeholder")
+        test_with_trace(self.tooltip, attribute="tooltip")
+
+        normalized = (
+            self.default_value
+            if isinstance(self.default_value, Sequence)
+            else [self.default_value]
+        )
+        for _value in normalized:
+            test_with_trace(_value or "", attribute="default_value")

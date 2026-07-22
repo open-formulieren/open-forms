@@ -7,6 +7,7 @@ import msgspec
 from typing_extensions import TypeIs
 
 from ._base import Component, Option
+from ._templating import get_template_trace_context
 from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
@@ -81,6 +82,8 @@ __all__ = [
     "SoftRequiredErrors",
     # deprecated
     "CosignV1",
+    # templating helpers
+    "get_template_trace_context",
 ]
 
 # Component types - these cannot be split into the layout modules due to circular

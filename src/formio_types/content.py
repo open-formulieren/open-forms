@@ -14,7 +14,7 @@ ContentExtensions = BaseOpenFormsExtensions[ContentTranslatableProperties]
 
 class Content(Component, tag="content"):
     conditional: Conditional | None = None
-    custom_class: Literal["", "error", "success", "info", "warning"] = ""
+    custom_class: Literal["", "error", "success", "info", "warning"] | None = ""
     hidden: bool = False
     html: str
     is_sensitive_data: bool = False  # TODO: remove from TS types - is irrelevant
