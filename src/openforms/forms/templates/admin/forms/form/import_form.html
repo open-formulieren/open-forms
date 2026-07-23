@@ -2,6 +2,7 @@
 {% load static i18n django_admin_index %}
 
 {% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
 <link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
 
 {% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
@@ -23,9 +24,30 @@
             <div>
                 <fieldset class="module aligned ">
                     {% csrf_token %}
-                    {% for field in form %}
-                        {{ field.label.capitalize }}: {{ field }}<br/>
-                        {{ field.help_text }}<br/><br/>
+
+                    {% for field in form.visible_fields %}
+                        <div class="form-row {% if field.errors %} errors{% endif %}">
+                            {{ field.errors }}
+                            <div class="flex-container {% if field.field.widget.input_type == 'checkbox' and field|length == 1 %}checkbox-row{% endif %} {% if field.errors %}errors{% endif %}">
+                                {{ field.label_tag }}
+
+                                {% if field|length == 1 %}
+                                    {{ field }}
+                                {% else %}
+                                    <ul {% if field.id_for_label %} id="{{ field.id_for_label }}"{% endif %}>
+                                        {% for subfield in field %}
+                                            <li>{{ subfield }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+
+                            {% if field.help_text %}
+                                <div class="help" {% if field.id_for_label %} id="{{ field.id_for_label }}_helptext"{% endif %}>
+                                    <div>{{ field.help_text|safe }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </fieldset>
 

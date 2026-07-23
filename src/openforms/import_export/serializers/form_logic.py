@@ -1,5 +1,9 @@
 from openforms.forms.api.serializers import FormLogicSerializer
-from openforms.import_export.serializers.base import BaseExportSerializer
+from openforms.forms.constants import LogicActionTypes
+from openforms.import_export.serializers.base import (
+    BaseExportSerializer,
+    BaseImportSerializer,
+)
 
 
 class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
@@ -22,3 +26,37 @@ class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
                 action["action"]["value"] = ""
 
         return representation
+
+
+class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if "order" not in value:
+            value["order"] = 0
+
+        if "service_fetch_configuration" in value:
+            # The transferring between systems case is very tricky
+            # better not import these, we don't know where this came from.
+            # services and ids may point to different things
+            # in different OF instances.
+            # @TODO should not happen by version restore
+            del value["service_fetch_configuration"]
+
+        self.clear_old_service_fetch_config(value)
+
+        return super().to_internal_value(value)
+
+    def clear_old_service_fetch_config(self, rule: dict) -> None:
+        for action in rule["actions"]:
+            if action["action"]["type"] != LogicActionTypes.fetch_from_service:
+                continue
+
+            if "value" not in action["action"] or action["action"]["value"] == "":
+                continue
+
+            # See comment in FormVariableImportSerializer `to_internal_value` where we
+            # check if the variable has a `service_fetch_configuration` attribute.
+            # We can't reliably relate the service fetch configured to an existing configuration.
+            # So we don't add any existing service fetch config to the variables
+            action["action"]["value"] = ""

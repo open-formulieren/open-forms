@@ -5,9 +5,14 @@ from .base import BaseResource
 
 
 class WMSTileLayerResource(BaseResource):
+    deep_comparison_fields = ("name", "url")
+
     class Meta:
         model = MapWMSTileLayer
+        import_id_fields = ("uuid",)
         fields = ("uuid", "name", "url")
+        store_instance = True
+        store_row_values = True
 
     def export_for_form(self, form: Form):
         wms_tile_layers = []

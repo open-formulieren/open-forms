@@ -5,8 +5,11 @@ from .base import BaseResource
 
 
 class ThemeResource(BaseResource):
+    deep_comparison_fields = ("name", "organization_name", "main_website")
+
     class Meta:
         model = Theme
+        import_id_fields = ("uuid",)
         fields = (
             "uuid",
             "name",
@@ -19,6 +22,8 @@ class ThemeResource(BaseResource):
             "stylesheet_file",
             "design_token_values",
         )
+        store_instance = True
+        store_row_values = True
 
     def export_for_form(self, form: Form):
         return self.export(queryset=[form.theme] if form.theme is not None else [])

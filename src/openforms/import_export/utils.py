@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import tablib
+
 from openforms.forms.models import Form
 from openforms.typing import JSONObject
 
@@ -12,40 +14,44 @@ from .resources import (
     WMTSTileLayerResource,
     YiviAttributeGroupResource,
 )
-from .typing import AdditionalFormConfigurationOptions, FormExportOptions
+from .typing import (
+    AdditionalFormConfigurationOptions,
+    FormExportOptions,
+    FormImportOptions,
+)
 
 
 @dataclass(frozen=True)
-class ExportResourceConfig:
+class ResourceConfig:
     resource: type[BaseResource]
     output_name: str
 
 
 ADDITIONAL_FORM_CONFIGURATION_RESOURCES: dict[
     AdditionalFormConfigurationOptions,
-    ExportResourceConfig,
+    ResourceConfig,
 ] = {
-    AdditionalFormConfigurationOptions.product: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.product: ResourceConfig(
         resource=ProductResource,
         output_name="product",
     ),
-    AdditionalFormConfigurationOptions.theme: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.theme: ResourceConfig(
         resource=ThemeResource,
         output_name="theme",
     ),
-    AdditionalFormConfigurationOptions.category: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.category: ResourceConfig(
         resource=CategoryResource,
         output_name="category",
     ),
-    AdditionalFormConfigurationOptions.wms_tile_layers: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.wms_tile_layers: ResourceConfig(
         resource=WMSTileLayerResource,
         output_name="wmsTileLayers",
     ),
-    AdditionalFormConfigurationOptions.wmts_tile_layers: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.wmts_tile_layers: ResourceConfig(
         resource=WMTSTileLayerResource,
         output_name="wmtsTileLayers",
     ),
-    AdditionalFormConfigurationOptions.yivi_attribute_groups: ExportResourceConfig(
+    AdditionalFormConfigurationOptions.yivi_attribute_groups: ResourceConfig(
         resource=YiviAttributeGroupResource,
         output_name="yiviAttributeGroups",
     ),
@@ -77,3 +83,35 @@ def get_additional_form_configuration_data(
             resources[config.output_name] = config.resource().export_for_form(form).json
 
     return resources
+
+
+def import_additional_form_configuration_data(
+    resources: JSONObject,
+    import_options: FormImportOptions,
+    uuid_mapping=dict[str, str],
+):
+    if import_options is None:
+        return
+
+    selected_options = set(import_options.additional_form_configuration)
+    unknown_options = selected_options - set(ADDITIONAL_FORM_CONFIGURATION_RESOURCES)
+
+    if unknown_options:
+        raise ValueError(
+            f"Invalid additional form configuration option(s): {unknown_options}"
+        )
+
+    for option, config in ADDITIONAL_FORM_CONFIGURATION_RESOURCES.items():
+        if option in selected_options and config.output_name in resources:
+            dataset = tablib.Dataset().load(resources[config.output_name], "json")
+            results = config.resource().import_data(dataset)
+
+            for row_result in results:
+                old_uuid = row_result.row_values.get("uuid")
+
+                if row_result.is_skip() and hasattr(row_result.original, "uuid"):
+                    uuid_mapping[old_uuid] = str(row_result.original.uuid)
+
+                elif row_result.is_new() and row_result.instance:
+                    if hasattr(row_result.instance, "uuid"):
+                        uuid_mapping[old_uuid] = str(row_result.instance.uuid)

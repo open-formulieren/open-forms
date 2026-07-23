@@ -4,18 +4,27 @@ import zipfile
 from pathlib import Path
 from shutil import rmtree
 from textwrap import dedent
-from unittest.mock import patch
-from uuid import UUID
+from unittest.mock import ANY, patch
+from uuid import UUID, uuid4
 
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
+from django.utils.translation import gettext as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from freezegun import freeze_time
 from rest_framework.exceptions import ValidationError
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
+from openforms.authentication.tests.factories import AttributeGroupFactory
 from openforms.config.constants import UploadFileType
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import (
+    GlobalConfiguration,
+    MapTileLayer,
+    MapWMSTileLayer,
+    Theme,
+)
 from openforms.config.tests.factories import (
     MapTileLayerFactory,
     MapWMSTileLayerFactory,
@@ -26,12 +35,17 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.import_export.typing import (
     AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
     FormExportOptions,
+    FormImportOptions,
+    LinksToUnknownDomainsOptions,
+    ReusableFormDefinitionsOptions,
 )
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
 from openforms.prefill.constants import IdentifierRoles
+from openforms.products.models import Product
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.contrib.objects_api.config import (
     ObjectsAPIOptionsSerializer,
@@ -65,11 +79,10 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
-from ...authentication.constants import AuthAttribute
-from ...authentication.tests.factories import AttributeGroupFactory
 from ..constants import EXPORT_META_KEY
 from ..disable_next_import_conversion import add_form_step_uuid_to_disable_next_actions
 from ..models import (
+    Category,
     Form,
     FormAuthenticationBackend,
     FormDefinition,
@@ -1058,6 +1071,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                     {
                         "uuid": str(category.uuid),
                         "name": category.name,
+                        "path": category.path,
+                        "depth": str(category.depth),
                     }
                 ],
             )
@@ -1225,7 +1240,17 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ]
+            ),
+        )
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1344,7 +1369,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         export_form(form.pk, archive_name=self.filepath)
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.get()
@@ -1388,7 +1418,12 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1555,7 +1590,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         export_form(form.pk, archive_name=self.filepath)
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()
@@ -1936,7 +1976,10 @@ class ImportExportTests(TempdirMixin, TestCase):
         export_form(form.pk, archive_name=self.filepath)
 
         converters = {"textfield": {"add_foo": add_foo}}
-        with patch("openforms.forms.utils.CONVERTERS", new=converters):
+        with patch(
+            "openforms.import_export.serializers.form_definition.CONVERTERS",
+            new=converters,
+        ):
             import_form(import_file=self.filepath)
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
@@ -2423,7 +2466,12 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends]
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2495,7 +2543,12 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends]
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2543,7 +2596,15 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.auth_backends],
+                    additional_form_configuration=[
+                        AdditionalFormConfigurationOptions.yivi_attribute_groups
+                    ],
+                ),
+            )
 
         error_detail = exc.exception.detail["auth_backends"][0]["backend"][0]
 
@@ -2574,7 +2635,12 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.auth_backends],
+                ),
+            )
 
         error_detail = exc.exception.detail["auth_backends"][0]["backend"][0]
 
@@ -2616,7 +2682,15 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups
+                ],
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2675,7 +2749,15 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups
+                ],
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2725,7 +2807,15 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.auth_backends],
+                    additional_form_configuration=[
+                        AdditionalFormConfigurationOptions.yivi_attribute_groups
+                    ],
+                ),
+            )
 
         error_detail = exc.exception.detail["auth_backends"][0]["options"][
             "additional_attributes_groups"
@@ -2776,7 +2866,12 @@ class ImportExportTests(TempdirMixin, TestCase):
                 form_configuration=["registrationBackends"],
             ),
         )
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
 
         updated_form = Form.objects.last()
         registration_backend = updated_form.registration_backends.get()
@@ -2942,7 +3037,12 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
         # Import form
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.prefill],
+            ),
+        )
 
         imported_form = Form.objects.last()
         imported_steps = list(imported_form.formstep_set.all())
@@ -3022,6 +3122,1247 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(
                 rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
             )
+
+    def test_import_with_options_remove_all_unknown_domains(self):
+        config = GlobalConfiguration.get_solo()
+
+        # Start with google domain in allowlist, so we can create the initial form
+        config.email_template_netloc_allowlist = ["https://google.com", "allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["some@email.com"],
+                "email_content_template_html": "<p>test https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test https://google.com https://allowed.com test",
+            },
+        )
+        ConfirmationEmailTemplateFactory(
+            form=form,
+            subject="Test",
+            content="<p>email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+            cosign_subject="Cosign test",
+            cosign_content="<p>cosign email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
+
+        # Delete the original form to make the slug available
+        form.delete()
+
+        # Remove google domain from allowlist
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends],
+                links_to_unknown_domains=LinksToUnknownDomainsOptions.remove,
+            ),
+        )
+
+        # The email templates of the imported form should not contain the google domain
+        imported_form = Form.objects.last()
+
+        self.assertEqual(len(imported_form.registration_backends.all()), 1)
+        self.assertEqual(
+            imported_form.registration_backends.first().options,
+            {
+                "to_emails": ["some@email.com"],
+                "attach_files_to_email": None,
+                "email_content_template_html": "<p>test  <a href=''>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test  https://allowed.com test",
+            },
+        )
+
+        # The confirmation and cosign email templates should not contain the google domain
+        self.assertEqual(
+            imported_form.confirmation_email_template.content,
+            "<p>email content  <a href=''>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+        )
+        self.assertEqual(
+            imported_form.confirmation_email_template.cosign_content,
+            "<p>cosign email content  <a href=''>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+
+    def test_import_with_options_accept_all_unknown_domains(self):
+        config = GlobalConfiguration.get_solo()
+
+        # Start with google domain in allowlist, so we can create the initial form
+        config.email_template_netloc_allowlist = ["https://google.com", "allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["some@email.com"],
+                "email_content_template_html": "<p>test https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test https://google.com https://allowed.com test",
+            },
+        )
+        ConfirmationEmailTemplateFactory(
+            form=form,
+            subject="Test",
+            content="<p>email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+            cosign_subject="Cosign test",
+            cosign_content="<p>cosign email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
+
+        # Delete the original form to make the slug available
+        form.delete()
+
+        # Remove google domain from allowlist
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends],
+                links_to_unknown_domains=LinksToUnknownDomainsOptions.accept,
+            ),
+        )
+        config.refresh_from_db()
+
+        # The email templates of the imported form should contain all the google domain
+        imported_form = Form.objects.last()
+        self.assertEqual(len(imported_form.registration_backends.all()), 1)
+        self.assertEqual(
+            imported_form.registration_backends.first().options,
+            {
+                "to_emails": ["some@email.com"],
+                "attach_files_to_email": None,
+                "email_content_template_html": "<p>test https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test https://google.com https://allowed.com test",
+            },
+        )
+        # The confirmation and cosign email templates should contain the google domain
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "<p>email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+        )
+        self.assertEqual(
+            form.confirmation_email_template.cosign_content,
+            "<p>cosign email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+        # The google domain should again be present in the allowlist
+        self.assertEqual(len(config.email_template_netloc_allowlist), 3)
+        self.assertIn("allowed.com", config.email_template_netloc_allowlist)
+        self.assertIn("www.google.com", config.email_template_netloc_allowlist)
+        self.assertIn("google.com", config.email_template_netloc_allowlist)
+
+    def test_import_with_options_ignore_all_unknown_domains(self):
+        config = GlobalConfiguration.get_solo()
+
+        # Start with google domain in allowlist, so we can create the initial form
+        config.email_template_netloc_allowlist = ["https://google.com", "allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["some@email.com"],
+                "email_content_template_html": "<p>test https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test https://google.com https://allowed.com test",
+            },
+        )
+        ConfirmationEmailTemplateFactory(
+            form=form,
+            subject="Test",
+            content="<p>email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+            cosign_subject="Cosign test",
+            cosign_content="<p>cosign email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
+
+        # Delete the original form to make the slug available
+        form.delete()
+
+        # Remove google domain from allowlist
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        # Import form
+        with self.assertRaises(ValidationError) as error:
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.registration_backends],
+                    links_to_unknown_domains=LinksToUnknownDomainsOptions.ignore,
+                ),
+            )
+
+        domain_error_message = _(
+            "This domain is not in the global netloc allowlist: {netloc}"
+        )
+        detail = error.exception.detail
+
+        # Assert that the email templates in the email registration raise errors
+        self.assertEqual(
+            detail["registration_backends"][0]["options"][
+                "email_content_template_html"
+            ][0],
+            domain_error_message.format(netloc="google.com"),
+        )
+        self.assertEqual(
+            detail["registration_backends"][0]["options"][
+                "email_content_template_text"
+            ][0],
+            domain_error_message.format(netloc="google.com"),
+        )
+        # The confirmation and cosign email templates also throw errors
+        self.assertEqual(
+            detail["confirmation_email_template"]["content"][0],
+            domain_error_message.format(netloc="google.com"),
+        )
+        self.assertEqual(
+            detail["confirmation_email_template"]["cosign_content"][0],
+            domain_error_message.format(netloc="google.com"),
+        )
+
+        # The allowlist should still only contain the allowed domain
+        config.refresh_from_db()
+        self.assertListEqual(
+            config.email_template_netloc_allowlist,
+            ["allowed.com"],
+        )
+
+    def test_import_with_options_exclude_all_form_configuration(self):
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            authentication_backend="digid",
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["abc@xyz.com"],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": "authorised_person",
+                        },
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                ],
+            ),
+        )
+        form.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[],
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # Expect registration, payment, and auth to be excluded
+        self.assertEqual(len(imported_form.auth_backends.all()), 0)
+        self.assertEqual(len(imported_form.registration_backends.all()), 0)
+        self.assertEqual(imported_form.payment_backend, "")
+        self.assertEqual(imported_form.payment_backend_options, {})
+
+        # The prefill config of the component should be removed
+        fd = imported_form.formstep_set.get().form_definition
+        self.assertEqual(len(fd.configuration["components"]), 1)
+        component = fd.configuration["components"][0]
+        self.assertEqual(
+            component["prefill"],
+            {
+                "plugin": "",
+                "attribute": "",
+                "identifier_role": IdentifierRoles.main,
+            },
+        )
+
+        # There should be two user-defined variables, both without prefill config
+        variables = FormVariable.objects.filter(
+            form=imported_form, source="user_defined"
+        )
+        self.assertEqual(variables.count(), 2)
+        self.assertEqual(variables[0].prefill_plugin, "")
+        self.assertEqual(variables[0].prefill_attribute, "")
+        self.assertEqual(variables[0].prefill_identifier_role, IdentifierRoles.main)
+        self.assertEqual(variables[0].prefill_options, {})
+
+        self.assertEqual(variables[1].prefill_plugin, "")
+        self.assertEqual(variables[1].prefill_attribute, "")
+        self.assertEqual(variables[1].prefill_identifier_role, IdentifierRoles.main)
+        self.assertEqual(variables[1].prefill_options, {})
+
+    def test_import_with_options_include_all_form_configuration(self):
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            authentication_backend="digid",
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["abc@xyz.com"],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                ],
+            ),
+        )
+        form.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # Expect registration, payment, and auth to be the same as the exported form
+        self.assertEqual(len(imported_form.auth_backends.all()), 1)
+        self.assertEqual(imported_form.auth_backends.first().backend, "digid")
+
+        self.assertEqual(len(imported_form.registration_backends.all()), 1)
+        registration_backend = imported_form.registration_backends.first()
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(
+            registration_backend.options["to_emails"],
+            ["abc@xyz.com"],
+        )
+
+        self.assertEqual(imported_form.payment_backend, "worldline")
+        self.assertEqual(
+            imported_form.payment_backend_options["merchant"], merchant.pspid
+        )
+
+        # The prefill config of the component should be removed
+        fd = imported_form.formstep_set.get().form_definition
+        self.assertEqual(len(fd.configuration["components"]), 1)
+        component = fd.configuration["components"][0]
+        self.assertEqual(
+            component["prefill"],
+            {
+                "plugin": "demo",
+                "attribute": "random_number",
+                "identifier_role": IdentifierRoles.authorizee,
+            },
+        )
+
+        # There should be two user-defined variables, both without prefill config
+        variables = FormVariable.objects.filter(
+            form=imported_form, source=FormVariableSources.user_defined
+        )
+        self.assertEqual(variables.count(), 2)
+        variable_with_demo = variables.get(key="variable_with_demo_prefill")
+        variable_with_objects_api = variables.get(
+            key="variable_with_objects_api_prefill"
+        )
+
+        self.assertEqual(variable_with_demo.prefill_plugin, "demo")
+        self.assertEqual(variable_with_demo.prefill_attribute, "random_string")
+        self.assertEqual(
+            variable_with_demo.prefill_identifier_role, IdentifierRoles.authorizee
+        )
+
+        self.assertEqual(variable_with_objects_api.prefill_plugin, "objects_api")
+        self.assertEqual(
+            variable_with_objects_api.prefill_options,
+            {
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+    def test_import_with_options_exclude_all_additional_form_configuration(self):
+        # Every OF instance has 5 default WMTS and 1 default WMS map tile layer. For more
+        # accurate and easier testing, we should start at zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmtsMap1 = MapTileLayerFactory.create()
+        wmtsMap2 = MapTileLayerFactory.create()
+        wmsMap1 = MapWMSTileLayerFactory.create()
+        wmsMap2 = MapWMSTileLayerFactory.create()
+        wmsMap3 = MapWMSTileLayerFactory.create()
+
+        yiviAttributeGroup1 = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+        yiviAttributeGroup2 = AttributeGroupFactory.create(attributes=["email_address"])
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    # The uuids of the `personal` and `mail` attribute groups
+                    yiviAttributeGroup1.uuid,
+                    yiviAttributeGroup2.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map 1",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap1.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap1.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                    {
+                        "label": "Map 2",
+                        "key": "map2",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap2.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap2.uuid),
+                                "label": "height",
+                                "layers": ["EL.GridCoverage"],
+                            },
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap3.uuid),
+                                "label": "LGN",
+                                "layers": ["lgn-actueel"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        # Delete all previous data
+        form.delete()
+        product.delete()
+        theme.delete()
+        category.delete()
+        wmtsMap1.delete()
+        wmtsMap2.delete()
+        wmsMap1.delete()
+        wmsMap2.delete()
+        wmsMap3.delete()
+        yiviAttributeGroup1.delete()
+        yiviAttributeGroup2.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends],
+                additional_form_configuration=[],
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # The imported form has no product, theme or category
+        self.assertEqual(imported_form.product, None)
+        self.assertEqual(imported_form.category, None)
+        self.assertEqual(imported_form.theme, None)
+
+        # Auth backend is imported without the additional attribute groups
+        self.assertEqual(len(imported_form.auth_backends.all()), 1)
+        auth_backend = imported_form.auth_backends.first()
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["authentication_options"], [AuthAttribute.bsn]
+        )
+        self.assertEqual(auth_backend.options["additional_attributes_groups"], [])
+
+        # Map components don't have configured background and overlay tile layers
+        fd = imported_form.formstep_set.get().form_definition
+        self.assertEqual(len(fd.configuration["components"]), 2)
+        map_component1 = fd.configuration["components"][0]
+        map_component2 = fd.configuration["components"][1]
+
+        self.assertEqual(map_component1["tileLayerIdentifier"], "")
+        self.assertEqual(
+            map_component1["overlays"],
+            [
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": "",
+                    "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                    "layers": [],
+                }
+            ],
+        )
+
+        self.assertEqual(map_component2["tileLayerIdentifier"], "")
+        self.assertEqual(
+            map_component2["overlays"],
+            [
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": "",
+                    "label": "height",
+                    "layers": [],
+                },
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": "",
+                    "label": "LGN",
+                    "layers": [],
+                },
+            ],
+        )
+
+        # None of the additional form configurations have been imported/created
+        self.assertEqual(Product.objects.count(), 0)
+        self.assertEqual(Theme.objects.count(), 0)
+        self.assertEqual(Category.objects.count(), 0)
+        self.assertEqual(MapTileLayer.objects.count(), 0)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 0)
+        self.assertEqual(AttributeGroup.objects.count(), 0)
+
+    def test_import_with_options_include_all_additional_form_configuration_create_new(
+        self,
+    ):
+        # Every OF instance has 5 default WMTS and 1 default WMS map tile layer. For more
+        # accurate and easier testing, we should start at zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmtsMap1 = MapTileLayerFactory.create(
+            identifier="wmts-map-1", url="https://example.wmts.1.com", label="wmtsMap1"
+        )
+        wmtsMap2 = MapTileLayerFactory.create(
+            identifier="wmts-map-2", url="https://example.wmts.2.com", label="wmtsMap2"
+        )
+        wmsMap1 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.1.com", name="wmsMap1"
+        )
+        wmsMap2 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.2.com", name="wmsMap2"
+        )
+        wmsMap3 = MapWMSTileLayerFactory.create(
+            url="https://example.wms.3.com", name="wmsMap3"
+        )
+
+        yiviAttributeGroup1 = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+        yiviAttributeGroup2 = AttributeGroupFactory.create(attributes=["email_address"])
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    # The uuids of the `personal` and `mail` attribute groups
+                    yiviAttributeGroup1.uuid,
+                    yiviAttributeGroup2.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map 1",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap1.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap1.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                    {
+                        "label": "Map 2",
+                        "key": "map2",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap2.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap2.uuid),
+                                "label": "height",
+                                "layers": ["EL.GridCoverage"],
+                            },
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap3.uuid),
+                                "label": "LGN",
+                                "layers": ["lgn-actueel"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        # Delete all previous data
+        form.delete()
+        product.delete()
+        theme.delete()
+        category.delete()
+        wmtsMap1.delete()
+        wmtsMap2.delete()
+        wmsMap1.delete()
+        wmsMap2.delete()
+        wmsMap3.delete()
+        yiviAttributeGroup1.delete()
+        yiviAttributeGroup2.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # All of the additional form configurations have been imported and created
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 2)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 3)
+        self.assertEqual(AttributeGroup.objects.count(), 2)
+        imported_product = Product.objects.last()
+        imported_theme = Theme.objects.last()
+        imported_category = Category.objects.last()
+        imported_wmts_layers = MapTileLayer.objects.all()
+        imported_wms_layers = MapWMSTileLayer.objects.all()
+        attribute_groups = AttributeGroup.objects.all()
+
+        # The imported form has product, theme or category
+        self.assertEqual(str(imported_form.product.uuid), str(imported_product.uuid))
+        self.assertEqual(str(imported_form.category.uuid), str(imported_category.uuid))
+        self.assertEqual(str(imported_form.theme.uuid), str(imported_theme.uuid))
+
+        # Auth backend is imported with the additional attribute groups
+        self.assertEqual(len(imported_form.auth_backends.all()), 1)
+        auth_backend = imported_form.auth_backends.first()
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            [
+                str(attribute_groups[0].uuid),
+                str(attribute_groups[1].uuid),
+            ],
+        )
+
+        # Map components have configured background and overlay tile layers
+        fd = imported_form.formstep_set.get().form_definition
+        self.assertEqual(len(fd.configuration["components"]), 2)
+        map_component1 = fd.configuration["components"][0]
+        map_component2 = fd.configuration["components"][1]
+
+        self.assertEqual(
+            map_component1["tileLayerIdentifier"],
+            str(imported_wmts_layers[0].identifier),
+        )
+        self.assertEqual(
+            map_component1["overlays"],
+            [
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": ANY,
+                    "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                    "layers": ["pand", "verblijfsobject"],
+                }
+            ],
+        )
+
+        self.assertEqual(
+            map_component2["tileLayerIdentifier"],
+            str(imported_wmts_layers[1].identifier),
+        )
+        self.assertEqual(
+            map_component2["overlays"],
+            [
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": ANY,
+                    "label": "height",
+                    "layers": ["EL.GridCoverage"],
+                },
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": ANY,
+                    "label": "LGN",
+                    "layers": ["lgn-actueel"],
+                },
+            ],
+        )
+
+        # The configuration of the WMS and WMTS tile layers hasn't changed
+        wmts_layer_1 = imported_wmts_layers.get(identifier="wmts-map-1")
+        wmts_layer_2 = imported_wmts_layers.get(identifier="wmts-map-2")
+        self.assertEqual(wmts_layer_1.url, "https://example.wmts.1.com")
+        self.assertEqual(wmts_layer_1.label, "wmtsMap1")
+        self.assertEqual(wmts_layer_2.url, "https://example.wmts.2.com")
+        self.assertEqual(wmts_layer_2.label, "wmtsMap2")
+
+        wms_layer_1 = imported_wms_layers.get(name="wmsMap1")
+        wms_layer_2 = imported_wms_layers.get(name="wmsMap2")
+        wms_layer_3 = imported_wms_layers.get(name="wmsMap3")
+        self.assertEqual(wms_layer_1.url, "https://example.wms.1.com")
+        self.assertEqual(wms_layer_2.url, "https://example.wms.2.com")
+        self.assertEqual(wms_layer_3.url, "https://example.wms.3.com")
+
+    def test_import_with_options_include_all_additional_form_configuration_reuses_already_existing_objects(
+        self,
+    ):
+        # Every OF instance has 5 default WMTS and 1 default WMS map tile layer. For more
+        # accurate and easier testing, we should start at zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmts_layer = MapTileLayerFactory.create()
+        wms_layer = MapWMSTileLayerFactory.create()
+
+        yiviAttributeGroup = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [yiviAttributeGroup.uuid],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map 1",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_layer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wms_layer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        # Only delete the form
+        form.delete()
+        # Change UUID's, as would be the case in a regular situation where a form is
+        # shared across different OF instances.
+        product.uuid = uuid4()
+        theme.uuid = uuid4()
+        category.uuid = uuid4()
+        wms_layer.uuid = uuid4()
+        yiviAttributeGroup.uuid = uuid4()
+        product.save()
+        theme.save()
+        category.save()
+        wms_layer.save()
+        yiviAttributeGroup.save()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.auth_backends],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # No new data was created
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 1)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 1)
+        self.assertEqual(AttributeGroup.objects.count(), 1)
+
+        # The imported form uses all existing objects
+        self.assertEqual(str(imported_form.product.uuid), str(product.uuid))
+        self.assertEqual(str(imported_form.category.uuid), str(category.uuid))
+        self.assertEqual(str(imported_form.theme.uuid), str(theme.uuid))
+
+        self.assertEqual(len(imported_form.auth_backends.all()), 1)
+        auth_backend = imported_form.auth_backends.first()
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            [str(yiviAttributeGroup.uuid)],
+        )
+
+        fd = imported_form.formstep_set.get().form_definition
+        self.assertEqual(len(fd.configuration["components"]), 1)
+        map_component1 = fd.configuration["components"][0]
+
+        self.assertEqual(
+            map_component1["tileLayerIdentifier"], str(wmts_layer.identifier)
+        )
+        self.assertEqual(
+            map_component1["overlays"],
+            [
+                {
+                    "url": "",
+                    "type": "wms",
+                    "uuid": str(wms_layer.uuid),
+                    "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                    "layers": ["pand", "verblijfsobject"],
+                }
+            ],
+        )
+
+    def test_import_with_options_reuse_form_definitions_with_duplicate_forms(self):
+        # Expect existing form definitions to be re-used
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    },
+                ],
+            },
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+
+        # Only delete the form
+        form.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # No new form definitions have been created
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
+        # Assert that the imported form FD is the same as the existing FD
+        imported_form_definition = imported_form.formstep_set.get().form_definition
+        self.assertEqual(imported_form_definition, form_definition)
+
+    def test_import_with_options_reuse_form_definitions_without_duplicate_forms(self):
+        # Expect existing form definitions to be re-used
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    },
+                ],
+            },
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+
+        # Only delete the form
+        form.delete()
+
+        # Update form definition
+        form_definition.configuration = {
+            "components": [
+                {
+                    "label": "Textfield",
+                    "key": "textfield",
+                    "type": "textfield",
+                },
+                {
+                    "label": "Textfield 2",
+                    "key": "textfield2",
+                    "type": "textfield",
+                },
+            ],
+        }
+        form_definition.save()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # A new form definition has been created, as the imported form FD differs from
+        # the existing FD
+        self.assertEqual(FormDefinition.objects.count(), 2)
+
+        # Assert that the imported form FD is the same as the existing FD
+        imported_form_definition = imported_form.formstep_set.get().form_definition
+        self.assertNotEqual(imported_form_definition, form_definition)
+        # The imported FD has the same configuration as the original form had during
+        # exporting
+        self.assertEqual(
+            imported_form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    },
+                ],
+            },
+        )
+
+    def test_import_with_options_create_all_new_form_definitions(self):
+        # Expect existing form definitions to be re-used
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    },
+                ],
+            },
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+
+        # Only delete the form
+        form.delete()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                reusable_form_definitions=ReusableFormDefinitionsOptions.create_new
+            ),
+        )
+
+        imported_form = Form.objects.last()
+
+        # New form definition has been created
+        self.assertEqual(FormDefinition.objects.count(), 2)
+
+        # Assert that the imported form FD is similar to the existing FD
+        imported_form_definition = imported_form.formstep_set.get().form_definition
+        self.assertNotEqual(imported_form_definition, form_definition)
+        self.assertEqual(
+            imported_form_definition.configuration, form_definition.configuration
+        )
 
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
@@ -3110,7 +4451,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.registration_backends]
+                ),
+            )
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "objects_api_group"
@@ -3154,7 +4500,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.registration_backends]
+                ),
+            )
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "objecttype"
@@ -3201,7 +4552,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3242,7 +4598,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
 
@@ -3299,7 +4660,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend_v1 = FormRegistrationBackend.objects.get(
             key="test-backend-v1"
@@ -3354,7 +4720,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend_valid_mapping = FormRegistrationBackend.objects.get(
             key="test-backend"
@@ -3403,7 +4774,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.registration_backends]
+                ),
+            )
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "variables_mapping"
@@ -3448,7 +4824,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3563,7 +4944,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()
@@ -3654,7 +5040,12 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             },
         )
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3686,7 +5077,14 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             )
 
             with self.assertRaises(ValidationError) as exc:
-                import_form(import_file=self.filepath)
+                import_form(
+                    import_file=self.filepath,
+                    import_options=FormImportOptions(
+                        form_configuration=[
+                            FormConfigurationOptions.registration_backends
+                        ]
+                    ),
+                )
 
             error_detail = exc.exception.detail["registration_backends"][0]["options"][
                 "objects_api_group"
@@ -3715,7 +5113,12 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 },
             )
 
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    form_configuration=[FormConfigurationOptions.registration_backends]
+                ),
+            )
 
             registration_backend = FormRegistrationBackend.objects.get(
                 key="test-backend"
@@ -3816,7 +5219,12 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()
@@ -3950,7 +5358,12 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                form_configuration=[FormConfigurationOptions.registration_backends]
+            ),
+        )
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()

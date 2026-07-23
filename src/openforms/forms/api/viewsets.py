@@ -21,7 +21,7 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
-from openforms.import_export.typing import FormExportOptions
+from openforms.import_export.typing import FormExportOptions, FormImportOptions
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.utils.urls import is_admin_request, reverse_plus
@@ -776,7 +776,10 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
 
 class FormsImportAPIView(views.APIView):
     serializer_class = FormImportSerializer
-    parser_classes = (parsers.FileUploadParser,)
+    parser_classes = (
+        parsers.MultiPartParser,
+        parsers.FormParser,
+    )
     authentication_classes = [TokenAuthentication]
     permission_classes = [FormAPIPermissions]
 
@@ -792,8 +795,24 @@ class FormsImportAPIView(views.APIView):
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print(request.data)
+        print(serializer.validated_data)
 
-        form_instance = import_form(serializer.validated_data["file"])
+        form_instance = import_form(
+            serializer.validated_data["file"],
+            import_options=FormImportOptions(
+                **{
+                    field_name: serializer.validated_data[field_name]
+                    for field_name in (
+                        "form_configuration",
+                        "reusable_form_definitions",
+                        "links_to_unknown_domains",
+                        "additional_form_configuration",
+                    )
+                    if field_name in serializer.validated_data
+                }
+            ),
+        )
         assert form_instance
 
         response_serializer = FormImportResponseSerializer(instance=form_instance)

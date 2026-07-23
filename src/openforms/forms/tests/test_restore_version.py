@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import uuid
 
 from django.test import TestCase
 from django.utils import translation
@@ -8,10 +9,27 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
+from openforms.authentication.tests.factories import AttributeGroupFactory
+from openforms.config.models import MapTileLayer, MapWMSTileLayer, Theme
+from openforms.config.tests.factories import (
+    MapTileLayerFactory,
+    MapWMSTileLayerFactory,
+    ThemeFactory,
+)
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.forms.models import Category, FormDefinition, FormStep, FormVersion
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
+from openforms.prefill.constants import IdentifierRoles
+from openforms.products.models import Product
+from openforms.products.tests.factories import ProductFactory
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..models import FormDefinition, FormStep, FormVersion
 from .factories import (
+    CategoryFactory,
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
@@ -324,6 +342,216 @@ class RestoreVersionTest(TestCase):
             },
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)
+
+    def test_full_form_save_and_restore(self):
+        """
+        Tests that all form configuration that receives dedicated attention from the
+        import/export is correctly saved and restored.
+
+        Ensuring all configuration is kept, especially the product, theme, category, and
+        service fetch. (@TODO service fetch is not yet implemented)
+        """
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmts_tile_layer = MapTileLayerFactory.create()
+        wms_tile_layer = MapWMSTileLayerFactory.create()
+
+        yivi_attribute_group = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [yivi_attribute_group.uuid],
+            },
+            internal_remarks="Some internal remark that should be kept",
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["abc@xyz.com"]},
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wms_tile_layer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        # Validate the initial setup
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 6)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 2)
+        self.assertEqual(AttributeGroup.objects.count(), 1)
+
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # Validate that no new additional data was created
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(Theme.objects.count(), 1)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(MapTileLayer.objects.count(), 6)
+        self.assertEqual(MapWMSTileLayer.objects.count(), 2)
+        self.assertEqual(AttributeGroup.objects.count(), 1)
+
+        # Validate product, theme and category
+        self.assertEqual(form.product.uuid, product.uuid)
+        self.assertEqual(form.theme.uuid, theme.uuid)
+        self.assertEqual(form.category.uuid, category.uuid)
+
+        # Validate payment backend
+        self.assertEqual(form.payment_backend, "worldline")
+        self.assertEqual(form.payment_backend_options["merchant"], merchant.pspid)
+
+        # Validate auth backend
+        self.assertEqual(form.auth_backends.count(), 1)
+        auth_backend = form.auth_backends.first()
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["authentication_options"], [AuthAttribute.bsn]
+        )
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            [str(yivi_attribute_group.uuid)],
+        )
+
+        # Validate registration backend and sensitive data was kept
+        self.assertEqual(
+            form.internal_remark,
+            "Some internal remark that should be kept",
+        )
+        self.assertEqual(form.registration_backends.count(), 1)
+        registration_backend = form.registration_backends.first()
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(registration_backend.options["to_emails"], ["abc@xyz.com"])
+
+        # Validate map component tile layer configuration
+        fd = form.formstep_set.first().form_definition
+        map_component = fd.configuration["components"][1]
+        self.assertEqual(map_component["type"], "map")
+        self.assertEqual(
+            map_component["tileLayerIdentifier"], wmts_tile_layer.identifier
+        )
+        self.assertEqual(len(map_component["overlays"]), 1)
+        self.assertEqual(map_component["overlays"][0]["uuid"], str(wms_tile_layer.uuid))
+
+    def test_form_restore_creating_new_resources_when_existing_have_been_altered(self):
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        form = FormFactory.create(
+            product=product,
+            theme=theme,
+            category=category,
+        )
+        version = FormVersionFactory.create(form=form)
+        self.assertNotEqual(version.export_blob, {})
+
+        # now delete the product, and update the theme and category
+        with self.subTest("Modify used resources"):
+            product.delete()
+            theme.organization_name = "Evil .inc"
+            category.uuid = uuid.uuid4()
+
+            self.assertEqual(Product.objects.count(), 0)
+            self.assertEqual(Theme.objects.count(), 1)
+            self.assertEqual(Category.objects.count(), 1)
+
+        # Restore it
+        form.restore_old_version(version.uuid)
+
+        # get all fresh DB records
+        form.refresh_from_db()
+
+        # Because the product was deleted, a new product is created
+        self.assertEqual(Product.objects.count(), 1)
+        new_product = Product.objects.first()
+        self.assertEqual(form.product.uuid, new_product.uuid)
+
+        # Because the theme was modified, a new theme is created. This ensures that the
+        # existing theme, which could be used in other forms, doesn't change.
+        self.assertEqual(Theme.objects.count(), 2)
+        new_theme = Theme.objects.first()
+        self.assertEqual(form.theme.uuid, new_theme.uuid)
+
+        # Because we don't use the uuid as an identifier for the resources, we can re-use
+        # the category that was used in the original form.
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(form.category.uuid, category.uuid)
 
 
 FORM_STEP = [

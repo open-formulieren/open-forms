@@ -6,7 +6,7 @@ from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
 from itertools import chain
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from uuid import UUID
 
 from django.conf import settings
@@ -32,6 +32,13 @@ from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
+from openforms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormImportOptions,
+    LinksToUnknownDomainsOptions,
+    ReusableFormDefinitionsOptions,
+)
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -676,6 +683,37 @@ class Form(models.Model):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
 
+    @staticmethod
+    def __delete_current_form_configuration(current_form: Form):
+        from . import FormDefinition, FormLogic, FormStep, FormVariable
+
+        form_steps = FormStep.objects.filter(form=current_form)
+        # delete single-use form definitions, they're orphan nodes when deleting the steps
+        fd_ids = list(
+            FormDefinition.objects.filter(
+                is_reusable=False, formstep__in=form_steps
+            ).values_list("id", flat=True)
+        )
+        form_steps.delete()
+        FormDefinition.objects.filter(id__in=fd_ids).delete()
+        FormLogic.objects.filter(form=current_form).delete()
+        FormVariable.objects.filter(form=current_form).delete()
+
+    @staticmethod
+    def __after_restore_corrections(
+        restored: Form, restore_version_data: dict[str, Any]
+    ):
+        import json
+
+        form_data = json.loads(restore_version_data["forms"])[0]
+
+        # The FormImportSerializer sets the 'active' state to False by default. We should
+        # restore it to the state it had before.
+        if (previous_active := form_data.get("active")) is not None:
+            restored.active = previous_active
+
+        restored.save()
+
     @transaction.atomic
     def restore_old_version(
         self, form_version_uuid: str, user: User | None = None
@@ -698,7 +736,34 @@ class Form(models.Model):
         form_version = form_versions_mapping[form_version_uuid]
         old_version_data = form_version.export_blob
 
-        import_form_data(old_version_data, form_version.form)
+        # when restoring a previous version, delete the current form configuration,
+        # it will be replaced with the import data.
+        self.__delete_current_form_configuration(form_version.form)
+
+        restored_form = import_form_data(
+            old_version_data,
+            form_version.form,
+            import_options=FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                reusable_form_definitions=ReusableFormDefinitionsOptions.reuse_existing,
+                links_to_unknown_domains=LinksToUnknownDomainsOptions.remove,
+            ),
+        )
+
+        self.__after_restore_corrections(restored_form, old_version_data)
 
         # now create a new FormVersion for this restore as well, tracking those nuances
         # in the description.

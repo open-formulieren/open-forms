@@ -6,7 +6,7 @@ from openforms.import_export.typing import (
 from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 def remove_prefill_from_variable(representation: JSONObject):
@@ -39,3 +39,25 @@ class FormVariableExportSerializer(FormVariableSerializer, BaseExportSerializer)
                 return representation
 
         return representation
+
+
+class FormVariableImportSerializer(FormVariableSerializer, BaseImportSerializer):
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_variable,
+        ),
+    )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if "service_fetch_configuration" in value:
+            # The transferring between systems case is very tricky
+            # better not import these, we don't know where this came from.
+            # services and ids may point to different things
+            # in different OF instances.
+            # @TODO should not happen by version restore
+            del value["service_fetch_configuration"]
+
+        return super().to_internal_value(value)

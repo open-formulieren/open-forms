@@ -7,7 +7,10 @@ from .base import BaseResource
 class WMTSTileLayerResource(BaseResource):
     class Meta:
         model = MapTileLayer
+        import_id_fields = ("identifier",)
         fields = ("identifier", "label", "url")
+        store_instance = True
+        store_row_values = True
 
     def export_for_form(self, form: Form):
         wmts_tile_layers = []

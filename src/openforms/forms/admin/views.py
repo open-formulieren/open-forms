@@ -27,6 +27,7 @@ from openforms.import_export.typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
     FormExportOptions,
+    FormImportOptions,
 )
 from openforms.logging import audit_logger
 
@@ -137,9 +138,25 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
         import_file = form.cleaned_data["file"]
         is_bulk_import = self.get_is_bulk_import(import_file)
 
+        import_options = FormImportOptions(
+            **{
+                field_name: form.cleaned_data[field_name]
+                for field_name in (
+                    "form_configuration",
+                    "reusable_form_definitions",
+                    "links_to_unknown_domains",
+                    "additional_form_configuration",
+                )
+                if field_name in form.cleaned_data
+            }
+        )
+
         if not is_bulk_import:
             try:
-                import_form(import_file)
+                import_form(
+                    import_file,
+                    import_options=import_options,
+                )
             except ValidationError as exc:
                 messages.error(
                     self.request,
@@ -147,7 +164,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
                 )
                 return super().form_invalid(form)
         else:
-            self._bulk_import_forms(import_file)
+            self._bulk_import_forms(import_file, import_options)
 
         return super().form_valid(form)
 
@@ -161,11 +178,11 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
             "The bulk import is being processed! The imported forms will soon be available."
         )
 
-    def _bulk_import_forms(self, import_file):
+    def _bulk_import_forms(self, import_file, import_options: FormImportOptions):
         name = f"imports/import_forms_{uuid4()}.zip"
         filename = private_media_storage.save(name, import_file)
 
-        process_forms_import.delay(filename, self.request.user.id)
+        process_forms_import.delay(filename, self.request.user.id, import_options)
 
 
 @method_decorator(staff_member_required, name="dispatch")
