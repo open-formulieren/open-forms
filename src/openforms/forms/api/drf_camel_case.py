@@ -17,7 +17,10 @@ class FormCamelCaseMixin:
            while we'd rather be able to just validate this depending on the applicable
            registration backend. Future improvement!
         """
-        ignore_fields = []
+
+        # Needed to not mangle the formio definitions - all processing assumes the
+        # original camel case keys.
+        ignore_fields = ["configuration"]
         for plugin in register:
             if not plugin.camel_case_ignore_fields:
                 continue
