@@ -7,7 +7,7 @@ from ...rendering.nodes import SubmissionStepNode
 from ..factories import SubmissionFactory, SubmissionStepFactory
 
 
-class FormNodeTests(TestCase):
+class SubmissionStepNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

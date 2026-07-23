@@ -28,6 +28,7 @@ from django.utils.translation import gettext as _
 
 import structlog
 
+from formio_types import CosignV2
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.typing import FormAuth
 from openforms.emails.constants import (
@@ -38,7 +39,7 @@ from openforms.emails.constants import (
     EmailEventChoices,
 )
 from openforms.emails.utils import send_mail_html
-from openforms.formio.typing import Component
+from openforms.formio.datastructures import FormioConfig
 from openforms.typing import JSONObject
 
 from .models import CosignOTP
@@ -95,7 +96,7 @@ class CosignState:
         )
         return f"<CosignState submission=<Submission reference={reference}>>"
 
-    def _find_component(self) -> Component | None:
+    def _find_component(self) -> CosignV2 | None:
         """
         Discover the Formio cosign component in the submission/form.
         """
@@ -111,15 +112,16 @@ class CosignState:
                 continue
 
             assert step.form_step is not None
-            configuration_wrapper = step.form_step.form_definition.configuration_wrapper
-            for component in configuration_wrapper:
-                if component["type"] == "cosign":
+            formio_config = step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            for component in formio_config:
+                if isinstance(component, CosignV2):
                     # we can't just blindly return the component, as it may be conditionally
                     # displayed, which is equivalent to "cosign not relevant". See
                     # https://github.com/open-formulieren/open-forms/issues/3901
                     state = self.submission.variables_state
-                    hidden = configuration_wrapper.is_hidden(
-                        component["key"], values=state.get_data(include_unsaved=True)
+                    hidden = formio_config.is_hidden(
+                        component.key, values=state.get_data(include_unsaved=True)
                     )
                     if hidden:
                         return None
@@ -141,14 +143,13 @@ class CosignState:
         .. note:: This does not consider cosign v1, as the cosigning is required to be
            able to complete the submission.
         """
-        cosign_component = self._find_component()
-        if cosign_component is None:
+        component = self._find_component()
+        if component is None:
             return False
 
         # if the component itself is marked as required, we know for sure cosigning is
         # required
-        validate = cosign_component.get("validate") or {}
-        required = validate.get("required", False)
+        required = validate.required if (validate := component.validate) else False
         if required:
             return True
 
@@ -191,7 +192,7 @@ class CosignState:
         values = variables_state.get_data()
         # detect inconsistent state - the component may be added after the submission
         # was completed
-        if (key := cosign_component["key"]) not in values:
+        if (key := cosign_component.key) not in values:
             logger.info(
                 "cosign_component_key_missing_from_values",
                 submission_uuid=str(self.submission.uuid),

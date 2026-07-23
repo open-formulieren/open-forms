@@ -5,14 +5,15 @@ from typing import TYPE_CHECKING
 
 from opentelemetry import trace
 
+from openforms.formio.datastructures import FormioConfig
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
     FormioData,
+    dump_to_legacy,
     get_dynamic_configuration,
     inject_variables,
     process_visibility,
 )
-from openforms.formio.typing import FormioConfiguration
+from openforms.formio.typing import Component, FormioConfiguration
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -83,7 +84,9 @@ def evaluate_form_logic(
 
     """
     # grab the configuration that will be mutated
-    config_wrapper = step.form_step.form_definition.configuration_wrapper
+    assert step.form_step is not None
+    formio_config = step.form_step.form_definition.formio_config
+    assert isinstance(formio_config, FormioConfig)
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
     #
@@ -93,7 +96,8 @@ def evaluate_form_logic(
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
-        return config_wrapper.configuration
+        components: list[Component] = dump_to_legacy(formio_config.components)
+        return {"components": components}
 
     # 3. Load the (variables) state
     submission_variables_state = submission.variables_state
@@ -135,15 +139,11 @@ def evaluate_form_logic(
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were (conditionally) hidden, so simply applying the unsaved
     # data to the state will not remove existing values of those fields.
-    evaluate_conditional_logic(
-        config_wrapper.configuration,
-        data_for_evaluation,
-        config_wrapper,
-    )
+    evaluate_conditional_logic(formio_config, data_for_evaluation)
 
     # 6. Evaluate the logic rules in order
     rules = get_rules_to_evaluate(submission, step)
-    mutation_operations = []
+    mutation_operations: list[ActionOperation] = []
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules.
@@ -161,7 +161,7 @@ def evaluate_form_logic(
             rules,
             data=data_for_evaluation,
             data_for_visible_state=data_for_visible_state,
-            configuration=config_wrapper,
+            config=formio_config,
             submission=submission,
         ):
             mutation_operations.append(operation)
@@ -170,18 +170,18 @@ def evaluate_form_logic(
 
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
-    config_wrapper = get_dynamic_configuration(
-        config_wrapper,
+    formio_config = get_dynamic_configuration(
+        formio_config,
         submission=submission,
         data=data_for_evaluation,
     )
 
     # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
-        mutation.apply(step, config_wrapper)
+        mutation.apply(step, formio_config)
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_for_evaluation)
+    inject_variables(formio_config, data_for_evaluation)
 
     # 7.3 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
@@ -210,24 +210,25 @@ def evaluate_form_logic(
 
     step._form_logic_evaluated = True
 
-    return config_wrapper.configuration
+    components: list[Component] = dump_to_legacy(formio_config.components)
+    return {"components": components}
 
 
-def evaluate_conditional_logic(
-    configuration: FormioConfiguration,
-    data: FormioData,
-    wrapper: FormioConfigurationWrapper,
-):
+def evaluate_conditional_logic(config: FormioConfig, data: FormioData):
     """
     Evaluate conditional logic through iteration.
 
     Note that this assumes the data converges to a final state, so no cycles can be
     present in the complete conditional logic tree.
 
-    :param configuration: Formio configuration.
+    No mutations to the component definitions are expected (side-effects are limited
+    to data mutations).
+
+    :param config: Wrapped formio configuration, ready for processing and component
+      lookups by key. Used for the root component nodes to start conditional evaluation
+      and as component key lookup store for keys referenced in conditional expressions.
     :param data: Data used for evaluation. Mutations will be applied to the data
       directly.
-    :param wrapper: Formio configuration wrapper. Required for component lookup.
     """
     processed_data = None
     _loop_count = 0
@@ -236,7 +237,8 @@ def evaluate_conditional_logic(
             raise RuntimeError("Potential infinite loop stopped!")
         _loop_count += 1
         processed_data = deepcopy(data)
-        process_visibility(configuration, data, wrapper)
+        # FIXME: key prefixing for editgrids, like with the serializers (!)
+        process_visibility(config.components, data, config)
 
 
 def check_submission_logic(
@@ -268,7 +270,7 @@ def check_submission_logic(
         rules,
         data=data_for_evaluation,
         data_for_visible_state=data_for_evaluation,
-        configuration=submission.total_configuration_wrapper,
+        config=submission.formio_config,
         submission=submission,
     ):
         mutation_operations.append(operation)

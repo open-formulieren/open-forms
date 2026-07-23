@@ -115,13 +115,20 @@ class FormVariableManager(models.Manager["FormVariable"]):
             # components inside edit grids are not real variables
             recurse_into_editgrid=False,
         ):
+            # prevent msgspec validation errors crashing the copy
+            if (prefill := component.get("prefill")) is not None:
+                if not isinstance(prefill.get("plugin"), str):
+                    prefill["plugin"] = ""
+                if not isinstance(prefill.get("attribute"), str):
+                    prefill["attribute"] = ""
+
             # we need to ignore components that don't actually hold any values - there's
             # no point to create variables for those.
             if not holds_submission_data(component):
                 continue
 
             # extract options from the component
-            prefill = component.get("prefill", {})
+            prefill = component.get("prefill") or {}
             prefill_plugin = prefill.get("plugin") or ""
             prefill_attribute = prefill.get("attribute") or ""
             prefill_identifier_role = (

@@ -8,10 +8,13 @@ from openforms.forms.tests.factories import (
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..api.serializers import SubmissionStepSerializer
+from .constants import NUMBER_FIELD_DEFAULTS, TEXT_FIELD_DEFAULTS
 from .factories import SubmissionFactory
 
 
 class SubmissionStepSerializerTests(TestCase):
+    maxDiff = None
+
     @tag("gh-6068")
     def test_formio_validation_does_not_use_outdated_configuration_and_or_values(self):
         step = FormStepFactory.create(
@@ -87,8 +90,14 @@ class SubmissionStepSerializerTests(TestCase):
         self.assertEqual(
             {
                 "components": [
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
                     {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
+                    {
+                        **NUMBER_FIELD_DEFAULTS,
                         "type": "number",
                         "key": "number",
                         "label": "number",

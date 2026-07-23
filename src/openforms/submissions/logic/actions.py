@@ -5,18 +5,20 @@ from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, Self, TypedDict
+from typing import Any, Literal, Self, TypedDict
 from uuid import UUID
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 
+import structlog
 from glom import assign
 from json_logic import UNDEFINED_VALUE, jsonLogic
 
+from formio_types import AnyComponent, Children
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    FormioConfig,
     FormioData,
     process_visibility,
 )
@@ -33,6 +35,8 @@ from openforms.variables.service import resolve_key
 from ..models import Submission, SubmissionStep
 from .log_utils import log_errors
 from .service_fetching import perform_service_fetch
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ActionDetails(TypedDict):
@@ -133,9 +137,7 @@ class ActionOperation:
         """
         raise NotImplementedError()
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         """
         Implements the side effects of the action operation.
         """
@@ -144,7 +146,7 @@ class ActionOperation:
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -159,7 +161,8 @@ class ActionOperation:
 @dataclass
 class PropertyAction(ActionOperation):
     component: str
-    property_name: str
+    # TODO: our serializers do not validate these values yet
+    property_name: Literal["validate.required", "hidden", "disabled"]
     value: Any
 
     @property
@@ -189,18 +192,18 @@ class PropertyAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
-        if self.component not in configuration:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
+        if self.component not in config:
             return None
-        component = configuration[self.component]
+        component = config[self.component]
+        # FIXME
+        # breakpoint()
         assign(component, self.property_name, self.value, missing=dict)
 
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -218,23 +221,34 @@ class PropertyAction(ActionOperation):
         # the one we are currently evaluating. We don't have to do
         # anything in this case, because the clear-on-hide behaviour of that
         # component will be handled once the user has reached that step.
-        if self.component not in configuration:
+        if self.component not in config:
             return None
 
-        component = configuration[self.component]
+        component = config[self.component]
 
         # apply the state mutation immediately, so that it's visible to follow up
         # actions and rules operating on the same component.
-        component[self.property_name] = self.value
+        # TODO - ensure this is propagated
+        assert self.property_name == "hidden"
+        if hasattr(component, self.property_name):
+            setattr(component, self.property_name, self.value)
+        else:
+            logger.debug(
+                "invalid_component_property_assignment_attempted",
+                component=component.__class__.__name__,
+                key=component.key,
+                property=self.property_name,
+                submission_uuid=str(submission.uuid),
+            )
 
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration. Mutations are performed on the context directly.
         process_visibility(
-            {"components": [component]},
+            [component],
             context,
-            configuration,
-            parent_hidden=configuration.is_hidden(component["key"], context),
+            config,
+            parent_hidden=config.is_hidden(component.key, context),
             data_for_visible_state=data_for_visible_state,
         )
         return None
@@ -265,9 +279,7 @@ class DisableNextAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         assert step.form_step is not None
         if str(step.form_step.uuid) == self.form_step_identifier:
             step.can_submit = False
@@ -310,9 +322,7 @@ class StepNotApplicableAction(ActionOperation):
         # `SubmissionStepViewSet.update`.
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         execution_state = (
             step.submission.load_execution_state()
         )  # typically cached already
@@ -363,9 +373,7 @@ class StepApplicableAction(ActionOperation):
     def is_backend_logic_evaluation_required(self) -> bool:
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         execution_state = (
             step.submission.load_execution_state()
         )  # typically cached already
@@ -424,7 +432,7 @@ class VariableAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -541,11 +549,11 @@ class SynchronizeVariablesAction(ActionOperation):
 
         return result
 
-    def _process_for_component_type(
-        self, context: FormioData, component_type: str
+    def _process_for_component(
+        self, context: FormioData, component: AnyComponent
     ) -> DataMapping | None:
-        match component_type:
-            case "children":
+        match component:
+            case Children():
                 source_data = context.get(self.source_variable, [])
                 destination_data = context.get(self.destination_variable) or []
                 if not (source_data or destination_data):
@@ -575,17 +583,17 @@ class SynchronizeVariablesAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
-        configuration = submission.total_configuration_wrapper
-        if self.source_variable not in configuration:
+        formio_config = submission.formio_config
+        if self.source_variable not in formio_config:
             return None
 
-        component_type = configuration[self.source_variable]["type"]
-        return self._process_for_component_type(context, component_type)
+        component = formio_config[self.source_variable]
+        return self._process_for_component(context, component)
 
 
 @dataclass
@@ -639,7 +647,7 @@ class ServiceFetchAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -716,7 +724,7 @@ class EvaluateDMNAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
-        configuration: FormioConfigurationWrapper,
+        config: FormioConfig,
         submission: Submission,
         *,
         data_for_visible_state: FormioData,
@@ -795,9 +803,7 @@ class SetRegistrationBackendAction(ActionOperation):
         # this action does not influence any submission data while filling out the form.
         return False
 
-    def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
-    ) -> None:
+    def apply(self, step: SubmissionStep, config: FormioConfig) -> None:
         step.submission.finalised_registration_backend_key = (
             self.registration_backend_key
         )

@@ -55,7 +55,7 @@ def validate_template_expressions(configuration: FormioConfiguration) -> None:
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errors = get_configuration_template_syntax_errors(configuration)
+    errors = get_configuration_template_syntax_errors(configuration["components"])
     if not errors:
         return
 

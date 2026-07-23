@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from formio_types import EditGrid, TextField
 from openforms.formio.typing import (
     ColumnsComponent,
     Component,
@@ -9,6 +10,7 @@ from openforms.formio.typing import (
 
 from ..datastructures import (
     DuplicateKeyError,
+    FormioConfig,
     FormioConfiguration,
     FormioConfigurationWrapper,
     FormioData,
@@ -272,6 +274,7 @@ class FormioConfigurationWrapperTests(TestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Repeating group",
+            "groupLabel": "Item",
             "components": [inner_textfield],
         }
 
@@ -541,3 +544,71 @@ class FormioConfigurationWrapperTests(TestCase):
             ],
         }
         self.assertEqual(duplicates, expected)
+
+
+class FormioConfigTests(TestCase):
+    def test_editgrid_lookups_by_key(self):
+        outer_textfield: Component = {
+            "type": "textfield",
+            "key": "outerTextfield",
+            "label": "outer text field",
+        }
+        inner_textfield: Component = {
+            "type": "textfield",
+            "key": "innerTextfield",
+            "label": "inner text field",
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Repeating group",
+            "groupLabel": "Item",
+            "components": [inner_textfield],
+        }
+
+        formio_config = FormioConfig(
+            name="test", components=[outer_textfield, editgrid]
+        )
+
+        with self.subTest("top level lookups"):
+            top_level_editgrid = formio_config["editgrid"]
+
+            self.assertIsInstance(top_level_editgrid, EditGrid)
+            self.assertEqual(top_level_editgrid.key, "editgrid")
+
+            self.assertIn("outerTextfield", formio_config)
+            self.assertNotIn("innerTextfield", formio_config)
+
+        with self.subTest("nested editgrid lookup"):
+            self.assertIn("editgrid.innerTextfield", formio_config)
+
+            nested_textfield = formio_config["editgrid.innerTextfield"]
+            self.assertIsInstance(nested_textfield, TextField)
+
+    def test_iter_components_without_recursion_into_editgrids(self):
+        outer_textfield: Component = {
+            "type": "textfield",
+            "key": "outerTextfield",
+            "label": "outer text field",
+        }
+        inner_textfield: Component = {
+            "type": "textfield",
+            "key": "innerTextfield",
+            "label": "inner text field",
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Repeating group",
+            "groupLabel": "Item",
+            "components": [inner_textfield],
+        }
+        formio_config = FormioConfig(
+            name="test", components=[outer_textfield, editgrid]
+        )
+
+        components = list(formio_config.iter_without_editgrid_children())
+
+        self.assertEqual(len(components), 2)
+        self.assertEqual(components[0].key, "outerTextfield")
+        self.assertEqual(components[1].key, "editgrid")

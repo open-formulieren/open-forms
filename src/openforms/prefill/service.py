@@ -34,11 +34,16 @@ So, to recap:
    form field default values.
 """
 
+from typing import Protocol
+
 import structlog
 from opentelemetry import trace
+from typing_extensions import TypeIs
 
+from formio_types import TYPE_TO_TAG, AnyComponent
+from formio_types._base import Prefill
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    FormioConfig,
     FormioData,
 )
 from openforms.submissions.models import Submission
@@ -58,14 +63,21 @@ logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.prefill.service")
 
 
-def inject_prefill(
-    configuration_wrapper: FormioConfigurationWrapper, submission: Submission
-) -> None:
+class ComponentWithPrefill(Protocol):
+    prefill: Prefill | None = None
+
+
+# The TypeIs narrowing doesn't play nice with union types :(
+def has_prefill(component: AnyComponent) -> TypeIs[ComponentWithPrefill]:  # pyright: ignore[reportGeneralTypeIssues]
+    prefill = getattr(component, "prefill", None)
+    return isinstance(prefill, Prefill)
+
+
+def inject_prefill(config: FormioConfig, submission: Submission) -> None:
     """
     Mutates each component found in configuration according to the prefilled values.
 
-    :param configuration_wrapper: The Formiojs JSON schema wrapper describing an entire
-      form or an individual component within the form.
+    :param config: The Formiojs JSON schema wrapper describing an entire form.
     :param submission: The :class:`openforms.submissions.models.Submission` instance
       that holds the values of the prefill data. The prefill data was fetched earlier,
       see :func:`prefill_variables`.
@@ -76,36 +88,43 @@ def inject_prefill(
     state = submission.variables_state
     prefilled_data = state.get_prefilled_data()
     for key, variable in state.prefilled_variables.items():
+        # The component to prefill is not in this step
+        if key not in config:
+            continue
         prefill_value = prefilled_data[key]
-        try:
-            component = configuration_wrapper[key]
-        except KeyError:
-            # The component to prefill is not in this step
+        component = config[key]
+
+        # ignore components that don't support or have prefill configuration
+        if not has_prefill(component):
             continue
 
-        if not (prefill := component.get("prefill")):
-            continue
-        if not prefill.get("plugin"):
-            continue
-        if not prefill.get("attribute"):
+        if (
+            not (prefill := component.prefill)
+            or not prefill.plugin
+            or not prefill.attribute
+        ):
             continue
 
         # Prefill values fetched from the state are in native Python types, so we need
         # to convert the default value before doing a comparison.
-        default_value = variable.to_python(component.get("defaultValue"))
+        default_value = variable.to_python(component.default_value)
 
         if prefill_value != default_value and default_value is not None:
             logger.info(
                 "prefill.overwrite_non_null_default_value",
                 submission_uuid=str(submission.uuid),
-                component_type=component["type"],
+                component_type=TYPE_TO_TAG[type(component)],
                 default_value=default_value,
-                component_id=component.get("id"),
+                component_id=component.id,
+                component_key=component.key,
             )
         # Component configuration is still in JSON, so we need to convert the value
         # back. Would be nice if this was no longer necessary with the (maybe planned)
         # formio configuration msgspec rework :)
-        component["defaultValue"] = variable.to_json(prefill_value)
+        # TODO: set_default_value method to handle the typing issues/consistency?
+        # Cleaner would be to have prefill not set default value at all, and instead
+        # store it in the target variables to begin with.
+        component.default_value = variable.to_json(prefill_value)
 
 
 @tracer.start_as_current_span(

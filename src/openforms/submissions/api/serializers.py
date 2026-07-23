@@ -489,19 +489,16 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # mark them all as not required, to support pausing forms where data is very
         # likely to still be incomplete. See #4144.
         for component in iter_components(configuration):
-            if "validate" not in component:
-                continue
-            if not component["validate"].get("required", False):
-                continue
-            component["validate"]["required"] = False
+            match component:
+                case {"validate": {"required": True}}:
+                    component["validate"]["required"] = False
+                case _:
+                    continue
 
         step_data_serializer = build_serializer(
             configuration["components"],
             data=data,
-            context={
-                "submission": submission,
-                "configuration": configuration,
-            },
+            context={"submission": submission},
         )
         step_data_serializer.is_valid(raise_exception=True)
 

@@ -1,16 +1,17 @@
-from collections.abc import Collection, Iterator
+from collections.abc import Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 
 from django.template import TemplateSyntaxError
 
 import structlog
+from typing_extensions import deprecated
 
-from openforms.formio.typing import FormioConfiguration
+from formio_types import get_template_trace_context
 from openforms.template import extract_variables_used, parse, render_from_string
-from openforms.typing import JSONValue
+from openforms.typing import JSONValue, VariableValue
 from openforms.utils.helpers import recursively_apply_function
 
-from .datastructures import FormioConfigurationWrapper, FormioData
+from .datastructures import FormioConfig, FormioData
 from .typing import Component
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -29,16 +30,20 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
 )
 
 
-def render(formio_bit: JSONValue, context: dict) -> JSONValue:
-    return recursively_apply_function(formio_bit, render_from_string, context=context)
+def _render_and_force_str(source: str, context: Mapping[str, VariableValue]) -> str:
+    result = render_from_string(source, context)
+    # Slice the SafeString to force it into a normal string.
+    return result[:]
 
 
+@deprecated("replaced by AnyComponent.iter_template_attributes")
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
     """
     Return an iterator over the formio component properties that are template-enabled.
 
     Each item returns a tuple with the key and value of the formio component.
     """
+
     # no server-side template evaluation here
     if component["type"] == "softRequiredErrors":
         return
@@ -57,7 +62,7 @@ class ComponentTemplateSyntaxError:
 
 
 def get_configuration_template_syntax_errors(
-    configuration: FormioConfiguration,
+    components: Sequence[Component],
 ) -> Collection[ComponentTemplateSyntaxError]:
     """
     Check the Formio configuration for template syntax errors.
@@ -67,34 +72,37 @@ def get_configuration_template_syntax_errors(
     components are eventually validated.
     """
     errors: list[ComponentTemplateSyntaxError] = []
-    config_wrapper = FormioConfigurationWrapper(
-        configuration=configuration,
-        validate_unique_keys=False,
-    )
-    for component in config_wrapper:
-        for property_name, property_value in iter_template_properties(component):
-            try:
-                recursively_apply_function(property_value, parse)
-            except TemplateSyntaxError:
-                key = component["key"]
-                parents = config_wrapper.get_branch(key)[:-1]
-                errors.append(
-                    ComponentTemplateSyntaxError(
-                        key=key,
-                        label=component.get("label") or key,
-                        property_name=property_name,
-                        parents_representation=" > ".join(
-                            (parent.get("label") or parent["key"]) for parent in parents
-                        ),
-                    )
+    formio_config = FormioConfig(name="<in-memory>", components=components)
+
+    def _parse(source: str) -> None:
+        try:
+            parse(source)
+        except TemplateSyntaxError:
+            trace_context = get_template_trace_context()
+            if trace_context is None:  # pragma: no cover
+                logger.debug("trace_context_unexpectedly_none")
+                return
+            component = trace_context.component
+            key = component.key
+            parents = formio_config.get_parents(key)
+            errors.append(
+                ComponentTemplateSyntaxError(
+                    key=key,
+                    label=component.get_label(),
+                    property_name=trace_context.attribute,
+                    parents_representation=" > ".join(
+                        parent.get_label() for parent in parents
+                    ),
                 )
+            )
+
+    for component in formio_config:
+        component.test_templates_with_trace(do_parse=_parse)
 
     return errors
 
 
-def inject_variables(
-    configuration: FormioConfigurationWrapper, values: FormioData
-) -> None:
+def inject_variables(formio_config: FormioConfig, values: FormioData) -> None:
     """
     Inject the variable values into the Formio configuration.
 
@@ -111,27 +119,21 @@ def inject_variables(
     .. todo:: Support getting non-string based configuration from variables, such as
        `validate.required` etc.
     """
-    for component in configuration:
-        for property_name, property_value in iter_template_properties(component):
-            if not property_value:
-                continue
 
-            match property_value:
-                case [str(), *_]:
-                    property_value = [s for s in property_value if isinstance(s, str)]
+    def _render(source: str) -> str:
+        try:
+            return _render_and_force_str(source, context=values.data)
+        except TemplateSyntaxError as exc:
+            logger.debug(
+                "formio.template_evaluation_failure",
+                template=source,
+                exc_info=exc,
+            )
+            # keep the original value on error
+            return source
 
-            try:
-                templated_value = render(property_value, values.data)
-            except TemplateSyntaxError as exc:
-                logger.debug(
-                    "formio.template_evaluation_failure",
-                    template=property_value,
-                    exc_info=exc,
-                )
-                # keep the original value on error
-                continue
-
-            component[property_name] = templated_value
+    for component in formio_config:
+        component.render_templates(do_render=_render)
 
 
 def extract_variables_from_template_properties(component: Component) -> set[str]:

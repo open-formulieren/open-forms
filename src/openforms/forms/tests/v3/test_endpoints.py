@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.utils.text import get_text_list
 from django.utils.translation import gettext as _
 
-from djangorestframework_camel_case.util import underscoreize
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
@@ -323,14 +322,14 @@ class FormEndpointTests(APITestCase):
                         "key": "component1",
                         "label": "component1",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
                         "label": "component2",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                 ],
             },
@@ -561,14 +560,14 @@ class FormEndpointTests(APITestCase):
                         "key": "component1",
                         "label": "component1",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
                         "label": "component2",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                 ],
             },
@@ -1230,7 +1229,7 @@ class FormEndpointTests(APITestCase):
                         "key": "component1",
                         "label": "component1",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                 ],
             },
@@ -1249,14 +1248,14 @@ class FormEndpointTests(APITestCase):
                         "key": "component2",
                         "label": "component2",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component3",
                         "label": "component3",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                 ],
             },
@@ -1342,14 +1341,14 @@ class FormEndpointTests(APITestCase):
                         "key": "component1",
                         "label": "component1",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
                         "label": "component2",
                         "hidden": False,
-                        "clear_on_hide": True,
+                        "clearOnHide": True,
                     },
                 ],
             },
@@ -1667,11 +1666,15 @@ class FormEndpointTests(APITestCase):
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
                                             "label": "fileInRepeatingGroup1",
+                                            "file": {"type": []},
+                                            "filePattern": "",
                                         },
                                         {
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
                                             "label": "fileInRepeatingGroup1",
+                                            "file": {"type": []},
+                                            "filePattern": "",
                                         },
                                     ],
                                 },
@@ -3063,7 +3066,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "textfield",
-                                    "name": "Text field",
+                                    "label": "Text field",
                                 },
                             ],
                         },
@@ -3345,6 +3348,8 @@ def close_db_connections(future: Future) -> None:
 
 
 class FormEndpointConcurrentTests(APITransactionTestCase):
+    maxDiff = None
+
     def test_create_form_with_definitions_with_update(self):
         """
         Test that updating the same form definition, by creating two forms
@@ -3463,10 +3468,11 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         ]
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
-        response_data = underscoreize(success_responses[0].json())
-        expected_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
+        response_data = success_responses[0].json()
+        successfull_form_definition = response_data["steps"][0]["formDefinition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         form = Form.objects.get()
 
@@ -3479,7 +3485,12 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         step_form_definition = form_step.form_definition
         self.assertEqual(step_form_definition.uuid, form_definition.uuid)
         self.assertTrue(step_form_definition.login_required)
-        self.assertEqual(step_form_definition.configuration, expected_form_definition)
+
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
 
     def test_update_form_definitions(self):
         """
@@ -3604,10 +3615,11 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         ]
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
-        response_data = underscoreize(success_responses[0].json())
-        expected_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
+        response_data = success_responses[0].json()
+        successfull_form_definition = response_data["steps"][0]["formDefinition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         self.assertEqual(Form.objects.count(), 2)
         updated_form = next(
@@ -3628,7 +3640,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
 
         # step form definition
         self.assertEqual(form_step.form_definition, form_definition)
-        self.assertEqual(
-            form_step.form_definition.configuration, expected_form_definition
-        )
+        step_form_definition = form_step.form_definition
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
         self.assertEqual(FormDefinition.objects.count(), 1)  # pyright: ignore[reportAttributeAccessIssue]

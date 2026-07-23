@@ -8,17 +8,16 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Mapping, Sequence
 from typing import TYPE_CHECKING
 
 import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
-from openforms.formio.typing.base import FormioConfiguration
+from formio_types import AnyComponent, FormioConfiguration
 
-from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
+from .datastructures import FormioConfig, FormioData
 from .utils import iter_components
 
 if TYPE_CHECKING:
@@ -26,15 +25,18 @@ if TYPE_CHECKING:
 
 logger = structlog.stdlib.get_logger(__name__)
 
+FORMIO_CONFIG_CONTEXT_KEY = "_formio_config"
+
 type FieldOrNestedFields = serializers.Field | dict[str, "FieldOrNestedFields"]
 
 
 class StepDataSerializer(serializers.Serializer):
     def apply_hidden_state(
         self,
-        configuration: FormioConfiguration,
-        fields: dict[str, FieldOrNestedFields],
+        components_to_post_process: Collection[AnyComponent],
+        fields: Mapping[str, FieldOrNestedFields],
         register: ComponentRegistry,
+        parent_key_prefix: str,
     ) -> None:
         """
         Apply the hidden/visible state of the formio components to the serializer.
@@ -51,22 +53,23 @@ class StepDataSerializer(serializers.Serializer):
             return
 
         assert self.context
-        assert "configuration_wrapper" in self.context
-        config_wrapper: FormioConfigurationWrapper = self.context[
-            "configuration_wrapper"
-        ]
+        assert FORMIO_CONFIG_CONTEXT_KEY in self.context
+        formio_config = self.context[FORMIO_CONFIG_CONTEXT_KEY]
+        assert isinstance(formio_config, FormioConfig)
 
         values = FormioData(self.initial_data)
-
         # loop over all components and delegate application to the registry
-        for component in iter_components(configuration, recurse_into_editgrid=False):
+        for component in components_to_post_process:
             # Components without submission data do not have serializer fields
             # associated with them.
-            if not register.holds_submission_data(component):
-                continue
+            assert register.holds_submission_data(component)
 
-            is_hidden = config_wrapper.is_hidden(component["key"], values)
+            # for components inside edit grids, a lookup key is necessary
+            lookup_key = component.key
+            if parent_key_prefix:
+                lookup_key = f"{parent_key_prefix}.{lookup_key}"
 
+            is_hidden = formio_config.is_hidden(lookup_key, values)
             # we don't have to do anything when the component is visible, regular
             # validation rules apply
             if not is_hidden:
@@ -74,7 +77,7 @@ class StepDataSerializer(serializers.Serializer):
 
             # when it's not visible, grab the field from the serializer and remove all
             # the validators to match Formio's behaviour.
-            serializer_field = glom(fields, component["key"])
+            serializer_field = glom(fields, component.key)
             self._remove_validations_from_field(serializer_field)
 
     def _remove_validations_from_field(self, field: serializers.Field) -> None:
@@ -118,7 +121,7 @@ class StepDataSerializer(serializers.Serializer):
 
 
 def dict_to_serializer(
-    fields: dict[str, FieldOrNestedFields], **kwargs
+    fields: Mapping[str, FieldOrNestedFields], **kwargs
 ) -> StepDataSerializer:
     """
     Recursively convert a mapping of field names to a serializer instance.
@@ -132,7 +135,7 @@ def dict_to_serializer(
     for bit, field in fields.items():
         match field:
             case dict() as nested_fields:
-                # we do not pass **kwwargs to nested serializers, as this should only
+                # we do not pass **kwargs to nested serializers, as this should only
                 # be provided to the top-level serializer. The context/data is then
                 # shared through all children by DRF.
                 serializer.fields[bit] = dict_to_serializer(nested_fields)
@@ -144,7 +147,10 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: Sequence[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[AnyComponent],
+    register: ComponentRegistry,
+    parent_key_prefix: str = "",
+    **kwargs,
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -152,24 +158,31 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
-    if context := kwargs.get("context"):
-        assert isinstance(context, dict) and "configuration" in context
-        context.setdefault(
-            "configuration_wrapper",
-            FormioConfigurationWrapper(context["configuration"]),
-        )
+    assert "context" in kwargs
+    assert FORMIO_CONFIG_CONTEXT_KEY in kwargs["context"]
+
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: FormioConfiguration = {"components": components}
+    config = FormioConfiguration(components=components)
+    components_to_post_process: list[AnyComponent] = []
     for component in iter_components(config, recurse_into_editgrid=False):
         # Components without submission data do not have serializer fields
         # associated with them.
         if not register.holds_submission_data(component):
             continue
 
-        field = register.build_serializer_field(component)
-        assign(obj=fields, path=component["key"], val=field, missing=dict)
+        components_to_post_process.append(component)
+
+        field = register.build_serializer_field(
+            component, parent_key_prefix=parent_key_prefix
+        )
+        assign(obj=fields, path=component.key, val=field, missing=dict)
 
     serializer = dict_to_serializer(fields, **kwargs)
-    serializer.apply_hidden_state(config, fields, register)
+    serializer.apply_hidden_state(
+        components_to_post_process,
+        fields,
+        register,
+        parent_key_prefix=parent_key_prefix,
+    )
     return serializer

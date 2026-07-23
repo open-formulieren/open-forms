@@ -124,6 +124,8 @@ def fix_file_default_value(component: Component) -> bool:
         return False
 
     default_value = component["defaultValue"]
+    del component["defaultValue"]
+
     empty_value = get_component_empty_value(component)
 
     match default_value:
@@ -134,6 +136,7 @@ def fix_file_default_value(component: Component) -> bool:
             component["defaultValue"] = empty_value
             return True
         case _:
+            component["defaultValue"] = default_value
             return False
 
 
@@ -337,12 +340,17 @@ def fix_empty_default_value(component: Component) -> bool:
     if "defaultValue" not in component:
         return False
 
+    multiple = component.get("multiple", False)
     changed = False
     if component["defaultValue"] is None:
+        del component["defaultValue"]
+        if multiple:
+            component["defaultValue"] = []
+
         component["defaultValue"] = get_component_empty_value(component)
         changed = True
 
-    if component.get("multiple", False):
+    elif multiple:
         for index, value in enumerate(component["defaultValue"]):
             if value is None:
                 component["defaultValue"][index] = ""

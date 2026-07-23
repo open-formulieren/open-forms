@@ -1,8 +1,11 @@
 from collections.abc import Iterator
+from typing import Literal
 
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeString
 
+from formio_types import AnyComponent
+from openforms.formio.datastructures import FormioConfig
 from openforms.formio.rendering.nodes import ComponentNode
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
@@ -23,15 +26,19 @@ class AppointmentRenderer(Renderer):
 
         components: list[Component] = appointment.contact_details_meta
         data = FormioData(appointment.contact_details)
-        for component in components:
-            child_node = ComponentNode.build_node(
+        formio_config = FormioConfig(
+            name="<appointment contact details>",
+            components=components,
+        )
+        for component in formio_config.components:
+            child_node = ComponentNode[AnyComponent].build_node(
                 step_data=data,
                 component=component,
                 renderer=self,
             )
             yield from child_node
 
-    def __str__(self) -> SafeString:
+    def __str__(self) -> SafeString | Literal[""]:
         # Like a Django Form renderer, render to the requested representation
 
         if (

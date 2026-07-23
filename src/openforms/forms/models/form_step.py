@@ -135,24 +135,23 @@ class FormStep(OrderedModel):
 
         # This is quicker than using `iter_components`
         for component in self.form_definition.configuration_wrapper:
-            # 1. another variable as data source (only relevant for select, selectboxes,
-            # and radio components)
-            if component.get("openForms", {}).get("dataSrc") == DataSrcOptions.variable:
-                return True
-
-            # 2. Date validation uses other variables (only relevant for date and
-            # datetime components)
-            if (
-                component.get("openForms", {}).get("minDate", {}).get("mode")
-                == "relativeToVariable"
-                or component.get("openForms", {}).get("maxDate", {}).get("mode")
-                == "relativeToVariable"
-            ):
-                return True
-
-            # 3. Template expressions
-            if extract_variables_from_template_properties(component):
-                return True
+            match component:
+                # 1. another variable as data source (only relevant for select, selectboxes,
+                # and radio components)
+                case {"openForms": {"dataSrc": DataSrcOptions.variable}}:
+                    return True
+                # 2. Date validation uses other variables (only relevant for date and
+                # datetime components)
+                case {
+                    "openForms": {"minDate": {"mode": "relativeToVariable"}}
+                    | {"maxDate": {"mode": "relativeToVariable"}}
+                }:
+                    return True
+                # 3. Template expressions
+                case _ if extract_variables_from_template_properties(component):
+                    return True
+                case _:
+                    continue
 
         return False
 

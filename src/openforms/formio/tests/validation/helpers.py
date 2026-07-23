@@ -19,10 +19,7 @@ def validate_formio_data(
     """
     Dynamically build the serializer, validate it and return the status.
     """
-    context = {
-        "submission": submission or SubmissionFactory.build(),
-        "configuration": {"components": [component]},
-    }
+    context = {"submission": submission or SubmissionFactory.build()}
     serializer = build_serializer(components=[component], data=data, context=context)
     is_valid = serializer.is_valid(raise_exception=False)
     return is_valid, serializer.errors
