@@ -36,19 +36,13 @@ def _get_mock_request():
     return request
 
 
-# @TODO make export_options required
 def export_form(
     form_id: int,
-    export_options: FormExportOptions = None,
+    export_options: FormExportOptions,
     archive_name: str | None = None,
     response: HttpResponseBase | None = None,
 ):
-    resources = form_to_json(
-        form_id,
-        export_options=export_options
-        if export_options is not None
-        else FormExportOptions(),
-    )
+    resources = form_to_json(form_id, export_options)
 
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
@@ -109,11 +103,7 @@ def form_to_json(form_id: int, export_options: FormExportOptions) -> Mapping[str
         "formLogic": to_json(form_logic),
         "formVariables": to_json(form_variables),
         # Include additional configuration data in the export resources, based on the form.
-        **(
-            get_additional_form_configuration_data(form, export_options)
-            if export_options is not None
-            else {}
-        ),
+        **get_additional_form_configuration_data(form, export_options),
         EXPORT_META_KEY: to_json(
             {
                 "of_release": settings.RELEASE,

@@ -9,7 +9,12 @@ from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import FormTypeChoices, LogicActionTypes, SubmissionAllowedChoices
-from ..import_export.service import form_to_json
+from ..import_export.service import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormExportOptions,
+    form_to_json,
+)
 from ..models import Form, FormDefinition, FormStep, FormVariable
 
 
@@ -250,7 +255,24 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):
-        json_form = form_to_json(obj.form.id)
+        json_form = form_to_json(
+            obj.form.id,
+            export_options=FormExportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                remove_sensitive_content=False,
+            ),
+        )
         obj.export_blob = json_form
         obj.save()
 
