@@ -22,8 +22,32 @@ class FormVersionManager(models.Manager):
         """
         # circular dependencies
         from openforms.forms.import_export.export_form import form_to_json
+        from openforms.forms.import_export.typing import (
+            AdditionalFormConfigurationOptions,
+            FormConfigurationOptions,
+            FormExportOptions,
+        )
 
-        form_json = form_to_json(form.id)
+        form_json = form_to_json(
+            form.id,
+            export_options=FormExportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                remove_sensitive_content=False,
+            ),
+        )
         if not description:
             version_number = self.filter(form=form).count() + 1
             description = _("Version {number}").format(number=version_number)
