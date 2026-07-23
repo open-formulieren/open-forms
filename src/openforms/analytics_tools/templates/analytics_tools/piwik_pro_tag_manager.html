@@ -1,28 +1,5 @@
 {% load solo_tags %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
-{% if analytics_tools_config.is_piwik_pro_tag_manager_enabled %}
-{% comment %}
-See https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html#adding-nonce-to-container-code
-
-There *used* to be some other script for sync tags with a link to documentation at
-https://developers.piwik.pro/docs/content-security-policy-csp#adjusting-tags-to-work-with-the-content-security-policy
-but the sample script is gone. We haven't supported that in the first place anyway.
-{% endcomment %}
-
-<!-- Start Piwik PRO tag manager head tag -->
-<script id="piwik-pro-tag-manager-async" type="text/javascript" nonce="{{ request.csp_nonce }}">
-  (function(window, document, dataLayerName, id) {
-  window[dataLayerName]=window[dataLayerName]||[],window[dataLayerName].push({start:(new Date).getTime(),event:"stg.start"});
-  {# custom datalayer attribute to expose the CSP nonce to tag manager #}
-  window[dataLayerName].push({nonce: '{{ request.csp_nonce|escapejs }}'});
-  {# end custom datalayer attribute #}
-  var scripts=document.getElementsByTagName('script')[0],tags=document.createElement('script');
-  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName);var qPString=qP.length>0?("?"+qP.join("&")):"";
-  tags.async=!0,tags.src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/"+id+".js"+qPString,tags.nonce="{{ request.csp_nonce|escapejs }}",
-  scripts.parentNode.insertBefore(tags,scripts);
-  !function(a,n,i){a[n]=a[n]||{};for(var c=0;c<i.length;c++)!function(i){a[n][i]=a[n][i]||{},a[n][i].api=a[n][i].api||function(){
-  var a=[].slice.call(arguments,0);"string"==typeof a[0]&&window[dataLayerName].push({event:n+"."+i+":"+a[0],parameters:[].slice.call(arguments,1)})}}(i[c])}(window,"ppms",["tm","cm"]);
-  })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
-</script>
-<!-- End Piwik PRO tag manager head tag -->
+{% if analytics_tools_config.is_piwik_pro_tag_manager_enabled and not analytics_tools_config.force_tag_manager_usage %}
+{% include "analytics_tools/_piwik_pro_tag_manager.html" %}
 {% endif %}

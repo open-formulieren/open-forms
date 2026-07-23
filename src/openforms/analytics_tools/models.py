@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -5,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from cookie_consent.models import CookieGroup
 from solo.models import SingletonModel
 
 from .constants import AnalyticsTools
@@ -29,8 +32,8 @@ class ToolConfiguration:
 
     def has_enabled_toggled(
         self,
-        original_config: "AnalyticsToolsConfiguration",
-        current_config: "AnalyticsToolsConfiguration",
+        original_config: AnalyticsToolsConfiguration,
+        current_config: AnalyticsToolsConfiguration,
     ) -> bool:
         was_enabled = getattr(original_config, self.enable_field_name)
         is_now_enabled = getattr(current_config, self.enable_field_name)
@@ -38,10 +41,28 @@ class ToolConfiguration:
         return was_enabled != is_now_enabled
 
 
+class TagManagerToolConfiguration(ToolConfiguration):
+    def has_enabled_toggled(
+        self,
+        original_config: AnalyticsToolsConfiguration,
+        current_config: AnalyticsToolsConfiguration,
+    ) -> bool:
+        normal_behaviour_toggled = super().has_enabled_toggled(
+            original_config, current_config
+        )
+        if normal_behaviour_toggled:
+            return True
+
+        was_tag_manager_forcibly_enabled = original_config.force_tag_manager_usage
+        is_tag_manager_now_forcibly_enabled = current_config.force_tag_manager_usage
+        # XOR to detect toggle
+        return was_tag_manager_forcibly_enabled != is_tag_manager_now_forcibly_enabled
+
+
 DYNAMIC_TOOL_CONFIGURATION = {
-    AnalyticsTools.google_analytics: ToolConfiguration(
+    AnalyticsTools.google_analytics: TagManagerToolConfiguration(
         enable_field_name="enable_google_analytics",
-        is_enabled_property="is_google_analytics_enabled",
+        is_enabled_property="is_google_tag_manager_enabled",
     ),
     AnalyticsTools.matomo: ToolConfiguration(
         enable_field_name="enable_matomo_site_analytics",
@@ -61,6 +82,8 @@ DYNAMIC_TOOL_CONFIGURATION = {
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
+    # standard behaviour, TagManagerToolConfiguration is not necessary because there's
+    # already an explicit flag for piwik pro tag manager vs. analytics
     AnalyticsTools.piwik_pro_tag_manager: ToolConfiguration(
         enable_field_name="enable_piwik_pro_tag_manager",
         is_enabled_property="is_piwik_pro_tag_manager_enabled",
@@ -290,7 +313,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         ),
     )
 
-    analytics_cookie_consent_group = models.ForeignKey(
+    analytics_cookie_consent_group = models.ForeignKey[CookieGroup](
         "cookie_consent.CookieGroup",
         on_delete=models.SET_NULL,
         null=True,
@@ -300,13 +323,33 @@ class AnalyticsToolsConfiguration(SingletonModel):
             "loaded only if this cookie group is accepted by the end-user."
         ),
     )
+    use_external_cmp = models.BooleanField(
+        _("use external CMP"),
+        default=False,
+        help_text=_(
+            "Enable when using an external Consent Management Platform (through a tag "
+            "manager). When this is checked, the built-in cookie consent notice will "
+            "not be shown."
+        ),
+    )
+    force_tag_manager_usage = models.BooleanField(
+        _("force enable tag manager(s)"),
+        default=False,
+        help_text=_(
+            "Force the tag manager scripts to run, even if no cookie consent is given "
+            "or individual tools are not enabled. You typically need this when you are "
+            "using an external Consent Management Platform (CMP) through a tag "
+            "manager. Be careful when you enable this, as incorrect configuration may "
+            "have privacy and/or legal implications."
+        ),
+    )
 
     class Meta:
         verbose_name = _("Analytics tools configuration")
 
     @property
     def is_matomo_enabled(self) -> bool:
-        return (
+        return bool(
             self.matomo_url
             and self.matomo_site_id
             and self.enable_matomo_site_analytics
@@ -315,7 +358,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_url
             and self.piwik_site_id
             and self.enable_piwik_site_analytics
@@ -324,7 +367,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_pro_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_pro_url
             and self.piwik_pro_site_id
             and self.enable_piwik_pro_site_analytics
@@ -333,7 +376,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_pro_tag_manager_enabled(self) -> bool:
-        return (
+        return bool(
             self.piwik_pro_url
             and self.piwik_pro_site_id
             and self.enable_piwik_pro_tag_manager
@@ -342,7 +385,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_siteimprove_enabled(self) -> bool:
-        return (
+        return bool(
             self.siteimprove_id
             and self.enable_siteimprove_analytics
             and self.analytics_cookie_consent_group
@@ -350,12 +393,17 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_google_analytics_enabled(self) -> bool:
-        return (
-            self.ga_code
-            and self.gtm_code
+        ga_or_gtm_configured = bool(self.ga_code) or bool(self.gtm_code)
+        return bool(
+            ga_or_gtm_configured
             and self.enable_google_analytics
             and self.analytics_cookie_consent_group
         )
+
+    @property
+    def is_google_tag_manager_enabled(self) -> bool:
+        force_enabled = self.force_tag_manager_usage and self.gtm_code
+        return force_enabled or self.is_google_analytics_enabled
 
     @property
     def is_govmetric_enabled(self) -> bool:
