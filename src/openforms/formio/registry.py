@@ -366,6 +366,23 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
                     continue
                 component[prop] = translation
 
+        for index, faq_item in enumerate(component.get("faqItems", [])):
+            assert "faqItems" in component
+            if "openForms" not in faq_item:
+                continue
+
+            faq_translations = faq_item["openForms"]["translations"]
+            if language_code not in faq_translations:
+                del faq_item["openForms"]["translations"]
+                continue
+
+            for property, translation in faq_translations[language_code].items():
+                if not translation:
+                    break  # don't apply any translation when one is missing
+                component["faqItems"][index][property] = translation
+
+            del faq_item["openForms"]["translations"]
+
         if (component_type := component["type"]) in self:
             component_plugin = self[component_type]
             component_plugin.localize(component, language_code, enabled=enabled)
