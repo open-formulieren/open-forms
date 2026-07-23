@@ -141,7 +141,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form=form, source=FormVariableSources.user_defined, key="test-user-defined"
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -228,7 +230,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -1327,7 +1331,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         form_definition = FormDefinitionFactory.create()
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         form_definition.slug = "modified"
         form_definition.save()
@@ -1354,7 +1360,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         FormStepFactory.create(form=form, form_definition=form_definition)
         FormLogicFactory.create(form=form)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         import_form(import_file=self.filepath)
 
@@ -1394,7 +1402,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         old_form_slug = form.slug
         form.slug = "modified"
@@ -1481,7 +1491,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         old_form_slug = form.slug
         form.slug = "modified"
@@ -1565,7 +1577,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         import_form(import_file=self.filepath)
 
@@ -1594,7 +1608,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         """
         category = CategoryFactory.create()
         form = FormFactory.create(category=category)
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
         # delete the data to mimic an environment where category/form don't exist
         form.delete()
         category.delete()
@@ -1671,11 +1687,13 @@ class ImportExportTests(TempdirMixin, TestCase):
             next_text_en="Some next step text translation",
         )
 
-        original_json = form_to_json(form.pk)
+        original_json = form_to_json(form.pk, export_options=FormExportOptions())
 
         # roundtrip
         with translation.override("en"):
-            export_form(form.pk, archive_name=self.filepath)
+            export_form(
+                form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+            )
         # language switched back to default
         form.delete()
         form_definition.delete()
@@ -1921,7 +1939,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             formstep__form_definition__configuration={"components": [component]},
         )
 
-        export_data = form_to_json(form.pk)
+        export_data = form_to_json(form.pk, export_options=FormExportOptions())
 
         self.assertIsInstance(export_data, dict)
 
@@ -1947,7 +1965,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                 ]
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         converters = {"textfield": {"add_foo": add_foo}}
         with patch("openforms.forms.utils.CONVERTERS", new=converters):
@@ -1963,7 +1983,9 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_rountrip_form_with_theme_override(self):
         theme = ThemeFactory.create()
         form = FormFactory.create(generate_minimal_setup=True, theme=theme)
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         # run the import again
         import_form(import_file=self.filepath)
@@ -2236,7 +2258,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                 ]
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
         import_form(import_file=self.filepath)
 
         imported_form = Form.objects.exclude(pk=form.pk).get()

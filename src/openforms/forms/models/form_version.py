@@ -21,9 +21,31 @@ class FormVersionManager(models.Manager):
         Create a new ``FormVersion`` record for a given form.
         """
         # circular dependencies
+        from ..import_export.constants import (
+            AdditionalFormConfigurationOptions,
+            FormConfigurationOptions,
+        )
         from ..import_export.export_form import form_to_json
+        from ..import_export.typing import FormExportOptions
 
-        form_json = form_to_json(form.id)
+        form_json = form_to_json(
+            form.id,
+            export_options=FormExportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                remove_sensitive_content=False,
+            ),
+        )
         if not description:
             version_number = self.filter(form=form).count() + 1
             description = _("Version {number}").format(number=version_number)

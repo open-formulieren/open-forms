@@ -34,16 +34,10 @@ def _get_mock_request():
     return request
 
 
-# @TODO make export_options required
 def export_form(
-    form_id, archive_name=None, response=None, export_options: FormExportOptions = None
+    form_id, export_options: FormExportOptions, archive_name=None, response=None
 ):
-    resources = form_to_json(
-        form_id,
-        export_options=export_options
-        if export_options is not None
-        else FormExportOptions(),
-    )
+    resources = form_to_json(form_id, export_options)
 
     outfile = response or archive_name
     with zipfile.ZipFile(outfile, "w") as zip_file:
