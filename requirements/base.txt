@@ -447,7 +447,7 @@ pathable==0.4.3
     # via jsonschema-spec
 phonenumberslite==8.13.29
     # via -r requirements/base.in
-pillow==10.3.0
+pillow==12.3.0
     # via
     #   -r requirements/base.in
     #   django-colorfield

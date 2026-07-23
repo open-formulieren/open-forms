@@ -831,7 +831,7 @@ phonenumberslite==8.13.29
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pillow==10.3.0
+pillow==12.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

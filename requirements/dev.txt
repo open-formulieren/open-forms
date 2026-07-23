@@ -526,7 +526,7 @@ furl==2.1.2
     #   django-digid-eherkenning
 gitdb==4.0.7
     # via gitpython
-gitpython==3.1.41
+gitpython==3.1.55
     # via -r requirements/dev.in
 glom==23.5.0
     # via
@@ -860,7 +860,7 @@ phonenumberslite==8.13.29
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pillow==10.3.0
+pillow==12.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
