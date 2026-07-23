@@ -472,7 +472,7 @@ packaging==26.0
     #   opentelemetry-instrumentation
 phonenumberslite==9.0.24
     # via -r requirements/base.in
-pillow==12.2.0
+pillow==12.3.0
     # via
     #   -r requirements/base.in
     #   django-colorfield
@@ -491,7 +491,7 @@ protobuf==6.33.5
     #   opentelemetry-proto
 psycopg==3.3.3
     # via -r requirements/base.in
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via webauthn
 pycountry==26.2.16
     # via schwifty
