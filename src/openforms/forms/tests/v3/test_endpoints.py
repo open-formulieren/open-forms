@@ -112,6 +112,23 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(form.name, "Create form")
         self.assertEqual(form.slug, "create-form")
 
+        with self.subTest("formio config is kept as-is"):
+            fd = FormDefinition.objects.get()
+            self.assertEqual(
+                fd.configuration,
+                {
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "component1",
+                            "label": "component1",
+                            "hidden": False,
+                            "clearOnHide": True,
+                        },
+                    ],
+                },
+            )
+
     def test_create_detailed_form(self):
         product = ProductFactory.create()
         category = CategoryFactory.create()
@@ -1667,11 +1684,15 @@ class FormEndpointTests(APITestCase):
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
                                             "label": "fileInRepeatingGroup1",
+                                            "file": {"type": []},
+                                            "filePattern": "",
                                         },
                                         {
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
                                             "label": "fileInRepeatingGroup1",
+                                            "file": {"type": []},
+                                            "filePattern": "",
                                         },
                                     ],
                                 },
