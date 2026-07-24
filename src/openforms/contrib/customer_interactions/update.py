@@ -59,7 +59,9 @@ def update_customer_interaction_data(
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the created ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene``. If the address is
-        submitted as ``isNewPreferred``, then it's also linked to the created ``partij``
+        submitted as ``isNewPreferred``, then
+        - it's also linked to the created ``partij``
+        - its ``referentie`` is also updated
 
     3. User is authenticated, known in the API and uses pre-filled data:
 
@@ -74,7 +76,9 @@ def update_customer_interaction_data(
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the found ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
-        If the address is submitted as ``isNewPreferred``, then it's also linked to the ``partij``
+        If the address is submitted as ``isNewPreferred``, then:
+        - it's also linked to the ``partij``
+        - its ``referentie`` is also updated (CAN CRASH)
 
     5. User is authenticated, known in the API and submits existing addresses with the changed preference:
 
@@ -83,7 +87,9 @@ def update_customer_interaction_data(
         to the found ``partij``
       * if the address is submitted as ``useOnlyOnce``, then we don't update it
       * if the address is submitted as ``isNewPreferred``, and the existing address is not
-        preferred (``isStandaardAdres`` == False) then we update it with ``isStandaardAdres`` = True
+        preferred (``isStandaardAdres`` == False) then we update it with:
+         - ``isStandaardAdres`` = True
+         - ``referentie`` from the config (CAN CRASH)
 
     """
 
@@ -168,7 +174,10 @@ def update_customer_interaction_data(
                 # flow 5. we update it only if it's marked as "isNewPreferred"
                 if is_address_new_preferred:
                     updated_address = client.update_digital_address_for_party(
-                        address=address_value, party_uuid=party_uuid, is_preferred=True
+                        address=address_value,
+                        party_uuid=party_uuid,
+                        is_preferred=True,
+                        reference=api_group.digital_address_reference,
                     )
                     updated_addresses.append(updated_address)
 
@@ -191,6 +200,9 @@ def update_customer_interaction_data(
                     betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                     party_uuid=party_uuid if is_address_new_preferred else "",
                     is_preferred=is_address_new_preferred,
+                    reference=api_group.digital_address_reference
+                    if is_address_new_preferred
+                    else "",
                 )
                 created_addresses.append(created_address)
 

@@ -29,6 +29,15 @@ class CustomerInteractionsAPIGroupConfig(models.Model):
         limit_choices_to={"api_type": APITypes.kc},
         related_name="+",
     )
+    digital_address_reference = models.CharField(
+        _("digital address reference"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "The 'referentie' attribute of the digital address resource "
+            "sent to the Customer Interactions API."
+        ),
+    )
 
     objects = CustomerInteractionsAPIGroupConfigManager()
 
