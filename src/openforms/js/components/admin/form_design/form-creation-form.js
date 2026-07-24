@@ -449,32 +449,16 @@ function reducer(draft, action) {
       break;
     }
     case 'EDIT_STEP_COMPONENT_MUTATED': {
-      const {mutationType, schema, args, formDefinition} = action.payload;
+      const {mutationType, schema, originalComponent, isNew, formDefinition} = action.payload;
 
-      let originalComp;
-      let isNew;
-      let configuration;
-      switch (mutationType) {
-        case 'changed': {
-          originalComp = args[0];
-          configuration = args[1];
-          isNew = args[4];
-          break;
-        }
-        case 'removed': {
-          originalComp = null;
-          configuration = args[0];
-          isNew = false;
-          break;
-        }
-        default:
-          throw new Error(`Unknown mutation type '${mutationType}'`);
+      if (!['changed', 'removed'].includes(mutationType)) {
+        throw new Error(`Unknown mutation type '${mutationType}'`);
       }
 
       // Check if a key has been changed and if the logic rules need updating
-      const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
+      const hasKeyChanged = checkKeyChange(mutationType, schema, originalComponent);
       if (mutationType === 'changed' && hasKeyChanged) {
-        updateKeyReferencesInLogic(draft.logicRules, originalComp.key, schema.key);
+        updateKeyReferencesInLogic(draft.logicRules, originalComponent.key, schema.key);
       } else if (mutationType === 'removed') {
         updateRemovedKeyInLogic(draft.logicRules, schema.key);
       }
@@ -494,8 +478,8 @@ function reducer(draft, action) {
       const step = getFormStep(formDefinition, draft.formSteps, true);
 
       if (!isNew) {
-        // In the case the component was removed, originalComp is null
-        const componentKey = originalComp ? originalComp.key : schema.key;
+        // In the case the component was removed, originalComponent is null
+        const componentKey = originalComponent ? originalComponent.key : schema.key;
         // the component was either changed or removed. Using the original key and
         // step configuration, we can build the full json path, after which we can
         // clear validation errors for that.
@@ -520,7 +504,7 @@ function reducer(draft, action) {
         mutationType,
         isNew,
         schema,
-        originalComp,
+        originalComponent,
         draft.formVariables,
         step.configuration
       );
@@ -536,7 +520,7 @@ function reducer(draft, action) {
           configuredBackend;
         const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
         if (handler == null) return configuredBackend;
-        const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+        const updatedOptions = handler(registrationBackendOptions, schema, originalComponent);
         if (!updatedOptions) return configuredBackend;
 
         return {...configuredBackend, options: updatedOptions};
@@ -1049,14 +1033,21 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
   };
 
   // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
-  const onComponentMutated = (formDefinition, mutationType, schema, ...rest) => {
+  const onComponentMutated = (
+    formDefinition,
+    mutationType,
+    schema,
+    originalComponent = null,
+    isNew = false
+  ) => {
     dispatch({
       type: 'EDIT_STEP_COMPONENT_MUTATED',
       payload: {
         mutationType,
         schema,
         formDefinition,
-        args: rest,
+        originalComponent,
+        isNew,
       },
     });
   };

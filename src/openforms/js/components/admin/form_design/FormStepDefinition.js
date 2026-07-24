@@ -7,11 +7,12 @@ import Field, {normalizeErrors} from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import OFFormBuilder from 'components/formio_builder/OFFormBuilder';
 import FormIOBuilder from 'components/formio_builder/builder';
 
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
-import {FormContext} from './Context';
+import {FeatureFlagsContext, FormContext} from './Context';
 import LanguageTabs, {DEFAULT_LANGUAGE} from './LanguageTabs';
 import LogicWarning from './LogicWarning';
 import PluginWarning from './PluginWarning';
@@ -58,6 +59,7 @@ const FormStepDefinition = ({
     registrationBackends,
     form: {type},
   } = useContext(FormContext);
+  const featureFlags = useContext(FeatureFlagsContext);
 
   const isSingleStep = type === 'single_step';
 
@@ -170,7 +172,7 @@ const FormStepDefinition = ({
           />
         }
         collapsible
-        initialCollapsed={hasName && slug && !errors.length}
+        initialCollapsed={hasName && slug !== '' && !errors.length}
       >
         <LanguageTabs haveErrors={[...erroredLanguages]}>
           {(langCode, defaultLang) => (
@@ -397,14 +399,24 @@ const FormStepDefinition = ({
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
         <MessageList messages={componentMessages} />
-        <FormIOBuilder
-          configuration={configuration}
-          onChange={onChange}
-          onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
-          componentNamespace={componentNamespace}
-          registrationBackendInfo={registrationBackends}
-          {...props}
-        />
+        {featureFlags.USE_OF_FORM_DESIGNER ? (
+          <OFFormBuilder
+            configuration={configuration}
+            onChange={onChange}
+            onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
+            componentNamespace={componentNamespace}
+            formDefinitionIdentifier={url || generatedId}
+          />
+        ) : (
+          <FormIOBuilder
+            configuration={configuration}
+            onChange={onChange}
+            onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
+            componentNamespace={componentNamespace}
+            registrationBackendInfo={registrationBackends}
+            {...props}
+          />
+        )}
       </div>
     </>
   );

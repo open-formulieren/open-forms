@@ -29,6 +29,7 @@
   "homepage": "https://www.maykin.nl",
   "dependencies": {
     "@formatjs/cli": "^6.6.1",
+    "@formatjs/intl": "^3.1.8",
     "@fortawesome/fontawesome-free": "^6.1.1",
     "@open-formulieren/design-tokens": "^0.68.1",
     "@open-formulieren/formio-builder": "^0.51.0",
@@ -60,6 +61,7 @@
     "react-select": "^5.8.0",
     "react-tabs": "^6.0.2",
     "react-use": "^17.2.4",
+    "regenerator-runtime": "^0.14.1",
     "state-pool": "^0.7.1",
     "use-immer": "^0.9.0",
     "uuid": "^8.3.2"
@@ -92,6 +94,7 @@
     "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
     "@storybook/react-webpack5": "10.4.6",
     "@storybook/test-runner": "^0.24.4",
+    "@utrecht/component-library-react": "^14.0.2",
     "@utrecht/heading-2-css": "^2.0.1",
     "@utrecht/icon-css": "^3.0.1",
     "@utrecht/link-css": "^2.0.1",
@@ -109,6 +112,7 @@
     "css-has-pseudo": "^6.0.1",
     "css-loader": "^5.0.2",
     "cssnano": "^5.0.17",
+    "date-fns": "^4.4.0",
     "ejs-loader": "^0.5.0",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",

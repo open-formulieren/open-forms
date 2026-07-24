@@ -62,6 +62,14 @@ module.exports = {
         loader: 'babel-loader',
       },
 
+      // .mjs
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+
       // .scss
       {
         test: /\.(sa|sc|c)ss$/,

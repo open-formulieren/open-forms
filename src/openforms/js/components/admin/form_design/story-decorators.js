@@ -18,6 +18,7 @@ export const FeatureFlagsDecorator = (Story, {parameters}) => (
   <FeatureFlagsContext.Provider
     value={{
       ZGW_APIS_INCLUDE_DRAFTS: parameters?.featureFlags?.ZGW_APIS_INCLUDE_DRAFTS ?? false,
+      USE_OF_FORM_DESIGNER: parameters?.featureFlags?.USE_OF_FORM_DESIGNER ?? false,
     }}
   >
     <Story />
