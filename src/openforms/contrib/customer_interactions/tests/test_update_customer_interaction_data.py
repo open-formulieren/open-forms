@@ -848,3 +848,259 @@ class UpdateCustomerInteractionDataTests(
         self.assertAddressPresent(digital_addresses["created"], expected_address)
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
+
+
+@tag("gh-6418")
+class UpdateCustomerInteractionReferentieTests(
+    CustomerInteractionsMixin, OFVCRMixin, TestCase
+):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.config.digital_address_reference = "portaalvoorkeur"
+        cls.config.save()
+
+    def test_auth_user_not_known_in_openklant(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "some@email.com",
+                "type": "email",
+                "preferenceUpdate": "useOnlyOnce",
+            },
+            {
+                "address": "0612345678",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="108915864",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        digital_addresses = result["digital_addresses"]
+
+        self.assertEqual(len(digital_addresses["created"]), 2)
+        expected_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "some@email.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "referentie": "",
+            },
+            {
+                "adres": "0612345678",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": True,
+                "referentie": "portaalvoorkeur",
+            },
+        ]
+        for expected_address in expected_addresses:
+            with self.subTest(expected_address):
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_auth_user_known_in_openklant_new_address_new_reference(self):
+        profile_channels: list[SupportedChannels] = ["phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "0612345678",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="111111110",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        digital_addresses = result["digital_addresses"]
+
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "0612345678",
+            "soortDigitaalAdres": "telefoonnummer",
+            "isStandaardAdres": True,
+            "referentie": "portaalvoorkeur",
+        }
+        self.assertAddressPresent(digital_addresses["created"], expected_address)
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_auth_user_known_in_openklant_new_address_same_reference(self):
+        # FIXME crashes, blocked by https://github.com/maykinmedia/open-klant/issues/625
+        profile_channels: list[SupportedChannels] = ["email"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "justanother@email.com",
+                "type": "email",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="111111110",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        digital_addresses = result["digital_addresses"]
+
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "justanother@email.com",
+            "soortDigitaalAdres": "email",
+            "isStandaardAdres": True,
+            "referentie": "portaalvoorkeur",
+        }
+
+        self.assertAddressPresent(digital_addresses["created"], expected_address)
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_auth_with_bsn_user_known_in_openklant_known_addresses_with_different_preference(
+        self,
+    ):
+        # FIXME crashes, blocked by https://github.com/maykinmedia/open-klant/issues/625
+        profile_channels: list[SupportedChannels] = ["email"]
+        # both addresses are known in the Open Klant and both are not preferred
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "more@email.nl",
+                "type": "email",
+                "preferenceUpdate": "isNewPreferred",
+            }
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="111111110",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        digital_addresses = result["digital_addresses"]
+
+        # no new address is added
+        self.assertEqual(digital_addresses["created"], [])
+        # 2 addresses are updated
+        self.assertEqual(len(digital_addresses["updated"]), 1)
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "more@email.nl",
+            "soortDigitaalAdres": "email",
+            "isStandaardAdres": True,
+            "referentie": "portaalvoorkeur",
+        }
+
+        self.assertAddressPresent(digital_addresses["updated"], expected_address)
