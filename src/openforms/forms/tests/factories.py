@@ -3,14 +3,21 @@ import random
 import factory.fuzzy
 
 from openforms.authentication.registry import register as authentication_registry
-from openforms.forms.constants import LogicActionTypes
+from openforms.forms.constants import (
+    FormTypeChoices,
+    LogicActionTypes,
+    SubmissionAllowedChoices,
+)
+from openforms.forms.import_export.export_form import form_to_json
+from openforms.forms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormExportOptions,
+)
+from openforms.forms.models import Form, FormDefinition, FormStep, FormVariable
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
-
-from ..constants import FormTypeChoices, SubmissionAllowedChoices
-from ..models import Form, FormDefinition, FormStep, FormVariable
-from ..utils import form_to_json
 
 
 def authentication_plugins():
@@ -246,7 +253,26 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):
-        json_form = form_to_json(obj.form.id)
+        json_form = form_to_json(
+            obj.form.id,
+            export_options=FormExportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                remove_sensitive_content=False,
+            ),
+        )
         obj.export_blob = json_form
         obj.save()
 

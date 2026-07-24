@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.forms.import_export.typing import FormExportOptions
 
 from ..admin.tasks import process_forms_export
 from ..models.form import FormsExport
@@ -25,6 +26,7 @@ class DeleteFormExportFilesTest(TestCase):
             process_forms_export(
                 forms_uuids=[form1.uuid, form2.uuid],
                 user_id=user.id,
+                export_options=FormExportOptions(),
             )
 
         forms_export = FormsExport.objects.get()

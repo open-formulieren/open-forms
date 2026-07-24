@@ -21,6 +21,8 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.forms.import_export.export_form import export_form
+from openforms.forms.import_export.typing import FormExportOptions
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.utils.urls import is_admin_request, reverse_plus
@@ -34,7 +36,7 @@ from ..models import (
     FormStep,
     FormVersion,
 )
-from ..utils import export_form, import_form
+from ..utils import import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
@@ -61,6 +63,7 @@ from .serializers import (
     FormVersionSerializer,
 )
 from .serializers.form import (
+    FormAPIExportRequestSerializer,
     FormImportResponseSerializer,
     FormJsonSchemaOptionsSerializer,
 )
@@ -422,7 +425,10 @@ class FormViewSet(viewsets.ModelViewSet):
         },
     )
     @action(
-        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
+        detail=True,
+        methods=["post"],
+        authentication_classes=(TokenAuthentication,),
+        serializer_class=FormAPIExportRequestSerializer,
     )
     def export(self, request, *args, **kwargs):
         """
@@ -435,7 +441,24 @@ class FormViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = f"attachment;filename={instance.slug}.zip"
 
-        export_form(instance.id, response=response)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        export_form(
+            instance.id,
+            response=response,
+            export_options=FormExportOptions(
+                **{
+                    field_name: serializer.validated_data[field_name]
+                    for field_name in (
+                        "remove_sensitive_content",
+                        "form_configuration",
+                        "additional_form_configuration",
+                    )
+                    if field_name in serializer.validated_data
+                },
+            ),
+        )
 
         response["Content-Length"] = len(response.content)
         return response

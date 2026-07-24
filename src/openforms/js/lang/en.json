@@ -44,6 +44,11 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
+  "/GRLBW": {
+    "defaultMessage": "Export file content",
+    "description": "Form export 'export file content' options fieldset title",
+    "originalDefault": "Export file content"
+  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -68,6 +73,11 @@
     "defaultMessage": "DMN variable",
     "description": "DMN variable label",
     "originalDefault": "DMN variable"
+  },
+  "0PB1XV": {
+    "defaultMessage": "WMS tile layers",
+    "description": "Label for additionalFormConfiguration wmsTileLayers input",
+    "originalDefault": "WMS tile layers"
   },
   "0PhQl9": {
     "defaultMessage": "If enabled, any deceased children will be displayed too.",
@@ -113,6 +123,11 @@
     "defaultMessage": "Configure options",
     "description": "Link label to open registration options modal",
     "originalDefault": "Configure options"
+  },
+  "1cMfAA": {
+    "defaultMessage": "Product",
+    "description": "Label for additionalFormConfiguration product input",
+    "originalDefault": "Product"
   },
   "1fD+K4": {
     "defaultMessage": "Incomplete Submissions Removal Method",
@@ -869,6 +884,11 @@
     "description": "Objects API registration: uploadSubmissionCsv helpText",
     "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
   },
+  "E3pztQ": {
+    "defaultMessage": "Whether sensative form configuration should be anonymized during exporting.",
+    "description": "Form export options 'removeSensitiveContent' help text",
+    "originalDefault": "Whether sensative form configuration should be anonymized during exporting."
+  },
   "EDwCbX": {
     "defaultMessage": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }",
     "description": "Description of which key is duplicated in which steps.",
@@ -1069,6 +1089,11 @@
     "description": "StUF-ZDS registration variablesMapping label",
     "originalDefault": "Variables mapping (case)"
   },
+  "H51Ms+": {
+    "defaultMessage": "Export form",
+    "description": "Form export options modal submit button text",
+    "originalDefault": "Export form"
+  },
   "H6VxhG": {
     "defaultMessage": "Maintenance mode",
     "description": "Form maintenance mode field label",
@@ -1098,6 +1123,11 @@
     "defaultMessage": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "HKwvbG": {
+    "defaultMessage": "Which form configuration should be included in the export file content.",
+    "description": "Form import/export options 'formConfiguration' field help text",
+    "originalDefault": "Which form configuration should be included in the export file content."
   },
   "HVG1xy": {
     "defaultMessage": "Cosign content",
@@ -1509,10 +1539,20 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "OH+T6k": {
+    "defaultMessage": "Payment provider",
+    "description": "Label for formConfiguration paymentBackend input",
+    "originalDefault": "Payment provider"
+  },
   "OX8wxE": {
     "defaultMessage": "Your session is about to expire {delta}. Extend your session if you wish to continue.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
+  },
+  "OaS7Pf": {
+    "defaultMessage": "Export options",
+    "description": "Form export options modal title",
+    "originalDefault": "Export options"
   },
   "Od+jm6": {
     "defaultMessage": "Values:",
@@ -1699,6 +1739,11 @@
     "description": "action type \"variable\" label",
     "originalDefault": "change the value of a variable/component"
   },
+  "S2Wv2u": {
+    "defaultMessage": "Form configuration",
+    "description": "Form import/export options 'formConfiguration' field label",
+    "originalDefault": "Form configuration"
+  },
   "S6eF5o": {
     "defaultMessage": "Data removal",
     "description": "Data removal tab title",
@@ -1853,6 +1898,11 @@
     "defaultMessage": "-",
     "description": "Registration summary no registration backend fallback message",
     "originalDefault": "-"
+  },
+  "V072C5": {
+    "defaultMessage": "Category",
+    "description": "Label for additionalFormConfiguration category input",
+    "originalDefault": "Category"
   },
   "VMMOA0": {
     "defaultMessage": "Page content",
@@ -2029,6 +2079,11 @@
     "description": "Email registration options 'emailContentTemplateHtml' helpText",
     "originalDefault": "Content of the registration email message (as html)."
   },
+  "Z4/E9e": {
+    "defaultMessage": "Authentication backends",
+    "description": "Label for formConfiguration authBackends input",
+    "originalDefault": "Authentication backends"
+  },
   "Z8f4hI": {
     "defaultMessage": "Document confidentiality level",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
@@ -2068,6 +2123,11 @@
     "defaultMessage": "The processing (\"verwerking\") for queries to the BRP Persoon API.",
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
+  },
+  "ZRv5W+": {
+    "defaultMessage": "WMTS tile layers",
+    "description": "Label for additionalFormConfiguration wmtsTileLayers input",
+    "originalDefault": "WMTS tile layers"
   },
   "ZdZ2Mb": {
     "defaultMessage": "Set the registration backend to use for the submission",
@@ -2354,6 +2414,11 @@
     "description": "ZGW APIs registration options 'partnersDescription' label",
     "originalDefault": "Partners description"
   },
+  "eBHgYL": {
+    "defaultMessage": "Additional form configuration",
+    "description": "Form import/export options 'additionalFormConfiguration' field label",
+    "originalDefault": "Additional form configuration"
+  },
   "eC2etA": {
     "defaultMessage": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable.",
     "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
@@ -2373,6 +2438,11 @@
     "defaultMessage": "Zds zaaktype status code",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
+  },
+  "eVpjb6": {
+    "defaultMessage": "Anonymize form configuration",
+    "description": "Form export options 'removeSensitiveContent' field label",
+    "originalDefault": "Anonymize form configuration"
   },
   "efsF8+": {
     "defaultMessage": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
@@ -2609,6 +2679,11 @@
     "description": "DMN Input clause label header",
     "originalDefault": "Label"
   },
+  "iAFlLD": {
+    "defaultMessage": "Registration backends",
+    "description": "Label for formConfiguration registrationBackends input",
+    "originalDefault": "Registration backends"
+  },
   "iNmPDd": {
     "defaultMessage": "Attachment informatieobjecttype",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
@@ -2809,6 +2884,11 @@
     "description": "Label for 'value' in MappingArrayInput table column",
     "originalDefault": "Value"
   },
+  "lIwiA/": {
+    "defaultMessage": "Prefill",
+    "description": "Label for formConfiguration prefill input",
+    "originalDefault": "Prefill"
+  },
   "lNBZdl": {
     "defaultMessage": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>.",
     "description": "MS Graph registration options 'folderPath' help text",
@@ -2888,6 +2968,11 @@
     "defaultMessage": "Name",
     "description": "Fixed metadata table name title",
     "originalDefault": "Name"
+  },
+  "n55FhL": {
+    "defaultMessage": "Security",
+    "description": "Form export 'security' options fieldset title",
+    "originalDefault": "Security"
   },
   "nEg4dr": {
     "defaultMessage": "Metadata:",
@@ -3349,6 +3434,11 @@
     "description": "History link button",
     "originalDefault": "History"
   },
+  "um9Dtq": {
+    "defaultMessage": "Theme",
+    "description": "Label for additionalFormConfiguration theme input",
+    "originalDefault": "Theme"
+  },
   "vAZDY4": {
     "defaultMessage": "Source path",
     "description": "Prefill / Objects API: column header for object type property selection",
@@ -3389,6 +3479,11 @@
     "description": "JSON editor: object entry has empty key name",
     "originalDefault": "Set a key name before you can configure this variable"
   },
+  "w2UNV6": {
+    "defaultMessage": "Yivi attribute groups",
+    "description": "Label for additionalFormConfiguration yiviAttributeGroups input",
+    "originalDefault": "Yivi attribute groups"
+  },
   "w4e4jx": {
     "defaultMessage": "After how many seconds should the cached response expire.",
     "description": "Help text cache timeout",
@@ -3418,6 +3513,11 @@
     "defaultMessage": "API group",
     "description": "Customer interactions API group field label",
     "originalDefault": "API group"
+  },
+  "wdvWi/": {
+    "defaultMessage": "Which additional form configuration should be included in the export file content.",
+    "description": "Form import/export options 'additionalFormConfiguration' field help text",
+    "originalDefault": "Which additional form configuration should be included in the export file content."
   },
   "wnTTZr": {
     "defaultMessage": "ID of the drive to use. If left empty, the default drive will be used.",

@@ -17,6 +17,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.forms.admin.tasks import process_forms_export
+from openforms.forms.import_export.typing import FormExportOptions
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
@@ -91,7 +92,20 @@ class TestExportFormsView(WebTest):
         self.assertRedirects(
             submission_response, reverse("admin:forms_form_changelist")
         )
-        m.assert_called_with(forms_uuids=[form.uuid], user_id=user.id)
+        m.assert_called_with(
+            forms_uuids=[form.uuid],
+            user_id=user.id,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+                form_configuration=[
+                    "registrationBackends",
+                    "prefill",
+                    "paymentBackend",
+                    "authBackends",
+                ],
+                additional_form_configuration=[],
+            ),
+        )
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))
@@ -225,6 +239,7 @@ class TestImportView(WebTest):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options=FormExportOptions(),
         )
 
         form_export = FormsExport.objects.get()

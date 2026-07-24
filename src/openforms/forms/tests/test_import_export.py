@@ -14,15 +14,28 @@ from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from freezegun import freeze_time
 from rest_framework.exceptions import ValidationError
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.tests.factories import AttributeGroupFactory
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
-from openforms.config.tests.factories import ThemeFactory
+from openforms.config.tests.factories import (
+    MapTileLayerFactory,
+    MapWMSTileLayerFactory,
+    ThemeFactory,
+)
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.import_export.constants import EXPORT_META_KEY
+from openforms.forms.import_export.export_form import export_form, form_to_json
+from openforms.forms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormExportOptions,
+)
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
+from openforms.prefill.constants import IdentifierRoles
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.contrib.objects_api.config import (
     ObjectsAPIOptionsSerializer,
@@ -56,8 +69,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
-from ...authentication.tests.factories import AttributeGroupFactory
-from ..constants import EXPORT_META_KEY
 from ..disable_next_import_conversion import add_form_step_uuid_to_disable_next_actions
 from ..models import (
     Form,
@@ -68,7 +79,7 @@ from ..models import (
     FormStep,
     FormVariable,
 )
-from ..utils import export_form, form_to_json, import_form
+from ..utils import import_form
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -129,7 +140,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form=form, source=FormVariableSources.user_defined, key="test-user-defined"
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -216,7 +229,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -242,6 +257,878 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(
                 form_definitions[0]["configuration"],
                 form_definition.configuration,
+            )
+
+    def test_export_without_anonymize_option_keeps_all_sensitive_data(self):
+        # Setting up a form with sensitive data in:
+        # - form internal remarks
+        # - user defined variable initial value
+        # - user defined variable in logic rule
+        # - e-mail address in e-mail registration to_emails
+        # - e-mail address in e-mail registration payment_emails
+        form = FormFactory.create(
+            internal_remarks="Some internal remark that should be kept",
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["submission@company.com"],
+                "to_emails_from_variable": "variable_with_sensitive_data",
+                "payment_emails": ["payment@company.com"],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="variable_with_sensitive_data",
+            initial_value="personal@company.com",
+        )
+        FormVariableFactory.create(form=form, user_defined=True, key="trigger")
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "trigger"}, 1]},
+            actions=[
+                {
+                    "variable": "variable_with_sensitive_data",
+                    "action": {"type": "variable", "value": "internal@company.com"},
+                }
+            ],
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_logic = json.loads(f.read("formLogic.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_logic), 1)
+            self.assertEqual(len(form_variables), 2)
+
+            # Internal remarks should be kept
+            self.assertEqual(
+                forms[0]["internal_remarks"], "Some internal remark that should be kept"
+            )
+
+            # E-mail addresses and variable assigned to registration backend should be
+            # kept
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            registration_backend = forms[0]["registration_backends"][0]
+            self.assertEqual(
+                registration_backend["options"]["to_emails"], ["submission@company.com"]
+            )
+            self.assertEqual(
+                registration_backend["options"]["to_emails_from_variable"],
+                "variable_with_sensitive_data",
+            )
+            self.assertEqual(
+                registration_backend["options"]["payment_emails"],
+                ["payment@company.com"],
+            )
+
+            # The initial data of the user-defined variable used by the e-mail
+            # registration backend should be kept
+            sensitive_variable = next(
+                variable
+                for variable in form_variables
+                if variable["key"] == "variable_with_sensitive_data"
+            )
+            self.assertEqual(
+                sensitive_variable["initial_value"], "personal@company.com"
+            )
+
+            # The logic rule that assigns the value of the sensitive user-defined
+            # variable is kept
+            self.assertEqual(len(form_logic[0]["actions"]), 1)
+            self.assertEqual(
+                form_logic[0]["actions"][0]["variable"], "variable_with_sensitive_data"
+            )
+            self.assertEqual(
+                form_logic[0]["actions"][0]["action"],
+                {"type": "variable", "value": "internal@company.com"},
+            )
+
+    def test_export_with_anonymize_option_removes_all_sensitive_data(self):
+        # Setting up a form with sensitive data in:
+        # - form internal remarks
+        # - user defined variable initial value
+        # - user defined variable in logic rule
+        # - e-mail address in e-mail registration to_emails
+        # - e-mail address in e-mail registration payment_emails
+        form = FormFactory.create(
+            internal_remarks="Some internal remark that should be removed",
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["submission@company.com"],
+                "to_emails_from_variable": "variable_with_sensitive_data",
+                "payment_emails": ["payment@company.com"],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="variable_with_sensitive_data",
+            initial_value="personal@company.com",
+        )
+        FormVariableFactory.create(form=form, user_defined=True, key="trigger")
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "trigger"}, 1]},
+            actions=[
+                {
+                    "variable": "variable_with_sensitive_data",
+                    "action": {"type": "variable", "value": "internal@company.com"},
+                }
+            ],
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+                form_configuration=["registrationBackends"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_logic = json.loads(f.read("formLogic.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_logic), 1)
+            self.assertEqual(len(form_variables), 2)
+
+            # Internal remarks should be removed
+            self.assertEqual(forms[0]["internal_remarks"], "")
+
+            # E-mail addresses assigned in the registration backend should be cleared
+            # The variable assigned in the registration backend should be kept
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            registration_backend = forms[0]["registration_backends"][0]
+
+            self.assertEqual(registration_backend["options"]["to_emails"], [])
+            self.assertEqual(
+                registration_backend["options"]["to_emails_from_variable"],
+                "variable_with_sensitive_data",
+            )
+            self.assertEqual(
+                registration_backend["options"]["payment_emails"],
+                [],
+            )
+
+            # The initial data of the user-defined variable used by the e-mail
+            # registration backend should be cleared
+            sensitive_variable = next(
+                variable
+                for variable in form_variables
+                if variable["key"] == "variable_with_sensitive_data"
+            )
+            self.assertEqual(sensitive_variable["initial_value"], "")
+
+            # The logic rule that assigns the value of the sensitive user-defined
+            # variable is cleared
+            self.assertEqual(len(form_logic[0]["actions"]), 1)
+            self.assertEqual(
+                form_logic[0]["actions"][0]["variable"], "variable_with_sensitive_data"
+            )
+            self.assertEqual(
+                form_logic[0]["actions"][0]["action"],
+                {"type": "variable", "value": ""},
+            )
+
+    def test_export_with_anonymize_option_anonymizes_component_variable(self):
+        # Setting up a form with sensitive data in:
+        # - component variable initial value
+        # - component variable in logic rule
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            registration_backend="email",
+            registration_backend_options={"to_emails_from_variable": "textfield"},
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "defaultValue": "personal@me.com",
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, user_defined=True, key="trigger")
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "trigger"}, 1]},
+            actions=[
+                {
+                    "variable": "textfield",
+                    "action": {"type": "variable", "value": "internal@company.com"},
+                }
+            ],
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+                form_configuration=["registrationBackends"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_logic = json.loads(f.read("formLogic.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+            form_definitions = json.loads(f.read("formDefinitions.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_logic), 1)
+            self.assertEqual(len(form_variables), 1)
+            self.assertEqual(len(form_definitions), 1)
+
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            registration_backend = forms[0]["registration_backends"][0]
+
+            self.assertEqual(
+                registration_backend["options"]["to_emails_from_variable"],
+                "textfield",
+            )
+
+            # The logic rule that assigns the value of the component variable is cleared
+            self.assertEqual(len(form_logic[0]["actions"]), 1)
+            self.assertEqual(form_logic[0]["actions"][0]["variable"], "textfield")
+            self.assertEqual(
+                form_logic[0]["actions"][0]["action"],
+                {"type": "variable", "value": ""},
+            )
+
+            # The default value of the component variable used in the e-mail registration
+            # is cleared
+            self.assertEqual(len(form_definitions[0]["configuration"]["components"]), 1)
+            component_definition = form_definitions[0]["configuration"]["components"][0]
+            self.assertEqual(component_definition["defaultValue"], "")
+
+    def test_export_with_anonymize_option_anonymizes_nested_component_variable(self):
+        # Setting up a form with sensitive data in:
+        # - component variable initial value
+        # - component variable in logic rule
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            registration_backend="email",
+            registration_backend_options={"to_emails_from_variable": "textfield"},
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "fieldset",
+                        "label": "Fieldset",
+                        "type": "fieldset",
+                        "components": [
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "label": "Textfield",
+                                "defaultValue": "personal@me.com",
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, user_defined=True, key="trigger")
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "trigger"}, 1]},
+            actions=[
+                {
+                    "variable": "textfield",
+                    "action": {"type": "variable", "value": "internal@company.com"},
+                }
+            ],
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_logic = json.loads(f.read("formLogic.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+            form_definitions = json.loads(f.read("formDefinitions.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_logic), 1)
+            self.assertEqual(len(form_variables), 1)
+            self.assertEqual(len(form_definitions), 1)
+
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            registration_backend = forms[0]["registration_backends"][0]
+
+            self.assertEqual(
+                registration_backend["options"]["to_emails_from_variable"],
+                "textfield",
+            )
+
+            # The logic rule that assigns the value of the component variable is cleared
+            self.assertEqual(len(form_logic[0]["actions"]), 1)
+            self.assertEqual(form_logic[0]["actions"][0]["variable"], "textfield")
+            self.assertEqual(
+                form_logic[0]["actions"][0]["action"],
+                {"type": "variable", "value": ""},
+            )
+
+            # The default value of the component variable used in the e-mail registration
+            # is cleared
+            self.assertEqual(len(form_definitions[0]["configuration"]["components"]), 1)
+            fieldset = form_definitions[0]["configuration"]["components"][0]
+            self.assertEqual(len(fieldset["components"]), 1)
+            self.assertEqual(fieldset["components"][0]["defaultValue"], "")
+
+    def test_export_with_exclude_registration_backends_option(self):
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["abc@xyz.com"],
+            },
+        )
+
+        # The export is made without registrationBackends in the form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                form_configuration=["prefill", "paymentBackend"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+
+            self.assertEqual(len(forms), 1)
+            # Registration backends should not be in exportdata
+            self.assertEqual(len(forms[0]["registration_backends"]), 0)
+
+    def test_export_with_exclude_prefill_option(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+                form_configuration=["registrationBackends"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+            form_definitions = json.loads(f.read("formDefinitions.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_variables), 2)
+            self.assertEqual(len(form_definitions), 1)
+
+            # Both variables should have empty prefill data
+            self.assertEqual(form_variables[0]["prefill_plugin"], "")
+            self.assertEqual(form_variables[0]["prefill_attribute"], "")
+            self.assertEqual(form_variables[0]["prefill_identifier_role"], "main")
+            self.assertEqual(form_variables[0]["prefill_options"], {})
+
+            self.assertEqual(form_variables[1]["prefill_plugin"], "")
+            self.assertEqual(form_variables[1]["prefill_attribute"], "")
+            self.assertEqual(form_variables[1]["prefill_identifier_role"], "main")
+            self.assertEqual(form_variables[1]["prefill_options"], {})
+
+            # The component prefill data should be cleared
+            self.assertEqual(len(form_definitions[0]["configuration"]["components"]), 1)
+            component_definition = form_definitions[0]["configuration"]["components"][0]
+            self.assertEqual(component_definition["prefill"]["plugin"], "")
+            self.assertEqual(component_definition["prefill"]["attribute"], "")
+            self.assertEqual(component_definition["prefill"]["identifier_role"], "main")
+
+    def test_export_with_exclude_payment_backend(self):
+        product = ProductFactory.create()
+        merchant = WorldlineMerchantFactory.create()
+        form = FormFactory.create(
+            product=product,
+            authentication_backend="digid",
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+        )
+
+        # The export is made without paymentBackend in the form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                form_configuration=["prefill", "registrationBackends"],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+
+            self.assertEqual(len(forms), 1)
+            # Payment backend should not be in exportdata
+            self.assertEqual(forms[0]["payment_backend"], "")
+            self.assertEqual(forms[0]["payment_backend_options"], {})
+
+    def test_export_with_all_additional_form_configuration_excluded(self):
+        product = ProductFactory.create()
+        theme = ThemeFactory.create()
+        category = CategoryFactory.create()
+
+        yiviAttributeGroup1 = AttributeGroupFactory.create()
+        yiviAttributeGroup2 = AttributeGroupFactory.create()
+
+        wmtsTileLayer = MapTileLayerFactory.create()
+        wmsTileLayer = MapWMSTileLayerFactory.create()
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    yiviAttributeGroup1.uuid,
+                    yiviAttributeGroup2.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsTileLayer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsTileLayer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # The export is made without any additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                additional_form_configuration=[],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            # None of the additional form configuration files should be in the exportdata
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            forms = json.loads(f.read("forms.json"))
+            formDefinitions = json.loads(f.read("formDefinitions.json"))
+
+            self.assertEqual(len(forms), 1)
+
+            # Assert product, theme, category are not in exportdata
+            self.assertEqual(forms[0]["product"], None)
+            self.assertEqual(forms[0]["theme"], None)
+            self.assertEqual(forms[0]["category"], None)
+
+            # Assert Yivi authentication_backend is in exportdata, but without
+            # additional_attributes_groups
+            self.assertEqual(len(forms[0]["auth_backends"]), 1)
+            auth_backend = forms[0]["auth_backends"][0]
+            self.assertEqual(auth_backend["backend"], "yivi_oidc")
+            self.assertEqual(
+                auth_backend["options"]["additional_attributes_groups"], []
+            )
+            # Assert that the authentication_options on the actual form object are kept
+            self.assertIn(
+                str(yiviAttributeGroup1.uuid),
+                form.auth_backends.first().options["additional_attributes_groups"],
+            )
+            self.assertIn(
+                str(yiviAttributeGroup2.uuid),
+                form.auth_backends.first().options["additional_attributes_groups"],
+            )
+
+            # Assert that the WMS and WMTS tile layers are removed from the exportdata
+            self.assertEqual(len(formDefinitions), 1)
+            self.assertEqual(len(formDefinitions[0]["configuration"]["components"]), 1)
+            component_definition = formDefinitions[0]["configuration"]["components"][0]
+
+            self.assertEqual(component_definition["type"], "map")
+            self.assertEqual(component_definition["tileLayerIdentifier"], "")
+            self.assertEqual(len(component_definition["overlays"]), 1)
+            self.assertEqual(component_definition["overlays"][0]["uuid"], "")
+            self.assertEqual(component_definition["overlays"][0]["layers"], [])
+            # Assert that the actual form definition still contains the WMS and WMTS tile layers
+            fd = form.formstep_set.get().form_definition
+            self.assertEqual(
+                fd.configuration["components"][0]["tileLayerIdentifier"],
+                wmtsTileLayer.identifier,
+            )
+            overlay = fd.configuration["components"][0]["overlays"][0]
+            self.assertEqual(overlay["uuid"], str(wmsTileLayer.uuid))
+            self.assertEqual(overlay["layers"], ["pand", "verblijfsobject"])
+
+    def test_export_with_all_additional_form_configuration_included(self):
+        product = ProductFactory.create()
+        theme = ThemeFactory.create(design_token_values={"key": "token"})
+        category = CategoryFactory.create()
+
+        wmtsMap1 = MapTileLayerFactory.create()
+        wmtsMap2 = MapTileLayerFactory.create()
+        wmsMap1 = MapWMSTileLayerFactory.create()
+        wmsMap2 = MapWMSTileLayerFactory.create()
+        wmsMap3 = MapWMSTileLayerFactory.create()
+
+        yiviAttributeGroup1 = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+        yiviAttributeGroup2 = AttributeGroupFactory.create(attributes=["email_address"])
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            theme=theme,
+            category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    # The uuids of the `personal` and `mail` attributegroups
+                    yiviAttributeGroup1.uuid,
+                    yiviAttributeGroup2.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map 1",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap1.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap1.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                    {
+                        "label": "Map 2",
+                        "key": "map2",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsMap2.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap2.uuid),
+                                "label": "height",
+                                "layers": ["EL.GridCoverage"],
+                            },
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsMap3.uuid),
+                                "label": "LGN",
+                                "layers": ["lgn-actueel"],
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # The export is made with all additional_form_configuration
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.theme,
+                    AdditionalFormConfigurationOptions.category,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            # All of the additional form configuration files should be in the exportdata
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    "product.json",
+                    "theme.json",
+                    "category.json",
+                    "wmsTileLayers.json",
+                    "wmtsTileLayers.json",
+                    "yiviAttributeGroups.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            forms = json.loads(f.read("forms.json"))
+            formDefinitions = json.loads(f.read("formDefinitions.json"))
+            product_export = json.loads(f.read("product.json"))
+            theme_export = json.loads(f.read("theme.json"))
+            category_export = json.loads(f.read("category.json"))
+            wms_tile_layers_export = json.loads(f.read("wmsTileLayers.json"))
+            wmts_tile_layers_export = json.loads(f.read("wmtsTileLayers.json"))
+            yivi_attribute_groups_export = json.loads(
+                f.read("yiviAttributeGroups.json")
+            )
+
+            self.assertEqual(len(forms), 1)
+
+            # Assert product, theme, category are in exportdata
+            self.assertIsNotNone(forms[0]["product"])
+            self.assertIsNotNone(forms[0]["theme"])
+            self.assertIsNotNone(forms[0]["category"])
+
+            # Assert Yivi authentication_backend is in exportdata with
+            # additional_attributes_groups
+            self.assertEqual(len(forms[0]["auth_backends"]), 1)
+            auth_backend = forms[0]["auth_backends"][0]
+            self.assertEqual(auth_backend["backend"], "yivi_oidc")
+            self.assertIn(
+                str(yiviAttributeGroup1.uuid),
+                auth_backend["options"]["additional_attributes_groups"],
+            )
+            self.assertIn(
+                str(yiviAttributeGroup2.uuid),
+                auth_backend["options"]["additional_attributes_groups"],
+            )
+
+            # Assert WMS and WMTS tile layers are in exportdata
+            self.assertEqual(len(formDefinitions), 1)
+            self.assertEqual(len(formDefinitions[0]["configuration"]["components"]), 2)
+            component1 = formDefinitions[0]["configuration"]["components"][0]
+            component2 = formDefinitions[0]["configuration"]["components"][1]
+
+            self.assertEqual(component1["tileLayerIdentifier"], wmtsMap1.identifier)
+            self.assertEqual(len(component1["overlays"]), 1)
+            self.assertEqual(component1["overlays"][0]["uuid"], str(wmsMap1.uuid))
+            self.assertEqual(
+                component1["overlays"][0]["layers"], ["pand", "verblijfsobject"]
+            )
+
+            self.assertEqual(component2["tileLayerIdentifier"], wmtsMap2.identifier)
+            self.assertEqual(len(component2["overlays"]), 2)
+            self.assertEqual(component2["overlays"][0]["uuid"], str(wmsMap2.uuid))
+            self.assertEqual(component2["overlays"][0]["layers"], ["EL.GridCoverage"])
+            self.assertEqual(component2["overlays"][1]["uuid"], str(wmsMap3.uuid))
+            self.assertEqual(component2["overlays"][1]["layers"], ["lgn-actueel"])
+
+            # Validate the export file contents
+            self.assertEqual(
+                product_export,
+                [
+                    {
+                        "uuid": str(product.uuid),
+                        "name": product.name,
+                        "price": str(product.price).replace(".", ","),
+                        "information": product.information,
+                    }
+                ],
+            )
+            self.assertEqual(
+                theme_export,
+                [
+                    {
+                        "uuid": str(theme.uuid),
+                        "name": theme.name,
+                        "organization_name": theme.organization_name,
+                        "main_website": theme.main_website,
+                        "favicon": str(theme.favicon),
+                        "email_logo": str(theme.email_logo),
+                        "classname": theme.classname,
+                        "stylesheet": theme.stylesheet,
+                        "stylesheet_file": str(theme.stylesheet_file),
+                        # Simple stringify results in the wrong quotes being used, so we
+                        # have to json.dump the design_token_values
+                        "design_token_values": json.dumps(theme.design_token_values),
+                    }
+                ],
+            )
+            self.assertEqual(
+                category_export,
+                [
+                    {
+                        "uuid": str(category.uuid),
+                        "name": category.name,
+                    }
+                ],
+            )
+
+            self.assertEqual(len(wms_tile_layers_export), 3)
+            self.assertIn(
+                {
+                    "uuid": str(wmsMap1.uuid),
+                    "name": wmsMap1.name,
+                    "url": wmsMap1.url,
+                },
+                wms_tile_layers_export,
+            )
+            self.assertIn(
+                {
+                    "uuid": str(wmsMap2.uuid),
+                    "name": wmsMap2.name,
+                    "url": wmsMap2.url,
+                },
+                wms_tile_layers_export,
+            )
+            self.assertIn(
+                {
+                    "uuid": str(wmsMap3.uuid),
+                    "name": wmsMap3.name,
+                    "url": wmsMap3.url,
+                },
+                wms_tile_layers_export,
+            )
+
+            self.assertEqual(len(wmts_tile_layers_export), 2)
+            self.assertIn(
+                {
+                    "identifier": wmtsMap1.identifier,
+                    "label": wmtsMap1.label,
+                    "url": wmtsMap1.url,
+                },
+                wmts_tile_layers_export,
+            )
+            self.assertIn(
+                {
+                    "identifier": wmtsMap2.identifier,
+                    "label": wmtsMap2.label,
+                    "url": wmtsMap2.url,
+                },
+                wmts_tile_layers_export,
+            )
+
+            self.assertEqual(len(yivi_attribute_groups_export), 2)
+            self.assertIn(
+                {
+                    "uuid": str(yiviAttributeGroup1.uuid),
+                    "name": yiviAttributeGroup1.name,
+                    "description": yiviAttributeGroup1.description,
+                    "attributes": ",".join(yiviAttributeGroup1.attributes),
+                },
+                yivi_attribute_groups_export,
+            )
+            self.assertIn(
+                {
+                    "uuid": str(yiviAttributeGroup2.uuid),
+                    "name": yiviAttributeGroup2.name,
+                    "description": yiviAttributeGroup2.description,
+                    "attributes": ",".join(yiviAttributeGroup2.attributes),
+                },
+                yivi_attribute_groups_export,
             )
 
     def test_import(self):
@@ -317,7 +1204,18 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[
+                    "registrationBackends",
+                    "prefill",
+                    "paymentBackend",
+                ],
+            ),
+        )
 
         # attempt to break ForeignKey constraint
         far_fetched.delete()
@@ -422,7 +1320,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         form_definition = FormDefinitionFactory.create()
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         form_definition.slug = "modified"
         form_definition.save()
@@ -449,7 +1349,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         FormStepFactory.create(form=form, form_definition=form_definition)
         FormLogicFactory.create(form=form)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         import_form(import_file=self.filepath)
 
@@ -489,7 +1391,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         old_form_slug = form.slug
         form.slug = "modified"
@@ -576,7 +1480,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         old_form_slug = form.slug
         form.slug = "modified"
@@ -660,7 +1566,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         import_form(import_file=self.filepath)
 
@@ -689,7 +1597,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         """
         category = CategoryFactory.create()
         form = FormFactory.create(category=category)
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
         # delete the data to mimic an environment where category/form don't exist
         form.delete()
         category.delete()
@@ -766,11 +1676,13 @@ class ImportExportTests(TempdirMixin, TestCase):
             next_text_en="Some next step text translation",
         )
 
-        original_json = form_to_json(form.pk)
+        original_json = form_to_json(form.pk, export_options=FormExportOptions())
 
         # roundtrip
         with translation.override("en"):
-            export_form(form.pk, archive_name=self.filepath)
+            export_form(
+                form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+            )
         # language switched back to default
         form.delete()
         form_definition.delete()
@@ -1014,7 +1926,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             formstep__form_definition__configuration={"components": [component]},
         )
 
-        export_data = form_to_json(form.pk)
+        export_data = form_to_json(form.pk, export_options=FormExportOptions())
 
         self.assertIsInstance(export_data, dict)
 
@@ -1040,7 +1952,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                 ]
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         converters = {"textfield": {"add_foo": add_foo}}
         with patch("openforms.forms.utils.CONVERTERS", new=converters):
@@ -1056,7 +1970,9 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_rountrip_form_with_theme_override(self):
         theme = ThemeFactory.create()
         form = FormFactory.create(generate_minimal_setup=True, theme=theme)
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
 
         # run the import again
         import_form(import_file=self.filepath)
@@ -1329,7 +2245,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                 ]
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk, archive_name=self.filepath, export_options=FormExportOptions()
+        )
         import_form(import_file=self.filepath)
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
@@ -1875,7 +2793,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             },
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
         import_form(import_file=self.filepath)
 
         updated_form = Form.objects.last()
@@ -2032,7 +2957,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             is_advanced=True,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["prefill"],
+            ),
+        )
 
         # Import form
         import_form(import_file=self.filepath)
@@ -2133,7 +3065,14 @@ class ExportObjectsAPITests(TempdirMixin, TestCase):
             },
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -2639,7 +3578,14 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)
@@ -2885,7 +3831,14 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)
@@ -3012,7 +3965,14 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=["registrationBackends"],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)
