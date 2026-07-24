@@ -4,6 +4,7 @@ from openforms.config.models import Theme
 from openforms.emails.utils import sanitize_content
 from openforms.forms.api.serializers import FormSerializer
 from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
@@ -194,6 +195,9 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
         # We remove all unknown domains from the email templates
         value = self.sanitize_email_templates(value)
 
+        # When importing a form, it should be non-active by default
+        value["active"] = False
+
         return super().to_internal_value(value)
 
     def set_theme(self, value: JSONObject) -> JSONObject:
@@ -215,6 +219,17 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
             value["category"] = category_url
         else:
             value["category"] = None
+
+        return value
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
+        # forms before v4.0 do not have the type field so in case we import an
+        # old appointment form we have to make sure that the form has the right
+        # type configured (by default is regular)
+        # Original commit d8b1d4ea9d31772f059a388347e8a4688be5d717
+        if appointment_options := value.get("appointment_options"):
+            if appointment_options.get("is_appointment"):
+                value["type"] = FormTypeChoices.appointment
 
         return value
 

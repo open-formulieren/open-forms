@@ -15,9 +15,6 @@ import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
-from openforms.formio.utils import iter_components
-from openforms.forms.constants import FormTypeChoices
 from openforms.forms.import_export.serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -35,10 +32,8 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
-from openforms.typing import JSONObject
 
 from .api.datastructures import FormVariableWrapper
-from .constants import LogicActionTypes
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -149,31 +144,9 @@ def import_form_data(
                 entry["uuid"] = str(uuid4())
 
             if resource == "forms":
-                # we can only extract a category UUID from the URL here, but that requires
-                # an exact match and we currently don't provide import/export functionality
-                # for categories. Relying on ID/Name is not much better than guesswork either,
-                # so we always import forms with NO category at all to prevent import errors.
-                # See #1774 for one such example of an error.
-                entry["category"] = None
-                # theme overrides cannot be imported, since the theme records/FKs have to
-                # exist in the target environment. Importing/exporting themes is also not
-                # possible at this time, so we reset the theme and admins need to update
-                # the imported form.
-                entry["theme"] = None
-
-                # forms before v4.0 do not have the type field so in case we import an
-                # old appointment form we have to make sure that the form has the right
-                # type configured (by default is regular)
-                if appointment_options := entry.get("appointment_options"):
-                    if appointment_options.get("is_appointment"):
-                        entry["type"] = FormTypeChoices.appointment
-
                 # check for file components in the form definitions and move
                 # registration options to the backend registration options
                 move_file_registration_options(entry, _form_definitions)
-
-            if resource == "forms" and not existing_form_instance:
-                entry["active"] = False
 
             serializer_kwargs = {
                 "data": entry,
@@ -242,26 +215,11 @@ def import_form_data(
 
             deserialized = serializer(**serializer_kwargs)
 
-            if resource == "formLogic" and "order" not in entry:
-                entry["order"] = 0
-
             try:
                 is_create = (
                     deserialized.instance is None or not deserialized.instance.pk
                 )
                 deserialized.is_valid(raise_exception=True)
-
-                if resource == "formDefinitions":
-                    apply_component_conversions(
-                        deserialized.validated_data["configuration"]
-                    )
-
-                    apply_definition_conversions(
-                        deserialized.validated_data["configuration"]
-                    )
-
-                if resource == "formLogic":
-                    clear_old_service_fetch_config(deserialized.validated_data)
 
                 instance = deserialized.save()
                 if resource == "forms":
@@ -310,28 +268,6 @@ def import_form_data(
     return created_form
 
 
-def apply_component_conversions(configuration):
-    """
-    Apply the known formio component conversions to the entire form definition.
-    """
-    log = logger.bind(action="forms.apply_component_conversions")
-    for component in iter_components(configuration):
-        if not (component_type := component.get("type")):  # pragma: no cover
-            continue
-        if not (converters := CONVERTERS.get(component_type)):
-            continue
-        for identifier, apply_converter in converters.items():
-            log.debug(
-                "apply_converter", component_type=component_type, identifier=identifier
-            )
-            apply_converter(component)
-
-
-def apply_definition_conversions(configuration: JSONObject) -> None:
-    for converter in DEFINITION_CONVERTERS:
-        converter(configuration)
-
-
 def remove_key_from_dict(dictionary, key):
     for dict_key in list(dictionary.keys()):
         if key == dict_key:
@@ -342,21 +278,6 @@ def remove_key_from_dict(dictionary, key):
             for value in dictionary[dict_key]:
                 if isinstance(value, dict):
                     remove_key_from_dict(value, key)
-
-
-def clear_old_service_fetch_config(rule: dict) -> None:
-    for action in rule["actions"]:
-        if action["action"]["type"] != LogicActionTypes.fetch_from_service:
-            continue
-
-        if "value" not in action["action"] or action["action"]["value"] == "":
-            continue
-
-        # See comment above in `import_form_data` where we check if the variable has a
-        # `service_fetch_configuration` attribute.
-        # We can't reliably relate the service fetch configured to an existing configuration.
-        # So we don't add any existing service fetch config to the variables
-        action["action"]["value"] = ""
 
 
 class FileComponentOptions(TypedDict, total=False):
