@@ -8484,6 +8484,52 @@ components:
       required:
       - actions
       - jsonLogicTrigger
+    FormLogicV3:
+      type: object
+      description: |-
+        A ModelSerializer to provide a serializer that can be update and create
+        objects in a specific order.
+
+        Typically a `models.PositiveIntegerField` field called `order` is used to
+        store the order of the Model objects. This field can be customized by setting
+        the `order_field_name` attribute on the Model class.
+
+        This serializer will move the object to the correct
+        order if the ordering field is passed in the validated data.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        jsonLogicTrigger:
+          title: JSON logic
+          description: The trigger expression to determine if the actions should execute
+            or not. Note that this must be a valid JsonLogic expression, and the first
+            operand must be a reference to a variable in the form.
+        description:
+          type: string
+          description: Logic rule description in natural language.
+          maxLength: 100
+        order:
+          type: integer
+          description: Order of the rule relative to the form it belongs to. Logic
+            rules are evaluated in this order. Note that specifying a value for the
+            order here will cause the rules before/after this rule to be re-calculated.
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicComponentActionV3'
+          description: Actions triggered when the trigger expression evaluates to
+            'truthy'.
+        isAdvanced:
+          type: boolean
+          description: Is this an advanced rule (the admin user manually wrote the
+            trigger as JSON)?
+      required:
+      - actions
+      - jsonLogicTrigger
+      - order
+      - uuid
     FormModelTranslations:
       type: object
       description: |-
@@ -8877,6 +8923,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormStepV3'
+        logicRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormLogicV3'
         showProgressIndicator:
           type: boolean
           description: Whether the step progression should be displayed in the UI
@@ -9447,6 +9497,37 @@ components:
           description: De UUID van de formulierstap waarop de actie van invloed is.
             Dit veld is verplicht voor actietypen `disable-next`, `step-applicable`,
             `step-not-applicable` - anders is het optioneel.
+        action:
+          $ref: '#/components/schemas/LogicActionPolymorphic'
+      required:
+      - action
+      - uuid
+    LogicComponentActionV3:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        component:
+          type: string
+          title: Form.io component
+          description: 'Sleutel van de Form.io-component waarop de actie van toepassing
+            is. Dit veld is verplicht voor de actietypes `property` - anders is het
+            optioneel. '
+        variable:
+          type: string
+          title: Key of the target variable
+          description: Sleutel van de variabele die aangepast wordt door de actie.
+            Dit veld is verplicht voor de actietypes `variable` - anders is het optioneel.
+        formStepSlug:
+          type: string
+          nullable: true
+          description: The slug of the form step that will be affected by the action.
+            This field is required for action types `disable-next`, `step-applicable`,
+            `step-not-applicable` - otherwise it's optional. We deliberately use the
+            slug instead of the uuid because the uuid is not fixed, as we create from
+            scratch the form steps dusring form update.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:

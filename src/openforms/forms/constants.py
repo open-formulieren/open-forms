@@ -38,6 +38,11 @@ LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID: Set[str] = {
     LogicActionTypes.step_not_applicable.value,
     LogicActionTypes.disable_next.value,
 }
+LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG: Set[str] = {
+    LogicActionTypes.step_applicable.value,
+    LogicActionTypes.step_not_applicable.value,
+    LogicActionTypes.disable_next.value,
+}
 
 
 class PropertyTypes(models.TextChoices):
