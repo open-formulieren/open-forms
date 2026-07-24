@@ -18,6 +18,7 @@ from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
 from openforms.forms.import_export.export_form import export_form
+from openforms.forms.import_export.import_form import import_form
 from openforms.forms.import_export.typing import (
     FormExportOptions,
     FormExportOptionsData,
@@ -29,7 +30,6 @@ from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import import_form
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -86,7 +86,7 @@ def process_forms_export(
 
 @app.task(ignore_result=True)
 def process_forms_import(
-    import_file: str, user_id: int, import_options: FormImportOptionsData = None
+    import_file: str, user_id: int, import_options: FormImportOptionsData
 ) -> None:
     failed_files: list[tuple[str, object]] = []
     # This deletes the temp dir once the context manager is exited

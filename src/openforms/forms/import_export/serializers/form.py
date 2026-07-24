@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.urls import reverse
 
 from openforms.config.models import Theme
@@ -197,6 +200,12 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
 
         # When importing a form, it should be non-active by default
         value["active"] = False
+
+        # Make sure the slug is unique
+        if Form.objects.filter(slug=value.get("slug")).first() is not None:
+            value["slug"] = (
+                f"{value['slug']}-{''.join(random.choices(string.hexdigits, k=6))}"
+            )
 
         return super().to_internal_value(value)
 

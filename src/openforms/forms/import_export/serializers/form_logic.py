@@ -45,6 +45,13 @@ class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
         if "order" not in value:
             value["order"] = 0
 
+        if "service_fetch_configuration" in value:
+            # The transferring between systems case is very tricky better not import
+            # these, as we don't know where this came from. Services and ids may point to
+            # different things in different OF instances. Even when restoring a form
+            # version, we don't know if the service is the same as it was before.
+            del value["service_fetch_configuration"]
+
         self.clear_old_service_fetch_config(value)
 
         return super().to_internal_value(value)
@@ -57,8 +64,8 @@ class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
             if "value" not in action["action"] or action["action"]["value"] == "":
                 continue
 
-            # See comment above in `import_form_data` where we check if the variable has a
-            # `service_fetch_configuration` attribute.
+            # See comment in FormVariableImportSerializer `to_internal_value` where we
+            # check if the variable has a `service_fetch_configuration` attribute.
             # We can't reliably relate the service fetch configured to an existing configuration.
             # So we don't add any existing service fetch config to the variables
             action["action"]["value"] = ""

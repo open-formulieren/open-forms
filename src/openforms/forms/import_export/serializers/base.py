@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from typing import ClassVar
+from uuid import uuid4
 
 from rest_framework import serializers
 
@@ -96,12 +97,21 @@ class BaseImportSerializer(serializers.Serializer):
 
     def to_internal_value(self, instance):
         value = instance.copy()
+
+        # When importing an existing instance, we should not overwrite the uuid
+        if not self.instance:
+            value = self.set_new_uuid(value)
+
         value = self.apply_backwards_compatibility(value)
 
         value = self.remove_excluded_form_configuration(value)
         value = self.remove_excluded_additional_form_configuration(value)
 
         return super().to_internal_value(value)
+
+    def set_new_uuid(self, value: JSONObject) -> JSONObject:
+        value["uuid"] = uuid4()
+        return value
 
     def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
         return value

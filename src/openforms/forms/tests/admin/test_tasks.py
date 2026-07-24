@@ -12,12 +12,11 @@ from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.forms.admin.tasks import process_forms_export, process_forms_import
+from openforms.forms.models.form import Form, FormsExport
+from openforms.forms.tests.factories import FormFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.utils.urls import build_absolute_uri
-
-from ...admin.tasks import process_forms_export, process_forms_import
-from ...models.form import Form, FormsExport
-from ..factories import FormFactory
 
 
 @temp_private_root()
@@ -100,7 +99,7 @@ class ImportFormsTaskTests(TestCase):
     def test_import_forms(self):
         imported_file_path = self._copy_file_to_imports_tempdir()
         assert private_media_storage.exists(imported_file_path)
-        process_forms_import(str(imported_file_path), self.user.id)
+        process_forms_import(str(imported_file_path), self.user.id, import_options={})
 
         self.assertEqual(4, Form.objects.count())
 
@@ -113,7 +112,7 @@ class ImportFormsTaskTests(TestCase):
     )
     def test_import_form_failure(self, m_import_form):
         imported_file_path = self._copy_file_to_imports_tempdir()
-        process_forms_import(str(imported_file_path), self.user.id)
+        process_forms_import(str(imported_file_path), self.user.id, import_options={})
 
         self.assertEqual(2, Form.objects.count())
 

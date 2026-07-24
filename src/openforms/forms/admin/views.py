@@ -22,6 +22,7 @@ from import_export.formats.base_formats import XLSX
 from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
+from openforms.forms.import_export.import_form import import_form
 from openforms.forms.import_export.typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
@@ -33,7 +34,6 @@ from openforms.logging import audit_logger
 from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
 from ..models import Form, FormsExport, FormSubmissionStatistics
-from ..utils import import_form
 from .tasks import process_forms_export, process_forms_import
 
 

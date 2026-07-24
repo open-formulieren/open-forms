@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.forms.import_export.export_form import export_form
+from openforms.forms.import_export.import_form import import_form
 from openforms.forms.import_export.typing import FormExportOptions
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -36,7 +37,6 @@ from ..models import (
     FormStep,
     FormVersion,
 )
-from ..utils import import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
