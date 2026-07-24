@@ -128,7 +128,7 @@ def partially_evaluate_json_logic(
             # unchanged expression, which can be evaluated at the end.
             # Mismatch between the `JSON` type of `json_logic`, and our own
             # `JSONValue`
-            return expression, True  # pyright: ignore[reportReturnType]
+            return expression, False  # pyright: ignore[reportReturnType]
         case _:
             pass
 
