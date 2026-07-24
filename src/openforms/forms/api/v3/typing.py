@@ -8,6 +8,7 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
 from openforms.formio.typing import FormioConfiguration
 from openforms.prefill.constants import IdentifierRoles
+from openforms.typing import JSONObject
 from openforms.variables.constants import (
     DataMappingTypes,
     FormVariableDataTypes,
@@ -16,7 +17,7 @@ from openforms.variables.constants import (
 )
 
 from ...constants import FormTypeChoices, StatementCheckboxChoices
-from ...models import Category
+from ...models import Category, FormStep
 
 
 class AppointmentData(TypedDict):
@@ -140,6 +141,16 @@ class FormVariableData(TypedDict):
     service_fetch_configuration: NotRequired[ServiceFetchConfigurationData | None]
 
 
+class FormLogicData(TypedDict):
+    uuid: str
+    description: NotRequired[str]
+    json_logic_trigger: JSONObject
+    actions: JSONObject
+    is_advanced: bool
+    # DeprecationWarning: remove in OF 4.1
+    trigger_from_step: FormStep
+
+
 class FormValidatedData(TypedDict):
     uuid: UUID
     name: str
@@ -157,6 +168,7 @@ class FormValidatedData(TypedDict):
     payment: NotRequired[PaymentData]
 
     formvariable_set: list[FormVariableData]
+    formlogic_set: list[FormLogicData]
 
     show_progress_indicator: NotRequired[bool]
     show_summary_progress: NotRequired[bool]
