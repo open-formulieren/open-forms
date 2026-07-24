@@ -16,7 +16,6 @@ Snel en eenvoudig slimme formulieren bouwen en publiceren. (`English version`_)
 
 Ontwikkeld door `Maykin B.V.`_, oorspronkelijk in opdracht van `Dimpact`_.
 
-
 Introductie
 ===========
 
@@ -42,6 +41,17 @@ eindgebruikers als beheerders.
 .. _`Common Ground`: https://commonground.nl/
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
 
+
+Duurzaam beheer
+===============
+
+Deze software is open source en vrij te gebruiken binnen de voorwaarden van de EUPL. Veilig en betrouwbaar productiegebruik vraagt echter om structureel beheer, waaronder beveiligingsupdates, dependency- en releasebeheer, kwaliteitsbewaking en het verwerken van kwetsbaarheden. Ook het onderhouden van publieke functies rondom het open source product vraagt om structurele inzet.
+
+**Publieke code vraagt om publieke verantwoordelijkheid.**
+
+De `Stakeholders`_ verwachten van publieke organisaties, die deze software in productie gebruiken, een financiele bijdrage aan de gezamenlijke instandhouding.
+
+Lees meer over de beheerorganisatie, bijdragen en verantwoordelijkheden in `GOVERNANCE.md`_.
 
 Component
 =========
@@ -70,14 +80,15 @@ Links
 Licentie
 ========
 
-Copyright © `"the Stakeholders`_, 2025
+Copyright © de `Stakeholders`_, 2025
 
 Licensed under the `EUPL`_.
 
 .. _`English version`: README.rst
 .. _`Maykin B.V.`: https://www.maykin.nl
 .. _`Dimpact`: https://www.dimpact.nl
-.. _ `"the Stakeholders"`: STAKEHOLDERS.md
+.. _`Stakeholders`: STAKEHOLDERS.md
+.. _`GOVERNANCE.md`: GOVERNANCE.md
 .. _`EUPL`: LICENSE.md
 
 .. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg
