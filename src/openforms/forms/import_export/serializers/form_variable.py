@@ -1,11 +1,10 @@
-from openforms.forms.api.serializers import FormVariableSerializer
-from openforms.forms.import_export.typing import (
-    FormConfigurationCleanup,
-    FormConfigurationOptions,
-)
 from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
 
+from ...api.serializers import FormVariableSerializer
+from ...models import FormVariable
+from ..constants import FormConfigurationOptions
+from ..typing import FormConfigurationCleanup
 from .base import BaseExportSerializer
 
 
@@ -15,12 +14,30 @@ def remove_prefill_from_variable(representation: JSONObject):
     representation["prefill_options"] = {}
 
 
-class FormVariableExportSerializer(FormVariableSerializer, BaseExportSerializer):
+class FormVariableExportSerializer(
+    FormVariableSerializer, BaseExportSerializer[FormVariable]
+):
     excluded_form_configuration_cleanup = (
         FormConfigurationCleanup(
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_variable,
         ),
+    )
+    safe_export_fields = (
+        "form",
+        "form_definition",
+        "name",
+        "key",
+        "source",
+        "service_fetch_configuration",
+        "prefill_plugin",
+        "prefill_attribute",
+        "prefill_identifier_role",
+        "prefill_options",
+        "data_type",
+        "data_format",
+        "is_sensitive_data",
+        "initial_value",
     )
 
     def remove_sensitive_content(self, instance, representation):

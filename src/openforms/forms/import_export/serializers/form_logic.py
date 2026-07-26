@@ -1,9 +1,21 @@
-from openforms.forms.api.serializers import FormLogicSerializer
-
+from ...api.serializers import FormLogicSerializer
+from ...models import FormLogic
 from .base import BaseExportSerializer
 
 
-class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
+class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer[FormLogic]):
+    safe_export_fields = (
+        "uuid",
+        "url",
+        "form",
+        "json_logic_trigger",
+        "description",
+        "order",
+        "actions",
+        "is_advanced",
+        "form_steps",
+    )
+
     def remove_sensitive_content(self, instance, representation):
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form

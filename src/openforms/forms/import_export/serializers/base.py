@@ -1,3 +1,8 @@
+from collections.abc import Sequence
+from typing import ClassVar
+
+from django.db.models import Model
+
 from rest_framework import serializers
 
 from openforms.typing import JSONObject
@@ -9,13 +14,36 @@ from ..typing import (
 )
 
 
-class BaseExportSerializer(serializers.Serializer):
-    excluded_form_configuration_cleanup: list[FormConfigurationCleanup] = ()
-    excluded_additional_form_configuration_cleanup: list[
-        AdditionalFormConfigurationCleanup
+class BaseExportSerializer[MT: Model](serializers.Serializer):
+    excluded_form_configuration_cleanup: ClassVar[
+        Sequence[FormConfigurationCleanup]
     ] = ()
+    """
+    Clean-up functions for form configuration.
 
-    def to_representation(self, instance):
+    Clean-up functions that are called when excluding the specified form configuration
+    during export. These functions specify how this configuration should be removed from
+    the form data.
+    """
+    excluded_additional_form_configuration_cleanup: ClassVar[
+        Sequence[AdditionalFormConfigurationCleanup]
+    ] = ()
+    """
+    Clean-up functions for additional form configuration.
+
+    Clean-up functions that are called when excluding the specified additional form
+    configuration during export. These functions specify how this configuration should
+    be removed from the form data.
+    """
+    safe_export_fields: ClassVar[Sequence[str]] = ()
+    """
+    Fields that never contain sensitive information.
+
+    When exporting with the option ``remove_sensitive_content=True``, only these fields
+    will be exported.
+    """
+
+    def to_representation(self, instance: MT):
         representation = super().to_representation(instance)
 
         if (
@@ -31,9 +59,16 @@ class BaseExportSerializer(serializers.Serializer):
         return representation
 
     def remove_sensitive_content(
-        self, instance, representation: JSONObject
+        self, instance: MT, representation: JSONObject
     ) -> JSONObject:
-        return representation
+        """
+        Remove all fields that are not in the safe_export_fields list.
+        """
+        return {
+            key: field
+            for key, field in representation.items()
+            if key in self.safe_export_fields
+        }
 
     def remove_excluded_form_configuration(
         self, representation: JSONObject
