@@ -4,6 +4,18 @@ from .base import BaseExportSerializer
 
 
 class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
+    save_export_fields = (
+        "uuid",
+        "url",
+        "form",
+        "json_logic_trigger",
+        "description",
+        "order",
+        "actions",
+        "is_advanced",
+        "form_steps",
+    )
+
     def remove_sensitive_content(self, instance, representation):
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form

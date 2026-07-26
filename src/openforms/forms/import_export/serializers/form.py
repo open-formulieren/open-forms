@@ -1,4 +1,5 @@
 from openforms.forms.api.serializers import FormSerializer
+from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
 from openforms.forms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
@@ -33,6 +34,26 @@ def exclude_auth_backends(representation: JSONObject):
     representation["auth_backends"] = []
 
 
+class FormRegistrationBackendExportSerializer(
+    FormRegistrationBackendSerializer, BaseExportSerializer
+):
+    save_export_fields = (
+        "key",
+        "name",
+        "backend",
+        "options",
+    )
+
+    def remove_sensitive_content(self, instance, representation):
+        representation = super().remove_sensitive_content(instance, representation)
+
+        if representation["backend"] == "email":
+            representation["options"]["to_emails"] = []
+            representation["options"]["payment_emails"] = []
+
+        return representation
+
+
 class FormExportSerializer(FormSerializer, BaseExportSerializer):
     excluded_additional_form_configuration_cleanup = (
         AdditionalFormConfigurationCleanup(
@@ -58,6 +79,70 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer):
             cleanup=exclude_auth_backends,
         ),
     )
+    registration_backends = FormRegistrationBackendExportSerializer(
+        many=True, required=False
+    )
+    save_export_fields = (
+        "uuid",
+        "name",
+        "internal_name",
+        "login_required",
+        "translation_enabled",
+        "registration_backends",
+        "auth_backends",
+        "login_options",
+        "auto_login_authentication_backend",
+        "payment_required",
+        "payment_backend",
+        "payment_backend_options",
+        "payment_options",
+        "price_variable_key",
+        "appointment_options",
+        "literals",
+        "begin_text",
+        "previous_text",
+        "change_text",
+        "confirm_text",
+        "product",
+        "slug",
+        "url",
+        "type",
+        "category",
+        "theme",
+        "steps",
+        "show_progress_indicator",
+        "show_summary_progress",
+        "maintenance_mode",
+        "active",
+        "activate_on",
+        "deactivate_on",
+        "is_deleted",
+        "submission_confirmation_template",
+        "introduction_page_content",
+        "explanation_template",
+        "submission_allowed",
+        "submission_limit",
+        "submission_counter",
+        "submission_limit_reached",
+        "suspension_allowed",
+        "ask_privacy_consent",
+        "ask_statement_of_truth",
+        "submissions_removal_options",
+        "confirmation_email_template",
+        "send_confirmation_email",
+        "display_main_website_link",
+        "include_confirmation_page_content_in_pdf",
+        "required_fields_with_asterisk",
+        "communication_preferences_portal_url",
+        "translations",
+        "resume_link_lifetime",
+        "hide_non_applicable_steps",
+        "cosign_login_options",
+        "cosign_has_link_in_email",
+        "submission_statements_configuration",
+        "submission_report_download_link_title",
+        "brp_personen_request_options",
+    )
 
     def get_fields(self):
         fields = super().get_fields()
@@ -67,14 +152,3 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer):
         if "payment_options" in fields:
             del fields["payment_options"]
         return fields
-
-    def remove_sensitive_content(self, instance, representation):
-        representation = super().remove_sensitive_content(instance, representation)
-        representation["internal_remarks"] = ""
-
-        for registration in representation.get("registration_backends", []):
-            if registration["backend"] == "email":
-                registration["options"]["to_emails"] = []
-                registration["options"]["payment_emails"] = []
-
-        return representation

@@ -408,7 +408,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(len(form_variables), 2)
 
             # Internal remarks should be removed
-            self.assertEqual(forms[0]["internal_remarks"], "")
+            self.assertIsNone(forms[0].get("internal_remarks"))
 
             # E-mail addresses assigned in the registration backend should be cleared
             # The variable assigned in the registration backend should be kept

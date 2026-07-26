@@ -23,6 +23,22 @@ class FormVariableExportSerializer(FormVariableSerializer, BaseExportSerializer)
             cleanup=remove_prefill_from_variable,
         ),
     )
+    save_export_fields = (
+        "form",
+        "form_definition",
+        "name",
+        "key",
+        "source",
+        "service_fetch_configuration",
+        "prefill_plugin",
+        "prefill_attribute",
+        "prefill_identifier_role",
+        "prefill_options",
+        "data_type",
+        "data_format",
+        "is_sensitive_data",
+        "initial_value",
+    )
 
     def remove_sensitive_content(self, instance, representation):
         representation = super().remove_sensitive_content(instance, representation)

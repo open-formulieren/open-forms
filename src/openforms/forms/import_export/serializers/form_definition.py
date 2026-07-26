@@ -57,6 +57,17 @@ class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSeriali
             cleanup=remove_prefill_from_component_configuration,
         ),
     )
+    save_export_fields = (
+        "url",
+        "uuid",
+        "name",
+        "internal_name",
+        "slug",
+        "configuration",
+        "login_required",
+        "is_reusable",
+        "translations",
+    )
 
     def remove_sensitive_content(self, instance, representation):
         representation = super().remove_sensitive_content(instance, representation)
