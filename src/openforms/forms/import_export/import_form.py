@@ -26,6 +26,7 @@ from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
 
+from .matchers.form_definition import FormDefinitionMatcher
 from .serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -81,6 +82,7 @@ def import_form_data(
     existing_form_instance: Form | None = None,
 ) -> Form | None:
     uuid_mapping = {}
+    form_definition_matcher = FormDefinitionMatcher()
 
     request = _get_mock_request()
     created_form: Form | None = None
@@ -109,6 +111,7 @@ def import_form_data(
             form=created_form,
             request=request,
             import_options=import_options,
+            matcher=form_definition_matcher,
         )
         move_file_registration_options(created_form, form_definitions)
 
@@ -185,6 +188,7 @@ def _import_form_definition_resources(
     form: Form,
     request: Request,
     import_options: FormImportOptions,
+    matcher: FormDefinitionMatcher,
 ) -> list[FormDefinition]:
     form_definitions: list[FormDefinition] = []
 
@@ -196,11 +200,7 @@ def _import_form_definition_resources(
 
         instance: FormDefinition | None = None
         if import_options.reuse_form_definitions:
-            # @TODO compare FD op component config zonder UUID's
-            instance = FormDefinition.objects.filter(
-                configuration=entry.get("configuration"),
-                is_reusable=True,
-            ).first()
+            instance = matcher.find(entry.get("configuration"))
 
         deserialized = FormDefinitionImportSerializer(
             data=entry,

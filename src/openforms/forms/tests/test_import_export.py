@@ -12,8 +12,11 @@ from django.utils import translation
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from freezegun import freeze_time
+from privates.storages import private_media_storage
+from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
 
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
 from openforms.authentication.tests.factories import AttributeGroupFactory
@@ -32,6 +35,7 @@ from openforms.config.tests.factories import (
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.admin.tasks import process_forms_export, process_forms_import
 from openforms.forms.import_export.constants import EXPORT_META_KEY
 from openforms.forms.import_export.export_form import export_form, form_to_json
 from openforms.forms.import_export.import_form import import_form
@@ -87,6 +91,7 @@ from ..models import (
     FormDefinition,
     FormLogic,
     FormRegistrationBackend,
+    FormsExport,
     FormStep,
     FormVariable,
 )
@@ -4171,6 +4176,60 @@ class ImportExportTests(TempdirMixin, TestCase):
             },
         )
 
+    def test_import_with_options_reuse_form_definitions_with_different_ids_in_configuration(
+        self,
+    ):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "id": "c4e49f",
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    },
+                ],
+            },
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+        form.delete()
+
+        # Change the component id
+        form_definition.configuration = {
+            "components": [
+                {
+                    "id": "eb0d38",
+                    "label": "Textfield",
+                    "key": "textfield",
+                    "type": "textfield",
+                },
+            ],
+        }
+        form_definition.save()
+
+        # Import form
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(reuse_form_definitions=True),
+        )
+
+        imported_form = Form.objects.last()
+
+        # There should be no new form definitions
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
+        # Assert that the imported form FD is the same as the existing FD
+        imported_form_definition = imported_form.formstep_set.get().form_definition
+        self.assertEqual(imported_form_definition, form_definition)
+
     def test_import_with_options_create_all_new_form_definitions(self):
         # Expect existing form definitions to be re-used
         form = FormFactory.create()
@@ -4303,6 +4362,84 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         imported_form = Form.objects.last()
         self.assertIsNone(imported_form.category)
+
+
+@temp_private_root(reset_storage=False)
+class BulkImportExportTests(TempdirMixin, TestCase):
+    def test_bulk_import_with_same_reusable_form_definition(self):
+        """
+        Expect that when multiple instances of the same reusable form definition are
+        imported at the same time with the import option `reuse_form_definitions=True`,
+        that only one is created which will be used by all imported forms.
+        """
+        user = SuperUserFactory.create(email="test@email.nl")
+
+        form1 = FormFactory.create()
+        form2 = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "label": "Textfield",
+                        "key": "textfield",
+                        "type": "textfield",
+                    }
+                ]
+            },
+        )
+        FormStepFactory.create(form=form1, form_definition=form_definition)
+        FormStepFactory.create(form=form2, form_definition=form_definition)
+
+        # Perform bulk export
+        process_forms_export(
+            forms_uuids=[form1.uuid, form2.uuid],
+            user_id=user.id,
+            export_options={},
+        )
+        form_export = FormsExport.objects.get()
+
+        # Remove the original forms and form definition
+        form1.delete()
+        form2.delete()
+        form_definition.delete()
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(FormDefinition.objects.count(), 0)
+
+        # Perform bulk import
+        exported_zip_file = form_export.export_content
+        exported_zip_file.seek(0)
+
+        name = "imports/tmp_import_file.zip"
+        filename = private_media_storage.save(name, exported_zip_file)
+
+        process_forms_import(
+            str(filename),
+            user.id,
+            import_options={
+                "reuse_form_definitions": True,
+            },
+        )
+
+        # Check that the import file is cleaned up
+        self.assertFalse(private_media_storage.exists(filename))
+
+        # There should be 2 form and 1 form definition
+        self.assertEqual(2, Form.objects.count())
+        self.assertEqual(1, FormDefinition.objects.count())
+        # Both forms use the same form definition
+        imported_form1 = Form.objects.first()
+        imported_form2 = Form.objects.last()
+        imported_form_definition = FormDefinition.objects.first()
+        self.assertEqual(
+            imported_form1.formstep_set.get().form_definition, imported_form_definition
+        )
+        self.assertEqual(
+            imported_form2.formstep_set.get().form_definition, imported_form_definition
+        )
+        self.assertEqual(
+            imported_form2.formstep_set.get().form_definition, imported_form_definition
+        )
 
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
