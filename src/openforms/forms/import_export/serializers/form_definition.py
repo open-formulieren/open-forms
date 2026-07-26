@@ -1,14 +1,15 @@
 from openforms.formio.typing import MapComponent
 from openforms.formio.utils import iter_components
-from openforms.forms.api.serializers import FormDefinitionSerializer
-from openforms.forms.import_export.typing import (
+from openforms.typing import JSONObject
+
+from ...api.serializers import FormDefinitionSerializer
+from ...models import FormDefinition
+from ..typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
 )
-from openforms.typing import JSONObject
-
 from .base import BaseExportSerializer
 
 
@@ -46,7 +47,9 @@ def remove_prefill_from_component_configuration(representation: JSONObject):
         component["prefill"]["attribute"] = ""
 
 
-class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSerializer):
+class FormDefinitionExportSerializer(
+    FormDefinitionSerializer, BaseExportSerializer[FormDefinition]
+):
     excluded_additional_form_configuration_cleanup = (
         AdditionalFormConfigurationCleanup(
             option=AdditionalFormConfigurationOptions.wms_tile_layers,
@@ -62,6 +65,17 @@ class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSeriali
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_component_configuration,
         ),
+    )
+    safe_export_fields = (
+        "url",
+        "uuid",
+        "name",
+        "internal_name",
+        "slug",
+        "configuration",
+        "login_required",
+        "is_reusable",
+        "translations",
     )
 
     def remove_sensitive_content(self, instance, representation):
