@@ -14,6 +14,26 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.6 (2026-07-27)
+===================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.5.6, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6458`] Fixed an issue in the new logic evaluation when the ``today``
+  operator was used in client-side evaluated logic.
+* Upgraded backend dependencies with latest security fixes.
+
+3.4.12 (2026-07-27)
+===================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.4.6, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* Upgraded backend dependencies with latest security fixes.
+
 4.0.0-alpha.2 (2026-07-22)
 ==========================
 
