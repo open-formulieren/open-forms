@@ -1,4 +1,17 @@
+import base64
+import binascii
+import mimetypes
+import uuid
+from collections.abc import Collection
+from typing import ClassVar
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.translation import gettext_lazy as _
+
+import magic
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import SkipField, empty
 
 
 class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
@@ -58,3 +71,92 @@ class RelatedFieldFromContext(serializers.HyperlinkedRelatedField):
         if input_url != context_obj_url:
             self.fail("incorrect_match")
         return obj
+
+
+class Base64ImageField(serializers.ImageField):
+    """
+    Accept image data that's base64 encoded and store it in an ``ImageField``.
+
+    The implementation is inspired by django-extra-fields which is unmaintained.
+    """
+
+    ALLOWED_EXTENSIONS: ClassVar[Collection[str]] = frozenset(
+        (
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        kwargs["use_url"] = True  # output URL when serializing
+        kwargs["allow_null"] = False  # use empty string instead
+        super().__init__(*args, **kwargs)
+
+    def run_validation(self, data=empty):
+        # do nothing
+        if data == "" and self.allow_empty_file:
+            raise SkipField()
+        # clear the field if it can be empty and & we get an explicit 'null'
+        if data is None and self.allow_empty_file:
+            return ""
+        if not data:
+            self.fail("empty")
+        return super().run_validation(data)
+
+    def to_internal_value(self, data):
+        # we must cast because the drf-stubs force `File` as type, which is wrong because
+        # we use base64...
+        from typing import cast  # noqa: TID251
+
+        data = data or ""
+        if not isinstance(data, str):
+            self.fail("invalid")
+
+        assert data
+        data = cast(str, data)
+
+        # decode as base64 - note that this loads the entire file into memory so
+        # appropriate memory constraints limits should be set.
+        try:
+            file_data: bytes = base64.b64decode(data, validate=True)
+        except (TypeError, binascii.Error, ValueError):
+            raise ValidationError(
+                _("Failed to decode the (image) file data."),
+                code="invalid",
+            )
+
+        # guess the mime type from the first 2KiB & validate
+        mime_type: str = magic.from_buffer(file_data[:2048], mime=True)
+        if not mime_type:
+            raise ValidationError(
+                _("Could not detect the file content type."), code="invalid"
+            )
+
+        # get the extension from the mime type
+        extension: str | None = mimetypes.guess_extension(mime_type)
+        if extension is None:
+            raise ValidationError(
+                _(
+                    "Could not determine an extension for the content type {mime_type}."
+                ).format(mime_type=mime_type),
+                code="invalid",
+            )
+
+        assert extension.startswith(".")
+        extension = extension.lower()
+        if extension not in self.ALLOWED_EXTENSIONS:
+            raise ValidationError(
+                _("Invalid file type '{ext}'.").format(ext=extension),
+                code="invalid",
+            )
+
+        file = SimpleUploadedFile(
+            # generate a file name
+            name=f"{uuid.uuid4()}{extension}",
+            content=file_data,
+            content_type=mime_type,
+        )
+
+        return super().to_internal_value(file)

@@ -1,6 +1,14 @@
+from typing import assert_never
+
 from drf_spectacular.authentication import SessionScheme
-from drf_spectacular.extensions import OpenApiSerializerExtension
+from drf_spectacular.extensions import (
+    OpenApiSerializerExtension,
+    OpenApiSerializerFieldExtension,
+)
 from drf_spectacular.openapi import AutoSchema
+from drf_spectacular.plumbing import build_basic_type
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import Direction
 
 
 class AnonCSRFSessionScheme(SessionScheme):
@@ -24,3 +32,26 @@ class ModelTranslationsSerializerExtension(OpenApiSerializerExtension):
         return auto_schema._map_serializer(
             self.target, direction, bypass_extensions=True
         )
+
+
+class Base64ImageFieldExtensions(OpenApiSerializerFieldExtension):
+    target_class = "openforms.api.fields.Base64ImageField"
+
+    def map_serializer_field(
+        self, auto_schema: AutoSchema, direction: Direction
+    ) -> dict[str, object]:
+        assert not self.target.allow_null
+        assert self.target.use_url
+
+        match direction:
+            # XXX this branch is not hit because we don't enable COMPONENT_SPLIT_REQUEST,
+            # and that change is too invasive for now
+            case "request":
+                schema = build_basic_type(OpenApiTypes.BYTE)
+            case "response":
+                schema = build_basic_type(OpenApiTypes.URI)
+            case _:  # pragma: no cover
+                assert_never(direction)
+
+        assert schema is not None
+        return schema
