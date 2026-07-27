@@ -16,7 +16,7 @@ U kunt elk formulier eenvoudig exporteren door onderstaande stappen te volgen:
 1. Navigeer naar **Formulieren** > **Formulieren**.
 2. Klik op de titel van het gewenste formulier om het formulier te openen.
 3. Klik onderaan op de knop **Exporteren**
-4. Een ZIP-bestand, met de naam van het *URL-deel* van het formulier, wordt nu 
+4. Een ZIP-bestand, met de naam van het *URL-deel* van het formulier, wordt nu
    gedownload op uw computer.
 
 U hoeft het ZIP-bestand niet uit te pakken.
@@ -25,17 +25,32 @@ U hoeft het ZIP-bestand niet uit te pakken.
 
     **Technische achtergrond**
 
-    Formulieren worden geëxporteerd als een ZIP-bestand waarin meerdere 
-    JSON-bestanden zitten. Elk JSON-bestand bevat de configuratie van het 
+    Formulieren worden geëxporteerd als een ZIP-bestand waarin meerdere
+    JSON-bestanden zitten. Elk JSON-bestand bevat de configuratie van het
     formulier zelf of een stap binnen het formulier. De JSON-structuur komt
     1-op-1 overeen met de API-specificatie waardoor het export formaat tevens
     open en transparent is.
 
+Formulier exporteer opties
+--------------------------
+
+Bij het exporteren van een formulier heb je enkele opties over hoe het
+ZIP-bestand wordt gemaakt:
+
+* **Anonimiseer formulierinstellingen**: Indien aangevinkt, dan worden de
+  formulierinstellingen automatisch geanonimiseerd. Dit verwijderd alle
+  e-mailadressen die zijn configureerd in de E-mail registratie en de interne
+  opmerkingen op het formulier. Deze optie is standaard aangevinkt.
+* **Formulierinstellingen**: Hiermee kunnen registratie backends,
+  betaalprovider, prefill en inlogmethode eenvoudig bij het exporteren
+  weggelaten worden. Standaard worden alle instellingen mee geëxporteerd.
+* **Aanvullende formulierinstellingen**: Hiermee kunnen aanvullende
+  instellingen van het formulier aan het ZIP-bestand toegevoegd worden.
 
 Formulieren importeren
 ======================
 
-Formulieren die zijn geëxporteerd met Open Formulieren kunnen ook weer 
+Formulieren die zijn geëxporteerd met Open Formulieren kunnen ook weer
 geïmporteerd worden.
 
 1. Navigeer naar **Formulieren** > **Formulieren**.
@@ -44,25 +59,25 @@ geïmporteerd worden.
 4. Klik op **Importeren**
 
 Als het goed is, is het formulier inclusief alle stappen geïmporteerd. Het
-geïmporteerde formulier is standaard niet actief en dus niet direct voor de 
+geïmporteerde formulier is standaard niet actief en dus niet direct voor de
 buitenwereld toegankelijk.
 
 Bijzonderheden
 --------------
 
-Als een formulier wordt geïmporteerd en het bevat een stap waarvan het 
+Als een formulier wordt geïmporteerd en het bevat een stap waarvan het
 *URL-deel* overeenkomt met een bestaande stap, dan controleert het import proces
-of de te importeren stap **exact hetzelfde** is als de bestaande stap. Als dat 
+of de te importeren stap **exact hetzelfde** is als de bestaande stap. Als dat
 zo is, dan wordt de bestaande stap gebruikt voor het geïmporteerde formulier. Er
 wordt dan geen nieuwe stap aangemaakt.
 
 Als de stap **niet exact hetzelfde** is, dan wordt er een nieuwe stap aangemaakt
-en wordt het *URL-deel* van de stap gewijzigd. Bijvoorbeeld van 
-``persoonsgegevens`` naar ``persoonsgegevens-2``. U krijgt hier altijd een 
+en wordt het *URL-deel* van de stap gewijzigd. Bijvoorbeeld van
+``persoonsgegevens`` naar ``persoonsgegevens-2``. U krijgt hier altijd een
 melding van.
 
-Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan kan het 
-formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het 
+Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan kan het
+formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het
 conflicterende formulier zelf aanpassen en het nogmaals proberen.
 
 Export en import van :ref:`logica <manual_logic>` regels die gebruik maken van
