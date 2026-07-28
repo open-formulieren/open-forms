@@ -3025,6 +3025,12 @@
       "value": "Your session has expired."
     }
   ],
+  "NOyTcy": [
+    {
+      "type": 0,
+      "value": "Content"
+    }
+  ],
   "NY6h3i": [
     {
       "type": 0,
@@ -3329,6 +3335,12 @@
     {
       "type": 0,
       "value": "Single step can be enabled only when there is exactly one form step configured."
+    }
+  ],
+  "QCLq4W": [
+    {
+      "type": 0,
+      "value": "Content for the help function. Only simple text markup is allowed."
     }
   ],
   "QDBI2H": [
@@ -4391,6 +4403,12 @@
     {
       "type": 0,
       "value": "Date of birth"
+    }
+  ],
+  "ZYdsY+": [
+    {
+      "type": 0,
+      "value": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
     }
   ],
   "ZdZ2Mb": [

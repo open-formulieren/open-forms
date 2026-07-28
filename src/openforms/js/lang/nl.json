@@ -1491,6 +1491,11 @@
     "description": "Session expiry notice - expired",
     "originalDefault": "Your session has expired."
   },
+  "NOyTcy": {
+    "defaultMessage": "Content",
+    "description": "form.helpDialogContent label",
+    "originalDefault": "Content"
+  },
   "NY6h3i": {
     "defaultMessage": "Alle eenvoudige variabelen zijn gekoppeld aan een zaakeigenschap.",
     "description": "Warning that all simple variables are mapped",
@@ -1649,6 +1654,11 @@
     "defaultMessage": "Enkele stap kan pas ingeschakeld worden als er precies één formulier stap geconfigureerd is.",
     "description": "Single step warning icon text",
     "originalDefault": "Single step can be enabled only when there is exactly one form step configured."
+  },
+  "QCLq4W": {
+    "defaultMessage": "Content for the help function. Only simple text markup is allowed.",
+    "description": "form.helpDialogContent help text",
+    "originalDefault": "Content for the help function. Only simple text markup is allowed."
   },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
@@ -2103,6 +2113,11 @@
     "defaultMessage": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier.",
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
+  },
+  "ZYdsY+": {
+    "defaultMessage": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content.",
+    "description": "Help dialog description",
+    "originalDefault": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
   },
   "ZdZ2Mb": {
     "defaultMessage": "Zet registratieplugin voor de inzending",

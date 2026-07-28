@@ -188,6 +188,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
   helpCalloutPage: 'form',
+  helpDialog: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -199,6 +200,7 @@ const TRANSLATION_FIELD_TO_TAB_NAMES = {
   previousText: 'literals',
   changeText: 'literals',
   confirmText: 'literals',
+  helpDialogContent: 'form',
 };
 
 function reducer(draft, action) {

@@ -15,6 +15,8 @@ import {getTranslatedChoices} from 'utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
+import TinyMCEEditor, {DEFAULT_CONFIG} from './Editor';
+import LanguageTabs from './LanguageTabs';
 import {FORM_TYPES, HELP_CALLOUT_PAGE_DISPLAY_CHOICES} from './constants';
 import TYPES from './types';
 
@@ -514,13 +516,21 @@ const FeatureFields = ({formType, translationEnabled, suspensionAllowed, onChang
   );
 };
 
+// See src/openforms/conf/tinymce_config.json for available options
+const HELP_DIALOG_TINYMCE_CONFIG = {
+  ...DEFAULT_CONFIG,
+  plugins: ['autolink', 'lists', 'link', 'anchor', 'wordcount'],
+  toolbar: 'undo redo | bold italic | bullist numlist outdent indent | link unlink',
+  width: 600,
+};
+
 const HelpOptionsFields = ({
   helpCalloutPageDisplay,
   helpCalloutPageContentConfigured,
+  translations,
   onChange,
 }) => {
   const intl = useIntl();
-
   return (
     <Fieldset
       title={
@@ -559,6 +569,52 @@ const HelpOptionsFields = ({
           />
         </Field>
       </FormRow>
+      <LanguageTabs forceRenderTabPanel>
+        {langCode => (
+          <>
+            <div className="description">
+              <FormattedMessage
+                description="Help dialog description"
+                defaultMessage={`You can (optionally) configure content for the
+                help function. When content is provided, an icon will be visible on
+                every form step. Clicking the icon will open a dialog-like element to
+                display the content configured here. You can optionally upload an image
+                to display below the content.`}
+              />
+            </div>
+            <FormRow>
+              <Field
+                name={`form.translations.${langCode}.helpDialogContent`}
+                label={
+                  <FormattedMessage
+                    description="form.helpDialogContent label"
+                    defaultMessage="Content"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    description="form.helpDialogContent help text"
+                    defaultMessage={`Content for the help function. Only simple text markup is allowed.`}
+                  />
+                }
+              >
+                <TinyMCEEditor
+                  tinyMceConfig={HELP_DIALOG_TINYMCE_CONFIG}
+                  content={translations?.[langCode]?.helpDialogContent || ''}
+                  onEditorChange={(newValue, editor) =>
+                    onChange({
+                      target: {
+                        name: `form.translations.${langCode}.helpDialogContent`,
+                        value: newValue,
+                      },
+                    })
+                  }
+                />
+              </Field>
+            </FormRow>
+          </>
+        )}
+      </LanguageTabs>
     </Fieldset>
   );
 };
@@ -597,6 +653,7 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     helpCalloutPage,
+    translations,
   } = form;
   const intl = useIntl();
 
@@ -818,6 +875,7 @@ const FormConfigurationFields = ({
         <HelpOptionsFields
           helpCalloutPageDisplay={helpCalloutPage.display}
           helpCalloutPageContentConfigured={!!helpCalloutPage.content}
+          translations={translations}
           onChange={onChange}
         />
       )}
