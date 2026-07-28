@@ -581,6 +581,12 @@
       "value": "Locatie"
     }
   ],
+  "44s7K8": [
+    {
+      "type": 0,
+      "value": "After start page"
+    }
+  ],
   "45IQhq": [
     {
       "type": 0,
@@ -947,6 +953,12 @@
     {
       "type": 0,
       "value": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "7KWWLM": [
+    {
+      "type": 0,
+      "value": "Help callout page display"
     }
   ],
   "7Ldfn+": [
@@ -1707,6 +1719,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "length"
+    }
+  ],
+  "Cbf8oT": [
+    {
+      "type": 0,
+      "value": "Help/contact options"
     }
   ],
   "Cf5zSF": [
@@ -4491,6 +4509,12 @@
       "value": "De DMN-instellingen zijn niet geldig."
     }
   ],
+  "alnzx+": [
+    {
+      "type": 0,
+      "value": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,
@@ -6815,6 +6839,12 @@
       "value": "(nog niet ingesteld)"
     }
   ],
+  "s0+59V": [
+    {
+      "type": 0,
+      "value": "Never"
+    }
+  ],
   "s8ercf": [
     {
       "type": 0,
@@ -7653,6 +7683,12 @@
     {
       "type": 0,
       "value": "Kinderen-omschrijving"
+    }
+  ],
+  "ygR4yU": [
+    {
+      "type": 0,
+      "value": "Before start page"
     }
   ],
   "yrz/oC": [
