@@ -62,6 +62,17 @@ module.exports = {
         loader: 'babel-loader',
       },
 
+      // .mjs
+      {
+        // @TODO remove in OF version 4.0
+        // The problem will be fixed in formio-renderer 2.0, which we will use in the new
+        // OF version.
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+
       // .scss
       {
         test: /\.(sa|sc|c)ss$/,
@@ -92,6 +103,16 @@ module.exports = {
               },
               sourceMap: argv.sourcemap,
             },
+          },
+        ],
+      },
+
+      // .png, .jpg, .jpeg, .gif, .svg
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        use: [
+          {
+            loader: 'file-loader',
           },
         ],
       },
