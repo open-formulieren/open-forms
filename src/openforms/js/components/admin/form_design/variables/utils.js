@@ -1,8 +1,13 @@
-import FormioUtils from 'formiojs/utils';
+import {iterComponents} from '@open-formulieren/formio-builder/formio';
 import _ from 'lodash';
 import {defineMessage} from 'react-intl';
 
-import {getComponentEmptyValue} from 'components/utils';
+import {
+  flattenComponents,
+  getComponentEmptyValue,
+  hasChildren,
+  isLayoutComponent,
+} from 'components/utils';
 
 import {
   COMPONENT_DATATYPES,
@@ -18,17 +23,14 @@ const getComponentDatatype = component => {
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
 
-const isInEditGrid = (component, configuration) => {
-  // Get all edit grids in the configuration
-  let editGrids = [];
-  FormioUtils.eachComponent(configuration.components, configComponent => {
-    if (configComponent.type === 'editgrid') editGrids.push(configComponent);
-  });
+const isInEditGrid = (targetComponent, configuration) => {
+  for (const {component} of iterComponents(configuration?.components || [])) {
+    if (component.type !== 'editgrid') continue;
 
-  // Check if our component is in the editgrid
-  for (const editGrid of editGrids) {
-    const foundComponent = FormioUtils.getComponent(editGrid.components, component.key, true);
-    if (foundComponent) return true;
+    // Check if any of the components in the editgrid has the same key as the component
+    // we're looking for.
+    const flatChildren = flattenComponents([component]);
+    if (flatChildren[targetComponent.key] !== undefined) return true;
   }
 
   return false;
@@ -64,7 +66,7 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
   // with additional special client-side behaviour
   if (newComponent.type === 'softRequiredErrors') return true;
 
-  const isLayout = FormioUtils.isLayoutComponent(newComponent);
+  const isLayout = hasChildren(newComponent);
 
   // When deleting a layout component, all child components need to be removed
   if (isLayout && mutationType === 'removed') return false;
@@ -92,17 +94,20 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
 const getFormVariables = (formDefinition, configuration) => {
   const newFormVariables = [];
 
-  FormioUtils.eachComponent(configuration.components, component => {
-    if (component.type === 'softRequiredErrors') return;
+  for (const {component} of iterComponents(configuration?.components || [])) {
+    if (component.type === 'softRequiredErrors') continue;
+    // Previous formio implementation skipped layout components that don't hold data
+    // (everything but 'editgrid'), so we do the same now.
+    if (isLayoutComponent(component)) continue;
 
-    // sEE #5035 - the client side upload components variables are created on load, and
+    // See #5035 - the client side upload components variables are created on load, and
     // then they get pushed to the server on save and are persisted too, which causes
     // upload issues. This may even have been the root cause of this issue where
     // "phantom" variables show up in the step data.
-    if (isInEditGrid(component, configuration)) return;
+    if (isInEditGrid(component, configuration)) continue;
 
     newFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
-  });
+  }
 
   return newFormVariables;
 };
@@ -127,10 +132,12 @@ const updateFormVariables = (
   if (isNew) {
     // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
     // the layout component need to be generated.
-    if (FormioUtils.isLayoutComponent(newComponent) && newComponent.type !== 'editgrid') {
-      FormioUtils.eachComponent([newComponent], component =>
-        updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
-      );
+    if (isLayoutComponent(newComponent)) {
+      for (const {component} of iterComponents([newComponent])) {
+        // Previous formio implementation skipped layout components, so we do the same now.
+        if (isLayoutComponent(component)) continue;
+        updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
+      }
     } else {
       // When a new component is created, the callback is called multiple times by Formio. So we need to avoid adding
       // the variable more than once.
@@ -183,10 +190,10 @@ const updateFormVariables = (
 
     // Case where a layout component is being removed,
     // so the variables for the nested components have to be removed too
-    if (FormioUtils.isLayoutComponent(newComponent)) {
-      FormioUtils.eachComponent([newComponent], component => {
+    if (hasChildren(newComponent)) {
+      for (const {component} of iterComponents([newComponent])) {
         keysToRemove.push(component.key);
-      });
+      }
     }
 
     updatedFormVariables = updatedFormVariables.filter(variable => {

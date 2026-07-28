@@ -1,11 +1,11 @@
-import FormioUtils from 'formiojs/utils';
+import {flattenComponents} from 'components/utils';
 
 const useDetectSimpleLogicErrors = configuration => {
-  const components = FormioUtils.flattenComponents(configuration.components || [], true);
+  const components = flattenComponents(configuration.components || []);
   const componentsKeys = Object.keys(components);
 
   let warnings = [];
-  for (const [componentKey, component] of Object.entries(components)) {
+  for (const component of Object.values(components)) {
     if (!!component?.conditional?.when && !componentsKeys.includes(component.conditional.when)) {
       warnings.push({
         component: component,

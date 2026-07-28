@@ -1,7 +1,7 @@
 /*
 global URLify;
  */
-import FormioUtils from 'formiojs/utils';
+import {iterComponents} from '@open-formulieren/formio-builder/formio';
 
 const stripIdFromComponents = obj => {
   const {id, ...objWithoutId} = obj;
@@ -17,23 +17,20 @@ const stripIdFromComponents = obj => {
  * @return {Object}           Object keyed by the Formio component.key with the component itself as value.
  */
 const getFormComponents = (formSteps = []) => {
-  const allComponents = formSteps
-    .map(step => {
-      let compMap = FormioUtils.flattenComponents(step.configuration.components || [], true);
-      return Object.fromEntries(
-        Object.entries(compMap).map(([key, component]) => {
-          let stepLabel;
-          if (component.label) {
-            stepLabel = `${step.internalName || step.name}: ${component.label} (${component.key})`;
-          } else {
-            stepLabel = `${step.internalName || step.name}: ${component.key}`;
-          }
-          return [key, {...component, stepLabel}];
-        })
-      );
-    })
-    .reduce((acc, currentValue) => ({...acc, ...currentValue}), {});
-  return allComponents;
+  const components = {};
+  formSteps.forEach(step => {
+    const stepLabel = `${step.internalName || step.name}`;
+
+    for (const {component, dataPath} of iterComponents(step.configuration.components || [])) {
+      const componentLabel =
+        'label' in component ? `${component.label} (${component.key})` : `${component.key}`;
+      components[dataPath] = {
+        ...component,
+        stepLabel: `${stepLabel}: ${componentLabel}`,
+      };
+    }
+  });
+  return components;
 };
 
 /**
@@ -44,9 +41,9 @@ const getFormComponents = (formSteps = []) => {
  */
 const findComponent = (formSteps = [], test) => {
   for (const step of formSteps) {
-    const stepComponents = FormioUtils.flattenComponents(step.configuration.components || [], true);
-    const hit = Object.values(stepComponents).find(test);
-    if (hit != null) return hit;
+    for (const {component} of iterComponents(step.configuration.components || [])) {
+      if (test(component)) return component;
+    }
   }
   return null;
 };
@@ -150,17 +147,16 @@ const updateRemovedKeyInLogic = (existingLogicRules, key) => {
 const getUniqueKey = (key, existingKeys) => {
   if (!existingKeys.includes(key)) return key;
 
-  let uniqueKey = key;
+  // In case the initial key already has a number suffix, use that as the starting point.
+  const [keyPrefix, keySuffix] = key.split(/(\d+)$/);
+  let uniqueKey = keyPrefix;
+  let index = keySuffix ? Number(keySuffix) : 0;
 
-  if (!uniqueKey.match(/(\d+)$/)) {
-    uniqueKey = `${key}1`;
-  } else {
-    uniqueKey = key.replace(/(\d+)$/, function (suffix) {
-      return Number(suffix) + 1;
-    });
+  while (existingKeys.includes(uniqueKey)) {
+    index++;
+    uniqueKey = `${keyPrefix}${index}`;
   }
-
-  return getUniqueKey(uniqueKey, existingKeys);
+  return uniqueKey;
 };
 
 /**

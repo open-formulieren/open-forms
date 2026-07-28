@@ -1,7 +1,7 @@
+import {iterComponents} from '@open-formulieren/formio-builder/formio';
 import classNames from 'classnames';
-import FormioUtils from 'formiojs/utils';
 import groupBy from 'lodash/groupBy';
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
@@ -108,9 +108,9 @@ const VariableRow = ({variable, onFieldChange}) => {
 
 const EditGridFileComponentRows = ({variable, component, onFieldChange}) => {
   const fileComponents = [];
-  FormioUtils.eachComponent(component.components, child => {
+  for (const {component: child} of iterComponents(component.components)) {
     if (child.type === 'file') fileComponents.push(child);
-  });
+  }
 
   if (!fileComponents.length) return null;
 
