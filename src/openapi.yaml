@@ -7609,11 +7609,6 @@ components:
       required:
       - id
       - label
-    DisplayEnum:
-      enum:
-      - form
-      type: string
-      description: '* `form` - form'
     DocumentType:
       type: object
       properties:
@@ -8016,6 +8011,16 @@ components:
           allOf:
           - $ref: '#/components/schemas/BRPPersonenRequestOptions'
           nullable: true
+        helpCalloutPage:
+          allOf:
+          - $ref: '#/components/schemas/HelpCalloutPage'
+          nullable: true
+        helpDialog:
+          allOf:
+          - $ref: '#/components/schemas/HelpDialog'
+          title: Help dialog configuration
+          description: When the nested content field is not empty, the SDK should
+            render help controls to assist the user filling out the form.
       required:
       - communicationPreferencesPortalUrl
       - cosignHasLinkInEmail
@@ -8126,10 +8131,15 @@ components:
       type: object
       properties:
         display:
-          $ref: '#/components/schemas/DisplayEnum'
+          $ref: '#/components/schemas/FormDefinitionConfigurationDisplayEnum'
         components:
           type: array
           items: {}
+    FormDefinitionConfigurationDisplayEnum:
+      enum:
+      - form
+      type: string
+      description: '* `form` - form'
     FormDefinitionConfigurationV3:
       type: object
       properties:
@@ -8380,6 +8390,12 @@ components:
           title: Explanation template [en]
           description: Content that will be shown on the start page of the form, below
             the title and above the log in text.
+        helpDialogContent:
+          type: string
+          nullable: true
+          title: Help dialog content [en]
+          description: Content displayed in the dialog/modal when the users clicks
+            the help icon on a step. Leave blank to disable this functionality.
     FormImport:
       type: object
       properties:
@@ -8581,6 +8597,12 @@ components:
           title: Explanation template [nl]
           description: Content that will be shown on the start page of the form, below
             the title and above the log in text.
+        helpDialogContent:
+          type: string
+          nullable: true
+          title: Help dialog content [nl]
+          description: Content displayed in the dialog/modal when the users clicks
+            the help icon on a step. Leave blank to disable this functionality.
     FormPayment:
       type: object
       properties:
@@ -8983,6 +9005,16 @@ components:
           description: Display the instruction from the confirmation page in the PDF.
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
+        helpCalloutPage:
+          allOf:
+          - $ref: '#/components/schemas/HelpCalloutPage'
+          nullable: true
+        helpDialog:
+          allOf:
+          - $ref: '#/components/schemas/HelpDialog'
+          title: Help dialog configuration
+          description: When the nested content field is not empty, the SDK should
+            render help controls to assist the user filling out the form.
       required:
       - loginRequired
       - name
@@ -9206,6 +9238,62 @@ components:
       required:
       - city
       - streetName
+    HelpCalloutPage:
+      type: object
+      properties:
+        display:
+          allOf:
+          - $ref: '#/components/schemas/HelpCalloutPageDisplayEnum'
+          title: Help callout page display
+          description: |-
+            When to display the help callout page.
+
+            * `before_start_page` - Before the start page
+            * `after_start_page` - After the start page
+            * `never` - Never
+        content:
+          type: string
+          readOnly: true
+          title: Help callout page content
+          description: Content for the help callout page, fetched from the global
+            configuration.
+        image:
+          type: string
+          format: uri
+          readOnly: true
+          title: Help callout page image
+          description: Image for the help callout page, fetched from the global configuration.
+      required:
+      - content
+      - display
+      - image
+    HelpCalloutPageDisplayEnum:
+      enum:
+      - before_start_page
+      - after_start_page
+      - never
+      type: string
+      description: |-
+        * `before_start_page` - Before the start page
+        * `after_start_page` - After the start page
+        * `never` - Never
+    HelpDialog:
+      type: object
+      properties:
+        content:
+          type: string
+          readOnly: true
+          description: Content displayed in the dialog/modal when the users clicks
+            the help icon on a step. Leave blank to disable this functionality.
+        image:
+          type: string
+          format: uri
+          title: Optional image
+          description: The image shown below the content in the help dialog. If no
+            help content is configured, this has no effect. When uploading an image,
+            make sure to base64-encode the binary data.
+      required:
+      - content
     IncompleteSubmissionsRemovalMethodEnum:
       enum:
       - delete_permanently
@@ -10084,6 +10172,16 @@ components:
           allOf:
           - $ref: '#/components/schemas/BRPPersonenRequestOptions'
           nullable: true
+        helpCalloutPage:
+          allOf:
+          - $ref: '#/components/schemas/HelpCalloutPage'
+          nullable: true
+        helpDialog:
+          allOf:
+          - $ref: '#/components/schemas/HelpDialog'
+          title: Help dialog configuration
+          description: When the nested content field is not empty, the SDK should
+            render help controls to assist the user filling out the form.
     PatchedFormDefinition:
       type: object
       properties:
