@@ -960,6 +960,11 @@
     "description": "Internal form remarks field help text",
     "originalDefault": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
   },
+  "F4qw6B": {
+    "defaultMessage": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined.",
+    "description": "Help dialog image help text",
+    "originalDefault": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined."
+  },
   "F9ew4C": {
     "defaultMessage": "Versie",
     "description": "Objects API registration options 'objecttypeVersion' label",
@@ -1064,6 +1069,11 @@
     "defaultMessage": "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Incomplete Submissions Removal Method help text",
     "originalDefault": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+  },
+  "GemVSH": {
+    "defaultMessage": "Help dialog image",
+    "description": "Help dialog image label",
+    "originalDefault": "Help dialog image"
   },
   "GfH2yX": {
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -2967,6 +2977,11 @@
     "description": "Email registration options 'emailContentTemplateHtml' label",
     "originalDefault": "Email content template HTML"
   },
+  "nVCVzl": {
+    "defaultMessage": "Are you sure that you want to clear the image?",
+    "description": "Clearing help dialog image confirmation message",
+    "originalDefault": "Are you sure that you want to clear the image?"
+  },
   "nXKEYN": {
     "defaultMessage": "Zaakobjecten ({count})",
     "description": "ZGW APIs registration backend options, 'case objects' tab label",
@@ -3611,6 +3626,11 @@
     "defaultMessage": "(niet ingesteld)",
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
+  },
+  "yWuVOE": {
+    "defaultMessage": "Clear image",
+    "description": "Clear image link label",
+    "originalDefault": "Clear image"
   },
   "ydnh2t": {
     "defaultMessage": "Kinderen-omschrijving",

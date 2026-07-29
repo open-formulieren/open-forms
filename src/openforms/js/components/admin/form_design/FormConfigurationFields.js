@@ -5,7 +5,13 @@ import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Checkbox, DateTimeInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {
+  Checkbox,
+  DateTimeInput,
+  ImageUpload,
+  TextArea,
+  TextInput,
+} from 'components/admin/forms/Inputs';
 import {Radio} from 'components/admin/forms/Inputs';
 import RadioList from 'components/admin/forms/RadioList';
 import Select from 'components/admin/forms/Select';
@@ -19,6 +25,7 @@ import TinyMCEEditor, {DEFAULT_CONFIG} from './Editor';
 import LanguageTabs from './LanguageTabs';
 import {FORM_TYPES, HELP_CALLOUT_PAGE_DISPLAY_CHOICES} from './constants';
 import TYPES from './types';
+import useConfirm from './useConfirm';
 
 const SUMBISSION_ALLOWED_CHOICES = [
   [
@@ -528,9 +535,46 @@ const HelpOptionsFields = ({
   helpCalloutPageDisplay,
   helpCalloutPageContentConfigured,
   translations,
+  hasHelpDialogImage,
   onChange,
 }) => {
   const intl = useIntl();
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
+
+  // handle file upload and convert to base64
+  const handleImageUpload = event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const content = reader.result;
+      // strip off the metadata
+      const marker = ';base64,';
+      const metadataIndex = content.indexOf(marker);
+      const base64Data = content.substring(metadataIndex + marker.length);
+      // and dispatch into our form state
+      onChange({
+        target: {
+          name: event.target.name,
+          value: base64Data,
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const onClearImage = async event => {
+    event.preventDefault();
+    if (!(await openConfirmationModal())) return;
+    onChange({
+      target: {
+        name: 'form.helpDialog.image',
+        value: '',
+      },
+    });
+  };
+
   return (
     <Fieldset
       title={
@@ -615,6 +659,54 @@ const HelpOptionsFields = ({
           </>
         )}
       </LanguageTabs>
+      <FormRow>
+        <Field
+          name="form.helpDialog.image"
+          label={
+            <FormattedMessage
+              description="Help dialog image label"
+              defaultMessage="Help dialog image"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Help dialog image help text"
+              defaultMessage={`You can upload a (small) image to display below the help
+              function content. PNG, JPG and WEBP files are accepted. Avoid uploading
+              large images for users with limited bandwidth or slow connections. Note
+              that this is ignored if no content is defined.
+            `}
+            />
+          }
+          noManageChildProps
+        >
+          <span>
+            <ImageUpload
+              name="form.helpDialog.image"
+              id="id_form.helpDialog.image"
+              onChange={handleImageUpload}
+            />
+            {hasHelpDialogImage && (
+              <a href="#" onClick={onClearImage} disabled={false}>
+                <FormattedMessage
+                  description="Clear image link label"
+                  defaultMessage="Clear image"
+                />
+              </a>
+            )}
+          </span>
+        </Field>
+      </FormRow>
+
+      <ConfirmationModal
+        {...confirmationModalProps}
+        message={
+          <FormattedMessage
+            description="Clearing help dialog image confirmation message"
+            defaultMessage="Are you sure that you want to clear the image?"
+          />
+        }
+      />
     </Fieldset>
   );
 };
@@ -654,6 +746,7 @@ const FormConfigurationFields = ({
     askStatementOfTruth,
     helpCalloutPage,
     translations,
+    helpDialog,
   } = form;
   const intl = useIntl();
 
@@ -876,6 +969,7 @@ const FormConfigurationFields = ({
           helpCalloutPageDisplay={helpCalloutPage.display}
           helpCalloutPageContentConfigured={!!helpCalloutPage.content}
           translations={translations}
+          hasHelpDialogImage={!!helpDialog?.image}
           onChange={onChange}
         />
       )}
