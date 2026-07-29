@@ -70,3 +70,69 @@ class FillInFormTests(E2ETestCase):
                     await expect(
                         page.get_by_text("This is non-nested data")
                     ).to_be_visible()
+
+    async def test_required_hidden_multiple_field(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Form nested data",
+                slug="form-with-nested-data",
+                generate_minimal_setup=True,
+                formstep__form_definition__name="First step",
+                formstep__form_definition__slug="first-step",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldVisible",
+                            "label": "Textfield visible",
+                            "hidden": False,
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "hiddenField",
+                            "label": "Hidden field",
+                            "validate": {
+                                "required": True,
+                            },
+                            "multiple": True,
+                            "hidden": False,
+                            "clearOnHide": False,
+                            "conditional": {
+                                "show": False,
+                                "when": "textfieldVisible",
+                                "eq": "hide",
+                            },
+                            "defaultValue": [],
+                        },
+                    ]
+                },
+                translation_enabled=True,
+                ask_privacy_consent=False,
+                ask_statement_of_truth=False,
+            )
+            return form
+
+        form = await setUpTestData()
+        form_url = str(
+            furl(self.live_server_url)
+            / reverse("forms:form-detail", kwargs={"slug": form.slug})
+        )
+
+        with patch("openforms.utils.validators.allow_redirect_url", return_value=True):
+            async with browser_page() as page:
+                await page.goto(form_url)
+
+                await page.get_by_role("button", name="Begin form").click()
+
+                await page.get_by_label("Textfield visible").fill("hide")
+                expect(page.get_by_label("Hidden field")).not_to_be_visible()
+
+                await page.get_by_role("button", name="Next").click()
+                await page.get_by_role("button", name="Confirm").click()
+                await expect(
+                    page.get_by_text(
+                        "Please hold on while we're processing your submission."
+                    )
+                ).to_be_visible()
