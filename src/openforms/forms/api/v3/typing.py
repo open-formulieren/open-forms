@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 from uuid import UUID
 
 from openforms.appointments.base import Product
@@ -8,6 +8,7 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
 from openforms.formio.typing import FormioConfiguration
 from openforms.prefill.constants import IdentifierRoles
+from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import (
     DataMappingTypes,
     FormVariableDataTypes,
@@ -15,7 +16,12 @@ from openforms.variables.constants import (
     ServiceFetchMethods,
 )
 
-from ...constants import FormTypeChoices, StatementCheckboxChoices
+from ...constants import (
+    FormTypeChoices,
+    LogicActionTypes,
+    PropertyTypes,
+    StatementCheckboxChoices,
+)
 from ...models import Category
 
 
@@ -140,6 +146,102 @@ class FormVariableData(TypedDict):
     service_fetch_configuration: NotRequired[ServiceFetchConfigurationData | None]
 
 
+class LogicActionServiceData(TypedDict):
+    type: Literal[LogicActionTypes.fetch_from_service]
+    value: JSONValue
+
+
+class LogicActionDummyData(TypedDict):
+    type: Literal[
+        LogicActionTypes.disable_next,
+        LogicActionTypes.step_not_applicable,
+        LogicActionTypes.step_applicable,
+    ]
+
+
+class PropertyData(TypedDict):
+    type: PropertyTypes
+    value: str
+
+
+class LogicActionPropertyData(TypedDict):
+    type: Literal[LogicActionTypes.property]
+    property: PropertyData
+    state: JSONValue
+
+
+class LogicValueData(TypedDict):
+    type: Literal[LogicActionTypes.variable]
+    value: JSONValue
+
+
+class VariableMappingData(TypedDict):
+    form_variable: str
+    dmn_variable: str
+
+
+class LogicActionDMNEvaluateConfigData(TypedDict):
+    plugin_id: str
+    decision_definition_id: str
+    decision_definition_version: NotRequired[str]
+    input_mapping: list[VariableMappingData]
+    output_mapping: list[VariableMappingData]
+
+
+class LogicActionDMNEvaluateData(TypedDict):
+    type: Literal[LogicActionTypes.evaluate_dmn]
+    config: LogicActionDMNEvaluateConfigData
+
+
+class LogicActionRegistrationBackendData(TypedDict):
+    type: Literal[LogicActionTypes.set_registration_backend]
+    value: str
+
+
+class SynchronizeDataMappingData(TypedDict):
+    property: str
+    component_key: str
+
+
+class SynchronizeVariableConfigData(TypedDict):
+    identifier_variable: str
+    source_variable: str
+    destination_variable: str
+    data_mappings: list[SynchronizeDataMappingData]
+
+
+class LogicActionSynchronizeVariableData(TypedDict):
+    type: Literal[LogicActionTypes.synchronize_variables]
+    config: SynchronizeVariableConfigData
+
+
+type LogicActionTypeData = (
+    LogicActionDummyData
+    | LogicActionPropertyData
+    | LogicActionServiceData
+    | LogicValueData
+    | LogicActionDMNEvaluateData
+    | LogicActionRegistrationBackendData
+    | LogicActionSynchronizeVariableData
+)
+
+
+class FormLogicActionData(TypedDict):
+    component: NotRequired[str]
+    variable: NotRequired[str]
+    form_step_slug: NotRequired[str]
+    action: LogicActionTypeData
+    config: NotRequired[LogicActionDMNEvaluateConfigData]
+
+
+class FormLogicData(TypedDict):
+    json_logic_trigger: JSONObject
+    description: NotRequired[str]
+    order: int
+    actions: list[FormLogicActionData]
+    is_advanced: NotRequired[bool]
+
+
 class FormValidatedData(TypedDict):
     uuid: UUID
     name: str
@@ -157,6 +259,7 @@ class FormValidatedData(TypedDict):
     payment: NotRequired[PaymentData]
 
     formvariable_set: list[FormVariableData]
+    formlogic_set: list[FormLogicData]
 
     show_progress_indicator: NotRequired[bool]
     show_summary_progress: NotRequired[bool]

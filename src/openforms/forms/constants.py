@@ -39,6 +39,12 @@ LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID: Set[str] = {
     LogicActionTypes.disable_next.value,
 }
 
+# TODO
+# Clean this up when the above is not needed (during v2 removal)
+LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG = (
+    LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID
+)
+
 
 class PropertyTypes(models.TextChoices):
     bool = "bool", _("Boolean")
