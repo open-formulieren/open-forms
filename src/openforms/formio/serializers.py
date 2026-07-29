@@ -97,7 +97,13 @@ class StepDataSerializer(serializers.Serializer):
             case serializers.CharField():
                 field.allow_blank = True
 
-            case serializers.ListField() | EditGridField():
+            case serializers.ListField():
+                field.allow_empty = True
+                field.min_length = None
+                field.max_length = None
+                self._remove_validations_from_field(field.child)
+
+            case EditGridField():
                 field.allow_empty = True
                 field.min_length = None
                 field.max_length = None
