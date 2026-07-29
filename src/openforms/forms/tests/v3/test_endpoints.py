@@ -4,6 +4,7 @@ from datetime import timedelta
 from uuid import UUID, uuid4
 
 from django.db import connections
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import get_text_list
@@ -43,11 +44,12 @@ from ...constants import (
     StatementCheckboxChoices,
     SubmissionAllowedChoices,
 )
-from ...models import Form, FormDefinition, FormRegistrationBackend
+from ...models import Form, FormDefinition, FormLogic, FormRegistrationBackend
 from ...tests.factories import (
     CategoryFactory,
     FormDefinitionFactory,
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
 )
 
@@ -304,6 +306,23 @@ class FormEndpointTests(APITestCase):
                     b"\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
                 ).decode("ascii"),
             },
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"==": [{"var": "component1"}, "foo"]},
+                    "actions": [
+                        {
+                            "component": "component2",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
         }
         response = self.client.put(url, data=data)
 
@@ -523,6 +542,9 @@ class FormEndpointTests(APITestCase):
             form.explanation_template_nl, "Wees klaar om voor koekjes te vragen"
         )
         self.assertEqual(form.help_dialog_content_nl, "hulpinformatie")
+
+        # logic rules
+        self.assertEqual(form.formlogic_set.count(), 1)
 
     def test_create_reuse_existing_definition(self):
         form_definition = FormDefinitionFactory.create(
@@ -3318,6 +3340,864 @@ class FormEndpointVariableTests(APITestCase):
         self.assertEqual(
             error_message["reason"],
             "Unknown component key 'foobar' specified for profile form variable",
+        )
+
+
+@override_settings(LANGUAGE_CODE="en")
+class FormEndpointLogicRulesTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.admin_user = UserFactory.create(
+            is_staff=True, user_permissions=("forms.change_form",)
+        )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.client.force_authenticate(user=self.admin_user)
+
+    def test_create_form_with_logic_rules(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "checkbox",
+                                    "key": "checkbox",
+                                    "label": "Checkbox",
+                                    "hidden": False,
+                                    "clearOnHide": False,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration",
+                                "internalName": "Form configuration",
+                            },
+                            "nl": {
+                                "name": "Form configuratie",
+                                "internalName": "Form configuratie",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "Extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                    "actions": [
+                        {
+                            "component": "textField",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+        self.assertEqual(form.formlogic_set.count(), 1)
+
+    def test_update_form_with_logic_rules(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_definition = form.formstep_set.get().form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "test-key",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "checkbox",
+                                    "key": "checkbox",
+                                    "label": "Checkbox",
+                                    "hidden": False,
+                                    "clearOnHide": False,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration",
+                                "internalName": "Form configuration",
+                            },
+                            "nl": {
+                                "name": "Form configuratie",
+                                "internalName": "Form configuratie",
+                            },
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                    "actions": [
+                        {
+                            "component": "test-key",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 1)
+        form.refresh_from_db()
+
+        logic_rule = FormLogic.objects.get()
+        self.assertEqual(form.formlogic_set.get(), logic_rule)
+        self.assertEqual(
+            logic_rule.actions,
+            [
+                {
+                    "action": {
+                        "type": "property",
+                        "state": True,
+                        "property": {"type": "bool", "value": "hidden"},
+                    },
+                    "component": "test-key",
+                }
+            ],
+        )
+
+    def test_component_missing_from_action_and_present_in_form(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": False,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "formStepSlug": form_step.slug,
+                            "action": {"type": "disable-next"},
+                        }
+                    ],
+                },
+                {
+                    "order": 1,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.1.actions.0.component",
+                "code": "blank",
+                "reason": "This field may not be blank.",
+            },
+        )
+
+    def test_variable_missing_from_action_and_present_in_form(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "variable",
+                                "property": {"type": "", "value": ""},
+                                "value": "foo",
+                                "state": "",
+                            },
+                            "variable": "",
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.variable",
+                "code": "blank",
+                "reason": "You must specify a variable.",
+            },
+        )
+
+    def test_wrong_variable_provided_in_variable_action(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "variable",
+                                "property": {"type": "", "value": ""},
+                                "value": "foo",
+                                "state": "",
+                            },
+                            "variable": "wrong",
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.variable",
+                "code": "invalid",
+                "reason": "The variable wrong does not exist.",
+            },
+        )
+
+    def test_wrong_date_format_in_variable_action(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "date",
+                                    "key": "date",
+                                    "label": "Date",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "variable",
+                                "property": {"type": "", "value": ""},
+                                "value": "foo",
+                                "state": "",
+                            },
+                            "variable": "date",
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.value",
+                "code": "invalid",
+                "reason": "Value for date variable must be a string in the format yyyy-mm-dd (e.g. 2023-07-03)",
+            },
+        )
+
+    def test_layout_components_and_disabled(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "fieldset",
+                                    "key": "fieldset",
+                                    "label": "Fieldset",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "fieldset",
+                            "action": {
+                                "type": "property",
+                                "property": {
+                                    "type": "bool",
+                                    "value": "disabled",
+                                },
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.component",
+                "code": "invalid",
+                "reason": "'disabled' property can't be used for layout components.",
+            },
+        )
+
+    def test_missing_form_step_slug_from_action(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "fieldset",
+                                    "key": "fieldset",
+                                    "label": "Fieldset",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "",
+                            "formStepSlug": None,
+                            "action": {
+                                "type": "disable-next",
+                                "property": {"type": "", "value": ""},
+                                "value": "",
+                                "state": "",
+                            },
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.formStepSlug",
+                "code": "null",
+                "reason": "This field may not be null.",
+            },
+        )
+
+    def test_invalid_form_step_slug_in_action(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "fieldset",
+                                    "key": "fieldset",
+                                    "label": "Fieldset",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "",
+                            "formStepSlug": "wrong",
+                            "action": {
+                                "type": "disable-next",
+                                "property": {"type": "", "value": ""},
+                                "value": "",
+                                "state": "",
+                            },
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.formStepSlug",
+                "code": "invalid",
+                "reason": "Invalid form step specified in logic action.",
+            },
+        )
+
+    def test_logic_rules_with_cycles_detected(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "key": "foo",
+                                    "type": "textfield",
+                                    "label": "Foo",
+                                },
+                                {
+                                    "key": "bar",
+                                    "type": "textfield",
+                                    "label": "Bar",
+                                },
+                                {
+                                    "key": "baz",
+                                    "type": "textfield",
+                                    "label": "Baz",
+                                },
+                                {
+                                    "key": "self",
+                                    "type": "textfield",
+                                    "label": "Self",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "jsonLogicTrigger": {"==": [{"var": "self"}, ""]},
+                    "description": "Set self",
+                    "order": 0,
+                    "actions": [
+                        {
+                            "variable": "self",
+                            "action": {"type": "variable", "value": "self"},
+                        }
+                    ],
+                },
+                {
+                    "jsonLogicTrigger": {"==": [{"var": "foo"}, ""]},
+                    "description": "Set bar",
+                    "order": 1,
+                    "actions": [
+                        {
+                            "variable": "bar",
+                            "action": {"type": "variable", "value": "bar"},
+                        }
+                    ],
+                },
+                {
+                    "jsonLogicTrigger": {"==": [{"var": "bar"}, ""]},
+                    "description": "Set baz",
+                    "order": 2,
+                    "actions": [
+                        {
+                            "variable": "baz",
+                            "action": {"type": "variable", "value": "baz"},
+                        }
+                    ],
+                },
+                {
+                    "jsonLogicTrigger": {"==": [{"var": "baz"}, ""]},
+                    "description": "Set foo",
+                    "order": 3,
+                    "actions": [
+                        {
+                            "variable": "foo",
+                            "action": {"type": "variable", "value": "foo"},
+                        }
+                    ],
+                },
+            ],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        expected_error = [
+            {
+                "name": "0.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="self"),
+            },
+            {
+                "name": "1.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
+            },
+            {
+                "name": "2.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
+            },
+            {
+                "name": "3.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
+            },
+        ]
+        self.assertEqual(response.json()["invalidParams"], expected_error)
+
+    def test_validation_reports_multiple_errors(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "fieldset",
+                                    "key": "fieldset",
+                                    "label": "Fieldset",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "",
+                            "formStepSlug": "",
+                            "action": {
+                                "type": "disable-next",
+                                "property": {"type": "", "value": ""},
+                                "value": "",
+                                "state": "",
+                            },
+                        },
+                        {
+                            "variable": "",
+                            "action": {
+                                "type": "variable",
+                                "value": 42,
+                            },
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.formStepSlug",
+                "code": "blank",
+                "reason": "This field may not be blank.",
+            },
+        )
+        self.assertEqual(
+            response_data["invalidParams"][1],
+            {
+                "name": "logicRules.0.actions.1.variable",
+                "code": "blank",
+                "reason": "This field may not be blank.",
+            },
         )
 
 
