@@ -67,14 +67,11 @@ def report_components() -> bool:
     from openforms.registrations.contrib.objects_api.constants import (
         PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
     )
-    from openforms.registrations.contrib.zgw_apis.plugin import (
-        PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
-    )
     from openforms.registrations.contrib.zgw_apis.typing import CatalogueOption
 
     RELEVANT_BACKENDS = {
         OBJECTS_API_PLUGIN_IDENTIFIER,
-        ZGW_APIS_PLUGIN_IDENTIFIER,
+        "zgw-create-zaak",
     }
 
     forms = (

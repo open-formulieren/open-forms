@@ -14,8 +14,6 @@ from json_logic.meta.expressions import destructure
 from json_logic.typing import JSON
 from tabulate import tabulate
 
-from openforms.forms.constants import LogicActionTypes
-
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
@@ -90,6 +88,7 @@ def report_rules() -> bool:
     )
     from openforms.formio.typing import Component
     from openforms.formio.visibility import get_conditional
+    from openforms.forms.constants import LogicActionTypes
     from openforms.forms.models import Form
     from openforms.variables.service import resolve_key
 
