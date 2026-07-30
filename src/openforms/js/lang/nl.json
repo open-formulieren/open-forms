@@ -255,6 +255,11 @@
     "description": "Demo registration options modal title",
     "originalDefault": "Plugin configuration: demo"
   },
+  "44s7K8": {
+    "defaultMessage": "After start page",
+    "description": "After start page option label",
+    "originalDefault": "After start page"
+  },
   "4FQxD/": {
     "defaultMessage": "Configureren",
     "description": "JSON editor: 'configure' header label",
@@ -408,6 +413,11 @@
     "defaultMessage": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.beginText help text",
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
+  },
+  "7KWWLM": {
+    "defaultMessage": "Help callout page display",
+    "description": "Help callout page display setting",
+    "originalDefault": "Help callout page display"
   },
   "7Lk/+w": {
     "defaultMessage": "Type",
@@ -751,6 +761,11 @@
     "defaultMessage": "de waarde",
     "description": "\"literal\" operand type",
     "originalDefault": "value"
+  },
+  "Cbf8oT": {
+    "defaultMessage": "Help/contact options",
+    "description": "Help/contact options fieldset title",
+    "originalDefault": "Help/contact options"
   },
   "CiaAYL": {
     "defaultMessage": "Selecteer de toegestane authenticatie-plugins om in te loggen aan het begin van het formulier.",
@@ -2169,6 +2184,11 @@
     "description": "DMN evaluation configuration errors message",
     "originalDefault": "There are errors in the DMN configuration."
   },
+  "alnzx+": {
+    "defaultMessage": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified.",
+    "description": "Help callout page display setting help text",
+    "originalDefault": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
+  },
   "auZOcD": {
     "defaultMessage": "Mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression field label",
@@ -3198,6 +3218,11 @@
     "description": "DMN evaluation not configured yet message",
     "originalDefault": "(not configured yet)"
   },
+  "s0+59V": {
+    "defaultMessage": "Never",
+    "description": "Never option label",
+    "originalDefault": "Never"
+  },
   "sAfROS": {
     "defaultMessage": "Metagegevensvariabelen",
     "description": "Metadata variables fieldset title",
@@ -3576,6 +3601,11 @@
     "defaultMessage": "Kinderen-omschrijving",
     "description": "ZGW APIs registration options 'childrenDescription' label",
     "originalDefault": "Children description"
+  },
+  "ygR4yU": {
+    "defaultMessage": "Before start page",
+    "description": "Before start page option label",
+    "originalDefault": "Before start page"
   },
   "yxcU+O": {
     "defaultMessage": "Beschrijving van het 'overige' objecttype",

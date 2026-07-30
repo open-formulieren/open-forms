@@ -42,6 +42,7 @@ from openforms.variables.constants import FormVariableSources
 
 from ..constants import (
     FormTypeChoices,
+    HelpCalloutPageDisplayChoices,
     StatementCheckboxChoices,
     SubmissionAllowedChoices,
 )
@@ -399,6 +400,18 @@ class Form(models.Model):
         help_text=_(
             "Amount of days when all submissions of this form will be permanently deleted. "
             "Leave blank to use value in General Configuration."
+        ),
+    )
+
+    # Help button and callout page settings
+    help_callout_page_display = models.CharField(
+        _("help callout page display"),
+        choices=HelpCalloutPageDisplayChoices.choices,
+        default=HelpCalloutPageDisplayChoices.never,
+        help_text=_(
+            "When to display the help callout page. Note that this field is disabled "
+            "when the help callout page content in the global configuration is not "
+            "specified."
         ),
     )
 

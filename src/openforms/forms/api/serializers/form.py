@@ -17,6 +17,10 @@ from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
+from openforms.config.api.fields import (
+    GlobalConfigurationCSPPostProcessedHTMLField,
+    GlobalConfigurationImageField,
+)
 from openforms.config.models import GlobalConfiguration, Theme
 from openforms.contrib.haal_centraal.api.serializers import (
     BRPPersonenRequestOptionsSerializer,
@@ -35,7 +39,7 @@ from openforms.registrations.service import plugin_allows_json_schema_generation
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import RegistrationBackendKey
 
-from ...constants import StatementCheckboxChoices
+from ...constants import HelpCalloutPageDisplayChoices, StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from ..validators import RequireAppointmentsPlugin
 from .button_text import ButtonTextSerializer
@@ -130,6 +134,31 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
         # serializer does some normalization, so make sure to update the data
         attrs["options"] = serializer.data
         return attrs
+
+
+class HelpCalloutPageSerializer(serializers.Serializer):
+    display = serializers.ChoiceField(
+        source="help_callout_page_display",
+        label=_("Help callout page display"),
+        help_text=_("When to display the help callout page."),
+        choices=HelpCalloutPageDisplayChoices.choices,
+    )
+    content = GlobalConfigurationCSPPostProcessedHTMLField(
+        source="help_callout_page_content",
+        label=_("Help callout page content"),
+        help_text=_(
+            "Content for the help callout page, fetched from the global configuration."
+        ),
+        read_only=True,
+    )
+    image = GlobalConfigurationImageField(
+        source="help_callout_page_image",
+        label=_("Help callout page image"),
+        help_text=_(
+            "Image for the help callout page, fetched from the global configuration."
+        ),
+        read_only=True,
+    )
 
 
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
@@ -247,6 +276,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
     auth_backends = FormAuthenticationBackendSerializer(many=True, required=False)
 
+    help_callout_page = HelpCalloutPageSerializer(
+        source="*", required=False, allow_null=True
+    )
+
     class Meta:
         model = Form
         fields = (
@@ -306,6 +339,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
+            "help_callout_page",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -341,6 +375,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "cosign_has_link_in_email",
             "submission_statements_configuration",
             "submission_report_download_link_title",
+            "help_callout_page",
         )
         extra_kwargs = {
             "uuid": {

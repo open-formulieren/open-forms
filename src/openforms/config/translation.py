@@ -29,6 +29,7 @@ class GlobalConfigurationTranslationOptions(TranslationOptions):
         "form_step_next_text",
         "privacy_policy_label",
         "statement_of_truth_label",
+        "help_callout_page_content",
     )
     fallback_undefined = {
         "submission_confirmation_title": "",
@@ -54,4 +55,5 @@ class GlobalConfigurationTranslationOptions(TranslationOptions):
         "form_step_next_text": "",
         "privacy_policy_label": "",
         "statement_of_truth_label": "",
+        "help_callout_page_content": "",
     }

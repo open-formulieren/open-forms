@@ -67,3 +67,9 @@ class FormTypeChoices(models.TextChoices):
     regular = "regular", _("Regular")
     appointment = "appointment", _("Appointment")
     single_step = "single_step", _("Single step")
+
+
+class HelpCalloutPageDisplayChoices(models.TextChoices):
+    before_start_page = "before_start_page", _("Before the start page")
+    after_start_page = "after_start_page", _("After the start page")
+    never = "never", _("Never")
