@@ -214,6 +214,7 @@ class FormsAPITests(APITestCase):
 
         self.user = UserFactory.create()
         self.client.force_authenticate(user=self.user)
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_list_anon(self):
         self.client.logout()
@@ -1522,28 +1523,24 @@ class FormsAPITests(APITestCase):
     def test_get_help_callout_page(self):
         form = FormFactory.create(help_callout_page_display="before_start_page")
 
+        config = GlobalConfiguration.get_solo()
+        config.help_callout_page_content = """
+            <p>Some content</p>
+            <a onclick="evil();">text</a>
+        """
+        config.help_callout_page_image = SimpleUploadedFile(
+            "some_image.png", b"Some bytes", content_type="image/png"
+        )
+        config.save()
+
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
-        content = """
-        <p>Some content</p>
-        <a onclick="evil();">text</a>
-        """
-        image = SimpleUploadedFile(
-            "some_image.png", b"Some bytes", content_type="image/png"
-        )
-
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        with patch(
-            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                help_callout_page_content=content, help_callout_page_image=image
-            ),
-        ):
-            response_data = self.client.get(
-                url, headers={NONCE_HTTP_HEADER: "some nonce"}
-            ).json()
+        response_data = self.client.get(
+            url, headers={NONCE_HTTP_HEADER: "some nonce"}
+        ).json()
 
         expected_content = """
         <p>Some content</p>
@@ -1556,9 +1553,10 @@ class FormsAPITests(APITestCase):
         self.assertHTMLEqual(
             expected_content, response_data["helpCalloutPage"]["content"]
         )
-        self.assertEqual(
-            f"{settings.BASE_URL}/media/some_image.png",
-            response_data["helpCalloutPage"]["image"],
+        self.assertTrue(
+            response_data["helpCalloutPage"]["image"].startswith(
+                "http://testserver/media/help-callout-page/some_image",
+            )
         )
 
     def test_put_help_callout_page(self):

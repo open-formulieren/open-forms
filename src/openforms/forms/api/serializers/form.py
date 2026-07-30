@@ -8,7 +8,6 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
-from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import (
     get_from_serializer_data_or_instance,
@@ -18,6 +17,10 @@ from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
+from openforms.config.api.fields import (
+    GlobalConfigurationCSPPostProcessedHTMLField,
+    GlobalConfigurationImageField,
+)
 from openforms.config.models import GlobalConfiguration, Theme
 from openforms.contrib.haal_centraal.api.serializers import (
     BRPPersonenRequestOptionsSerializer,
@@ -35,7 +38,6 @@ from openforms.registrations.registry import register as registration_register
 from openforms.registrations.service import plugin_allows_json_schema_generation
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import RegistrationBackendKey
-from openforms.utils.urls import build_absolute_uri
 
 from ...constants import HelpCalloutPageDisplayChoices, StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
@@ -136,39 +138,27 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
 
 class HelpCalloutPageSerializer(serializers.Serializer):
     display = serializers.ChoiceField(
+        source="help_callout_page_display",
         label=_("Help callout page display"),
         help_text=_("When to display the help callout page."),
         choices=HelpCalloutPageDisplayChoices.choices,
-        source="help_callout_page_display",
     )
-    content = serializers.SerializerMethodField(
+    content = GlobalConfigurationCSPPostProcessedHTMLField(
+        source="help_callout_page_content",
         label=_("Help callout page content"),
         help_text=_(
             "Content for the help callout page, fetched from the global configuration."
         ),
+        read_only=True,
     )
-    image = serializers.SerializerMethodField(
+    image = GlobalConfigurationImageField(
+        source="help_callout_page_image",
         label=_("Help callout page image"),
         help_text=_(
             "Image for the help callout page, fetched from the global configuration."
         ),
+        read_only=True,
     )
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_content(self, *args) -> str:
-        field = CSPPostProcessedHTMLField()
-        # Set the parent to provide the necessary request context
-        field.bind("help_callout_page_content", self)
-        config = GlobalConfiguration.get_solo()
-        return field.to_representation(config.help_callout_page_content)
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_image(self, *args) -> str:
-        config = GlobalConfiguration.get_solo()
-        field = serializers.ImageField()
-        if uri := field.to_representation(config.help_callout_page_image):
-            return build_absolute_uri(uri)
-        return ""
 
 
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
