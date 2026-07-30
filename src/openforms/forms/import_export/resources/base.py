@@ -17,10 +17,19 @@ class BaseResource(ModelResource):
             The field that uniquely identifies the instance. This field will be assigned
             a new identifier value when the identifier in the import-data is already in
             use, and we want to create a new instance.
+        force_deep_compare:
+            Whether to force a deep comparison when searching for an existing instance.
+            If False, the default behavior is to use the import_id_fields to do a first
+            lookup, and if that fails, fall back to a deep comparison.
     """
 
     deep_comparison_fields = ()
     identifier_field: str
+    force_deep_compare = False
+
+    def __init__(self, force_deep_compare: bool = False, *args, **kwargs):
+        self.force_deep_compare = force_deep_compare
+        super().__init__(*args, **kwargs)
 
     def export_for_form(self, form: Form):
         raise NotImplementedError(
@@ -49,12 +58,13 @@ class BaseResource(ModelResource):
 
         The return value is a tuple of (instance, is_new).
         """
-        instance = super().get_instance(instance_loader, row)
+        if not self.force_deep_compare:
+            instance = super().get_instance(instance_loader, row)
 
-        # Return the existing instance, found using the import_id_fields.
-        if instance is not None:
-            row["_matched_existing_instance"] = True
-            return instance, False
+            # Return the existing instance, found using the import_id_fields.
+            if instance is not None:
+                row["_matched_existing_instance"] = True
+                return instance, False
 
         # Collect the parameters for the deep comparison.
         params = {}

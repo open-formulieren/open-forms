@@ -33,6 +33,11 @@ from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
+from openforms.forms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormImportOptions,
+)
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -725,9 +730,21 @@ class Form(models.Model):
         FormLogic.objects.filter(form=current_form).delete()
         FormVariable.objects.filter(form=current_form).delete()
 
+    @staticmethod
+    def _get_uuid_from_resource_url(url: str | None) -> UUID | None:
+        from urllib.parse import urlparse
+
+        from django.urls import resolve
+
+        if url is None:
+            return None
+
+        result = resolve(urlparse(url).path)
+        return result.kwargs.get("uuid")
+
     @transaction.atomic
     def restore_old_version(
-        self, form_version_uuid: str, user: User | None = None
+        self, form_version_uuid: UUID, user: User | None = None
     ) -> None:
         from openforms.forms.import_export.import_form import import_form_data
 
@@ -756,7 +773,30 @@ class Form(models.Model):
         assert len(forms) == 1, "expected exactly one form in the old version"
         form_data = forms[0]
 
-        restored_form = import_form_data(old_version_data, form_version.form)
+        theme_uuid = self._get_uuid_from_resource_url(form_data.get("theme"))
+        category_uuid = self._get_uuid_from_resource_url(form_data.get("category"))
+
+        restored_form = import_form_data(
+            old_version_data,
+            FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                reuse_form_definitions=True,
+                theme=theme_uuid,
+                category=category_uuid,
+            ),
+            form_version.form,
+        )
 
         # The FormImportSerializer sets the 'active' state to False by default. We should
         # restore it to the state it had before.

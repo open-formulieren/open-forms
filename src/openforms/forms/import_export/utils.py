@@ -80,6 +80,7 @@ def import_additional_form_configuration_data(
     resources: JSONObject,
     import_options: FormImportOptions,
     uuid_mapping=dict[str, str],
+    restore_previous_form_version: bool = False,
 ):
     selected_options = set(import_options.additional_form_configuration)
     unknown_options = selected_options - set(ADDITIONAL_FORM_CONFIGURATION_RESOURCES)
@@ -92,7 +93,9 @@ def import_additional_form_configuration_data(
     for option, config in ADDITIONAL_FORM_CONFIGURATION_RESOURCES.items():
         if option in selected_options and config.output_name in resources:
             dataset = tablib.Dataset().load(resources[config.output_name], "json")
-            results = config.resource().import_data(dataset)
+            results = config.resource(
+                force_deep_compare=restore_previous_form_version
+            ).import_data(dataset)
 
             for row_result in results:
                 identifier_field = config.resource.identifier_field
