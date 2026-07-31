@@ -4,13 +4,13 @@ name: open-zaak
 
 services:
   openzaak-redis:
-    image: redis:7
+    image: redis:8
     command: ["redis-server", "--appendonly", "yes"]
     networks:
       - open-forms-dev
 
   openzaak-db:
-    image: postgis/postgis:${PG_VERSION:-14-master}
+    image: postgis/postgis:${PG_VERSION:-17-master}
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
@@ -20,7 +20,7 @@ services:
       - open-forms-dev
 
   openzaak-web.local:
-    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.13.0}
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.29.2}
     environment: &openzaak_web_env
       - DJANGO_SETTINGS_MODULE=openzaak.conf.docker
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
@@ -40,9 +40,10 @@ services:
       - CELERY_RESULT_BACKEND=redis://openzaak-redis:6379/1
       - NOTIFICATIONS_DISABLED=true
       - JWT_EXPIRY=99999999999  # Roughly 3170 years. This is required for tests with time frozen to work
-      - JWT_LEEWAY=99999999999  # Clock drift can cause a JWT that’s valid on the client to be considered not valid (yet, or anymore) on the server, leading to unexpected HTTP 403 errors.
+      - TIME_LEEWAY=99999999999  # Clock drift can cause a JWT that’s valid on the client to be considered not valid (yet, or anymore) on the server, leading to unexpected HTTP 403 errors.
       - CELERY_WORKER_CONCURRENCY=${CELERY_WORKER_CONCURRENCY:-2}
       - SENDFILE_BACKEND=django_sendfile.backends.simple
+      - OTEL_SDK_DISABLED=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -58,8 +59,8 @@ services:
     networks:
       - open-forms-dev
 
-  celery:
-    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.13.0}
+  openzaak-celery:
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.29.2}
     environment: *openzaak_web_env
     volumes: *openzaak_web_volumes
     command: /celery_worker.sh
