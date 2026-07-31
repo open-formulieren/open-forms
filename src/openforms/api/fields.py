@@ -110,11 +110,11 @@ class Base64ImageField(serializers.ImageField):
         from typing import cast  # noqa: TID251
 
         data = data or ""
-        if not isinstance(data, str):
+        if not isinstance(data, str):  # pragma: no cover
             self.fail("invalid")
 
         assert data
-        data = cast(str, data)
+        data = cast(str, data)  # pyright infers Literal[""] from the parent types...
 
         # decode as base64 - note that this loads the entire file into memory so
         # appropriate memory constraints limits should be set.
@@ -128,14 +128,14 @@ class Base64ImageField(serializers.ImageField):
 
         # guess the mime type from the first 2KiB & validate
         mime_type: str = magic.from_buffer(file_data[:2048], mime=True)
-        if not mime_type:
+        if not mime_type:  # pragma: no cover / I don't know how to test this
             raise ValidationError(
                 _("Could not detect the file content type."), code="invalid"
             )
 
         # get the extension from the mime type
         extension: str | None = mimetypes.guess_extension(mime_type)
-        if extension is None:
+        if extension is None:  # pragma: no cover / I don't know how to test this
             raise ValidationError(
                 _(
                     "Could not determine an extension for the content type {mime_type}."
