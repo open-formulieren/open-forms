@@ -91,7 +91,6 @@ class Base64ImageField(serializers.ImageField):
 
     def __init__(self, *args, **kwargs):
         kwargs["use_url"] = True  # output URL when serializing
-        kwargs["allow_null"] = False  # use empty string instead
         super().__init__(*args, **kwargs)
 
     def run_validation(self, data=empty):

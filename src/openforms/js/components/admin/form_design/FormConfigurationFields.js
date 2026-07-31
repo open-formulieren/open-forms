@@ -570,7 +570,13 @@ const HelpOptionsFields = ({
     onChange({
       target: {
         name: 'form.helpDialog.image',
-        value: '',
+        value: null, // null clears the field, empty string leaves it as-is
+      },
+    });
+    onChange({
+      target: {
+        name: 'form.helpDialog._hasImage',
+        value: false,
       },
     });
   };
@@ -585,6 +591,7 @@ const HelpOptionsFields = ({
       }
       collapsible
       initialCollapsed
+      fieldNames={['form.helpCalloutPage', 'form.helpDialog']}
     >
       <FormRow>
         <Field
@@ -969,7 +976,7 @@ const FormConfigurationFields = ({
           helpCalloutPageDisplay={helpCalloutPage.display}
           helpCalloutPageContentConfigured={!!helpCalloutPage.content}
           translations={translations}
-          hasHelpDialogImage={!!helpDialog?.image}
+          hasHelpDialogImage={helpDialog?._hasImage || !!helpDialog?.image}
           onChange={onChange}
         />
       )}

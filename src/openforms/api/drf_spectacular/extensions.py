@@ -1,5 +1,3 @@
-from typing import assert_never
-
 from drf_spectacular.authentication import SessionScheme
 from drf_spectacular.extensions import (
     OpenApiSerializerExtension,
@@ -7,6 +5,7 @@ from drf_spectacular.extensions import (
 )
 from drf_spectacular.openapi import AutoSchema
 from drf_spectacular.plumbing import build_basic_type
+from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import Direction
 
@@ -40,18 +39,26 @@ class Base64ImageFieldExtensions(OpenApiSerializerFieldExtension):
     def map_serializer_field(
         self, auto_schema: AutoSchema, direction: Direction
     ) -> dict[str, object]:
-        assert not self.target.allow_null
         assert self.target.use_url
 
-        match direction:
-            # XXX this branch is not hit because we don't enable COMPONENT_SPLIT_REQUEST,
-            # and that change is too invasive for now
-            case "request":
-                schema = build_basic_type(OpenApiTypes.BYTE)
-            case "response":
-                schema = build_basic_type(OpenApiTypes.URI)
-            case _:  # pragma: no cover
-                assert_never(direction)
+        if not spectacular_settings.COMPONENT_SPLIT_REQUEST:
+            # we have to cover for all possible types due to request/response being
+            # different... not ideal
+            schema = {
+                "oneOf": [
+                    build_basic_type(OpenApiTypes.URI),  # response
+                    build_basic_type(OpenApiTypes.BYTE),  # request (base64 data)
+                ],
+                # DRF outputs null for empty file fields
+                "nullable": self.target.allow_empty_file,
+            }
+        # currently we don't split request/response so this will never hit...
+        else:  # pragma: no cover
+            # request -> OpenApiTypes.BYTE or null, depending on allow_null
+            # response -> OpenApiTypes.URI or null (irrespective of allow_null)
+            raise NotImplementedError(
+                "request/response separation is not implemented yet"
+            )
 
         assert schema is not None
         return schema

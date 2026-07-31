@@ -9286,8 +9286,12 @@ components:
           description: Content displayed in the dialog/modal when the users clicks
             the help icon on a step. Leave blank to disable this functionality.
         image:
-          type: string
-          format: uri
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            format: byte
+          nullable: true
           title: Optional image
           description: The image shown below the content in the help dialog. If no
             help content is configured, this has no effect. When uploading an image,

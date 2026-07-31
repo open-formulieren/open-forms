@@ -125,6 +125,11 @@ const initialFormState = {
     },
     authBackends: [],
     helpCalloutPage: {display: 'never', content: ''},
+    helpDialog: {
+      content: '',
+      image: '',
+      _hasImage: false,
+    },
   },
   newForm: true,
   formSteps: [],
@@ -229,6 +234,13 @@ function reducer(draft, action) {
 
       if (!draft.form.confirmationEmailTemplate) {
         draft.form.confirmationEmailTemplate = {subject: '', content: '', translations: {}};
+      }
+
+      // the backend emits an image URL for existing data on read, which is not valid to
+      // submit back to the server (it's not base64 data)
+      if (draft.form.helpDialog?.image) {
+        draft.form.helpDialog.image = ''; // empty string to leave it untouched, null to clear it
+        draft.form.helpDialog._hasImage = true;
       }
 
       // set initial translations if needed
