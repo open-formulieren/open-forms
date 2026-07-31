@@ -2,7 +2,6 @@ from django.db import transaction
 from django.utils import timezone
 
 import structlog
-from flags.state import flag_disabled
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -15,7 +14,7 @@ from ..models import Submission, SubmissionFileAttachment
 from ..signals import submission_complete
 from ..tasks import on_post_submission_event
 from ..tokens import submission_status_token_generator
-from ..utils import persist_user_defined_variables, remove_submission_from_session
+from ..utils import remove_submission_from_session
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -39,16 +38,6 @@ class SubmissionCompletionMixin:
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
-
-        # If we have reached the submission completion, all steps were already
-        # submitted, so it *shouldn't* be necessary to persist the user-defined
-        # variables again. That is why we only execute this if the feature flag is
-        # disabled, i.e. return to previous behaviour.
-        if flag_disabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
-            # This requires form logic to be evaluated, which is done already in the
-            # "complete" endpoint of the submission view
-            assert getattr(submission, "_form_logic_evaluated", False)
-            persist_user_defined_variables(submission)
 
         # all logic has run; we can fix backend
         submission.save()

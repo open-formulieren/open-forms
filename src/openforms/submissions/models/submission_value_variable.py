@@ -15,7 +15,6 @@ from django.utils.functional import cached_property, empty
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from typing_extensions import deprecated
 
 from openforms.formio.service import (
     FormioData,
@@ -112,10 +111,6 @@ class SubmissionValueVariablesState:
             for variable in get_static_variables(submission=self.submission)
         }
         return self._static_variables
-
-    @deprecated("Use `state.variables[key]` instead.")
-    def get_variable(self, key: str) -> SubmissionValueVariable:
-        return self.variables[key]
 
     def get_data(
         self,

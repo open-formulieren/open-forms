@@ -35,8 +35,6 @@ from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.pricing import InvalidPrice
-from openforms.utils.tests.feature_flags import disable_feature_flag
-from openforms.variables.constants import FormVariableDataTypes
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
 from ..form_logic import evaluate_form_logic
@@ -47,7 +45,6 @@ from ..utils import persist_user_defined_variables
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
-    SubmissionValueVariableFactory,
 )
 from .mixins import SubmissionsMixin
 
@@ -529,67 +526,6 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    @disable_feature_flag("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION")
-    def test_user_defined_variables_set_properly(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "testComponent",
-                        "label": "testComponent",
-                    },
-                ]
-            },
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                "==": [
-                    {"var": "testComponent"},
-                    "test",
-                ]
-            },
-            actions=[
-                {
-                    "variable": "userDefinedVar",
-                    "action": {
-                        "type": "variable",
-                        "value": {"+": [{"var": "userDefinedVar"}, 1]},
-                    },
-                }
-            ],
-        )
-        form.apply_logic_analysis()
-        submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={"testComponent": "test"},
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            key="userDefinedVar",
-            value=0,
-            data_type=FormVariableDataTypes.int,
-            form_variable__user_defined=True,
-        )
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
-
-        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
-
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-        user_defined_variable = submission.submissionvaluevariable_set.get(
-            key="userDefinedVar"
-        )
-
-        self.assertEqual(user_defined_variable.value, 1)
 
     @tag("gh-2096")
     @override_settings(LANGUAGE_CODE="en")

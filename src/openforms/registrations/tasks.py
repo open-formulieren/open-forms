@@ -441,7 +441,7 @@ def execute_component_pre_registration(
     audit_log.info("component_pre_registration_start")
 
     state = submission.variables_state
-    component_var = state.get_variable(component_key)
+    component_var = state.variables[component_key]
 
     # if it's already completed
     config = GlobalConfiguration.get_solo()

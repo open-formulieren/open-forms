@@ -9,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from flags.state import flag_enabled
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -631,10 +630,10 @@ class SubmissionStepViewSet(
         serializer.save()
 
         submission = instance.submission
-        if flag_enabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
-            # This requires form logic to be evaluated, which is done already in the
-            # serializer
-            persist_user_defined_variables(submission)
+        # Persisting user-defined variables requires form logic to be evaluated, which
+        # is done already in the serializer
+        assert getattr(instance, "_form_logic_evaluated", False)
+        persist_user_defined_variables(submission)
 
         assert instance.form_step
         audit_logger.info(
