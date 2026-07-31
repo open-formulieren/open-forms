@@ -631,10 +631,10 @@ class SubmissionStepViewSet(
         serializer.save()
 
         submission = instance.submission
-        if flag_enabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
-            # This requires form logic to be evaluated, which is done already in the
-            # serializer
-            persist_user_defined_variables(submission)
+        # Persisting user-defined variables requires form logic to be evaluated, which
+        # is done already in the serializer
+        assert getattr(instance, "_form_logic_evaluated", False)
+        persist_user_defined_variables(submission)
 
         assert instance.form_step
         audit_logger.info(

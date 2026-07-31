@@ -40,16 +40,6 @@ class SubmissionCompletionMixin:
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
 
-        # If we have reached the submission completion, all steps were already
-        # submitted, so it *shouldn't* be necessary to persist the user-defined
-        # variables again. That is why we only execute this if the feature flag is
-        # disabled, i.e. return to previous behaviour.
-        if flag_disabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
-            # This requires form logic to be evaluated, which is done already in the
-            # "complete" endpoint of the submission view
-            assert getattr(submission, "_form_logic_evaluated", False)
-            persist_user_defined_variables(submission)
-
         # all logic has run; we can fix backend
         submission.save()
 
