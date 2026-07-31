@@ -113,10 +113,6 @@ class SubmissionValueVariablesState:
         }
         return self._static_variables
 
-    @deprecated("Use `state.variables[key]` instead.")
-    def get_variable(self, key: str) -> SubmissionValueVariable:
-        return self.variables[key]
-
     def get_data(
         self,
         *,

@@ -60,7 +60,7 @@ class ServiceFetchWithActionsTest(TestCase):
 
         state = submission.variables_state
 
-        variable = state.get_variable("someVariable")
+        variable = state.variables["someVariable"]
 
         self.assertEqual(variable.value, 42)
 
@@ -98,7 +98,7 @@ class ServiceFetchWithActionsTest(TestCase):
 
         state = submission.load_submission_value_variables_state(refresh=True)
 
-        variable = state.get_variable("someVariable")
+        variable = state.variables["someVariable"]
         # assert no new value
         # if a fetch service is down or misconfigured, a submitter's values
         # shouldn't be overwritten

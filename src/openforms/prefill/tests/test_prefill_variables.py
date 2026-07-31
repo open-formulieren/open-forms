@@ -81,10 +81,8 @@ class PrefillVariablesTests(TestCase):
 
         self.assertEqual(2, len(submission_value_variables_state.variables))
 
-        submission_variable1 = submission_value_variables_state.get_variable(
-            key="voornamen"
-        )
-        submission_variable2 = submission_value_variables_state.get_variable(key="age")
+        submission_variable1 = submission_value_variables_state.variables["voornamen"]
+        submission_variable2 = submission_value_variables_state.variables["age"]
 
         self.assertEqual("Not so random string", submission_variable1.value)
         self.assertEqual(
@@ -114,9 +112,7 @@ class PrefillVariablesTests(TestCase):
 
         self.assertEqual(1, len(submission_value_variables_state.variables))
 
-        submission_variable = submission_value_variables_state.get_variable(
-            key="voornamen"
-        )
+        submission_variable = submission_value_variables_state.variables["voornamen"]
 
         self.assertEqual("Not so random string", submission_variable.value)
         self.assertEqual(
@@ -342,7 +338,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state(refresh=True)
         self.assertEqual(len(variables_state.variables), 2)
-        submission_variable = variables_state.get_variable(key="voornamen")
+        submission_variable = variables_state.variables["voornamen"]
         self.assertEqual("Not so random string", submission_variable.value)
         self.assertEqual(
             SubmissionValueVariableSources.prefill, submission_variable.source

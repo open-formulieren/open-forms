@@ -70,7 +70,7 @@ class EmailRegistration(BasePlugin[Options]):
             log = log.bind(variable=variable_key)
             log.info("lookup_recipient_from_variable")
             try:
-                variable = state.get_variable(variable_key)
+                variable = state.variables[variable_key]
             except KeyError:
                 log.info("variable_not_found")
             else:

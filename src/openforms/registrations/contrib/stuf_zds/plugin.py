@@ -314,7 +314,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 # xml file generation depends on whether the variable was prefilled or not
                 # (authentiek)
                 state = submission.variables_state
-                submission_variable = state.get_variable(fm_immutable_variable.key)
+                submission_variable = state.variables[fm_immutable_variable.key]
 
                 # update the zaak data with the information needed for the xml request
                 for partner in zaak_data[RegistrationAttribute.partners]:
