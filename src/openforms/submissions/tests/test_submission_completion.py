@@ -35,8 +35,6 @@ from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.pricing import InvalidPrice
-from openforms.utils.tests.feature_flags import disable_feature_flag
-from openforms.variables.constants import FormVariableDataTypes
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
 from ..form_logic import evaluate_form_logic
@@ -47,7 +45,6 @@ from ..utils import persist_user_defined_variables
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
-    SubmissionValueVariableFactory,
 )
 from .mixins import SubmissionsMixin
 

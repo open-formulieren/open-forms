@@ -15,7 +15,6 @@ from django.utils.functional import cached_property, empty
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from typing_extensions import deprecated
 
 from openforms.formio.service import (
     FormioData,

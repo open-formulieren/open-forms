@@ -8,10 +8,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
-    FormVariableFactory,
 )
-from openforms.utils.tests.feature_flags import disable_feature_flag
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ...models import SubmissionValueVariable
 from ..factories import SubmissionFactory, SubmissionStepFactory
