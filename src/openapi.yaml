@@ -1476,7 +1476,10 @@ paths:
       - forms
       requestBody:
         content:
-          '*/*':
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FormImport'
+          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/FormImport'
         required: true
@@ -6860,6 +6863,18 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AdditionalFormConfigurationEnum:
+      enum:
+      - product
+      - wmsTileLayers
+      - wmtsTileLayers
+      - yiviAttributeGroups
+      type: string
+      description: |-
+        * `product` - Product
+        * `wmsTileLayers` - WMS-tile layers
+        * `wmtsTileLayers` - Background tile layers
+        * `yiviAttributeGroups` - Yivi attribute groups
     AddressSearchResult:
       type: object
       properties:
@@ -8078,6 +8093,18 @@ components:
           title: authentication backend options
       required:
       - backend
+    FormConfigurationEnum:
+      enum:
+      - registrationBackends
+      - prefill
+      - paymentBackend
+      - authBackends
+      type: string
+      description: |-
+        * `registrationBackends` - Registration backends
+        * `prefill` - Prefill
+        * `paymentBackend` - Payment backend
+        * `authBackends` - Authentication backends
     FormData:
       type: object
       properties:
@@ -8404,6 +8431,32 @@ components:
           format: uri
           description: The file that contains the form, form definitions and form
             steps.
+        formConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormConfigurationEnum'
+          description: Which form configuration should be included in the export file
+            content.
+        reuseFormDefinitions:
+          type: boolean
+          title: Re-use form definitions
+          description: Whether to re-use existing form definitions or create new form
+            definitions for each form definition in the import file. (If no matching
+            reusable form definition is found, a new one will be created.)
+        additionalFormConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalFormConfigurationEnum'
+          description: Which additional form configuration should be included in the
+            export file content.
+        theme:
+          type: string
+          format: uuid
+          description: Which theme should be used for the imported forms.
+        category:
+          type: string
+          format: uuid
+          description: Which category should be applied to the imported forms.
       required:
       - file
     FormImportResponse:
