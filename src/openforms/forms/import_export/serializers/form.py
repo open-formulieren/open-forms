@@ -6,7 +6,10 @@ from django.urls import reverse
 from openforms.config.models import Theme
 from openforms.emails.utils import sanitize_content
 from openforms.forms.api.serializers import FormSerializer
-from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
+from openforms.forms.api.serializers.form import (
+    FormAuthenticationBackendSerializer,
+    FormRegistrationBackendSerializer,
+)
 from openforms.forms.constants import FormTypeChoices
 from openforms.forms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
@@ -239,6 +242,50 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer):
         if appointment_options := value.get("appointment_options"):
             if appointment_options.get("is_appointment"):
                 value["type"] = FormTypeChoices.appointment
+
+        # In v3.2 the authentication_backends field was replaced with auth_backends. This
+        # converter ensures that pre-v3.2 forms are converted correctly. See #5140
+        # Original commit d08281dad2e426e2655d87f67cefec9b58c5c810
+        if (
+            "authentication_backends" in value
+            or "authentication_backend_options" in value
+        ):
+            # Make sure `auth_backends` exists
+            value["auth_backends"] = value.get("auth_backends", [])
+            auth_backends_map = {}
+
+            # Pre-fill the map with the `auth_backends` values
+            for auth_backend in value["auth_backends"]:
+                auth_backends_map[auth_backend["backend"]] = auth_backend
+
+            # Collect all the backends that should be transformed to `auth_backends`
+            if "authentication_backends" in value:
+                for plugin in value["authentication_backends"]:
+                    # Add plugin if it's not already in the map
+                    if plugin not in auth_backends_map:
+                        auth_backends_map[plugin] = {
+                            "backend": plugin,
+                            "options": None,
+                        }
+
+            if "authentication_backend_options" in value:
+                for plugin, options in value["authentication_backend_options"].items():
+                    if plugin not in auth_backends_map:
+                        auth_backends_map[plugin] = {
+                            "backend": plugin,
+                            "options": options,
+                        }
+                        continue
+
+                    if auth_backends_map[plugin]["options"] is None:
+                        auth_backends_map[plugin]["options"] = options
+
+            validated_auth_backends = []
+            for config in auth_backends_map.values():
+                validated_auth_backends.append(
+                    FormAuthenticationBackendSerializer().validate(config)
+                )
+            value["auth_backends"] = validated_auth_backends
 
         return value
 

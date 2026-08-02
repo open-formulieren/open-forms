@@ -1,5 +1,9 @@
 from openforms.forms.api.serializers import FormLogicSerializer
 from openforms.forms.constants import LogicActionTypes
+from openforms.forms.disable_next_import_conversion import (
+    add_form_step_uuid_to_disable_next_actions,
+)
+from openforms.typing import JSONObject
 
 from .base import BaseExportSerializer, BaseImportSerializer
 
@@ -69,3 +73,12 @@ class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
             # We can't reliably relate the service fetch configured to an existing configuration.
             # So we don't add any existing service fetch config to the variables
             action["action"]["value"] = ""
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
+        # Preparations for 4.0, ensuring legacy imports with disable-next logic actions
+        # still work. See #6254
+        # Original commit 879751310d0bdf6a21bdd143b54f2a3d3f095023
+        add_form_step_uuid_to_disable_next_actions(
+            value, self.context["form_variables"].variables, self.context["form_steps"]
+        )
+        return value
