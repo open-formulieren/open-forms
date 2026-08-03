@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
+import {patchDefaultValue} from './textfield';
 
 const Time = Formio.Components.components.time;
 
@@ -12,6 +13,7 @@ const Time = Formio.Components.components.time;
 class TimeField extends Time {
   constructor(...args) {
     super(...args);
+    patchDefaultValue(this);
   }
 
   static schema(...extend) {
