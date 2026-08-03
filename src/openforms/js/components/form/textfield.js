@@ -27,6 +27,20 @@ export const patchValidateDefaults = instance => {
     delete validate.maxWords;
   }
 };
+export const patchDefaultValue = instance => {
+  // #6297; The Formiojs `Component` base class creates a "modified schema" dict
+  // (https://github.com/formio/formio.js/blob/v4.13.13/src/components/_classes/component/Component.js#L685C3-L715)
+  // which is merged with the default schema to get the component schema. In this
+  // `getModifiedSchema` function, empty list values are dropped and get replaced with
+  // their default schema values. This results in `defaultValue=[]` being replaced with
+  // `defaultValue=""`.
+  //
+  // With this small fix we ensure that the `defaultValue` correctly represents the
+  // `multiple` property.
+  if (instance.component.multiple && !Array.isArray(instance.component.defaultValue)) {
+    instance.component.defaultValue = [];
+  }
+};
 
 class TextField extends FormioTextField {
   static schema(...extend) {
@@ -44,6 +58,7 @@ class TextField extends FormioTextField {
     super(...args);
 
     patchValidateDefaults(this);
+    patchDefaultValue(this);
   }
 
   get defaultSchema() {
