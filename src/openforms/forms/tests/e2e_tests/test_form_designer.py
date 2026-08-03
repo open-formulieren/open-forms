@@ -513,6 +513,151 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
                 await assertFormValues()
 
+    @tag("gh-6297")
+    async def test_textfields_multiple_default_value_empty_list(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(name="Test textfields default value empty string")
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+        admin_changelist_url = str(
+            furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+        )
+
+        basic_components_with_multiple = (
+            "Tekstveld",
+            "E-mail",
+            "Datum",
+            "Datum & tijd",
+            "Tijd",
+            "Telefoonnummer",
+            "Postcode",
+            "Tekstvlak",
+        )
+
+        special_components_with_multiple = (
+            "BSN",
+            "IBAN",
+            "Kenteken",
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Populate and save form"):
+                await add_new_step(page)
+                step_name_input = page.get_by_role(
+                    "textbox", name="Step name", exact=True
+                )
+                await step_name_input.click()
+                await step_name_input.fill("Step 1")
+
+                for component in basic_components_with_multiple:
+                    await drag_and_drop_component(page, component, "group-panel-custom")
+                    await page.get_by_label("Label", exact=True).fill(
+                        f"Label {component}"
+                    )
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    # Remove the default first item, making the default value `[]`
+                    await (
+                        page.get_by_test_id("componentEditForm")
+                        .get_by_role("button", name="Remove item")
+                        .click()
+                    )
+                    await close_modal(page, "Save", exact=True)
+
+                # Open the special fields list
+                await page.get_by_role(
+                    "button", name="Speciale velden", exact=True
+                ).click()
+
+                for component in special_components_with_multiple:
+                    await drag_and_drop_component(page, component)
+                    await page.get_by_label("Label", exact=True).fill(
+                        f"Label {component}"
+                    )
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    # Remove the default first item, making the default value `[]`
+                    await (
+                        page.get_by_test_id("componentEditForm")
+                        .get_by_role("button", name="Remove item")
+                        .click()
+                    )
+                    await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role("button", name="Save", exact=True).click()
+                await page.wait_for_url(admin_changelist_url)
+
+            with phase("Validate default values in database"):
+
+                @sync_to_async
+                def assertFormValues():
+                    for component in form.iter_components():
+                        expected = []
+
+                        self.assertEqual(
+                            component["defaultValue"],
+                            expected,
+                            msg=f"Test failed for component {component['key']}",
+                        )
+
+                await assertFormValues()
+
+            with phase("Validate default values in form designer"):
+                # The 6297 bug happens here, after the component default value is set to
+                # `[]`. The bug appears in the component edit json view, where the
+                # `defaultValue` is shown as an empty string `""`. If the form is then
+                # saved again, the component is broken.
+
+                await page.goto(str(admin_url))
+                await page.get_by_role("tab", name="Steps and fields").click()
+                await page.get_by_role("button", name="Step 1").click()
+
+                # Validate every component
+                for component in basic_components_with_multiple:
+                    await open_component_options_modal(
+                        page, f"Label {component}", exact=True
+                    )
+                    await close_modal(page, "Save", exact=True)
+
+                for component in special_components_with_multiple:
+                    await open_component_options_modal(
+                        page, f"Label {component}", exact=True
+                    )
+                    await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role("button", name="Save", exact=True).click()
+                await page.wait_for_url(admin_changelist_url)
+
+            with phase("Validate default value after editing"):
+
+                @sync_to_async
+                def assertFormValues():
+                    configuration = (
+                        form.formstep_set.get().form_definition.configuration
+                    )
+
+                    for component in configuration["components"]:
+                        self.assertEqual(
+                            component["defaultValue"],
+                            [],
+                            msg=f"Component of type {component['type']} with "
+                            f"`multiple=True` has a non-array default value after "
+                            f"editing.",
+                        )
+
+                await assertFormValues()
+
     @tag("dh-5104")
     async def test_radio_component_default_value_empty_string(self):
         @sync_to_async
