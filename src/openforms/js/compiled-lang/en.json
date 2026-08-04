@@ -1,4 +1,18 @@
 {
+  "+/hjpS": [
+    {
+      "type": 0,
+      "value": "The value must be "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": " or less."
+    }
+  ],
   "+0eHh2": [
     {
       "type": 0,
@@ -17,16 +31,88 @@
       "value": "From variable"
     }
   ],
+  "+AhGyf": [
+    {
+      "type": 0,
+      "value": "Ensure the number of items is less than or equal to "
+    },
+    {
+      "type": 1,
+      "value": "maxLength"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "+DztEl": [
     {
       "type": 0,
       "value": "Path"
     }
   ],
+  "+KBbXH": [
+    {
+      "type": 0,
+      "value": "Click to start drawing shape"
+    }
+  ],
+  "+MVbpZ": [
+    {
+      "type": 0,
+      "value": "Add child"
+    }
+  ],
+  "+RF9ZR": [
+    {
+      "type": 0,
+      "value": "Use this "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " only for this form."
+    }
+  ],
   "+Te82K": [
     {
       "type": 0,
       "value": "Optional ZGW configuration"
+    }
+  ],
+  "+W79Dr": [
+    {
+      "type": 0,
+      "value": "Click to continue drawing line"
     }
   ],
   "+XwAuT": [
@@ -87,6 +173,18 @@
       "value": "Mark the form step as applicable"
     }
   ],
+  "+xOWBM": [
+    {
+      "type": 0,
+      "value": "Remove"
+    }
+  ],
+  "/RrV7w": [
+    {
+      "type": 0,
+      "value": "House number addition must be up to four letters and digits."
+    }
+  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -129,16 +227,54 @@
       "value": "Set the text of the 'Save row' button."
     }
   ],
-  "/xFb1n": [
-    {
-      "type": 0,
-      "value": "The 'domein' attribute for the Catalogus resource in the Catalogi API."
-    }
-  ],
   "/yDnA3": [
     {
       "type": 0,
       "value": "Whether to show this value in the confirmation PDF"
+    }
+  ],
+  "/yX9Xl": [
+    {
+      "type": 0,
+      "value": "Cancel drawing"
+    }
+  ],
+  "008V0z": [
+    {
+      "type": 0,
+      "value": "Save my preferences for the next time. "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "You can always change them again later in the "
+            },
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "portal"
+                }
+              ],
+              "type": 8,
+              "value": "a"
+            },
+            {
+              "type": 0,
+              "value": "."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasPortalUrl"
     }
   ],
   "01mWK2": [
@@ -159,6 +295,12 @@
       "value": "Objecttype"
     }
   ],
+  "0EdUXi": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "0FD2pY": [
     {
       "type": 0,
@@ -169,6 +311,12 @@
     {
       "type": 0,
       "value": "DMN variable"
+    }
+  ],
+  "0O+VL8": [
+    {
+      "type": 0,
+      "value": "Number"
     }
   ],
   "0OP7ho": [
@@ -225,6 +373,12 @@
       "value": "Layers"
     }
   ],
+  "0gGl1O": [
+    {
+      "type": 0,
+      "value": "Delete component"
+    }
+  ],
   "0gbtNe": [
     {
       "type": 0,
@@ -237,10 +391,50 @@
       "value": "Specify a ZGW property name."
     }
   ],
+  "0tH+u2": [
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
+  "1+Q55M": [
+    {
+      "type": 0,
+      "value": "You are verifying the email address "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "emailAddress"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": ". First, we need to send you a verification code on this email address. Then, you need to enter the code to confirm it."
+    }
+  ],
   "10KWbo": [
     {
       "type": 0,
       "value": "BRP Personen processing header value"
+    }
+  ],
+  "1AgCMs": [
+    {
+      "type": 0,
+      "value": "Remove"
     }
   ],
   "1HfdUc": [
@@ -261,6 +455,12 @@
       "value": "Configure options"
     }
   ],
+  "1Q5hq3": [
+    {
+      "type": 0,
+      "value": "Drag a component in the form and release the mouse button."
+    }
+  ],
   "1U0I5C": [
     {
       "type": 0,
@@ -279,16 +479,16 @@
       "value": "Regular Expression Pattern"
     }
   ],
-  "1andg+": [
-    {
-      "type": 0,
-      "value": "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
-    }
-  ],
   "1fD+K4": [
     {
       "type": 0,
       "value": "Incomplete Submissions Removal Method"
+    }
+  ],
+  "1hdvgS": [
+    {
+      "type": 0,
+      "value": "Something went wrong while presenting the login option. Please contact the municipality."
     }
   ],
   "1iwlXs": [
@@ -323,6 +523,12 @@
       "value": " contains the original filename."
     }
   ],
+  "1pxgtB": [
+    {
+      "type": 0,
+      "value": "At least one digital address should be provided."
+    }
+  ],
   "1tLYIe": [
     {
       "type": 0,
@@ -345,6 +551,12 @@
     {
       "type": 0,
       "value": "The minimum value this field can have before the form can be submitted."
+    }
+  ],
+  "2/wgNH": [
+    {
+      "type": 0,
+      "value": "The file is too small."
     }
   ],
   "205QX5": [
@@ -371,10 +583,22 @@
       "value": "Is deleted"
     }
   ],
-  "2KY/BC": [
+  "2D6ubj": [
     {
       "type": 0,
-      "value": "Specify the document type to use for the file uploads when sending them to the Documents API. The direct URL references are replaced with references to the catalogue and document type description."
+      "value": "Line"
+    }
+  ],
+  "2HsmfN": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
+  "2KKNKT": [
+    {
+      "type": 0,
+      "value": "Previous year"
     }
   ],
   "2Lg8Vc": [
@@ -393,6 +617,12 @@
     {
       "type": 0,
       "value": "Content of the registration email message (as text)."
+    }
+  ],
+  "2RWk49": [
+    {
+      "type": 0,
+      "value": "Invalid Dutch license plate."
     }
   ],
   "2ajYIp": [
@@ -451,12 +681,6 @@
       "value": "API group"
     }
   ],
-  "2mgmOj": [
-    {
-      "type": 0,
-      "value": "The title for the document that is related to the case."
-    }
-  ],
   "2nxTFx": [
     {
       "type": 0,
@@ -481,10 +705,50 @@
       "value": "Maximum value"
     }
   ],
+  "33UD7T": [
+    {
+      "type": 0,
+      "value": "Affixes"
+    }
+  ],
   "36qdVW": [
     {
       "type": 0,
       "value": "The minimum age used to determine which children will be displayed. Leave blank to show all children."
+    }
+  ],
+  "3C29X9": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "label"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 1,
+              "value": "label"
+            },
+            {
+              "type": 0,
+              "value": " (not required)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "addNotRequiredSuffix"
+    }
+  ],
+  "3DaLqN": [
+    {
+      "type": 0,
+      "value": "A BSN must be 9 digits."
     }
   ],
   "3FxzLm": [
@@ -551,16 +815,28 @@
       "value": "Ask statement of truth"
     }
   ],
+  "3aKZqi": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "3beumC": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
   "3h215E": [
     {
       "type": 0,
       "value": "CSS class"
     }
   ],
-  "3leP68": [
+  "3tz37g": [
     {
       "type": 0,
-      "value": "Document type"
+      "value": "Selectboxes"
     }
   ],
   "3z1hhJ": [
@@ -593,6 +869,20 @@
       "value": "Fixed value"
     }
   ],
+  "46fk1B": [
+    {
+      "type": 0,
+      "value": "The required field "
+    },
+    {
+      "type": 1,
+      "value": "fieldLabel"
+    },
+    {
+      "type": 0,
+      "value": " must be filled in."
+    }
+  ],
   "4CuHYk": [
     {
       "type": 1,
@@ -601,6 +891,12 @@
     {
       "type": 0,
       "value": " must be a valid postcode."
+    }
+  ],
+  "4D1HCF": [
+    {
+      "type": 0,
+      "value": "Map"
     }
   ],
   "4DkoO5": [
@@ -641,6 +937,12 @@
       "value": " files to upload."
     }
   ],
+  "4IX8hk": [
+    {
+      "type": 0,
+      "value": "Loading..."
+    }
+  ],
   "4P5kwG": [
     {
       "type": 0,
@@ -653,6 +955,12 @@
       "value": "Variant"
     }
   ],
+  "4ZOmtU": [
+    {
+      "type": 0,
+      "value": "Save changes"
+    }
+  ],
   "4binPe": [
     {
       "type": 0,
@@ -663,6 +971,30 @@
     {
       "type": 0,
       "value": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression."
+    }
+  ],
+  "4tPKAs": [
+    {
+      "type": 0,
+      "value": "Verify"
+    }
+  ],
+  "4tUcbs": [
+    {
+      "type": 0,
+      "value": "Form fields"
+    }
+  ],
+  "4ui8R+": [
+    {
+      "type": 0,
+      "value": "Click last point to finish line"
+    }
+  ],
+  "4xtxl1": [
+    {
+      "type": 0,
+      "value": "AddressNL"
     }
   ],
   "5/5LjA": [
@@ -735,6 +1067,36 @@
       "value": "Add another value"
     }
   ],
+  "5TAbGN": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "1 character"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "charCount"
+            },
+            {
+              "type": 0,
+              "value": " characters"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "charCount"
+    }
+  ],
   "5XOrxo": [
     {
       "type": 0,
@@ -799,12 +1161,6 @@
       "value": "Option label"
     }
   ],
-  "5y8Yt4": [
-    {
-      "type": 0,
-      "value": "Save the attachment in the Documents API with this InformatieObjectType. If unspecified, the registration plugin defaults are used."
-    }
-  ],
   "5yP7G/": [
     {
       "type": 0,
@@ -815,6 +1171,24 @@
     {
       "type": 0,
       "value": "Name of the form definition used in this form step"
+    }
+  ],
+  "6/3Dta": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
+  "62SBjV": [
+    {
+      "type": 0,
+      "value": "Shape (polygon)"
+    }
+  ],
+  "646077": [
+    {
+      "type": 0,
+      "value": "Invalid BSN."
     }
   ],
   "68Aey7": [
@@ -847,12 +1221,6 @@
       "value": "A required field must be filled in before the form can be submitted."
     }
   ],
-  "6XG2pL": [
-    {
-      "type": 0,
-      "value": "Confidentiality level"
-    }
-  ],
   "6Xhq/T": [
     {
       "type": 0,
@@ -863,6 +1231,12 @@
     {
       "type": 0,
       "value": "Request body"
+    }
+  ],
+  "6g4o2Y": [
+    {
+      "type": 0,
+      "value": "MM"
     }
   ],
   "6hApJ7": [
@@ -887,6 +1261,12 @@
     {
       "type": 0,
       "value": "Key"
+    }
+  ],
+  "6o3CZT": [
+    {
+      "type": 0,
+      "value": "Email"
     }
   ],
   "6qPITC": [
@@ -1203,10 +1583,44 @@
       "value": "Single step"
     }
   ],
+  "8soi1P": [
+    {
+      "type": 0,
+      "value": "The submitted value does not match the pattern: "
+    },
+    {
+      "type": 1,
+      "value": "pattern"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "8uM5Vx": [
+    {
+      "type": 0,
+      "value": "Remove '"
+    },
+    {
+      "type": 1,
+      "value": "fileName"
+    },
+    {
+      "type": 0,
+      "value": "'"
+    }
+  ],
   "91XY1Q": [
     {
       "type": 0,
       "value": "Is not sensitive"
+    }
+  ],
+  "94ZHpN": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "96yhxP": [
@@ -1239,10 +1653,32 @@
       "value": "Key"
     }
   ],
+  "9SgPC6": [
+    {
+      "type": 0,
+      "value": "Remove item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
+  "9UF9Z7": [
+    {
+      "type": 0,
+      "value": "No information provided"
+    }
+  ],
   "9UR5jt": [
     {
       "type": 0,
       "value": "If enabled, the user will have to agree that they filled out the form truthfully before submitting it."
+    }
+  ],
+  "9W0yX/": [
+    {
+      "type": 0,
+      "value": "File upload"
     }
   ],
   "9WZkZg": [
@@ -1273,6 +1709,12 @@
     {
       "type": 0,
       "value": "Convert to advanced"
+    }
+  ],
+  "9dLBrj": [
+    {
+      "type": 0,
+      "value": "Do not display the configured label and top line as the header in the container fieldset."
     }
   ],
   "9dLOs2": [
@@ -1377,6 +1819,12 @@
       "value": "Latitude coordinate of the initial center point of the map."
     }
   ],
+  "AEnddx": [
+    {
+      "type": 0,
+      "value": "The datetime must consist of a date and a time stamp, separated by a space (e.g. 10/30/2025 5:34 PM)."
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -1399,6 +1847,12 @@
     {
       "type": 0,
       "value": "Simple conditional"
+    }
+  ],
+  "ALpIwm": [
+    {
+      "type": 0,
+      "value": "The signature value must be a base64-encoded png."
     }
   ],
   "AMqUHx": [
@@ -1431,10 +1885,26 @@
       "value": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
     }
   ],
+  "At/y3w": [
+    {
+      "type": 0,
+      "value": "Edit item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
       "value": "Confirm"
+    }
+  ],
+  "AustF4": [
+    {
+      "type": 0,
+      "value": "Next month"
     }
   ],
   "Ax7r1y": [
@@ -1443,10 +1913,26 @@
       "value": "File types"
     }
   ],
+  "AxDC+M": [
+    {
+      "type": 0,
+      "value": "Login with "
+    },
+    {
+      "type": 1,
+      "value": "provider"
+    }
+  ],
   "AyOwJl": [
     {
       "type": 0,
       "value": "'Remove row' text"
+    }
+  ],
+  "B/W1uC": [
+    {
+      "type": 0,
+      "value": "Remove shapes"
     }
   ],
   "B1ONuu": [
@@ -1503,6 +1989,32 @@
       "value": "If specified, the user must check at least this many options."
     }
   ],
+  "BWCtbf": [
+    {
+      "type": 0,
+      "value": "You cannot submit multiple digital addresses for the type "
+    },
+    {
+      "type": 1,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "BYKDMO": [
+    {
+      "type": 0,
+      "value": "The date must be in a valid format (e.g., 10/30/2025)."
+    }
+  ],
+  "BboxO6": [
+    {
+      "type": 0,
+      "value": "Use two fingers to move the map"
+    }
+  ],
   "Bc8xyG": [
     {
       "type": 0,
@@ -1515,6 +2027,12 @@
       "value": "Boolean"
     }
   ],
+  "Bfda2A": [
+    {
+      "type": 0,
+      "value": "Co-sign"
+    }
+  ],
   "BiKRJT": [
     {
       "type": 0,
@@ -1525,6 +2043,50 @@
     {
       "type": 0,
       "value": "Save changes"
+    }
+  ],
+  "Bo6onH": [
+    {
+      "type": 0,
+      "value": "You must select at least "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "style": null,
+              "type": 2,
+              "value": "minSelectedCount"
+            },
+            {
+              "type": 0,
+              "value": " item"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "style": null,
+              "type": 2,
+              "value": "minSelectedCount"
+            },
+            {
+              "type": 0,
+              "value": " items"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "minSelectedCount"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "Bp3X7R": [
@@ -1581,6 +2143,12 @@
       "value": ": the length of the result is capped to 32 characters."
     }
   ],
+  "Bq2hIW": [
+    {
+      "type": 0,
+      "value": "You must verify this email address to continue."
+    }
+  ],
   "BqA9of": [
     {
       "type": 0,
@@ -1597,6 +2165,12 @@
     {
       "type": 0,
       "value": "Decimal places"
+    }
+  ],
+  "BxPJLU": [
+    {
+      "type": 0,
+      "value": "First names"
     }
   ],
   "C+91tl": [
@@ -1681,6 +2255,12 @@
       "value": " attribute"
     }
   ],
+  "CGXGUq": [
+    {
+      "type": 0,
+      "value": "Update preferences"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -1697,6 +2277,20 @@
     {
       "type": 0,
       "value": "Placeholder"
+    }
+  ],
+  "CTDEh6": [
+    {
+      "type": 0,
+      "value": "The BSN "
+    },
+    {
+      "type": 1,
+      "value": "bsn"
+    },
+    {
+      "type": 0,
+      "value": " is used for multiple children. Each child must have a unique BSN."
     }
   ],
   "CXKQZZ": [
@@ -1817,16 +2411,28 @@
       "value": " logic rule(s)."
     }
   ],
+  "D6TdPW": [
+    {
+      "type": 0,
+      "value": "Click map to place marker"
+    }
+  ],
   "D717gY": [
     {
       "type": 0,
       "value": "Other options"
     }
   ],
-  "DE7U4q": [
+  "DBTNgI": [
     {
       "type": 0,
-      "value": "The RSIN must consist of 9 numbers."
+      "value": "d"
+    }
+  ],
+  "DDeDij": [
+    {
+      "type": 0,
+      "value": "Phone number"
     }
   ],
   "DEAqyQ": [
@@ -1845,6 +2451,12 @@
     {
       "type": 0,
       "value": "Update existing objects"
+    }
+  ],
+  "DGjM+p": [
+    {
+      "type": 0,
+      "value": "Firstnames"
     }
   ],
   "DGpAyT": [
@@ -1907,6 +2519,12 @@
       "value": "Plugin"
     }
   ],
+  "DZjLaH": [
+    {
+      "type": 0,
+      "value": "Hour must be between 0-23 and minute between 0-59"
+    }
+  ],
   "DaG+4u": [
     {
       "type": 0,
@@ -1935,6 +2553,12 @@
     {
       "type": 0,
       "value": "Session expired"
+    }
+  ],
+  "DcLzdm": [
+    {
+      "type": 0,
+      "value": "Date of birth must be within the last 120 years."
     }
   ],
   "Dm3S1P": [
@@ -1973,10 +2597,56 @@
       "value": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
     }
   ],
+  "E++Snm": [
+    {
+      "type": 0,
+      "value": "Date of birth must be within the last 120 years."
+    }
+  ],
   "E/biiX": [
     {
       "type": 0,
       "value": "Button labels"
+    }
+  ],
+  "E37u5a": [
+    {
+      "type": 0,
+      "value": "(Will become preferred "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "E5FZz/": [
@@ -1995,6 +2665,12 @@
     {
       "type": 0,
       "value": "Allow negative values"
+    }
+  ],
+  "E8UptU": [
+    {
+      "type": 0,
+      "value": "Partners"
     }
   ],
   "EDwCbX": [
@@ -2063,6 +2739,12 @@
       "value": "API group"
     }
   ],
+  "EZ7myd": [
+    {
+      "type": 0,
+      "value": "Email address verification"
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -2093,6 +2775,12 @@
     {
       "type": 0,
       "value": "Save as new"
+    }
+  ],
+  "ErdIGO": [
+    {
+      "type": 0,
+      "value": "Clear signature"
     }
   ],
   "ErwGIQ": [
@@ -2161,6 +2849,12 @@
       "value": "Version"
     }
   ],
+  "FDy8nr": [
+    {
+      "type": 0,
+      "value": "The verification code may only contain letters (A-Z) and numbers (0-9)."
+    }
+  ],
   "FH2sxf": [
     {
       "type": 0,
@@ -2197,6 +2891,12 @@
       "value": "Mode"
     }
   ],
+  "FWCQJu": [
+    {
+      "type": 0,
+      "value": "Current location"
+    }
+  ],
   "FayNPY": [
     {
       "type": 0,
@@ -2213,6 +2913,12 @@
     {
       "type": 0,
       "value": "is not equal to"
+    }
+  ],
+  "FfBWqF": [
+    {
+      "type": 0,
+      "value": "Show tooltip"
     }
   ],
   "FffJxu": [
@@ -2237,6 +2943,12 @@
     {
       "type": 0,
       "value": "Send confirmation email"
+    }
+  ],
+  "G+capl": [
+    {
+      "type": 0,
+      "value": "Profile"
     }
   ],
   "G+nriX": [
@@ -2297,6 +3009,12 @@
       "value": "Internal step name"
     }
   ],
+  "GHg1V/": [
+    {
+      "type": 0,
+      "value": "Currency"
+    }
+  ],
   "GIdTgB": [
     {
       "type": 0,
@@ -2313,6 +3031,22 @@
     {
       "type": 0,
       "value": "When the form should be activated."
+    }
+  ],
+  "GS1Yjy": [
+    {
+      "type": 0,
+      "value": "Empty fields"
+    }
+  ],
+  "GThFIc": [
+    {
+      "type": 0,
+      "value": "Time must be after "
+    },
+    {
+      "type": 1,
+      "value": "minTime"
     }
   ],
   "GV8HnZ": [
@@ -2369,6 +3103,12 @@
       "value": "Specify the size of each column. The sum of all the widths should be 100%."
     }
   ],
+  "GkuPAG": [
+    {
+      "type": 0,
+      "value": "HH"
+    }
+  ],
   "GsAN0n": [
     {
       "type": 0,
@@ -2385,6 +3125,12 @@
     {
       "type": 0,
       "value": "Variables mapping (case)"
+    }
+  ],
+  "H4VhcO": [
+    {
+      "type": 0,
+      "value": "Current location cannot be accessed"
     }
   ],
   "H4sILo": [
@@ -2459,6 +3205,12 @@
       "value": "BRP Personen purpose limitation header value"
     }
   ],
+  "HY6Irs": [
+    {
+      "type": 0,
+      "value": "Cancel changes"
+    }
+  ],
   "Hcwvos": [
     {
       "type": 0,
@@ -2471,10 +3223,64 @@
       "value": "Version"
     }
   ],
+  "HgLr1F": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "HhZc5C": [
     {
       "type": 0,
       "value": "(none)"
+    }
+  ],
+  "Hkq6NE": [
+    {
+      "type": 0,
+      "value": "Finish drawing"
+    }
+  ],
+  "HoCa81": [
+    {
+      "type": 0,
+      "value": "Too many files uploaded. You can upload "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "one file."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "up to "
+            },
+            {
+              "type": 1,
+              "value": "maxNumberOfFiles"
+            },
+            {
+              "type": 0,
+              "value": " files"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "maxNumberOfFiles"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "HrSXGN": [
@@ -2487,6 +3293,36 @@
     {
       "type": 0,
       "value": "Successful Submissions Removal Method field label"
+    }
+  ],
+  "I2pBWg": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "1 character remaining"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "remainingCharCount"
+            },
+            {
+              "type": 0,
+              "value": " characters remaining"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "remainingCharCount"
     }
   ],
   "I3zyib": [
@@ -2551,6 +3387,12 @@
       "value": "Decision definition ID"
     }
   ],
+  "IhLYXK": [
+    {
+      "type": 0,
+      "value": "Toggle calendar"
+    }
+  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -2591,12 +3433,6 @@
     {
       "type": 0,
       "value": "Are you sure you want to delete this item?"
-    }
-  ],
-  "J1zTQz": [
-    {
-      "type": 0,
-      "value": "Document type description"
     }
   ],
   "J5EZDj": [
@@ -2689,6 +3525,12 @@
       "value": "Hidden"
     }
   ],
+  "K+ha3D": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -2713,6 +3555,38 @@
     {
       "type": 0,
       "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+    }
+  ],
+  "K4JPOy": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Edit child with BSN: "
+            },
+            {
+              "type": 1,
+              "value": "bsn"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Edit child with first name: "
+            },
+            {
+              "type": 1,
+              "value": "firstNames"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasFirstNames"
     }
   ],
   "K5TkEU": [
@@ -2761,6 +3635,12 @@
     {
       "type": 0,
       "value": "Unfortunately something went wrong!"
+    }
+  ],
+  "KWP1b9": [
+    {
+      "type": 0,
+      "value": "Previous month"
     }
   ],
   "Kdgpxf": [
@@ -2889,10 +3769,22 @@
       "value": "Component selection"
     }
   ],
+  "LYjd+f": [
+    {
+      "type": 0,
+      "value": "Use my current location"
+    }
+  ],
   "LZc4TN": [
     {
       "type": 0,
       "value": "Longitude"
+    }
+  ],
+  "LaKfzC": [
+    {
+      "type": 0,
+      "value": "Signature"
     }
   ],
   "LbiXCA": [
@@ -2913,10 +3805,22 @@
       "value": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
     }
   ],
+  "Lp2KV6": [
+    {
+      "type": 0,
+      "value": "(Preferred)"
+    }
+  ],
   "LrlAVD": [
     {
       "type": 0,
       "value": "Data extraction"
+    }
+  ],
+  "LsgvKh": [
+    {
+      "type": 0,
+      "value": "Postcode"
     }
   ],
   "Ltde29": [
@@ -2929,6 +3833,12 @@
     {
       "type": 0,
       "value": "Authentication options"
+    }
+  ],
+  "M/Akft": [
+    {
+      "type": 0,
+      "value": "Search component(s)"
     }
   ],
   "M1L9/1": [
@@ -2983,10 +3893,22 @@
       "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
     }
   ],
+  "MJXZYI": [
+    {
+      "type": 0,
+      "value": "m"
+    }
+  ],
   "MTdKuN": [
     {
       "type": 0,
       "value": "Disable adding or removing groups"
+    }
+  ],
+  "MTfsUB": [
+    {
+      "type": 0,
+      "value": "There are too many characters provided."
     }
   ],
   "MUfBmP": [
@@ -3007,16 +3929,46 @@
       "value": "Prefill"
     }
   ],
+  "MmjiYz": [
+    {
+      "type": 0,
+      "value": "Clear selection"
+    }
+  ],
   "MnfzL3": [
     {
       "type": 0,
       "value": "Plugin ID"
     }
   ],
+  "MrlKEu": [
+    {
+      "type": 0,
+      "value": "Date of birth cannot be in the future."
+    }
+  ],
   "Mv8yjC": [
     {
       "type": 0,
       "value": "Form variables configuration"
+    }
+  ],
+  "N25aMd": [
+    {
+      "type": 0,
+      "value": "Family members"
+    }
+  ],
+  "N2sZnS": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "N46vH2": [
+    {
+      "type": 0,
+      "value": "Search component(s)"
     }
   ],
   "N5Hv+1": [
@@ -3053,6 +4005,12 @@
     {
       "type": 0,
       "value": "Catalogue"
+    }
+  ],
+  "NZ8rJn": [
+    {
+      "type": 0,
+      "value": "Your current location cannot be accessed"
     }
   ],
   "NdaqDN": [
@@ -3151,6 +4109,12 @@
       "value": "Prefix"
     }
   ],
+  "Ob4chA": [
+    {
+      "type": 0,
+      "value": "The location derivation options have known usability problems and do not work when used inside repeating groups. We recommend that you use the 'AddressNL' component instead. Existing forms will continue to function as before, but this feature will not receive further improvements."
+    }
+  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3195,6 +4159,12 @@
       "value": ")"
     }
   ],
+  "OlHdZq": [
+    {
+      "type": 0,
+      "value": "License plate"
+    }
+  ],
   "OlPsaw": [
     {
       "type": 0,
@@ -3213,10 +4183,122 @@
       "value": "Advanced"
     }
   ],
+  "Op4orj": [
+    {
+      "type": 0,
+      "value": "No shapes to remove"
+    }
+  ],
   "OpkUgV": [
     {
       "type": 0,
       "value": "Whether to include this variable in the data to be sent."
+    }
+  ],
+  "OqrBsx": [
+    {
+      "type": 0,
+      "value": "There are multiple "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email addresses"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone numbers"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " associated with your account. Use the dropdown to select the "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " you want to use for this form. "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "To update your preferences, use the "
+            },
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "portal"
+                }
+              ],
+              "type": 8,
+              "value": "a"
+            },
+            {
+              "type": 0,
+              "value": "."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasPortalUrl"
     }
   ],
   "Orf0vr": [
@@ -3259,6 +4341,12 @@
     {
       "type": 0,
       "value": "Content"
+    }
+  ],
+  "PCv4sQ": [
+    {
+      "type": 0,
+      "value": "House number"
     }
   ],
   "PN8vFa": [
@@ -3327,6 +4415,12 @@
       "value": ")"
     }
   ],
+  "PzBahf": [
+    {
+      "type": 0,
+      "value": "Date of birth"
+    }
+  ],
   "Q0SS8P": [
     {
       "type": 1,
@@ -3337,10 +4431,62 @@
       "value": " must be a valid email."
     }
   ],
+  "Q4fCjD": [
+    {
+      "type": 0,
+      "value": "The "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " you provide will automatically only be used for this form. You can update your preferences using the button below."
+    }
+  ],
+  "Q6/Lj7": [
+    {
+      "type": 0,
+      "value": "Remove last drawn point"
+    }
+  ],
   "Q8WgtE": [
     {
       "type": 0,
       "value": "Output mapping"
+    }
+  ],
+  "QAN3ua": [
+    {
+      "type": 0,
+      "value": "The file(s) are ready to drop."
     }
   ],
   "QCEWHo": [
@@ -3371,6 +4517,12 @@
     {
       "type": 0,
       "value": "Save text"
+    }
+  ],
+  "QPdaOi": [
+    {
+      "type": 0,
+      "value": "No results found"
     }
   ],
   "QW32Dd": [
@@ -3439,6 +4591,12 @@
       "value": "Main/representee"
     }
   ],
+  "R7k4JC": [
+    {
+      "type": 0,
+      "value": "Enter the six-character code"
+    }
+  ],
   "R8/zGm": [
     {
       "type": 0,
@@ -3483,6 +4641,12 @@
       "value": "The data will be retrieved for the selected type of person."
     }
   ],
+  "RJ+0F/": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -3493,6 +4657,18 @@
     {
       "type": 0,
       "value": "Main"
+    }
+  ],
+  "RSPyzt": [
+    {
+      "type": 0,
+      "value": "Month"
+    }
+  ],
+  "Rba7CV": [
+    {
+      "type": 0,
+      "value": "The maximum number of uploads is reached. You cannot upload additional files."
     }
   ],
   "RcVlPF": [
@@ -3525,6 +4701,12 @@
       "value": "Add/remove"
     }
   ],
+  "RulJnf": [
+    {
+      "type": 0,
+      "value": "Deprecated"
+    }
+  ],
   "RvJXSo": [
     {
       "type": 0,
@@ -3537,10 +4719,30 @@
       "value": "When this is checked, the filetypes configured in the global settings will be used."
     }
   ],
+  "S2Wyuv": [
+    {
+      "type": 0,
+      "value": "The submitted value does not match the pattern: "
+    },
+    {
+      "type": 1,
+      "value": "pattern"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "S4Lvvs": [
     {
       "type": 0,
       "value": "Clear selection"
+    }
+  ],
+  "S5ydMY": [
+    {
+      "type": 0,
+      "value": "The format of the date of birth is incorrect."
     }
   ],
   "S6eF5o": [
@@ -3593,12 +4795,6 @@
     {
       "type": 0,
       "value": "Mode preset"
-    }
-  ],
-  "SEu4I2": [
-    {
-      "type": 0,
-      "value": "Title"
     }
   ],
   "SH67gH": [
@@ -3715,6 +4911,12 @@
       "value": "the path should not have a leading slash"
     }
   ],
+  "TINs+z": [
+    {
+      "type": 0,
+      "value": "Columns"
+    }
+  ],
   "TQv+8T": [
     {
       "type": 0,
@@ -3739,10 +4941,60 @@
       "value": "Appointment"
     }
   ],
+  "TW+VxA": [
+    {
+      "type": 0,
+      "value": "Textarea"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "TZb5ph": [
+    {
+      "type": 0,
+      "value": "You can only select up to "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "style": null,
+              "type": 2,
+              "value": "maxSelectedCount"
+            },
+            {
+              "type": 0,
+              "value": " item"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "style": null,
+              "type": 2,
+              "value": "maxSelectedCount"
+            },
+            {
+              "type": 0,
+              "value": " items"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "maxSelectedCount"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "TbFGCG": [
@@ -3757,6 +5009,12 @@
       "value": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:"
     }
   ],
+  "Tip5+d": [
+    {
+      "type": 0,
+      "value": "Next year"
+    }
+  ],
   "TjjvQL": [
     {
       "type": 0,
@@ -3767,6 +5025,12 @@
     {
       "type": 0,
       "value": "Do not ask"
+    }
+  ],
+  "Tmbth6": [
+    {
+      "type": 0,
+      "value": "The format of the date of birth is incorrect."
     }
   ],
   "Tpg442": [
@@ -3815,6 +5079,26 @@
       },
       "type": 5,
       "value": "hasAuth"
+    }
+  ],
+  "U5+FHP": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "U7YHLZ": [
+    {
+      "type": 0,
+      "value": "Include "
+    },
+    {
+      "type": 1,
+      "value": "firstname"
+    },
+    {
+      "type": 0,
+      "value": "?"
     }
   ],
   "UCGSib": [
@@ -3909,6 +5193,20 @@
       "value": "File"
     }
   ],
+  "V0B3pn": [
+    {
+      "type": 0,
+      "value": "The date must be later than or equal to "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "V6ClU9": [
     {
       "type": 0,
@@ -3931,6 +5229,46 @@
     {
       "type": 0,
       "value": "Maximum selected checkboxes (e.g. 1)"
+    }
+  ],
+  "VSf9fx": [
+    {
+      "type": 0,
+      "value": "Provide the "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " on which you want to be contacted."
     }
   ],
   "VV2TCH": [
@@ -4101,6 +5439,12 @@
       "value": "Type"
     }
   ],
+  "WpfP0s": [
+    {
+      "type": 0,
+      "value": "The submitted value does not match the postcode pattern: 1234 AB"
+    }
+  ],
   "WxwqZJ": [
     {
       "type": 0,
@@ -4113,10 +5457,22 @@
       "value": "Active"
     }
   ],
+  "WzAGB4": [
+    {
+      "type": 0,
+      "value": "Add another"
+    }
+  ],
   "X+NeMd": [
     {
       "type": 0,
       "value": "Include variable in metadata"
+    }
+  ],
+  "X/24FO": [
+    {
+      "type": 0,
+      "value": "Map component search button"
     }
   ],
   "X18/UP": [
@@ -4209,6 +5565,12 @@
       "value": "House number Schema target"
     }
   ],
+  "XiLc3z": [
+    {
+      "type": 0,
+      "value": "Co-sign"
+    }
+  ],
   "Xj1uvL": [
     {
       "type": 0,
@@ -4221,6 +5583,12 @@
       "value": "Whether to include this variable in the metadata to be sent."
     }
   ],
+  "XsjoZd": [
+    {
+      "type": 0,
+      "value": "Date & time"
+    }
+  ],
   "XyDeaD": [
     {
       "type": 0,
@@ -4231,6 +5599,12 @@
     {
       "type": 0,
       "value": "Digital address types a user can be contacted on."
+    }
+  ],
+  "Y3jHZm": [
+    {
+      "type": 0,
+      "value": "Remove last point"
     }
   ],
   "Y4oNhH": [
@@ -4263,6 +5637,12 @@
       "value": "Advanced"
     }
   ],
+  "YKpmvq": [
+    {
+      "type": 0,
+      "value": "Postcode"
+    }
+  ],
   "YObTjL": [
     {
       "type": 0,
@@ -4281,6 +5661,12 @@
       "value": "(collapse)"
     }
   ],
+  "YZpcRG": [
+    {
+      "type": 0,
+      "value": "Invalid phone number - a phone number may only contain digits, the + or - sign or spaces."
+    }
+  ],
   "YdHbH9": [
     {
       "type": 0,
@@ -4293,10 +5679,22 @@
       "value": "Add item"
     }
   ],
+  "Yg2+vS": [
+    {
+      "type": 0,
+      "value": "Invalid email address."
+    }
+  ],
   "YmWeGZ": [
     {
       "type": 0,
       "value": "Select the plugin to use for the prefill functionality."
+    }
+  ],
+  "YnTumB": [
+    {
+      "type": 0,
+      "value": "Phone number"
     }
   ],
   "YzLSHY": [
@@ -4315,6 +5713,38 @@
     {
       "type": 0,
       "value": "Document confidentiality level"
+    }
+  ],
+  "ZAq+s7": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Delete child with BSN: "
+            },
+            {
+              "type": 1,
+              "value": "bsn"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Delete child with first name: "
+            },
+            {
+              "type": 1,
+              "value": "firstNames"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasFirstNames"
     }
   ],
   "ZB6mnn": [
@@ -4377,6 +5807,12 @@
       "value": "Whether the user is allowed to suspend this form or not."
     }
   ],
+  "ZGuxfW": [
+    {
+      "type": 0,
+      "value": "File name"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -4421,6 +5857,12 @@
     {
       "type": 0,
       "value": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
+    }
+  ],
+  "Za0/8c": [
+    {
+      "type": 0,
+      "value": "The file registration options have been moved to the 'variables' tab of the form edit page."
     }
   ],
   "ZdZ2Mb": [
@@ -4497,6 +5939,12 @@
       "value": " attribute"
     }
   ],
+  "aUpjaY": [
+    {
+      "type": 0,
+      "value": "Sorry, that address could not be found."
+    }
+  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -4519,6 +5967,12 @@
     {
       "type": 0,
       "value": "Organization RSIN"
+    }
+  ],
+  "abKEBH": [
+    {
+      "type": 0,
+      "value": "No"
     }
   ],
   "adFa0X": [
@@ -4561,6 +6015,16 @@
       "value": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
     }
   ],
+  "ampZcZ": [
+    {
+      "type": 0,
+      "value": "Time must be before "
+    },
+    {
+      "type": 1,
+      "value": "maxTime"
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,
@@ -4583,6 +6047,12 @@
     {
       "type": 0,
       "value": "Mapping expression"
+    }
+  ],
+  "auqTVZ": [
+    {
+      "type": 0,
+      "value": "Soft required errors"
     }
   ],
   "axygDt": [
@@ -4619,6 +6089,12 @@
       "value": "backendLabel"
     }
   ],
+  "b4uuR7": [
+    {
+      "type": 0,
+      "value": "There are too many characters provided."
+    }
+  ],
   "b5Bxb/": [
     {
       "type": 0,
@@ -4643,10 +6119,22 @@
       "value": "Array"
     }
   ],
+  "bKPaUj": [
+    {
+      "type": 0,
+      "value": "House number must be a number with up to five digits (e.g. 456)."
+    }
+  ],
   "bRe/yq": [
     {
       "type": 0,
       "value": "There are validation errors"
+    }
+  ],
+  "bRtoG6": [
+    {
+      "type": 0,
+      "value": "Remove all"
     }
   ],
   "bYBFBc": [
@@ -4669,12 +6157,6 @@
       "value": "backendName"
     }
   ],
-  "bh2ky5": [
-    {
-      "type": 0,
-      "value": "Catalogus domain"
-    }
-  ],
   "bjIQDR": [
     {
       "type": 0,
@@ -4693,10 +6175,22 @@
       "value": "Identifier role"
     }
   ],
+  "bmnUq8": [
+    {
+      "type": 0,
+      "value": "Lastname"
+    }
+  ],
   "bnxtnX": [
     {
       "type": 0,
       "value": "Full request"
+    }
+  ],
+  "bqbXGd": [
+    {
+      "type": 0,
+      "value": "No information provided"
     }
   ],
   "brvKtm": [
@@ -4723,16 +6217,16 @@
       "value": "Move up"
     }
   ],
+  "c0Ry9H": [
+    {
+      "type": 0,
+      "value": "The verification code must contain exactly six characters."
+    }
+  ],
   "c0dfYJ": [
     {
       "type": 0,
       "value": "Build a JsonLogic expression using raw JSON."
-    }
-  ],
-  "c770ER": [
-    {
-      "type": 0,
-      "value": "Catalogus RSIN"
     }
   ],
   "cAC5kL": [
@@ -4755,6 +6249,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "cBsrax": [
+    {
+      "type": 0,
+      "value": "House letter"
     }
   ],
   "cDbGU2": [
@@ -4797,6 +6297,12 @@
     {
       "type": 0,
       "value": "Something went wrong when fetching the available target paths"
+    }
+  ],
+  "cKFCTI": [
+    {
+      "type": 0,
+      "value": "Add another"
     }
   ],
   "cLzsxn": [
@@ -4889,16 +6395,24 @@
       "value": "duplicatedKeys"
     }
   ],
-  "ce0Nz4": [
-    {
-      "type": 0,
-      "value": "You must specify a document type description when a catalogue is configured."
-    }
-  ],
   "ce1N0I": [
     {
       "type": 0,
       "value": "Plugin"
+    }
+  ],
+  "cnQt6v": [
+    {
+      "type": 0,
+      "value": "The uploaded file type is not an allowed type. It must be "
+    },
+    {
+      "type": 1,
+      "value": "allowedTypes"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "cpJErE": [
@@ -4911,6 +6425,12 @@
     {
       "type": 0,
       "value": "Product request type"
+    }
+  ],
+  "ct2S70": [
+    {
+      "type": 0,
+      "value": "Close"
     }
   ],
   "cuivC6": [
@@ -4929,6 +6449,20 @@
     {
       "type": 0,
       "value": "From form field"
+    }
+  ],
+  "d2SYc4": [
+    {
+      "type": 0,
+      "value": "The datetime must be later than or equal to "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "d3V6A+": [
@@ -5041,6 +6575,12 @@
       "value": "Cancel"
     }
   ],
+  "dNGw+S": [
+    {
+      "type": 0,
+      "value": "Click to continue drawing shape"
+    }
+  ],
   "dQxy1P": [
     {
       "type": 0,
@@ -5107,6 +6647,20 @@
       "value": "Date"
     }
   ],
+  "dsZqad": [
+    {
+      "type": 0,
+      "value": "The email address '"
+    },
+    {
+      "type": 1,
+      "value": "email"
+    },
+    {
+      "type": 0,
+      "value": "' is verified."
+    }
+  ],
   "dvlFuk": [
     {
       "type": 0,
@@ -5147,6 +6701,12 @@
     {
       "type": 0,
       "value": "Allow the selection of specific children that are retrieved from the external source for further processing."
+    }
+  ],
+  "e7ovEV": [
+    {
+      "type": 0,
+      "value": "Repeating group"
     }
   ],
   "eAmrdi": [
@@ -5267,6 +6827,12 @@
       "value": "Subject of the email sent to the registration backend. You can use the expressions {{ form_name }} and {{ public_reference }} to include the form name and the reference number to the submission in the subject."
     }
   ],
+  "f9CqUS": [
+    {
+      "type": 0,
+      "value": "Layout"
+    }
+  ],
   "f9Zr9D": [
     {
       "type": 0,
@@ -5283,6 +6849,12 @@
     {
       "type": 0,
       "value": "Background"
+    }
+  ],
+  "fJVa0u": [
+    {
+      "type": 0,
+      "value": "Marker"
     }
   ],
   "fLCWjk": [
@@ -5339,12 +6911,6 @@
       "value": "The maximum size of a single file to upload."
     }
   ],
-  "fY/8xt": [
-    {
-      "type": 0,
-      "value": "Information object type"
-    }
-  ],
   "faAkZs": [
     {
       "type": 0,
@@ -5387,6 +6953,12 @@
       "value": "Choose existing configuration"
     }
   ],
+  "fwMwqD": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "g+ppJj": [
     {
       "type": 0,
@@ -5397,6 +6969,12 @@
     {
       "type": 0,
       "value": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user. This is important to prevent malicious users looking up private information of other people."
+    }
+  ],
+  "g8jZU+": [
+    {
+      "type": 0,
+      "value": "No matching components found."
     }
   ],
   "gAf9pR": [
@@ -5453,6 +7031,12 @@
       "value": "Map specific subfields"
     }
   ],
+  "gg3Osx": [
+    {
+      "type": 0,
+      "value": "Hidden component"
+    }
+  ],
   "gheRkp": [
     {
       "type": 0,
@@ -5497,6 +7081,12 @@
       "value": "Postcode"
     }
   ],
+  "gv32/3": [
+    {
+      "type": 0,
+      "value": "Content"
+    }
+  ],
   "gzAzdU": [
     {
       "type": 0,
@@ -5521,10 +7111,22 @@
       "value": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "h2LzuB": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete your drawn shape?"
+    }
+  ],
   "h2ZNhM": [
     {
       "type": 0,
       "value": "Fieldset content"
+    }
+  ],
+  "h7JS6y": [
+    {
+      "type": 0,
+      "value": "Add child"
     }
   ],
   "h8DIWk": [
@@ -5537,12 +7139,6 @@
     {
       "type": 0,
       "value": "Minimal levels of assurance"
-    }
-  ],
-  "hAc9vQ": [
-    {
-      "type": 0,
-      "value": "Legacy"
     }
   ],
   "hBxKbW": [
@@ -5569,6 +7165,12 @@
     {
       "type": 0,
       "value": "Form"
+    }
+  ],
+  "hPHLdv": [
+    {
+      "type": 0,
+      "value": "Edit child"
     }
   ],
   "hPJb+Q": [
@@ -5655,10 +7257,22 @@
       "value": "Internal name"
     }
   ],
+  "i+nuPv": [
+    {
+      "type": 0,
+      "value": "Fieldset"
+    }
+  ],
   "i/P7yw": [
     {
       "type": 0,
       "value": "You must select a table."
+    }
+  ],
+  "i3G0QQ": [
+    {
+      "type": 0,
+      "value": "Update your preferences"
     }
   ],
   "i7HknI": [
@@ -5745,6 +7359,70 @@
       "value": "Plugin configuration: MS Graph"
     }
   ],
+  "iiVLgn": [
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Drop, or click to select a file to upload."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Drop, or click to select "
+            },
+            {
+              "options": {
+                "0": {
+                  "value": [
+                  ]
+                },
+                "other": {
+                  "value": [
+                    {
+                      "type": 0,
+                      "value": "up to "
+                    },
+                    {
+                      "type": 1,
+                      "value": "limit"
+                    }
+                  ]
+                }
+              },
+              "type": 5,
+              "value": "limit"
+            },
+            {
+              "type": 0,
+              "value": " files to upload."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "multiple"
+    },
+    {
+      "type": 0,
+      "value": " The maximum size of a single file is "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "fileSize"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "inhTXo": [
     {
       "type": 0,
@@ -5763,6 +7441,12 @@
       "value": "Clear on hide"
     }
   ],
+  "ixMIBJ": [
+    {
+      "type": 0,
+      "value": "What would you like to do?"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -5771,6 +7455,20 @@
     {
       "type": 0,
       "value": " [new]"
+    }
+  ],
+  "j1VL+H": [
+    {
+      "type": 1,
+      "value": "fileTypes"
+    },
+    {
+      "type": 0,
+      "value": " or "
+    },
+    {
+      "type": 1,
+      "value": "lastOption"
     }
   ],
   "j2vQH3": [
@@ -5827,6 +7525,12 @@
       "value": "This will make the text area auto expand its height as the user is typing into the area."
     }
   ],
+  "jXYcaq": [
+    {
+      "type": 0,
+      "value": "Textfield"
+    }
+  ],
   "jYFS/i": [
     {
       "type": 0,
@@ -5861,6 +7565,20 @@
     {
       "type": 0,
       "value": "Folder path"
+    }
+  ],
+  "jqQOW0": [
+    {
+      "type": 0,
+      "value": "The file must be smaller than "
+    },
+    {
+      "type": 1,
+      "value": "fileMaxSize"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "jtJACV": [
@@ -5957,6 +7675,12 @@
       "value": "Remove default value"
     }
   ],
+  "k8V0/f": [
+    {
+      "type": 0,
+      "value": "Removing this component will also remove all of its children. Are you sure you want to continue?"
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6033,6 +7757,42 @@
     {
       "type": 0,
       "value": "Category"
+    }
+  ],
+  "kpiWvx": [
+    {
+      "type": 0,
+      "value": "Add "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "email address"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "phone number"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
     }
   ],
   "ksJN3E": [
@@ -6145,6 +7905,12 @@
       "value": "Authentication method"
     }
   ],
+  "lQY+Zm": [
+    {
+      "type": 0,
+      "value": "Enter the verification code"
+    }
+  ],
   "lTJ2Hi": [
     {
       "type": 0,
@@ -6157,6 +7923,12 @@
       "value": "The minimum date that can be picked."
     }
   ],
+  "lVNV/d": [
+    {
+      "type": 0,
+      "value": "House number addition"
+    }
+  ],
   "lZw4g0": [
     {
       "type": 0,
@@ -6167,6 +7939,12 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "lmWBQT": [
+    {
+      "type": 0,
+      "value": "The code is exactly six characters long and consists of only uppercase letters and numbers."
     }
   ],
   "ln72CJ": [
@@ -6289,10 +8067,36 @@
       "value": "Name"
     }
   ],
+  "mgtQm3": [
+    {
+      "type": 0,
+      "value": "Special fields"
+    }
+  ],
   "mpzdoT": [
     {
       "type": 0,
       "value": "The sum of column sizes may not exceed 12."
+    }
+  ],
+  "muPw1F": [
+    {
+      "type": 0,
+      "value": "The datetime must be earlier than or equal to "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "n8XxZg": [
+    {
+      "type": 0,
+      "value": "IBAN"
     }
   ],
   "n9T2Oy": [
@@ -6313,6 +8117,12 @@
       "value": "Metadata:"
     }
   ],
+  "nF6MTl": [
+    {
+      "type": 0,
+      "value": "Time"
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -6323,6 +8133,18 @@
     {
       "type": 0,
       "value": "Trigger condition"
+    }
+  ],
+  "nKLmfd": [
+    {
+      "type": 0,
+      "value": "Preset"
+    }
+  ],
+  "nLymjB": [
+    {
+      "type": 0,
+      "value": "Use ctrl + scroll to zoom the map"
     }
   ],
   "nNbK3G": [
@@ -6337,16 +8159,16 @@
       "value": "Size"
     }
   ],
+  "nTNZBL": [
+    {
+      "type": 0,
+      "value": "Save all rows before proceeding."
+    }
+  ],
   "nVCVzl": [
     {
       "type": 0,
       "value": "Are you sure that you want to clear the image?"
-    }
-  ],
-  "nW5g1S": [
-    {
-      "type": 0,
-      "value": "Bronorganisatie"
     }
   ],
   "nXKEYN": [
@@ -6381,6 +8203,12 @@
       "value": "The registration result will be an object from the selected type."
     }
   ],
+  "nfRRDu": [
+    {
+      "type": 0,
+      "value": "yyyy"
+    }
+  ],
   "nhBYT3": [
     {
       "type": 0,
@@ -6403,6 +8231,20 @@
     {
       "type": 0,
       "value": "Tooltip"
+    }
+  ],
+  "o3TabP": [
+    {
+      "type": 0,
+      "value": "The date must be earlier than or equal to "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "o4AUIi": [
@@ -6435,6 +8277,12 @@
       "value": "String"
     }
   ],
+  "oCHirf": [
+    {
+      "type": 0,
+      "value": "Uploading..."
+    }
+  ],
   "oCo2mP": [
     {
       "type": 0,
@@ -6445,6 +8293,12 @@
     {
       "type": 0,
       "value": "Minimum selected checkboxes (e.g. 1)"
+    }
+  ],
+  "oHr4Nz": [
+    {
+      "type": 0,
+      "value": "Children"
     }
   ],
   "oR677a": [
@@ -6489,12 +8343,6 @@
       "value": "Which merchant should be used for payments related to this form."
     }
   ],
-  "oiB6Kg": [
-    {
-      "type": 0,
-      "value": "The direct URL configuration is scheduled for removal. If both the URL and the fields above are configured, the new configuration is used."
-    }
-  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -6513,10 +8361,22 @@
       "value": "The regular expression pattern test that the city field value must pass before the form can be submitted."
     }
   ],
+  "ovI+W7": [
+    {
+      "type": 0,
+      "value": "Use ⌘ + scroll to zoom the map"
+    }
+  ],
   "ow5LZk": [
     {
       "type": 0,
       "value": "Variables to include in the data to be sent."
+    }
+  ],
+  "oxM3rx": [
+    {
+      "type": 0,
+      "value": "Close modal"
     }
   ],
   "oxYXJX": [
@@ -6597,10 +8457,22 @@
       "value": "Number of rows"
     }
   ],
+  "pErllF": [
+    {
+      "type": 0,
+      "value": "Something went wrong while presenting the login option. Please contact the municipality."
+    }
+  ],
   "pGmjYH": [
     {
       "type": 0,
       "value": "User"
+    }
+  ],
+  "pHX3oF": [
+    {
+      "type": 0,
+      "value": "House letter must be a single letter."
     }
   ],
   "pM92DZ": [
@@ -6661,6 +8533,12 @@
       "value": "Select registration backend"
     }
   ],
+  "pitnjr": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "pjbN8m": [
     {
       "type": 0,
@@ -6683,6 +8561,12 @@
     {
       "type": 0,
       "value": "Fetch configuration:"
+    }
+  ],
+  "pzR8ui": [
+    {
+      "type": 0,
+      "value": "Something went wrong while processing the co-sign results. Please contact the municipality."
     }
   ],
   "q+qVVR": [
@@ -6757,6 +8641,12 @@
       "value": "Plugin configuration: Generic JSON"
     }
   ],
+  "qyWfE+": [
+    {
+      "type": 0,
+      "value": "Receive a verification code"
+    }
+  ],
   "qzISfx": [
     {
       "type": 0,
@@ -6769,6 +8659,28 @@
       "value": "Registration"
     }
   ],
+  "r0uvHk": [
+    {
+      "type": 0,
+      "value": "Remove '"
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": "'"
+    }
+  ],
   "r4OkBj": [
     {
       "type": 0,
@@ -6779,6 +8691,12 @@
     {
       "type": 0,
       "value": "Payment updates"
+    }
+  ],
+  "r6qiY/": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "r9MTrz": [
@@ -6827,6 +8745,12 @@
       "value": "isPublished"
     }
   ],
+  "rQ5vC9": [
+    {
+      "type": 0,
+      "value": "Postcode must be four digits followed by two letters (e.g. 1234 AB)."
+    }
+  ],
   "rQy+Yq": [
     {
       "type": 0,
@@ -6863,10 +8787,28 @@
       "value": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
     }
   ],
+  "rZy0zu": [
+    {
+      "type": 0,
+      "value": "Date"
+    }
+  ],
+  "re7vQZ": [
+    {
+      "type": 0,
+      "value": "The upload must be completed before you can continue."
+    }
+  ],
   "riS49K": [
     {
       "type": 0,
       "value": "To variable"
+    }
+  ],
+  "riuSfc": [
+    {
+      "type": 0,
+      "value": "Send code"
     }
   ],
   "rkJLBr": [
@@ -6935,6 +8877,12 @@
       "value": "If specified, the user must check at most this many options."
     }
   ],
+  "sSmY1N": [
+    {
+      "type": 0,
+      "value": "Enter address, please"
+    }
+  ],
   "sU/n0S": [
     {
       "type": 0,
@@ -6945,6 +8893,12 @@
     {
       "type": 0,
       "value": "Minimum age"
+    }
+  ],
+  "sYb+eZ": [
+    {
+      "type": 0,
+      "value": "Remove all shapes"
     }
   ],
   "sdnxHe": [
@@ -7017,6 +8971,12 @@
       "value": "Identifier variable (BSN)"
     }
   ],
+  "syyEii": [
+    {
+      "type": 0,
+      "value": "Date of birth"
+    }
+  ],
   "t+B+/4": [
     {
       "type": 0,
@@ -7063,6 +9023,12 @@
       "value": "one or more actions are invalid"
     }
   ],
+  "t5vd9s": [
+    {
+      "type": 0,
+      "value": "Time"
+    }
+  ],
   "t9+e9k": [
     {
       "type": 0,
@@ -7073,6 +9039,12 @@
     {
       "type": 0,
       "value": "BSN"
+    }
+  ],
+  "tBQ8TL": [
+    {
+      "type": 0,
+      "value": "Not co-signed"
     }
   ],
   "tJQoMq": [
@@ -7155,12 +9127,6 @@
       "value": "Derive address"
     }
   ],
-  "tzAOAm": [
-    {
-      "type": 0,
-      "value": "You must specify both domain and RSIN."
-    }
-  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7171,6 +9137,12 @@
     {
       "type": 0,
       "value": "House number addition Schema target"
+    }
+  ],
+  "u1vsoV": [
+    {
+      "type": 0,
+      "value": "Invalid IBAN."
     }
   ],
   "u3P/1E": [
@@ -7209,12 +9181,6 @@
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
-  "uOtaSP": [
-    {
-      "type": 0,
-      "value": "The document type will be retrieved in the specified catalogue. The version will automatically be selected based on the submission completion timestamp. When used with ZGW APIs, ensure that the document type belongs to the specified case type!"
-    }
-  ],
   "uUf7cu": [
     {
       "type": 0,
@@ -7231,6 +9197,12 @@
     {
       "type": 0,
       "value": "Type of the case object. Currently only the value 'overige' is supported."
+    }
+  ],
+  "uXkEQJ": [
+    {
+      "type": 0,
+      "value": "Radio"
     }
   ],
   "uaHUFc": [
@@ -7287,6 +9259,30 @@
     {
       "type": 0,
       "value": "Source path"
+    }
+  ],
+  "vCObuG": [
+    {
+      "type": 0,
+      "value": "Day"
+    }
+  ],
+  "vMKP5p": [
+    {
+      "type": 0,
+      "value": "Time must be in-between "
+    },
+    {
+      "type": 1,
+      "value": "minTime"
+    },
+    {
+      "type": 0,
+      "value": " and "
+    },
+    {
+      "type": 1,
+      "value": "maxTime"
     }
   ],
   "vN6yXh": [
@@ -7365,6 +9361,12 @@
       "value": "Custom error messages"
     }
   ],
+  "vfKvuS": [
+    {
+      "type": 0,
+      "value": "Click first point to finish shape"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -7387,12 +9389,6 @@
       "value": " Are you sure you want to do this?"
     }
   ],
-  "vlY36U": [
-    {
-      "type": 0,
-      "value": "Indication of the level to which extent the INFORMATIEOBJECT is meant to be public."
-    }
-  ],
   "vng/5K": [
     {
       "type": 0,
@@ -7403,6 +9399,12 @@
     {
       "type": 0,
       "value": "Specify the attribute holding the pre-fill data."
+    }
+  ],
+  "w4culW": [
+    {
+      "type": 0,
+      "value": "The entered postcode and number don't result into a known address."
     }
   ],
   "w4e4jx": [
@@ -7417,6 +9419,12 @@
       "value": "Extra print statement"
     }
   ],
+  "wBLfLz": [
+    {
+      "type": 0,
+      "value": "Signature"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -7427,6 +9435,12 @@
     {
       "type": 0,
       "value": "Map settings"
+    }
+  ],
+  "wLPbi4": [
+    {
+      "type": 0,
+      "value": "Email"
     }
   ],
   "wOMoEs": [
@@ -7483,6 +9497,12 @@
       "value": "API group"
     }
   ],
+  "wiPGoP": [
+    {
+      "type": 0,
+      "value": "Add partner details"
+    }
+  ],
   "wnTTZr": [
     {
       "type": 0,
@@ -7513,16 +9533,34 @@
       "value": "Other data"
     }
   ],
-  "wqhr+0": [
-    {
-      "type": 0,
-      "value": "Specify either none or all three of the fields below to configure the document type to use."
-    }
-  ],
   "x+ORaW": [
     {
       "type": 0,
       "value": "Deactivate on"
+    }
+  ],
+  "x/mWt2": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Uploaded files"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Uploaded file"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "single"
     }
   ],
   "x38ph4": [
@@ -7547,6 +9585,20 @@
     {
       "type": 0,
       "value": "Select an object type and version before you can pick a source path."
+    }
+  ],
+  "xHVrv5": [
+    {
+      "type": 0,
+      "value": "The value must be "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": " or greater."
     }
   ],
   "xI6md8": [
@@ -7585,22 +9637,28 @@
       "value": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
     }
   ],
-  "xUt2+r": [
-    {
-      "type": 0,
-      "value": "You must specify both domain and RSIN."
-    }
-  ],
   "xcp+LU": [
     {
       "type": 0,
       "value": "Create definition"
     }
   ],
+  "xe7bA1": [
+    {
+      "type": 0,
+      "value": "Verify"
+    }
+  ],
   "xgcUQF": [
     {
       "type": 0,
       "value": "Generate JSON schema"
+    }
+  ],
+  "xh+7Vv": [
+    {
+      "type": 0,
+      "value": "Finish"
     }
   ],
   "xrfkiI": [
@@ -7677,6 +9735,12 @@
       "value": "Authorizee"
     }
   ],
+  "yKo62N": [
+    {
+      "type": 0,
+      "value": "Year"
+    }
+  ],
   "yL9Ql7": [
     {
       "type": 0,
@@ -7695,16 +9759,22 @@
       "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
     }
   ],
-  "yQUV3M": [
+  "yPD9g1": [
     {
       "type": 0,
-      "value": "RSIN of the organization which creates the ENKELVOUDIGINFORMATIEOBJECT."
+      "value": "Select"
     }
   ],
   "yQtFln": [
     {
       "type": 0,
       "value": "Hide a field from the form."
+    }
+  ],
+  "ySaVSL": [
+    {
+      "type": 0,
+      "value": "The file upload (meta) data is not consistent."
     }
   ],
   "ySkT14": [
@@ -7737,6 +9807,18 @@
       "value": "Clear image"
     }
   ],
+  "yaI9aD": [
+    {
+      "type": 0,
+      "value": "Edit component"
+    }
+  ],
+  "ybTcqX": [
+    {
+      "type": 0,
+      "value": "Remove partner details"
+    }
+  ],
   "ydnh2t": [
     {
       "type": 0,
@@ -7747,6 +9829,18 @@
     {
       "type": 0,
       "value": "Before start page"
+    }
+  ],
+  "yjCrXX": [
+    {
+      "type": 0,
+      "value": "Date of birth cannot be in the future."
+    }
+  ],
+  "yr8cz5": [
+    {
+      "type": 0,
+      "value": "Checkbox"
     }
   ],
   "yrz/oC": [
@@ -7863,6 +9957,12 @@
       "value": "\" login options. Please select one or remove the prefill plugin."
     }
   ],
+  "zpHAro": [
+    {
+      "type": 0,
+      "value": "Click to start drawing line"
+    }
+  ],
   "zqnTBZ": [
     {
       "type": 0,
@@ -7879,6 +9979,18 @@
     {
       "type": 0,
       "value": "An error occurred during schema generation"
+    }
+  ],
+  "zvoXSU": [
+    {
+      "type": 0,
+      "value": "Nearest address: "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "address"
     }
   ],
   "zwOwrD": [
