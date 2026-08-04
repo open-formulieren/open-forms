@@ -46,7 +46,7 @@ const DefaultValueSelection = ({name, dataType, componentType, value, onChange})
         type={dataType}
         componentType={componentType}
         inputTypeOverrides={COMPONENT_TYPE_TO_INPUT_TYPE}
-        value={value}
+        value={value.toString()}
         onChange={onChange}
       />
       <FAIcon

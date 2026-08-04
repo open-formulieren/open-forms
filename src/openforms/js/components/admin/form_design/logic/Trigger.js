@@ -186,7 +186,13 @@ const Trigger = ({name, logic, onChange, error}) => {
   };
 
   // rendering logic
-  const {variable: triggerVariableKey, operator, operandType, operand, defaultValue} = state;
+  const {
+    variable: triggerVariableKey,
+    operator,
+    operandType,
+    operand,
+    defaultValue: defaultValueFromState,
+  } = state;
   const triggerVariable = allVariablesObj[triggerVariableKey];
 
   let compareValue = null;
@@ -277,6 +283,7 @@ const Trigger = ({name, logic, onChange, error}) => {
   }
 
   let firstOperand;
+  let defaultValue = defaultValueFromState;
   if (triggerVariable?.source === VARIABLE_SOURCES.component) {
     const triggerComponent = formContext.components[triggerVariableKey];
     // Handling components special cases
@@ -289,18 +296,22 @@ const Trigger = ({name, logic, onChange, error}) => {
         break;
       }
       case 'selectboxes': {
+        if (defaultValue === 'true') defaultValue = true;
+        if (defaultValue === 'false') defaultValue = false;
         firstOperand =
           defaultValue === undefined
             ? {var: `${triggerVariableKey}.${compareValue}`}
-            : {var: [`${triggerVariableKey}.${compareValue}`, defaultValue === 'true']};
+            : {var: [`${triggerVariableKey}.${compareValue}`, defaultValue]};
         compareValue = true;
         break;
       }
       case 'checkbox': {
+        if (defaultValue === 'true') defaultValue = true;
+        if (defaultValue === 'false') defaultValue = false;
         firstOperand =
           defaultValue === undefined
             ? {var: triggerVariableKey}
-            : {var: [triggerVariableKey, defaultValue === 'true']};
+            : {var: [triggerVariableKey, defaultValue]};
         // cast from string to actual boolean
         if (compareValue === 'true') compareValue = true;
         if (compareValue === 'false') compareValue = false;
