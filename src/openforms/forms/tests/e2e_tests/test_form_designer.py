@@ -1423,9 +1423,11 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "label": "Field Set 1",
                             "components": [
                                 {
-                                    "type": "datagrid",
-                                    "key": "datagrid",
+                                    "type": "editgrid",
+                                    "key": "parentEditgrid",
                                     "label": "Repeating group",
+                                    "groupLabel": "Item",
+                                    "components": [],
                                 },
                                 {
                                     "type": "textfield",
