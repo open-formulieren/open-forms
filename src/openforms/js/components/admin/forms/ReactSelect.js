@@ -1,4 +1,4 @@
-import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/components/formio/select';
+import {getReactSelectStyles} from '@open-formulieren/formio-builder/components/formio/select';
 import classNames from 'classnames';
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
