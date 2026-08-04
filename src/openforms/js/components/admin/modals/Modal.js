@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {createContext, useContext} from 'react';
+import {useIntl} from 'react-intl';
 import ReactModal from 'react-modal';
 
 import {FAIcon} from 'components/admin/icons';
@@ -20,6 +21,7 @@ const Modal = ({
   contentModifiers = [],
   ...props
 }) => {
+  const intl = useIntl();
   const {parentSelector, ariaHideApp} = useContext(ModalContext);
   const modifiedClassNames = contentModifiers.map(modifier => `${CONTENT_CLASS_NAME}--${modifier}`);
   const className = classNames(CONTENT_CLASS_NAME, ...modifiedClassNames);
@@ -35,7 +37,14 @@ const Modal = ({
     >
       <header className="react-modal__header">
         {title ? <h2 className="react-modal__title">{title}</h2> : null}
-        <button className="react-modal__close" aria-label="Sluiten" onClick={closeModal}>
+        <button
+          className="react-modal__close"
+          aria-label={intl.formatMessage({
+            description: 'Modal close button accessible label',
+            defaultMessage: 'Close',
+          })}
+          onClick={closeModal}
+        >
           <FAIcon icon="close" extraClassname="fa-lg" aria-hidden="true" />
         </button>
       </header>
