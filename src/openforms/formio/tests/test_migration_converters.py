@@ -158,6 +158,29 @@ class LicensePlateTests(SimpleTestCase):
                 {"show": True, "when": "textfield", "eq": ""},
             )
 
+        empty_eq_show_component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": "",
+                "show": False,
+                "when": "textfield",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_show_component)
+
+        with self.subTest(component=empty_eq_show_component):
+            self.assertFalse(changed)
+            self.assertEqual(
+                empty_eq_show_component["conditional"],
+                {"show": False, "when": "textfield", "eq": ""},
+            )
+
         empty_show_component: Component = {
             "type": "licenseplate",
             "key": "licensePlate",
