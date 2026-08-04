@@ -60,6 +60,9 @@ class FormFactory(factory.django.DjangoModelFactory):
         # prevent options passed to Form() and set a default
         registration_backend_options = {}
         authentication_backend_options = {}
+        with_help_dialog_image = factory.Trait(
+            help_dialog_image=factory.django.ImageField(width=1, height=1),
+        )
 
     @factory.lazy_attribute
     def registration_backend__options(backend_resolver):

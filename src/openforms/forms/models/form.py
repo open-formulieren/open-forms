@@ -414,6 +414,25 @@ class Form(models.Model):
             "specified."
         ),
     )
+    help_dialog_content = CSPPostProcessedWYSIWYGField(
+        HTMLField(
+            blank=True,
+            verbose_name=_("help dialog content"),
+            help_text=_(
+                "Content displayed in the dialog/modal when the users clicks the help "
+                "icon on a step. Leave blank to disable this functionality."
+            ),
+        ),
+    )
+    help_dialog_image = models.ImageField(
+        _("help dialog image"),
+        help_text=_(
+            "The image shown below the content in the help dialog. If no help "
+            "content is configured, this has no effect."
+        ),
+        blank=True,
+        upload_to="forms/help-dialog/",
+    )
 
     # feature flags
     # DeprecationWarning: remove in OF 4.1

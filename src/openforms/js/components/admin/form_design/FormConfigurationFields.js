@@ -5,7 +5,13 @@ import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Checkbox, DateTimeInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {
+  Checkbox,
+  DateTimeInput,
+  ImageUpload,
+  TextArea,
+  TextInput,
+} from 'components/admin/forms/Inputs';
 import {Radio} from 'components/admin/forms/Inputs';
 import RadioList from 'components/admin/forms/RadioList';
 import Select from 'components/admin/forms/Select';
@@ -15,8 +21,11 @@ import {getTranslatedChoices} from 'utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
+import TinyMCEEditor, {DEFAULT_CONFIG} from './Editor';
+import LanguageTabs from './LanguageTabs';
 import {FORM_TYPES, HELP_CALLOUT_PAGE_DISPLAY_CHOICES} from './constants';
 import TYPES from './types';
+import useConfirm from './useConfirm';
 
 const SUMBISSION_ALLOWED_CHOICES = [
   [
@@ -514,12 +523,63 @@ const FeatureFields = ({formType, translationEnabled, suspensionAllowed, onChang
   );
 };
 
+// See src/openforms/conf/tinymce_config.json for available options
+const HELP_DIALOG_TINYMCE_CONFIG = {
+  ...DEFAULT_CONFIG,
+  plugins: ['autolink', 'lists', 'link', 'anchor', 'wordcount'],
+  toolbar: 'undo redo | bold italic | bullist numlist outdent indent | link unlink',
+  width: 600,
+};
+
 const HelpOptionsFields = ({
   helpCalloutPageDisplay,
   helpCalloutPageContentConfigured,
+  translations,
+  hasHelpDialogImage,
   onChange,
 }) => {
   const intl = useIntl();
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
+
+  // handle file upload and convert to base64
+  const handleImageUpload = event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const content = reader.result;
+      // strip off the metadata
+      const marker = ';base64,';
+      const metadataIndex = content.indexOf(marker);
+      const base64Data = content.substring(metadataIndex + marker.length);
+      // and dispatch into our form state
+      onChange({
+        target: {
+          name: event.target.name,
+          value: base64Data,
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const onClearImage = async event => {
+    event.preventDefault();
+    if (!(await openConfirmationModal())) return;
+    onChange({
+      target: {
+        name: 'form.helpDialog.image',
+        value: null, // null clears the field, empty string leaves it as-is
+      },
+    });
+    onChange({
+      target: {
+        name: 'form.helpDialog._hasImage',
+        value: false,
+      },
+    });
+  };
 
   return (
     <Fieldset
@@ -531,6 +591,7 @@ const HelpOptionsFields = ({
       }
       collapsible
       initialCollapsed
+      fieldNames={['form.helpCalloutPage', 'form.helpDialog']}
     >
       <FormRow>
         <Field
@@ -559,6 +620,100 @@ const HelpOptionsFields = ({
           />
         </Field>
       </FormRow>
+      <LanguageTabs forceRenderTabPanel>
+        {langCode => (
+          <>
+            <div className="description">
+              <FormattedMessage
+                description="Help dialog description"
+                defaultMessage={`You can (optionally) configure content for the
+                help function. When content is provided, an icon will be visible on
+                every form step. Clicking the icon will open a dialog-like element to
+                display the content configured here. You can optionally upload an image
+                to display below the content.`}
+              />
+            </div>
+            <FormRow>
+              <Field
+                name={`form.translations.${langCode}.helpDialogContent`}
+                label={
+                  <FormattedMessage
+                    description="form.helpDialogContent label"
+                    defaultMessage="Content"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    description="form.helpDialogContent help text"
+                    defaultMessage={`Content for the help function. Only simple text markup is allowed.`}
+                  />
+                }
+              >
+                <TinyMCEEditor
+                  tinyMceConfig={HELP_DIALOG_TINYMCE_CONFIG}
+                  content={translations?.[langCode]?.helpDialogContent || ''}
+                  onEditorChange={(newValue, editor) =>
+                    onChange({
+                      target: {
+                        name: `form.translations.${langCode}.helpDialogContent`,
+                        value: newValue,
+                      },
+                    })
+                  }
+                />
+              </Field>
+            </FormRow>
+          </>
+        )}
+      </LanguageTabs>
+      <FormRow>
+        <Field
+          name="form.helpDialog.image"
+          label={
+            <FormattedMessage
+              description="Help dialog image label"
+              defaultMessage="Help dialog image"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Help dialog image help text"
+              defaultMessage={`You can upload a (small) image to display below the help
+              function content. PNG, JPG and WEBP files are accepted. Avoid uploading
+              large images for users with limited bandwidth or slow connections. Note
+              that this is ignored if no content is defined.
+            `}
+            />
+          }
+          noManageChildProps
+        >
+          <span>
+            <ImageUpload
+              name="form.helpDialog.image"
+              id="id_form.helpDialog.image"
+              onChange={handleImageUpload}
+            />
+            {hasHelpDialogImage && (
+              <a href="#" onClick={onClearImage} disabled={false}>
+                <FormattedMessage
+                  description="Clear image link label"
+                  defaultMessage="Clear image"
+                />
+              </a>
+            )}
+          </span>
+        </Field>
+      </FormRow>
+
+      <ConfirmationModal
+        {...confirmationModalProps}
+        message={
+          <FormattedMessage
+            description="Clearing help dialog image confirmation message"
+            defaultMessage="Are you sure that you want to clear the image?"
+          />
+        }
+      />
     </Fieldset>
   );
 };
@@ -597,6 +752,8 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     helpCalloutPage,
+    translations,
+    helpDialog,
   } = form;
   const intl = useIntl();
 
@@ -818,6 +975,8 @@ const FormConfigurationFields = ({
         <HelpOptionsFields
           helpCalloutPageDisplay={helpCalloutPage.display}
           helpCalloutPageContentConfigured={!!helpCalloutPage.content}
+          translations={translations}
+          hasHelpDialogImage={helpDialog?._hasImage || !!helpDialog?.image}
           onChange={onChange}
         />
       )}

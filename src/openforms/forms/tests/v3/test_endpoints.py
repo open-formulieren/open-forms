@@ -1,3 +1,4 @@
+import base64
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from datetime import timedelta
 from uuid import UUID, uuid4
@@ -280,6 +281,7 @@ class FormEndpointTests(APITestCase):
                     "submissionConfirmationTemplate": "Have a cookie",
                     "introductionPageContent": "You can ask for cookies here",
                     "explanationTemplate": "Get ready to ask for some cookies",
+                    "helpDialogContent": "help information",
                 },
                 "nl": {
                     "name": "Create formulier",
@@ -290,15 +292,27 @@ class FormEndpointTests(APITestCase):
                     "submissionConfirmationTemplate": "Neem een koekje",
                     "introductionPageContent": "Je kan hier voor koekjes vragen",
                     "explanationTemplate": "Wees klaar om voor koekjes te vragen",
+                    "helpDialogContent": "hulpinformatie",
                 },
             },
             "helpCalloutPage": {"display": "before_start_page"},
+            "helpDialog": {
+                "content": "Hello there",
+                "image": base64.b64encode(
+                    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02"
+                    b"\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc```\x00\x00\x00\x04\x00\x01"
+                    b"\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
+                ).decode("ascii"),
+            },
         }
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.count(), 1)
         form = Form.objects.get()
+        self.addCleanup(
+            lambda: form.help_dialog_image.storage.delete(form.help_dialog_image.name)
+        )
 
         self.assertEqual(form.name_en, "Create form")
         self.assertEqual(form.name_nl, "Create formulier")
@@ -310,6 +324,14 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(form.type, FormTypeChoices.regular)
         self.assertEqual(form.slug, "create-form")
         self.assertEqual(form.help_callout_page_display, "before_start_page")
+
+        # help dialog
+        self.assertEqual(form.help_dialog_content_en, "help information")
+        self.assertEqual(form.help_dialog_content_nl, "hulpinformatie")
+        self.assertNotEqual(form.help_dialog_image, "")
+        name = form.help_dialog_image.name
+        self.assertTrue(name.endswith(".png"))
+        self.assertTrue(form.help_dialog_image.storage.exists(name))
 
         # product
         self.assertEqual(form.product, product)
@@ -487,6 +509,8 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(
             form.explanation_template_en, "Get ready to ask for some cookies"
         )
+        self.assertEqual(form.help_dialog_content_en, "help information")
+
         self.assertEqual(form.begin_text_nl, "start")
         self.assertEqual(form.previous_text_nl, "vorige")
         self.assertEqual(form.change_text_nl, "wijzigen")
@@ -498,6 +522,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(
             form.explanation_template_nl, "Wees klaar om voor koekjes te vragen"
         )
+        self.assertEqual(form.help_dialog_content_nl, "hulpinformatie")
 
     def test_create_reuse_existing_definition(self):
         form_definition = FormDefinitionFactory.create(

@@ -14,6 +14,7 @@ class FormTranslationOptions(TranslationOptions):
         "confirm_text",
         "explanation_template",
         "introduction_page_content",
+        "help_dialog_content",
     )
 
 

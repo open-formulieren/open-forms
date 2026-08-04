@@ -1,9 +1,11 @@
+import base64
 import copy
 import uuid
 from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -24,6 +26,12 @@ from ..api.serializers import FormSerializer
 from ..constants import FormTypeChoices, StatementCheckboxChoices
 from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+
+PIXEL_PNG = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02"
+    b"\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc```\x00\x00\x00\x04\x00\x01"
+    b"\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
+)
 
 
 class FormSerializerTests(APITestCase):
@@ -1591,6 +1599,96 @@ class FormsAPITests(APITestCase):
             self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
+class HelpDialogFormsAPITests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.user = UserFactory.create(is_staff=True, is_superuser=True)
+
+    def setUp(self):
+        super().setUp()
+
+        self.client.force_authenticate(user=self.user)
+
+    def _schedule_cleanup(self, form: Form):
+        if not form.help_dialog_image.name:
+            return
+
+        self.addCleanup(
+            lambda: form.help_dialog_image.storage.delete(form.help_dialog_image.name)
+        )
+
+    def test_retrieve_form_with_help_dialog_configured(self):
+        form = FormFactory.create(
+            help_dialog_content="Content with <strong>minimal</strong> tags.",
+            help_dialog_image=ContentFile(content=PIXEL_PNG, name="pixel.png"),
+        )
+        self._schedule_cleanup(form)
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        help_dialog = response.json()["helpDialog"]
+        self.assertIsInstance(help_dialog, dict)
+        self.assertEqual(
+            help_dialog["content"], "Content with <strong>minimal</strong> tags."
+        )
+        self.assertEqual(
+            help_dialog["image"],
+            f"http://testserver{form.help_dialog_image.url}",
+        )
+
+    def test_create_form_with_only_help_dialog_content_and_no_image(self):
+        url = reverse("api:form-list")
+        # minimal data
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "helpDialog": {
+                "content": "-ignore me-",
+                "image": "",
+            },
+            "translations": {
+                "nl": {"helpDialogContent": "Hallo daar"},
+                "en": {"helpDialogContent": "Hello there"},
+            },
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        form = Form.objects.get()
+        self._schedule_cleanup(form)
+
+        self.assertEqual(form.help_dialog_image, "")
+        self.assertEqual(form.help_dialog_content, "Hallo daar")
+        self.assertEqual(form.help_dialog_content_en, "Hello there")
+
+    def test_create_form_with_help_dialog_content_and_image(self):
+        url = reverse("api:form-list")
+        # minimal data
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "helpDialog": {
+                "content": "Hello there",
+                "image": base64.b64encode(PIXEL_PNG).decode("ascii"),
+            },
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        form = Form.objects.get()
+        self._schedule_cleanup(form)
+        self.assertNotEqual(form.help_dialog_image, "")
+        name = form.help_dialog_image.name
+        self.assertTrue(name.endswith(".png"))
+        self.assertTrue(form.help_dialog_image.storage.exists(name))
+
+
 class FormsAPITranslationTests(APITestCase):
     maxDiff = None
 
@@ -1633,6 +1731,7 @@ class FormsAPITranslationTests(APITestCase):
                 previous_text="prev",
                 change_text="change",
                 confirm_text="confirm",
+                help_dialog_content="help dialog",
             )
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -1652,6 +1751,8 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(literal_value("previousText"), "prev")
         self.assertEqual(literal_value("changeText"), "change")
         self.assertEqual(literal_value("confirmText"), "confirm")
+
+        self.assertEqual(data["helpDialog"]["content"], "help dialog")
 
     @patch(
         "openforms.forms.models.utils.GlobalConfiguration.get_solo",
@@ -1784,6 +1885,7 @@ class FormsAPITranslationTests(APITestCase):
                     "name": "Form 1",
                     "previous_text": "prev",
                     "submission_confirmation_template": "",
+                    "help_dialog_content": "",
                 },
                 "nl": {
                     "begin_text": "",
@@ -1794,6 +1896,7 @@ class FormsAPITranslationTests(APITestCase):
                     "name": "",
                     "previous_text": "",
                     "submission_confirmation_template": "",
+                    "help_dialog_content": "",
                 },
             },
         )
@@ -1847,6 +1950,7 @@ class FormsAPITranslationTests(APITestCase):
                     "previous_text": "prev",
                     "explanation_template": "explanation",
                     "submission_confirmation_template": "submission",
+                    "help_dialog_content": "help information",
                 },
                 "nl": {
                     "name": "Formulier 1",
@@ -1856,6 +1960,7 @@ class FormsAPITranslationTests(APITestCase):
                     "previous_text": "vorige",
                     "explanation_template": "uitleg",
                     "submission_confirmation_template": "bevestiging",
+                    "help_dialog_content": "hulpinformatie",
                 },
             },
             "confirmation_email_template": {
@@ -1887,6 +1992,7 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.name_en, "Form 1")
         self.assertEqual(form.previous_text_en, "prev")
         self.assertEqual(form.submission_confirmation_template_en, "submission")
+        self.assertEqual(form.help_dialog_content_en, "help information")
 
         self.assertEqual(form.begin_text_nl, "begin")
         self.assertEqual(form.change_text_nl, "pas aan")
@@ -1895,6 +2001,7 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.name_nl, "Formulier 1")
         self.assertEqual(form.previous_text_nl, "vorige")
         self.assertEqual(form.submission_confirmation_template_nl, "bevestiging")
+        self.assertEqual(form.help_dialog_content_nl, "hulpinformatie")
 
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(
@@ -1922,6 +2029,7 @@ class FormsAPITranslationTests(APITestCase):
                     "confirm_text": "confirm",
                     "name": "Form 1",
                     "previous_text": "prev",
+                    "help_dialog_content": "help information",
                 },
                 "nl": {
                     "begin_text": "begin",
@@ -1929,6 +2037,7 @@ class FormsAPITranslationTests(APITestCase):
                     "confirm_text": "bevestig",
                     "name": "Formulier 1",
                     "previous_text": "vorige",
+                    "help_dialog_content": "hulpinformatie",
                 },
             },
             "confirmation_email_template": {
@@ -1959,6 +2068,7 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.name_en, "Form 1")
         self.assertEqual(form.previous_text_en, "prev")
         self.assertEqual(form.submission_confirmation_template_en, "")
+        self.assertEqual(form.help_dialog_content_en, "help information")
 
         self.assertEqual(form.begin_text_nl, "begin")
         self.assertEqual(form.change_text_nl, "pas aan")
@@ -1967,6 +2077,7 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.name_nl, "Formulier 1")
         self.assertEqual(form.previous_text_nl, "vorige")
         self.assertEqual(form.submission_confirmation_template_nl, "")
+        self.assertEqual(form.help_dialog_content_nl, "hulpinformatie")
 
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(

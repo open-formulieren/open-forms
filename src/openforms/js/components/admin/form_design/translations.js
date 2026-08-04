@@ -12,6 +12,7 @@ export const initialFormTranslations = {
   submissionConfirmationTemplate: '',
   introductionPageContent: '',
   explanationTemplate: '',
+  helpDialogContent: '',
 };
 
 export const initialConfirmationEmailTranslations = {

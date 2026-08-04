@@ -162,4 +162,18 @@ Radio.propTypes = {
   helpText: PropTypes.node,
 };
 
-export {Input, TextInput, TextArea, NumberInput, DateInput, DateTimeInput, Checkbox, Radio};
+const ImageUpload = props => (
+  <Input type="file" accept="image/png,image/jpeg,image/webp" {...props} />
+);
+
+export {
+  Input,
+  TextInput,
+  TextArea,
+  NumberInput,
+  DateInput,
+  DateTimeInput,
+  Checkbox,
+  Radio,
+  ImageUpload,
+};

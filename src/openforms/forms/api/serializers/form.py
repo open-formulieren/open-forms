@@ -8,6 +8,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
+from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
+from openforms.api.fields import Base64ImageField
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import (
     get_from_serializer_data_or_instance,
@@ -161,6 +163,36 @@ class HelpCalloutPageSerializer(serializers.Serializer):
     )
 
 
+class HelpDialogSerializer(serializers.Serializer):
+    content = CSPPostProcessedHTMLField(
+        source="help_dialog_content",
+        read_only=True,
+        label=_("Content"),
+        help_text=_(
+            "Content displayed in the dialog/modal when the users clicks the help "
+            "icon on a step. Leave blank to disable this functionality."
+        ),
+    )
+    image = Base64ImageField(
+        source="help_dialog_image",
+        required=False,
+        allow_null=True,  # null to clear the field
+        allow_empty_file=True,
+        label=_("Optional image"),
+        help_text=_(
+            "The image shown below the content in the help dialog. If no help "
+            "content is configured, this has no effect. When uploading an image, "
+            "make sure to base64-encode the binary data."
+        ),
+    )
+
+    # translations are tracked via the top-level serializer `translations` field
+
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Form
+        fields = ("content", "image")
+
+
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -280,6 +312,17 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         source="*", required=False, allow_null=True
     )
 
+    help_dialog = HelpDialogSerializer(
+        source="*",
+        required=False,
+        allow_null=False,
+        label=_("Help dialog configuration"),
+        help_text=_(
+            "When the nested content field is not empty, the SDK should render help "
+            "controls to assist the user filling out the form."
+        ),
+    )
+
     class Meta:
         model = Form
         fields = (
@@ -340,6 +383,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_report_download_link_title",
             "brp_personen_request_options",
             "help_callout_page",
+            "help_dialog",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -376,6 +420,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "help_callout_page",
+            "help_dialog",
         )
         extra_kwargs = {
             "uuid": {

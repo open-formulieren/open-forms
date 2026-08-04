@@ -63,38 +63,42 @@ In dit tabblad worden de algemene formuliergegevens weergegeven. Deze zijn gegro
 in een aantal onderdelen:
 
 * **Formuliergegevens**: Algemene informatie zoals de naam en toelichting van het formulier.
+
+  .. note::
+
+    Als de formuliernaam lange woorden bevat, kan je optionele koppeltekens (`soft hyphens`_)
+    invoeren om aan te geven waar het woord mag worden afgebroken naar de volgende regel.
+    Op Windows vindt u deze "soft hyphens" in het 'Speciale tekens'-programma en kan je
+    ze kopiëren/plakken naar Open Formulieren-velden.
+
 * **Introductiepagina**: Wanneer ingesteld, dan wordt er een extra introductiepagina
   getoond voor het starten van het formulier.
 * **Instellingen**: Algemene instellingen zoals de unieke identificatie, URL-deel,
   type formulier, categorie...
 * **Functionaliteiten**: Niet-verplichte/extra functionaliteiten zoals vertalingen
   inschakelen, tussentijds opslaan toestaan of niet.
-* **Inlogopties**: Als voor een formulier ingelogd moet worden kan een van de
+* **Inloggen**: Als voor een formulier ingelogd moet worden kan een van de
   beschikbare inlog opties worden aangevinkt.
 
   Zie ook: :ref:`configuration_authentication_index`
+
+  .. note::
+
+    Indien een of meer **Inlogopties** zijn geselecteerd, dan verschijnt aan het
+    begin van het formulier een knop om in te loggen. Echter, als er geen stappen
+    in het formulier zitten die **Inloggen vereisen** (zie hieronder) dan kan het
+    formulier ook gestart worden *zonder in te loggen*.
 
 * **Weergave/layout**: Instellingen die het uiterlijk van het formulier aanpassen, zoals
   de stijl die toegepast moet worden.
 * **Beschikbaarheid**: Instellingen die bepalen of een formulier actief is of niet, dan
   wel wanneer het geactiveerd/gedeactiveerd dient te worden.
 * **Inzending-instellingen**: Instellingen voor het insturen van de formulieren.
-
-.. note::
-
-  Als de formuliernaam lange woorden bevat, kan je optionele koppeltekens (`soft hyphens`_)
-  invoeren om aan te geven waar het woord mag afgebroken worden naar de volgende regel.
-  Op Windows vindt u deze "soft hyphens" in het 'Speciale tekens'-programma  en kan je
-  ze kopiëren/plakken naar Open Formulieren-velden.
+* **Hulp/contact**: Formulierspecifieke instellingen voor de hulp-functionaliteit. Je
+  kan hier de inhoud en een eventuele afbeelding toevoegen om gebruikers op
+  contactmogelijkheden te wijzen.
 
 .. _soft hyphens: https://en.wikipedia.org/wiki/Soft_hyphen
-
-.. note::
-
-  Indien een of meer **Inlogopties** zijn geselecteerd, dan verschijnt aan het
-  begin van het formulier een knop om in te loggen. Echter, als er geen stappen
-  in het formulier zitten die **Inloggen vereisen** (zie hieronder) dan kan het
-  formulier ook gestart worden *zonder in te loggen*.
 
 Stappen en velden
 -----------------

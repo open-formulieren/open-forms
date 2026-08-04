@@ -33,6 +33,7 @@ from ....api.serializers.form import (
     FormLiteralsSerializer,
     FormRegistrationBackendSerializer,
     HelpCalloutPageSerializer,
+    HelpDialogSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
 from ....constants import FormTypeChoices
@@ -113,6 +114,17 @@ class FormSerializer(serializers.ModelSerializer):
 
     form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
 
+    help_dialog = HelpDialogSerializer(
+        source="*",
+        required=False,
+        allow_null=False,
+        label=_("Help dialog configuration"),
+        help_text=_(
+            "When the nested content field is not empty, the SDK should render help "
+            "controls to assist the user filling out the form."
+        ),
+    )
+
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
         fields = (
@@ -156,6 +168,7 @@ class FormSerializer(serializers.ModelSerializer):
             "include_confirmation_page_content_in_pdf",
             "translations",
             "help_callout_page",
+            "help_dialog",
         )
         extra_kwargs = {
             "uuid": {  # retrieved from the context passed through from the view

@@ -1,9 +1,12 @@
 import {expect, fn, userEvent, within} from 'storybook/test';
 
+import {FormDecorator} from 'components/admin/form_design/story-decorators';
+
 import FormConfigurationFields from './FormConfigurationFields';
 
 export default {
   title: 'Form design / Tabs / Form / Configuration fields',
+  decorators: [FormDecorator],
   component: FormConfigurationFields,
   args: {
     form: {

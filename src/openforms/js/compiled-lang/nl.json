@@ -2136,6 +2136,12 @@
       "value": "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor het maken van notities voor later gebruik of voor een andere beheerder."
     }
   ],
+  "F4qw6B": [
+    {
+      "type": 0,
+      "value": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined."
+    }
+  ],
   "F9ew4C": [
     {
       "type": 0,
@@ -2306,6 +2312,12 @@
     {
       "type": 0,
       "value": "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "GemVSH": [
+    {
+      "type": 0,
+      "value": "Help dialog image"
     }
   ],
   "GfH2yX": [
@@ -3012,6 +3024,12 @@
       "value": "Uw sessie is vervallen."
     }
   ],
+  "NOyTcy": [
+    {
+      "type": 0,
+      "value": "Content"
+    }
+  ],
   "NY6h3i": [
     {
       "type": 0,
@@ -3312,6 +3330,12 @@
     {
       "type": 0,
       "value": "Enkele stap kan pas ingeschakeld worden als er precies één formulier stap geconfigureerd is."
+    }
+  ],
+  "QCLq4W": [
+    {
+      "type": 0,
+      "value": "Content for the help function. Only simple text markup is allowed."
     }
   ],
   "QDBI2H": [
@@ -4375,6 +4399,12 @@
     {
       "type": 0,
       "value": "Geboortedatum"
+    }
+  ],
+  "ZYdsY+": [
+    {
+      "type": 0,
+      "value": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
     }
   ],
   "ZdZ2Mb": [
@@ -6295,6 +6325,12 @@
       "value": "Grootte"
     }
   ],
+  "nVCVzl": [
+    {
+      "type": 0,
+      "value": "Are you sure that you want to clear the image?"
+    }
+  ],
   "nW5g1S": [
     {
       "type": 0,
@@ -7677,6 +7713,12 @@
     {
       "type": 0,
       "value": "(niet ingesteld)"
+    }
+  ],
+  "yWuVOE": [
+    {
+      "type": 0,
+      "value": "Clear image"
     }
   ],
   "ydnh2t": [

@@ -6,10 +6,12 @@ import getTinyMCEAppearance from 'tinymce_appearance';
 
 import {currentTheme} from 'utils/theme';
 
-import tinyMceConfig from '../../../../conf/tinymce_config.json';
+import {default as defaultTinyMceConfig} from '../../../../conf/tinymce_config.json';
 import {TinyMceContext} from './Context';
 
-const TinyMCEEditor = ({content, onEditorChange}) => {
+export const DEFAULT_CONFIG = defaultTinyMceConfig;
+
+const TinyMCEEditor = ({content, onEditorChange, tinyMceConfig = defaultTinyMceConfig}) => {
   const editorRef = useRef(null);
   const tinyMceUrl = useContext(TinyMceContext);
   const intl = useIntl();
