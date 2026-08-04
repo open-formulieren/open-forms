@@ -129,7 +129,14 @@ const VARIABLES = [
 export default {
   title: 'Form design / Variables editor',
   component: VariablesEditor,
-  decorators: [FormDecorator],
+  decorators: [
+    FormDecorator,
+    Story => (
+      <form>
+        <Story />
+      </form>
+    ),
+  ],
   args: {
     availableFormVariables: VARIABLES,
     availableStaticVariables: [
@@ -562,7 +569,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
   },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
 
     expect(editIcons).toHaveLength(3);
 
@@ -660,7 +667,7 @@ export const WithObjectsAPIRegistrationBackendsGeometryField = {
   },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
 
     expect(editIcons).toHaveLength(1);
 
@@ -825,7 +832,7 @@ export const FilesMappingAndObjectAPIRegistration = {
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
     expect(editIcons).toHaveLength(3);
 
     await step('Single file component', async () => {
@@ -1030,7 +1037,7 @@ export const WithGenericJSONRegistrationBackend = {
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
     expect(editIcons).toHaveLength(3);
 
     await step('formioComponent checkboxes unchecked', async () => {
@@ -1060,7 +1067,7 @@ export const WithGenericJSONRegistrationBackend = {
       const staticVariables = canvas.getByRole('tab', {name: /Vaste variabelen/});
       await userEvent.click(staticVariables);
 
-      const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
+      const editIcon = canvas.getByRole('button', {name: 'Registratie-instellingen bewerken'});
       await userEvent.click(editIcon);
 
       const checkboxes = await canvas.findAllByRole('checkbox');
@@ -1075,7 +1082,7 @@ export const WithGenericJSONRegistrationBackend = {
         const registrationVariables = canvas.getByRole('tab', {name: /Registratie/});
         await userEvent.click(registrationVariables);
 
-        const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
+        const editIcon = canvas.getByRole('button', {name: 'Registratie-instellingen bewerken'});
         await userEvent.click(editIcon);
 
         const checkboxes = await canvas.findAllByRole('checkbox');
@@ -1168,7 +1175,7 @@ export const WithGenericJSONRegistrationBackendTransformToList = {
   },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
 
     expect(editIcons).toHaveLength(3);
 
@@ -1223,7 +1230,7 @@ export const ConfigurePrefill = {
     await userEvent.click(userDefinedVarsTab);
 
     // open modal for configuration
-    const editIcon = canvas.getByTitle('Prefill instellen');
+    const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
     await userEvent.click(editIcon);
 
     const pluginDropdown = await canvas.findByLabelText('Plugin');
@@ -1261,7 +1268,7 @@ export const ConfigurePrefillShowPluginWarnings = {
     await userEvent.click(userDefinedVarsTab);
 
     // open modal for configuration
-    const editIcon = canvas.getByTitle('Prefill instellen');
+    const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
     await userEvent.click(editIcon);
 
     const pluginDropdown = await canvas.findByLabelText('Plugin');
@@ -1301,7 +1308,7 @@ export const ConfigurePrefillObjectsAPI = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Prefill instellen');
+      const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1407,7 +1414,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Prefill instellen');
+      const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1504,7 +1511,7 @@ export const ConfigurePrefillFamilyMembersPartners = {
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
       // open modal for configuration
-      const editIcons = canvas.getAllByTitle('Prefill instellen');
+      const editIcons = canvas.getAllByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcons[1]);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1571,7 +1578,7 @@ export const ConfigurePrefillFamilyMembersChildren = {
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
       // open modal for configuration
-      const editIcons = canvas.getAllByTitle('Prefill instellen');
+      const editIcons = canvas.getAllByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcons[1]);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1687,7 +1694,7 @@ export const ConfigurePrefillYivi = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Prefill instellen');
+      const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1736,7 +1743,7 @@ export const ConfigurePrefillYiviAuthPluginWarning = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Edit prefill configuration');
+      const editIcon = canvas.getByRole('button', {name: 'Edit prefill configuration'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1800,7 +1807,7 @@ export const WithValidationErrors = {
     await userEvent.click(userDefinedVarsTab);
 
     // open modal for configuration
-    const editIcon = canvas.getByTitle('Prefill instellen');
+    const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
     await userEvent.click(editIcon);
   },
 };
@@ -1859,7 +1866,7 @@ export const ConfigurePrefillObjectsAPIWithValidationErrors = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Prefill instellen');
+      const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
@@ -1944,7 +1951,7 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
     await userEvent.click(editIcons[0]);
 
     const modalForm = await canvas.findByTestId('modal-form');
@@ -2074,7 +2081,7 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    const editIcons = canvas.getAllByRole('button', {name: 'Registratie-instellingen bewerken'});
     await userEvent.click(editIcons[0]);
 
     const modalForm = await canvas.findByTestId('modal-form');
@@ -2418,7 +2425,7 @@ export const ConfigurePrefillCommunicationPreferences = {
       await userEvent.click(userDefinedVarsTab);
 
       // open modal for configuration
-      const editIcon = canvas.getByTitle('Prefill instellen');
+      const editIcon = canvas.getByRole('button', {name: 'Prefill instellen'});
       await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });

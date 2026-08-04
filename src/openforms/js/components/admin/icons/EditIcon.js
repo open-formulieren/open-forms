@@ -4,12 +4,15 @@ import React from 'react';
 import FAIcon from './FAIcon';
 
 const EditIcon = ({label, onClick}) => (
-  <FAIcon
-    icon="edit"
-    extraClassname="fa-lg actions__action"
-    accessibleLabel={label}
+  <button
+    type="button"
     onClick={onClick}
-  />
+    className="button button--plain actions__action"
+    aria-label={label}
+    title={label}
+  >
+    <FAIcon icon="edit" extraClassname="fa-lg" />
+  </button>
 );
 
 EditIcon.propTypes = {
