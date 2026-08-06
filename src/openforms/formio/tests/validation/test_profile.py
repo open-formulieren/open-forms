@@ -152,7 +152,7 @@ class ProfileValidationTests(TestCase):
 
         is_valid, errors = validate_formio_data(component, values, submission)
 
-        error = extract_error(errors["profile"][0], "non_field_errors")
+        error = extract_error(errors["profile"][0], "address")
 
         self.assertFalse(is_valid)
         self.assertEqual(error, _("Enter a valid email address."))
@@ -183,7 +183,7 @@ class ProfileValidationTests(TestCase):
         }
         is_valid, errors = validate_formio_data(component, values, submission)
 
-        error = extract_error(errors["profile"][0], "non_field_errors")
+        error = extract_error(errors["profile"][0], "address")
 
         self.assertFalse(is_valid)
         self.assertEqual(error, _("Enter a valid phone number."))

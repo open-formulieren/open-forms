@@ -4,6 +4,7 @@ from copy import deepcopy
 from datetime import date, datetime
 from typing import Protocol, assert_never
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -18,6 +19,7 @@ from django.utils.translation import get_language, gettext as _
 import structlog
 from glom import Path, glom
 from rest_framework import ISO_8601, serializers
+from rest_framework.fields import get_error_detail
 from rest_framework.request import Request
 
 from openforms.api.geojson import (
@@ -1246,18 +1248,27 @@ class DigitalAddressSerializer(serializers.Serializer):
             return attrs
 
         # validate address value depending on its type
-        match type:
-            case "email":
-                validate_email(address)
+        try:
+            match type:
+                case "email":
+                    validate_email(address)
 
-            case "phoneNumber":
-                # replicate client-side validation in formio-renderer (buildPhoneNumberValidationSchema)
-                RegexValidator(
-                    regex="^[+0-9][- 0-9]+$", message=_("Enter a valid phone number.")
-                )(address)
+                case "phoneNumber":
+                    # replicate client-side validation in formio-renderer (buildPhoneNumberValidationSchema)
+                    RegexValidator(
+                        regex="^[+0-9][- 0-9]+$",
+                        message=_("Enter a valid phone number."),
+                    )(address)
 
-            case _:  # pragma: no cover
-                assert_never(type)
+                case _:  # pragma: no cover
+                    assert_never(type)
+        except DjangoValidationError as exc:
+            detail = get_error_detail(exc)
+            raise serializers.ValidationError({"address": detail})
+        # branch below is uncovered because *so far* we only use plain Django validators
+        except serializers.ValidationError as exc:  # pragma: no cover
+            detail = serializers.as_serializer_error(exc)
+            raise serializers.ValidationError({"address": detail})
 
         return attrs
 
