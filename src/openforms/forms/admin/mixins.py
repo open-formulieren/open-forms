@@ -11,6 +11,8 @@ from openforms.config.models import (
     MapWMSTileLayer,
     RichTextColor,
 )
+from openforms.formio.registry import register as component_registry
+from openforms.typing import JSONValue
 
 
 def get_rich_text_colors():
@@ -28,6 +30,31 @@ def get_map_tile_layers():
 
 def get_wms_layers():
     return list(MapWMSTileLayer.objects.values("uuid", "name", "url"))
+
+
+def get_component_empty_values():
+    empty_values: dict[str, dict[str, JSONValue | None]] = {}
+    for component_plugin in component_registry:
+        empty_values[component_plugin.identifier] = {}
+
+        for multiple in (True, False):
+            _component_mock = {
+                "type": component_plugin.identifier,
+                "multiple": multiple,
+                "key": "dummy",
+                "label": "Dummy",
+                # digitalAddressTypes is needed for customerProfile component
+                "digitalAddressTypes": ["email", "phoneNumber"],
+            }
+            empty_value = component_registry.get_empty_value(_component_mock)
+            json_safe_empty_value = (
+                empty_value if empty_value is not NotImplemented else None
+            )
+
+            key = f"empty_value_{'multiple' if multiple else 'single'}"
+            empty_values[component_plugin.identifier][key] = json_safe_empty_value
+
+    return empty_values
 
 
 class FormioConfigMixin:
@@ -54,6 +81,7 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices
                 ],
+                "component_empty_values": get_component_empty_values(),
             }
         )
 
