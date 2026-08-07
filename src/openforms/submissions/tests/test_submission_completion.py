@@ -875,6 +875,52 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @tag("gh-6297")
+    def test_required_hidden_multiple_field_should_not_fail_validation(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfieldVisible",
+                        "label": "Textfield visible",
+                        "hidden": False,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "hiddenField",
+                        "label": "Hidden field",
+                        "validate": {
+                            "required": True,
+                        },
+                        "multiple": True,
+                        "hidden": False,
+                        "clearOnHide": False,
+                        "conditional": {
+                            "show": False,
+                            "when": "textfieldVisible",
+                            "eq": "hide",
+                        },
+                        "defaultValue": [],
+                    },
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "textfieldVisible": "hide",
+                "hiddenField": [""],
+            },
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
