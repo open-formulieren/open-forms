@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {patchValidateDefaults} from './textfield';
+import {patchDefaultValue, patchValidateDefaults} from './textfield';
 
 const TextField = Formio.Components.components.textfield;
 
@@ -32,6 +32,7 @@ class IbanField extends TextField {
     super(...args);
 
     patchValidateDefaults(this);
+    patchDefaultValue(this);
   }
 
   get defaultSchema() {

@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
+import {patchDefaultValue} from './textfield';
 
 const DateTimeField = Formio.Components.components.datetime;
 
@@ -93,6 +94,7 @@ class DateField extends DateTimeField {
       submissionTimezone: null,
       timezone: '',
     };
+    patchDefaultValue(this);
   }
 }
 

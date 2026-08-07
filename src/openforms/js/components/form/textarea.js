@@ -3,7 +3,7 @@ import NativePromise from 'native-promise-only';
 import {Formio} from 'react-formio';
 
 import {localiseSchema} from './i18n';
-import {patchValidateDefaults} from './textfield';
+import {patchDefaultValue, patchValidateDefaults} from './textfield';
 
 const FormioTextarea = Formio.Components.components.textarea;
 
@@ -25,6 +25,7 @@ class TextArea extends FormioTextarea {
     super(...args);
 
     patchValidateDefaults(this);
+    patchDefaultValue(this);
   }
 
   get defaultSchema() {

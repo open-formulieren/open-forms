@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
-import {patchValidateDefaults} from './textfield';
+import {patchDefaultValue, patchValidateDefaults} from './textfield';
 
 const FormioEmail = Formio.Components.components.email;
 
@@ -32,6 +32,7 @@ class EmailField extends FormioEmail {
     super(...args);
 
     patchValidateDefaults(this);
+    patchDefaultValue(this);
   }
 
   get defaultSchema() {
