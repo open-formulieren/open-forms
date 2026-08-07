@@ -22,7 +22,8 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.forms.import_export.export_form import export_form
-from openforms.forms.import_export.typing import FormExportOptions
+from openforms.forms.import_export.import_form import import_form
+from openforms.forms.import_export.typing import FormExportOptions, FormImportOptions
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.utils.urls import is_admin_request, reverse_plus
@@ -36,7 +37,6 @@ from ..models import (
     FormStep,
     FormVersion,
 )
-from ..utils import import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
@@ -777,7 +777,10 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
 
 class FormsImportAPIView(views.APIView):
     serializer_class = FormImportSerializer
-    parser_classes = (parsers.FileUploadParser,)
+    parser_classes = (
+        parsers.MultiPartParser,
+        parsers.FormParser,
+    )
     authentication_classes = [TokenAuthentication]
     permission_classes = [FormAPIPermissions]
 
@@ -794,7 +797,22 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        form_instance = import_form(serializer.validated_data["file"])
+        form_instance = import_form(
+            serializer.validated_data["file"],
+            import_options=FormImportOptions(
+                **{
+                    field_name: serializer.validated_data[field_name]
+                    for field_name in (
+                        "form_configuration",
+                        "reuse_form_definitions",
+                        "additional_form_configuration",
+                        "theme",
+                        "category",
+                    )
+                    if field_name in serializer.validated_data
+                }
+            ),
+        )
         assert form_instance
 
         response_serializer = FormImportResponseSerializer(instance=form_instance)

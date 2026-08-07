@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import uuid as _uuid
 from collections.abc import Iterator, Mapping
 from contextlib import suppress
@@ -32,6 +33,11 @@ from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
+from openforms.forms.import_export.typing import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormImportOptions,
+)
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -708,11 +714,40 @@ class Form(models.Model):
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
 
+    @staticmethod
+    def _delete_current_form_configuration(current_form: Form):
+        from . import FormDefinition, FormLogic, FormStep, FormVariable
+
+        form_steps = FormStep.objects.filter(form=current_form)
+        # delete single-use form definitions, they're orphan nodes when deleting the steps
+        fd_ids = list(
+            FormDefinition.objects.filter(
+                is_reusable=False, formstep__in=form_steps
+            ).values_list("id", flat=True)
+        )
+        form_steps.delete()
+        FormDefinition.objects.filter(id__in=fd_ids).delete()
+        FormLogic.objects.filter(form=current_form).delete()
+        FormVariable.objects.filter(form=current_form).delete()
+
+    @staticmethod
+    def _get_uuid_from_resource_url(url: str | None) -> UUID | None:
+        from urllib.parse import urlparse
+
+        from django.urls import resolve
+
+        if url is None:
+            return None
+
+        result = resolve(urlparse(url).path)
+        return result.kwargs.get("uuid")
+
     @transaction.atomic
     def restore_old_version(
-        self, form_version_uuid: str, user: User | None = None
+        self, form_version_uuid: UUID, user: User | None = None
     ) -> None:
-        from ..utils import import_form_data
+        from openforms.forms.import_export.import_form import import_form_data
+
         from .form_version import FormVersion
 
         # we use the window function to find the record with its index in _all_
@@ -730,7 +765,46 @@ class Form(models.Model):
         form_version = form_versions_mapping[form_version_uuid]
         old_version_data = form_version.export_blob
 
-        import_form_data(old_version_data, form_version.form)
+        # when restoring a previous version, delete the current form configuration;
+        # it will be replaced with the import data.
+        self._delete_current_form_configuration(form_version.form)
+
+        forms = json.loads(old_version_data["forms"])
+        assert len(forms) == 1, "expected exactly one form in the old version"
+        form_data = forms[0]
+
+        theme_uuid = self._get_uuid_from_resource_url(form_data.get("theme"))
+        category_uuid = self._get_uuid_from_resource_url(form_data.get("category"))
+
+        restored_form = import_form_data(
+            old_version_data,
+            FormImportOptions(
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+                reuse_form_definitions=True,
+                theme=theme_uuid,
+                category=category_uuid,
+            ),
+            form_version.form,
+        )
+
+        # The FormImportSerializer sets the 'active' state to False by default. We should
+        # restore it to the state it had before.
+        if (
+            previous_active := form_data.get("active")
+        ) is not None and previous_active is not restored_form.active:
+            restored_form.active = previous_active
+            restored_form.save()
 
         # now create a new FormVersion for this restore as well, tracking those nuances
         # in the description.

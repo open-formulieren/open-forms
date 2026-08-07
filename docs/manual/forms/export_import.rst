@@ -62,23 +62,33 @@ Als het goed is, is het formulier inclusief alle stappen geïmporteerd. Het
 geïmporteerde formulier is standaard niet actief en dus niet direct voor de
 buitenwereld toegankelijk.
 
+Formulier importeer opties
+--------------------------
+
+Bij het importeren van een formulier heb je enkele opties over hoe het
+ZIP-bestand wordt geïmporteerd en hoe het formulier wordt gemaakt:
+
+* **Formulierinstellingen**: Hiermee kunnen registratie backends,
+  betaalprovider, prefill en inlogmethode eenvoudig bij het importeren
+  weggelaten worden. Standaard worden alle instellingen mee geïmporteerd.
+* **Aanvullende formulierinstellingen**: Hiermee kunnen aanvullende
+  instellingen uit het ZIP-bestand toegevoegd worden aan het formulier. Bij het
+  importeren wordt gekeken of de aanvullende objecten, zoals producten, al in
+  de Open Formulieren-omgeving bestaan. Zo ja, worden deze bestaande objecten
+  hergebruikt, zo niet worden ze aangemaakt.
+* **Hergebruik formulierdefinities**: Hiermee kan aangegeven worden of al
+  bestaande herbruikbare formulierdefinities gebruikt moeten worden, of dat
+  elke formulierdefinitie opnieuw aangemaakt moet worden.
+* **Stijl**: Welk stijl gebruik zal worden voor het formulier.
+* **Categorie**: In welke categorie het formulier geplaatst zal worden.
+
 Bijzonderheden
 --------------
 
-Als een formulier wordt geïmporteerd en het bevat een stap waarvan het
-*URL-deel* overeenkomt met een bestaande stap, dan controleert het import proces
-of de te importeren stap **exact hetzelfde** is als de bestaande stap. Als dat
-zo is, dan wordt de bestaande stap gebruikt voor het geïmporteerde formulier. Er
-wordt dan geen nieuwe stap aangemaakt.
-
-Als de stap **niet exact hetzelfde** is, dan wordt er een nieuwe stap aangemaakt
-en wordt het *URL-deel* van de stap gewijzigd. Bijvoorbeeld van
-``persoonsgegevens`` naar ``persoonsgegevens-2``. U krijgt hier altijd een
-melding van.
-
-Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan kan het
-formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het
-conflicterende formulier zelf aanpassen en het nogmaals proberen.
+Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan wordt
+het *URL-deel* van het te importeren formulier uniek gemaakt door een reeks van
+letters en cijfers er achter te plaatsen. Na het importeren kunt u het
+*URL-deel* nakijken en eventueel aanpassen.
 
 Export en import van :ref:`logica <manual_logic>` regels die gebruik maken van
 het experimentele bevragen van registraties is niet geïmplementeerd. De

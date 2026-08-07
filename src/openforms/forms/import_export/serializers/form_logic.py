@@ -1,6 +1,11 @@
 from openforms.forms.api.serializers import FormLogicSerializer
+from openforms.forms.constants import LogicActionTypes
+from openforms.forms.disable_next_import_conversion import (
+    add_form_step_uuid_to_disable_next_actions,
+)
+from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
@@ -35,3 +40,45 @@ class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
                 action["action"]["value"] = ""
 
         return representation
+
+
+class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if "order" not in value:
+            value["order"] = 0
+
+        if "service_fetch_configuration" in value:
+            # The transferring between systems case is very tricky better not import
+            # these, as we don't know where this came from. Services and ids may point to
+            # different things in different OF instances. Even when restoring a form
+            # version, we don't know if the service is the same as it was before.
+            del value["service_fetch_configuration"]
+
+        self.clear_old_service_fetch_config(value)
+
+        return super().to_internal_value(value)
+
+    def clear_old_service_fetch_config(self, rule: dict) -> None:
+        for action in rule["actions"]:
+            if action["action"]["type"] != LogicActionTypes.fetch_from_service:
+                continue
+
+            if "value" not in action["action"] or action["action"]["value"] == "":
+                continue
+
+            # See comment in FormVariableImportSerializer `to_internal_value` where we
+            # check if the variable has a `service_fetch_configuration` attribute.
+            # We can't reliably relate the service fetch configured to an existing configuration.
+            # So we don't add any existing service fetch config to the variables
+            action["action"]["value"] = ""
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
+        # Preparations for 4.0, ensuring legacy imports with disable-next logic actions
+        # still work. See #6254
+        # Original commit 879751310d0bdf6a21bdd143b54f2a3d3f095023
+        add_form_step_uuid_to_disable_next_actions(
+            value, self.context["form_variables"].variables, self.context["form_steps"]
+        )
+        return value

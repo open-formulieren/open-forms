@@ -1,14 +1,26 @@
+import random
+import string
+
+from django.urls import reverse
+
+from openforms.config.models import Theme
+from openforms.emails.utils import sanitize_content
 from openforms.forms.api.serializers import FormSerializer
-from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
+from openforms.forms.api.serializers.form import (
+    FormAuthenticationBackendSerializer,
+    FormRegistrationBackendSerializer,
+)
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.import_export.typing import (
     AdditionalFormConfigurationCleanup,
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
 )
+from openforms.forms.models import Category, Form
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 def clear_product(representation: JSONObject):
@@ -152,3 +164,166 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer):
         if "payment_options" in fields:
             del fields["payment_options"]
         return fields
+
+
+class FormImportSerializer(FormSerializer, BaseImportSerializer):
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.product,
+            cleanup=clear_product,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            cleanup=clear_yivi_attribute_groups,
+        ),
+    )
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.registration_backends,
+            cleanup=exclude_registration_backends,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.payment_backend,
+            cleanup=exclude_payment_backend,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.auth_backends,
+            cleanup=exclude_auth_backends,
+        ),
+    )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        value = self.set_theme(value)
+        value = self.set_category(value)
+
+        # We remove all unknown domains from the email templates
+        value = self.sanitize_email_templates(value)
+
+        # When importing a form, it should be non-active by default
+        value["active"] = False
+
+        # Make sure the slug is unique
+        if Form.objects.filter(slug=value.get("slug")).first() is not None:
+            value["slug"] = (
+                f"{value['slug']}-{''.join(random.choices(string.hexdigits, k=6))}"
+            )
+
+        return super().to_internal_value(value)
+
+    def set_theme(self, value: JSONObject) -> JSONObject:
+        if (import_options := self.get_import_options()) is not None and (
+            theme := Theme.objects.filter(uuid=import_options.theme).first()
+        ):
+            theme_url = reverse("api:themes-detail", args=[theme.uuid])
+            value["theme"] = theme_url
+        else:
+            value["theme"] = None
+
+        return value
+
+    def set_category(self, value: JSONObject) -> JSONObject:
+        if (import_options := self.get_import_options()) is not None and (
+            category := Category.objects.filter(uuid=import_options.category).first()
+        ):
+            category_url = reverse("api:categories-detail", args=[category.uuid])
+            value["category"] = category_url
+        else:
+            value["category"] = None
+
+        return value
+
+    def apply_backwards_compatibility(self, value: JSONObject) -> JSONObject:
+        # forms before v4.0 do not have the type field so in case we import an
+        # old appointment form we have to make sure that the form has the right
+        # type configured (by default is regular)
+        # Original commit d8b1d4ea9d31772f059a388347e8a4688be5d717
+        if appointment_options := value.get("appointment_options"):
+            if appointment_options.get("is_appointment"):
+                value["type"] = FormTypeChoices.appointment
+
+        # In v3.2 the authentication_backends field was replaced with auth_backends. This
+        # converter ensures that pre-v3.2 forms are converted correctly. See #5140
+        # Original commit d08281dad2e426e2655d87f67cefec9b58c5c810
+        if (
+            "authentication_backends" in value
+            or "authentication_backend_options" in value
+        ):
+            # Make sure `auth_backends` exists
+            value["auth_backends"] = value.get("auth_backends", [])
+            auth_backends_map = {}
+
+            # Pre-fill the map with the `auth_backends` values
+            for auth_backend in value["auth_backends"]:
+                auth_backends_map[auth_backend["backend"]] = auth_backend
+
+            # Collect all the backends that should be transformed to `auth_backends`
+            if "authentication_backends" in value:
+                for plugin in value["authentication_backends"]:
+                    # Add plugin if it's not already in the map
+                    if plugin not in auth_backends_map:
+                        auth_backends_map[plugin] = {
+                            "backend": plugin,
+                            "options": None,
+                        }
+
+            if "authentication_backend_options" in value:
+                for plugin, options in value["authentication_backend_options"].items():
+                    if plugin not in auth_backends_map:
+                        auth_backends_map[plugin] = {
+                            "backend": plugin,
+                            "options": options,
+                        }
+                        continue
+
+                    if auth_backends_map[plugin]["options"] is None:
+                        auth_backends_map[plugin]["options"] = options
+
+            validated_auth_backends = []
+            for config in auth_backends_map.values():
+                validated_auth_backends.append(
+                    FormAuthenticationBackendSerializer().validate(config)
+                )
+            value["auth_backends"] = validated_auth_backends
+
+        return value
+
+    def sanitize_email_templates(self, value: JSONObject) -> JSONObject:
+        # Sanitize confirmation email templates
+        if value.get("confirmation_email_template", None) is not None:
+            email_template = value["confirmation_email_template"]
+
+            if email_template.get("content") is not None:
+                email_template["content"] = sanitize_content(email_template["content"])
+
+            if email_template.get("cosign_content") is not None:
+                email_template["cosign_content"] = sanitize_content(
+                    email_template["cosign_content"]
+                )
+
+            for translation in email_template.get("translations", {}).values():
+                if translation.get("content") is not None:
+                    translation["content"] = sanitize_content(translation["content"])
+
+                if translation.get("cosign_content") is not None:
+                    translation["cosign_content"] = sanitize_content(
+                        translation["cosign_content"]
+                    )
+
+        # Sanitize email registration backend email templates
+        for registration in value.get("registration_backends", []):
+            if registration["backend"] == "email":
+                options = registration["options"]
+
+                if options.get("email_content_template_html") is not None:
+                    options["email_content_template_html"] = sanitize_content(
+                        options["email_content_template_html"]
+                    )
+
+                if options.get("email_content_template_text") is not None:
+                    options["email_content_template_text"] = sanitize_content(
+                        options["email_content_template_text"]
+                    )
+
+        return value

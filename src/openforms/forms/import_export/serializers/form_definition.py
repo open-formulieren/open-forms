@@ -1,3 +1,6 @@
+import structlog
+
+from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.import_export.typing import (
@@ -9,7 +12,9 @@ from openforms.forms.import_export.typing import (
 from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def clear_wms_tile_layers(representation: JSONObject):
@@ -87,3 +92,53 @@ class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSeriali
                 component["defaultValue"] = ""
 
         return representation
+
+
+class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSerializer):
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.wms_tile_layers,
+            cleanup=clear_wms_tile_layers,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.wmts_tile_layers,
+            cleanup=clear_wmts_tile_layers,
+        ),
+    )
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_component_configuration,
+        ),
+    )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        if configuration := value.get("configuration"):
+            self.apply_component_conversions(configuration)
+            self.apply_definition_conversions(configuration)
+
+        return super().to_internal_value(value)
+
+    def apply_component_conversions(self, configuration: JSONObject):
+        """
+        Apply the known formio component conversions to the entire form definition.
+        """
+        log = logger.bind(action="forms.apply_component_conversions")
+        for component in iter_components(configuration):
+            if not (component_type := component.get("type")):  # pragma: no cover
+                continue
+            if not (converters := CONVERTERS.get(component_type)):
+                continue
+            for identifier, apply_converter in converters.items():
+                log.debug(
+                    "apply_converter",
+                    component_type=component_type,
+                    identifier=identifier,
+                )
+                apply_converter(component)
+
+    def apply_definition_conversions(self, configuration: JSONObject):
+        for converter in DEFINITION_CONVERTERS:
+            converter(configuration)

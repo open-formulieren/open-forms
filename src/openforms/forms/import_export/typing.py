@@ -44,6 +44,32 @@ class FormExportOptions:
     )
 
 
+class FormImportOptionsData(TypedDict, total=False):
+    form_configuration: list[FormConfigurationOptions]
+    additional_form_configuration: list[AdditionalFormConfigurationOptions]
+    reuse_form_definitions: bool
+    theme: str | None
+    category: str | None
+
+
+@dataclass(slots=True)
+class FormImportOptions:
+    form_configuration: list[FormConfigurationOptions] = field(
+        default_factory=lambda: [
+            FormConfigurationOptions.registration_backends,
+            FormConfigurationOptions.prefill,
+            FormConfigurationOptions.payment_backend,
+            FormConfigurationOptions.auth_backends,
+        ]
+    )
+    additional_form_configuration: list[AdditionalFormConfigurationOptions] = field(
+        default_factory=list
+    )
+    reuse_form_definitions: bool = True
+    theme: str | None = None
+    category: str | None = None
+
+
 @dataclass(frozen=True)
 class AdditionalFormConfigurationCleanup:
     option: AdditionalFormConfigurationOptions

@@ -1,6 +1,7 @@
 from openforms.forms.api.serializers import FormStepSerializer
+from openforms.forms.models import FormVariable
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 class FormStepExportSerializer(FormStepSerializer, BaseExportSerializer):
@@ -22,3 +23,13 @@ class FormStepExportSerializer(FormStepSerializer, BaseExportSerializer):
         "next_text",
         "translations",
     )
+
+
+class FormStepImportSerializer(FormStepSerializer, BaseImportSerializer):
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if (form := self.context.get("form")) is not None:
+            # Once the form steps have been created, we create the component
+            # FormVariables based on the form definition configurations.
+            FormVariable.objects.create_for_form(form)

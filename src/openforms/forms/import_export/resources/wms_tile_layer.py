@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from openforms.config.models import MapWMSTileLayer
 from openforms.forms.models import Form
 
@@ -5,9 +7,15 @@ from .base import BaseResource
 
 
 class WMSTileLayerResource(BaseResource):
+    deep_comparison_fields = ("name", "url")
+    identifier_field = "uuid"
+
     class Meta:
         model = MapWMSTileLayer
+        import_id_fields = ("uuid",)
         fields = ("uuid", "name", "url")
+        store_instance = True
+        store_row_values = True
 
     def export_for_form(self, form: Form):
         wms_tile_layers = []
@@ -26,3 +34,6 @@ class WMSTileLayerResource(BaseResource):
         return self.export(
             queryset=MapWMSTileLayer.objects.filter(uuid__in=list(set(wms_tile_layers)))
         )
+
+    def generate_identifier(self, row):
+        return uuid4()

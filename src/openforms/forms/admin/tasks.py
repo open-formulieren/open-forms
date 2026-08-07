@@ -18,16 +18,18 @@ from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
 from openforms.forms.import_export.export_form import export_form
+from openforms.forms.import_export.import_form import import_form
 from openforms.forms.import_export.typing import (
     FormExportOptions,
     FormExportOptionsData,
+    FormImportOptions,
+    FormImportOptionsData,
 )
 from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import import_form
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -83,7 +85,9 @@ def process_forms_export(
 
 
 @app.task(ignore_result=True)
-def process_forms_import(import_file: str, user_id: int) -> None:
+def process_forms_import(
+    import_file: str, user_id: int, import_options: FormImportOptionsData
+) -> None:
     failed_files: list[tuple[str, object]] = []
     # This deletes the temp dir once the context manager is exited
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -92,7 +96,8 @@ def process_forms_import(import_file: str, user_id: int) -> None:
                 try:
                     # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
                     import_form(
-                        zip_file.extract(member=zipped_form_file, path=temp_dir)
+                        zip_file.extract(member=zipped_form_file, path=temp_dir),
+                        import_options=FormImportOptions(**import_options),
                     )
                 except ValidationError as exc:
                     filename = Path(zipped_form_file.filename).name

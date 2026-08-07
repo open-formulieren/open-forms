@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-02 13:12+0200\n"
-"PO-Revision-Date: 2026-08-02 13:17+0200\n"
+"POT-Creation-Date: 2026-08-02 13:29+0200\n"
+"PO-Revision-Date: 2026-08-02 13:34+0200\n"
 "Last-Translator:   <admin@admin.com>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -87,7 +87,7 @@ msgstr "stafstatus"
 msgid "Designates whether the user can log into this admin site."
 msgstr "Bepaalt of de gebruiker zich op deze beheerwebsite kan aanmelden."
 
-#: openforms/accounts/models.py:55 openforms/forms/models/form.py:312
+#: openforms/accounts/models.py:55 openforms/forms/models/form.py:318
 msgid "active"
 msgstr "actief"
 
@@ -115,7 +115,7 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:85 openforms/forms/models/form.py:854
+#: openforms/accounts/models.py:85 openforms/forms/models/form.py:928
 #: openforms/forms/models/form_version.py:86 soap/models.py:53
 msgid "user"
 msgstr "gebruiker"
@@ -757,9 +757,9 @@ msgstr "Unieke sleutel van het product"
 #: openforms/config/models/map.py:70 openforms/config/models/theme.py:21
 #: openforms/contrib/customer_interactions/models.py:14
 #: openforms/contrib/objects_api/models.py:16
-#: openforms/dmn/api/serializers.py:76 openforms/forms/admin/form.py:271
+#: openforms/dmn/api/serializers.py:76 openforms/forms/admin/form.py:272
 #: openforms/forms/admin/form_definition.py:69
-#: openforms/forms/models/category.py:13 openforms/forms/models/form.py:81
+#: openforms/forms/models/category.py:13 openforms/forms/models/form.py:87
 #: openforms/forms/models/form_definition.py:40
 #: openforms/forms/models/form_registration_backend.py:23
 #: openforms/forms/models/form_variable.py:265
@@ -2100,8 +2100,8 @@ msgstr ""
 #: openforms/authentication/contrib/yivi_oidc/models.py:20
 #: openforms/config/models/map.py:64 openforms/config/models/theme.py:26
 #: openforms/forms/api/serializers/logic/action_serializers.py:214
-#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:80
-#: openforms/forms/models/form.py:841
+#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:86
+#: openforms/forms/models/form.py:915
 #: openforms/forms/models/form_definition.py:39
 #: openforms/forms/models/form_step.py:27
 #: openforms/forms/models/form_version.py:66
@@ -3008,7 +3008,7 @@ msgstr ""
 msgid "Confirmation: {{ public_reference }}"
 msgstr "Bevestiging: {{ public_reference }}"
 
-#: openforms/config/models/config.py:76 openforms/forms/models/form.py:171
+#: openforms/config/models/config.py:76 openforms/forms/models/form.py:177
 msgid "submission confirmation template"
 msgstr "Bevestigingspagina tekst"
 
@@ -3184,7 +3184,7 @@ msgid ""
 msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
 
-#: openforms/config/models/config.py:240 openforms/forms/models/form.py:272
+#: openforms/config/models/config.py:240 openforms/forms/models/form.py:278
 msgid "change text"
 msgstr "Stap wijzigen-label"
 
@@ -3199,7 +3199,7 @@ msgid ""
 msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen"
 
-#: openforms/config/models/config.py:249 openforms/forms/models/form.py:282
+#: openforms/config/models/config.py:249 openforms/forms/models/form.py:288
 msgid "confirm text"
 msgstr "Formulier verzenden-label"
 
@@ -3215,7 +3215,7 @@ msgid ""
 msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen"
 
-#: openforms/config/models/config.py:258 openforms/forms/models/form.py:252
+#: openforms/config/models/config.py:258 openforms/forms/models/form.py:258
 msgid "begin text"
 msgstr "Formulier starten-label"
 
@@ -3435,11 +3435,11 @@ msgstr ""
 "tokens {year}, {public_reference} en {uid} zijn beschikbaar. Het sjabloon "
 "moet de placeholder {uid} bevatten."
 
-#: openforms/config/models/config.py:434 openforms/forms/models/form.py:231
+#: openforms/config/models/config.py:434 openforms/forms/models/form.py:237
 msgid "ask privacy consent"
 msgstr "vraag toestemming om gegevens te verwerken"
 
-#: openforms/config/models/config.py:437 openforms/forms/models/form.py:236
+#: openforms/config/models/config.py:437 openforms/forms/models/form.py:242
 msgid ""
 "If enabled, the user will have to agree to the privacy policy before "
 "submitting a form."
@@ -3475,11 +3475,11 @@ msgstr ""
 "Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk"
 " toestemming voor het verwerken van de door mij opgegeven gegevens."
 
-#: openforms/config/models/config.py:467 openforms/forms/models/form.py:240
+#: openforms/config/models/config.py:467 openforms/forms/models/form.py:246
 msgid "ask statement of truth"
 msgstr "vraag waarheidsverklaring"
 
-#: openforms/config/models/config.py:470 openforms/forms/models/form.py:245
+#: openforms/config/models/config.py:470 openforms/forms/models/form.py:251
 msgid ""
 "If enabled, the user will have to agree that they filled out the form "
 "truthfully before submitting it."
@@ -3508,7 +3508,7 @@ msgstr ""
 "Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen "
 "informatie heb verzwegen."
 
-#: openforms/config/models/config.py:492 openforms/forms/models/form.py:336
+#: openforms/config/models/config.py:492 openforms/forms/models/form.py:342
 msgid "successful submission removal limit"
 msgstr "bewaartermijn voor voltooide inzendingen."
 
@@ -3516,7 +3516,7 @@ msgstr "bewaartermijn voor voltooide inzendingen."
 msgid "Amount of days successful submissions will remain before being removed"
 msgstr "Aantal dagen dat een voltooide inzending bewaard blijft."
 
-#: openforms/config/models/config.py:500 openforms/forms/models/form.py:346
+#: openforms/config/models/config.py:500 openforms/forms/models/form.py:352
 msgid "successful submissions removal method"
 msgstr "opschoonmethode voor voltooide inzendingen"
 
@@ -3525,7 +3525,7 @@ msgid "How successful submissions will be removed after the limit"
 msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:507 openforms/forms/models/form.py:356
+#: openforms/config/models/config.py:507 openforms/forms/models/form.py:362
 msgid "incomplete submission removal limit"
 msgstr "bewaartermijn voor sessies"
 
@@ -3533,7 +3533,7 @@ msgstr "bewaartermijn voor sessies"
 msgid "Amount of days incomplete submissions will remain before being removed"
 msgstr "Aantal dagen dat een sessie bewaard blijft."
 
-#: openforms/config/models/config.py:515 openforms/forms/models/form.py:366
+#: openforms/config/models/config.py:515 openforms/forms/models/form.py:372
 msgid "incomplete submissions removal method"
 msgstr "opschoonmethode voor sessies."
 
@@ -3541,8 +3541,8 @@ msgstr "opschoonmethode voor sessies."
 msgid "How incomplete submissions will be removed after the limit"
 msgstr "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:522 openforms/forms/models/form.py:376
-#: openforms/forms/models/form.py:386
+#: openforms/config/models/config.py:522 openforms/forms/models/form.py:382
+#: openforms/forms/models/form.py:392
 msgid "errored submission removal limit"
 msgstr "bewaartermijn voor niet voltooide inzendingen"
 
@@ -3562,7 +3562,7 @@ msgstr ""
 "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) "
 "worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:537 openforms/forms/models/form.py:396
+#: openforms/config/models/config.py:537 openforms/forms/models/form.py:402
 msgid "all submissions removal limit"
 msgstr "bewaartermijn van inzendingen"
 
@@ -3733,7 +3733,6 @@ msgstr ""
 "unieke volgorde van het alfabet."
 
 #: openforms/config/models/config.py:673
-#| msgid "export content"
 msgid "help callout page content"
 msgstr ""
 
@@ -3989,7 +3988,7 @@ msgstr "stijlen"
 #: openforms/config/templates/admin/config/overview.html:8
 #: openforms/config/templates/admin/config/theme/preview.html:13
 #: openforms/forms/templates/admin/forms/form/export.html:13
-#: openforms/forms/templates/admin/forms/form/import_form.html:13
+#: openforms/forms/templates/admin/forms/form/import_form.html:14
 #: openforms/forms/templates/admin/forms/form/migrate-payment-backend.html:18
 #: openforms/forms/templates/admin/forms/formsubmissionstatistics/export_form.html:19
 msgid "Home"
@@ -4008,7 +4007,7 @@ msgid "Status"
 msgstr "Status"
 
 #: openforms/config/templates/admin/config/overview.html:25
-#: openforms/forms/admin/category.py:37 openforms/forms/admin/form.py:264
+#: openforms/forms/admin/category.py:37 openforms/forms/admin/form.py:265
 #: openforms/forms/api/serializers/logic/form_logic.py:132
 #: openforms/submissions/api/serializers.py:244
 msgid "Actions"
@@ -5421,7 +5420,7 @@ msgstr ""
 " voor meer informatie."
 
 #: openforms/emails/models.py:97 openforms/forms/admin/form_logic.py:28
-#: openforms/forms/models/form.py:450
+#: openforms/forms/models/form.py:456
 #: openforms/forms/models/form_variable.py:249
 #: openforms/forms/models/form_version.py:68
 msgid "form"
@@ -6587,95 +6586,95 @@ msgstr "aantal formulieren"
 msgid "Show forms"
 msgstr "Toon formulieren"
 
-#: openforms/forms/admin/form.py:54
+#: openforms/forms/admin/form.py:55
 msgid "has reached submission limit"
 msgstr "status inzendingslimiet"
 
-#: openforms/forms/admin/form.py:59
+#: openforms/forms/admin/form.py:60
 msgid "Available for submission"
 msgstr "Accepteert nieuwe inzendingen"
 
-#: openforms/forms/admin/form.py:60
+#: openforms/forms/admin/form.py:61
 msgid "Unavailable for submission"
 msgstr "Limiet bereikt"
 
-#: openforms/forms/admin/form.py:78
+#: openforms/forms/admin/form.py:79
 msgid "is deleted"
 msgstr "is verwijderd"
 
-#: openforms/forms/admin/form.py:106
+#: openforms/forms/admin/form.py:107
 msgid "Available forms"
 msgstr "Beschikbare formulieren"
 
-#: openforms/forms/admin/form.py:113
+#: openforms/forms/admin/form.py:114
 msgid "Deleted forms"
 msgstr "Verwijderde formulieren"
 
-#: openforms/forms/admin/form.py:268
+#: openforms/forms/admin/form.py:269
 msgid "Show form"
 msgstr "Toon formulier"
 
-#: openforms/forms/admin/form.py:275
+#: openforms/forms/admin/form.py:276
 msgid "Live"
 msgstr "Live"
 
-#: openforms/forms/admin/form.py:299
+#: openforms/forms/admin/form.py:300
 #, python-brace-format
 msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
-#: openforms/forms/admin/form.py:334
+#: openforms/forms/admin/form.py:335
 #, python-brace-format
 msgid "{} {} was successfully exported"
 msgstr "{} {} is met succes geëxporteerd"
 
-#: openforms/forms/admin/form.py:357
+#: openforms/forms/admin/form.py:358
 #: openforms/forms/admin/form_definition.py:82
 #, python-format
 msgid "Copy selected %(verbose_name_plural)s"
 msgstr "Kopieer geselecteerde %(verbose_name_plural)s"
 
-#: openforms/forms/admin/form.py:365
+#: openforms/forms/admin/form.py:366
 #, python-brace-format
 msgid "Copied {count} {verbose_name} object."
 msgid_plural "Copied {count} {verbose_name} objects."
 msgstr[0] "{count} {verbose_name} object gekopieerd"
 msgstr[1] "{count} {verbose_name}objecten gekopieerd"
 
-#: openforms/forms/admin/form.py:375
+#: openforms/forms/admin/form.py:376
 #, python-format
 msgid "Set selected %(verbose_name_plural)s to maintenance mode"
 msgstr ""
 "Schakel de onderhoudsmodus in voor geselecteerde %(verbose_name_plural)s"
 
-#: openforms/forms/admin/form.py:382
+#: openforms/forms/admin/form.py:383
 #, python-brace-format
 msgid "Set {count} {verbose_name} object to maintenance mode"
 msgid_plural "Set {count} {verbose_name} objects to maintenance mode"
 msgstr[0] "Onderhoudsmodus aangezet voor {count} {verbose_name} object "
 msgstr[1] "Onderhoudsmodus aangezet voor {count} {verbose_name} objecten"
 
-#: openforms/forms/admin/form.py:391
+#: openforms/forms/admin/form.py:392
 #, python-format
 msgid "Remove %(verbose_name_plural)s from maintenance mode"
 msgstr ""
 "Schakel de onderhoudsmodus uit voor geselecteerde %(verbose_name_plural)s."
 
-#: openforms/forms/admin/form.py:397
+#: openforms/forms/admin/form.py:398
 #, python-brace-format
 msgid "Removed {count} {verbose_name} object from maintenance mode"
 msgid_plural "Removed {count} {verbose_name} objects from maintenance mode"
 msgstr[0] "Onderhoudsmodus uitgezet voor {count} {verbose_name} object"
 msgstr[1] "Onderhoudsmodus uitgezet voor {count} {verbose_name} objecten"
 
-#: openforms/forms/admin/form.py:446
+#: openforms/forms/admin/form.py:447
 #: openforms/forms/templates/admin/forms/form/export.html:15
 #: openforms/forms/templates/admin/forms/form/export.html:19
 #: openforms/forms/templates/admin/forms/form/export.html:22
 msgid "Export forms"
 msgstr "Formulieren exporteren"
 
-#: openforms/forms/admin/form.py:452
+#: openforms/forms/admin/form.py:453
 msgid ""
 "Please configure your email address in your admin profile before requesting "
 "a bulk export"
@@ -6707,36 +6706,40 @@ msgstr "ingezonden tussen"
 msgid "Red"
 msgstr "Rood"
 
-#: openforms/forms/admin/tasks.py:78
+#: openforms/forms/admin/tasks.py:80
 msgid "Forms export ready"
 msgstr "Export formulieren gereed"
 
-#: openforms/forms/admin/views.py:41
+#: openforms/forms/admin/views.py:43
 msgid "Anonymize form configuration"
 msgstr "Formulierinstellingen anonimiseren"
 
-#: openforms/forms/admin/views.py:45
+#: openforms/forms/admin/views.py:47
 #: openforms/forms/api/serializers/form.py:701
 msgid ""
 "Whether sensative form configuration should be anonymized during exporting."
 msgstr "Anonimiseer gevoelige formulierinstellingen bij het exporteren."
 
-#: openforms/forms/admin/views.py:49
+#: openforms/forms/admin/views.py:51 openforms/forms/forms/form.py:19
 msgid "Form configuration"
 msgstr "Formulierinstellingen"
 
-#: openforms/forms/admin/views.py:60
+#: openforms/forms/admin/views.py:62
 #: openforms/forms/api/serializers/form.py:708
+#: openforms/forms/api/serializers/form.py:727
+#: openforms/forms/forms/form.py:30
 msgid ""
 "Which form configuration should be included in the export file content."
 msgstr "Welke formulierinstellingen meegenomen worden bij het exporteren."
 
-#: openforms/forms/admin/views.py:64
+#: openforms/forms/admin/views.py:66 openforms/forms/forms/form.py:34
 msgid "Additional form configuration"
 msgstr "Aanvullende formulierinstellingen"
 
-#: openforms/forms/admin/views.py:69
+#: openforms/forms/admin/views.py:71
 #: openforms/forms/api/serializers/form.py:715
+#: openforms/forms/api/serializers/form.py:745
+#: openforms/forms/forms/form.py:39
 msgid ""
 "Which additional form configuration should be included in the export file "
 "content."
@@ -6744,24 +6747,24 @@ msgstr ""
 "Welke aanvullende formulierinstellingen meegenomen worden bij het "
 "exporteren."
 
-#: openforms/forms/admin/views.py:75
+#: openforms/forms/admin/views.py:77
 msgid "Invalid form uuids."
 msgstr "Ongeldige formulier-IDs."
 
-#: openforms/forms/admin/views.py:88
+#: openforms/forms/admin/views.py:90
 msgid "Success! You will receive an email when your export is ready."
 msgstr "Gelukt! U ontvangt een e-mail zodra de export gereed is."
 
-#: openforms/forms/admin/views.py:143
+#: openforms/forms/admin/views.py:160
 #, python-brace-format
 msgid "Something went wrong while importing form: {}"
 msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
 
-#: openforms/forms/admin/views.py:156
+#: openforms/forms/admin/views.py:173
 msgid "Form successfully imported!"
 msgstr "Formulier is succesvol geïmporteerd"
 
-#: openforms/forms/admin/views.py:158
+#: openforms/forms/admin/views.py:175
 msgid ""
 "The bulk import is being processed! The imported forms will soon be "
 "available."
@@ -6802,12 +6805,10 @@ msgid "Help callout page display"
 msgstr ""
 
 #: openforms/forms/api/serializers/form.py:147
-#| msgid "The display label of the catalogue"
 msgid "When to display the help callout page."
 msgstr ""
 
 #: openforms/forms/api/serializers/form.py:152
-#| msgid "export content"
 msgid "Help callout page content"
 msgstr ""
 
@@ -6869,7 +6870,7 @@ msgid "URL to the product in the Open Forms API"
 msgstr "URL van het product in de Open Formulieren API"
 
 #: openforms/forms/api/serializers/form.py:234
-#: openforms/forms/models/form.py:134
+#: openforms/forms/models/form.py:140
 msgid "payment backend options"
 msgstr "betaalprovider backend opties"
 
@@ -6909,33 +6910,61 @@ msgstr ""
 "Het bestand dat het formulier, de formulierdefinities en de formulierstappen"
 " bevat."
 
-#: openforms/forms/api/serializers/form.py:727
+#: openforms/forms/api/serializers/form.py:732
+#: openforms/forms/forms/form.py:44
+#| msgid "form definition"
+msgid "Re-use form definitions"
+msgstr "Hergebruik formulierdefinities"
+
+#: openforms/forms/api/serializers/form.py:736
+#: openforms/forms/forms/form.py:48
+msgid ""
+"Whether to re-use existing form definitions or create new form definitions "
+"for each form definition in the import file. (If no matching reusable form "
+"definition is found, a new one will be created.)"
+msgstr ""
+"Of bestaande formulierdefinities worden hergebruikt of dat er voor elke "
+"formulierdefinitie in het importbestand een nieuwe formulierdefinitie worden"
+" aangemaakt. (Als er geen overeenkomende herbruikbare formulierdefinitie "
+"wordt gevonden, wordt er een nieuwe aangemaakt.)"
+
+#: openforms/forms/api/serializers/form.py:751
+#| msgid "The uuid of the imported form."
+msgid "Which theme should be used for the imported forms."
+msgstr "Welk stijl gebruikt zal worden voor de geïmporteerde formulieren."
+
+#: openforms/forms/api/serializers/form.py:755
+#| msgid "The uuid of the imported form."
+msgid "Which category should be applied to the imported forms."
+msgstr "Welke categorie toegepast zal worden op de geïmporteerde formulieren."
+
+#: openforms/forms/api/serializers/form.py:760
 msgid "The uuid of the imported form."
 msgstr "ID van het geïmporteerde formulier."
 
-#: openforms/forms/api/serializers/form.py:732
+#: openforms/forms/api/serializers/form.py:765
 msgid "Registration backend key"
 msgstr "Registratiebackend-sleutel"
 
-#: openforms/forms/api/serializers/form.py:734
+#: openforms/forms/api/serializers/form.py:767
 msgid "The registration backend key for which to generate the schema."
 msgstr ""
 "De registratiebackend-sleutel waarvoor het schema moet worden gegenereerd."
 
-#: openforms/forms/api/serializers/form.py:739
+#: openforms/forms/api/serializers/form.py:772
 msgid "Registration backend identifier"
 msgstr "Registratiebackend-identificatie"
 
-#: openforms/forms/api/serializers/form.py:744
+#: openforms/forms/api/serializers/form.py:777
 msgid "Registration backend options"
 msgstr "Registratiebackend-instellingen"
 
-#: openforms/forms/api/serializers/form.py:756
+#: openforms/forms/api/serializers/form.py:789
 #, python-brace-format
 msgid "Backend with key '{key}' does not exist for form '{form}'"
 msgstr "Backend met sleutel '{key}' bestaat niet voor formulier '{form}'"
 
-#: openforms/forms/api/serializers/form.py:773
+#: openforms/forms/api/serializers/form.py:806
 #, python-brace-format
 msgid "Backend with id '{backend}' does not allow JSON schema generation"
 msgstr ""
@@ -7632,9 +7661,9 @@ msgstr "Het UUID van de formulierversie"
 msgid "List form versions"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:785
-#: openforms/forms/templates/admin/forms/form/import_form.html:15
-#: openforms/forms/templates/admin/forms/form/import_form.html:20
+#: openforms/forms/api/viewsets.py:788
+#: openforms/forms/templates/admin/forms/form/import_form.html:16
+#: openforms/forms/templates/admin/forms/form/import_form.html:21
 msgid "Import form"
 msgstr "Formulier importeren"
 
@@ -7727,12 +7756,10 @@ msgid "Single step"
 msgstr "Enkele stap"
 
 #: openforms/forms/constants.py:71
-#| msgid "Go to the payment page"
 msgid "Before the start page"
 msgstr ""
 
 #: openforms/forms/constants.py:72
-#| msgid "Go to the payment page"
 msgid "After the start page"
 msgstr ""
 
@@ -7740,13 +7767,33 @@ msgstr ""
 msgid "Never"
 msgstr ""
 
-#: openforms/forms/forms/form.py:7
+#: openforms/forms/forms/form.py:14
 msgid "file"
 msgstr "bestand"
 
-#: openforms/forms/forms/form.py:9
+#: openforms/forms/forms/form.py:16
 msgid "Upload your exported ZIP-file."
 msgstr "Upload het geëxporteerde ZIP-bestand."
+
+#: openforms/forms/forms/form.py:54
+#| msgid "Themes"
+msgid "Theme"
+msgstr "Stijl"
+
+#: openforms/forms/forms/form.py:56
+#| msgid "The uuid of the imported form."
+msgid "Which theme should be used for the imported form."
+msgstr "Welk stijl gebruikt zal worden voor het geïmporteerde formulier."
+
+#: openforms/forms/forms/form.py:60
+#| msgid "category"
+msgid "Category"
+msgstr "Categorie"
+
+#: openforms/forms/forms/form.py:62
+#| msgid "The uuid of the imported form."
+msgid "Which category should be applied to the imported form."
+msgstr "Welke categorie toegepast zal worden op het geïmporteerde formulier."
 
 #: openforms/forms/forms/form_statistics.py:38
 msgid "Successfully registered"
@@ -7789,7 +7836,7 @@ msgstr "Exporteer inzendingen die op of voor deze datum ingestuurd zijn."
 
 #: openforms/forms/forms/form_statistics.py:72
 #: openforms/forms/templates/admin/forms/form/export.html:14
-#: openforms/forms/templates/admin/forms/form/import_form.html:14
+#: openforms/forms/templates/admin/forms/form/import_form.html:15
 #: openforms/forms/templates/admin/forms/form/migrate-payment-backend.html:19
 msgid "Forms"
 msgstr "Formulieren"
@@ -7886,21 +7933,21 @@ msgstr "Eenvoudige naam"
 msgid "categories"
 msgstr "categorieën"
 
-#: openforms/forms/models/form.py:83
+#: openforms/forms/models/form.py:89
 #: openforms/forms/models/form_definition.py:42
 msgid "internal name"
 msgstr "interne naam"
 
-#: openforms/forms/models/form.py:86
+#: openforms/forms/models/form.py:92
 #: openforms/forms/models/form_definition.py:45
 msgid "internal name for management purposes"
 msgstr "interne naam voor beheerdoeleinden "
 
-#: openforms/forms/models/form.py:89
+#: openforms/forms/models/form.py:95
 msgid "internal remarks"
 msgstr "interne opmerkingen"
 
-#: openforms/forms/models/form.py:91
+#: openforms/forms/models/form.py:97
 msgid ""
 "Remarks or intentions about the form. Can also be used to save notes for "
 "later use or for another admin user."
@@ -7908,17 +7955,17 @@ msgstr ""
 "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor "
 "het maken van notities voor later gebruik of voor een andere beheerder."
 
-#: openforms/forms/models/form.py:98
+#: openforms/forms/models/form.py:104
 #: openforms/forms/models/form_definition.py:47
 #: openforms/forms/models/form_step.py:33
 msgid "slug"
 msgstr "URL-deel"
 
-#: openforms/forms/models/form.py:101
+#: openforms/forms/models/form.py:107
 msgid "form type"
 msgstr "formuliertype"
 
-#: openforms/forms/models/form.py:105
+#: openforms/forms/models/form.py:111
 msgid ""
 "The type of the form. The choices are regular, appointment or a single step "
 "form. Depending on the choice a different form design is required/rendered."
@@ -7927,11 +7974,11 @@ msgstr ""
 "standaard, afspraak of een formulier met één stap. Afhankelijk van de keuze "
 "zijn andere formulierinstellingen beschikbaar/verplicht."
 
-#: openforms/forms/models/form.py:123
+#: openforms/forms/models/form.py:129
 msgid "form theme"
 msgstr "formulierstijl"
 
-#: openforms/forms/models/form.py:125
+#: openforms/forms/models/form.py:131
 msgid ""
 "Apply a specific appearance configuration to the form. If left blank, then "
 "the globally configured default is applied."
@@ -7939,33 +7986,33 @@ msgstr ""
 "Pas een specifieke stijl toe op het formulier. Indien geen optie gekozen is,"
 " dan wordt de globale instelling toegepast."
 
-#: openforms/forms/models/form.py:129
+#: openforms/forms/models/form.py:135
 msgid "translation enabled"
 msgstr "meertaligheid ingeschakeld"
 
-#: openforms/forms/models/form.py:132 openforms/forms/models/form.py:534
+#: openforms/forms/models/form.py:138 openforms/forms/models/form.py:540
 msgid "payment backend"
 msgstr "betaalprovider backend"
 
-#: openforms/forms/models/form.py:139
+#: openforms/forms/models/form.py:145
 msgid "price variable key"
 msgstr "sleutel prijsvariabele"
 
-#: openforms/forms/models/form.py:142
+#: openforms/forms/models/form.py:148
 msgid "Key of the variable that contains the calculated submission price."
 msgstr ""
 "Sleutel van de variabele die de (berekende) kostprijs van de inzending "
 "bevat."
 
-#: openforms/forms/models/form.py:149
+#: openforms/forms/models/form.py:155
 msgid "automatic login"
 msgstr "automatisch inloggen"
 
-#: openforms/forms/models/form.py:154
+#: openforms/forms/models/form.py:160
 msgid "maximum allowed submissions"
 msgstr "maximum aantal inzendingen"
 
-#: openforms/forms/models/form.py:158
+#: openforms/forms/models/form.py:164
 msgid ""
 "Maximum number of allowed submissions per form. Leave this empty if no limit"
 " is needed."
@@ -7973,11 +8020,11 @@ msgstr ""
 "Het maximum aantal inzendingen die toegestaan zijn voor het formulier. Laat "
 "dit veld leeg als er geen beperking is."
 
-#: openforms/forms/models/form.py:162
+#: openforms/forms/models/form.py:168
 msgid "submissions counter"
 msgstr "aantal inzendingen"
 
-#: openforms/forms/models/form.py:165
+#: openforms/forms/models/form.py:171
 msgid ""
 "Counter to track how many submissions have been completed for the specific "
 "form. This works in combination with the maximum allowed submissions per "
@@ -7987,7 +8034,7 @@ msgstr ""
 "Deze werkt samen met de inzendingslimiet en kan gereset worden via de "
 "frontend."
 
-#: openforms/forms/models/form.py:173
+#: openforms/forms/models/form.py:179
 msgid ""
 "The content of the submission confirmation page. It can contain variables "
 "that will be templated from the submitted form data. If not specified, the "
@@ -7997,12 +8044,12 @@ msgstr ""
 "de ingediende formuliergegevens worden weergegeven. Indien niet opgegeven "
 "dan wordt de globale bevestingspagina gebruikt."
 
-#: openforms/forms/models/form.py:182
+#: openforms/forms/models/form.py:188
 #: openforms/submissions/api/serializers.py:157
 msgid "submission allowed"
 msgstr "inzenden toegestaan"
 
-#: openforms/forms/models/form.py:186
+#: openforms/forms/models/form.py:192
 msgid ""
 "Whether the user is allowed to submit this form or not, and whether the "
 "overview page should be shown if they are not."
@@ -8010,31 +8057,31 @@ msgstr ""
 "Geeft aan of de gebruiker het formulier kan verzenden en of de "
 "overzichtspagina getoond wordt als het formulier niet verzonden kan worden."
 
-#: openforms/forms/models/form.py:192
+#: openforms/forms/models/form.py:198
 msgid "suspension allowed"
 msgstr "tussentijds opslaan"
 
-#: openforms/forms/models/form.py:194
+#: openforms/forms/models/form.py:200
 msgid "Whether the user is allowed to suspend this form or not."
 msgstr ""
 "Geeft aan of de gebruiker het formulier tussentijds kan opslaan/pauzeren of "
 "niet."
 
-#: openforms/forms/models/form.py:197
+#: openforms/forms/models/form.py:203
 msgid "show progress indicator"
 msgstr "toon formulierstappen"
 
-#: openforms/forms/models/form.py:200
+#: openforms/forms/models/form.py:206
 msgid "Whether the step progression should be displayed in the UI or not."
 msgstr ""
 "Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker "
 "getoond."
 
-#: openforms/forms/models/form.py:204
+#: openforms/forms/models/form.py:210
 msgid "show summary of the progress"
 msgstr "toon voortgangsoverzicht"
 
-#: openforms/forms/models/form.py:207
+#: openforms/forms/models/form.py:213
 msgid ""
 "Whether to display the short progress summary, indicating the current step "
 "number and total amount of steps."
@@ -8043,30 +8090,30 @@ msgstr ""
 " de huidige stap en het totaal aantal stappen, typisch onder de "
 "formuliertitel."
 
-#: openforms/forms/models/form.py:212
+#: openforms/forms/models/form.py:218
 msgid "display main website link"
 msgstr "toon hoofdsite link"
 
-#: openforms/forms/models/form.py:215
+#: openforms/forms/models/form.py:221
 msgid ""
 "Display the link to the main website on the submission confirmation page."
 msgstr "Toon de link naar de hoofdsite op de bevestigingspagina na inzenden."
 
-#: openforms/forms/models/form.py:219
+#: openforms/forms/models/form.py:225
 msgid "include confirmation page content in PDF"
 msgstr "voeg de \"bevestigingspaginatekst\" toe in de bevestigings-PDF"
 
-#: openforms/forms/models/form.py:221
+#: openforms/forms/models/form.py:227
 msgid "Display the instruction from the confirmation page in the PDF."
 msgstr ""
 "Vink aan om de inhoud van het \"bevestigingspaginatekst\"-veld toe te voegen"
 " aan de PDF met gegevens ter bevestiging."
 
-#: openforms/forms/models/form.py:224
+#: openforms/forms/models/form.py:230
 msgid "send confirmation email"
 msgstr "verstuur bevestigingsmail"
 
-#: openforms/forms/models/form.py:226
+#: openforms/forms/models/form.py:232
 msgid ""
 "Whether a confirmation email should be sent to the end user filling in the "
 "form."
@@ -8074,7 +8121,7 @@ msgstr ""
 "Geef aan of er een bevestigingsmail naar de formulierinzender verstuurd "
 "dient te worden."
 
-#: openforms/forms/models/form.py:256
+#: openforms/forms/models/form.py:262
 msgid ""
 "The text that will be displayed at the start of the form to indicate the "
 "user can begin to fill in the form. Leave blank to get value from global "
@@ -8083,11 +8130,11 @@ msgstr ""
 "Het label van de knop om het formulier te starten. Laat leeg om de waarde "
 "van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:262
+#: openforms/forms/models/form.py:268
 msgid "previous text"
 msgstr "Vorige stap-label"
 
-#: openforms/forms/models/form.py:266
+#: openforms/forms/models/form.py:272
 msgid ""
 "The text that will be displayed in the overview page to go to the previous "
 "step. Leave blank to get value from global configuration."
@@ -8095,7 +8142,7 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
 " Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:276
+#: openforms/forms/models/form.py:282
 msgid ""
 "The text that will be displayed in the overview page to change a certain "
 "step. Leave blank to get value from global configuration."
@@ -8103,7 +8150,7 @@ msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:286
+#: openforms/forms/models/form.py:292
 msgid ""
 "The text that will be displayed in the overview page to confirm the form is "
 "filled in correctly. Leave blank to get value from global configuration."
@@ -8111,11 +8158,11 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:294
+#: openforms/forms/models/form.py:300
 msgid "introduction page"
 msgstr "introductiepagina"
 
-#: openforms/forms/models/form.py:296
+#: openforms/forms/models/form.py:302
 msgid ""
 "Content for the introduction page that leads to the start page of the form. "
 "Leave blank to disable the introduction page."
@@ -8123,11 +8170,11 @@ msgstr ""
 "Inhoud voor de introductiepagina die naar de formulierstartpagina leidt. "
 "Laat deze leeg om de introductiepagina uit te schakelen."
 
-#: openforms/forms/models/form.py:304
+#: openforms/forms/models/form.py:310
 msgid "explanation template"
 msgstr "Toelichtingssjabloon"
 
-#: openforms/forms/models/form.py:306
+#: openforms/forms/models/form.py:312
 msgid ""
 "Content that will be shown on the start page of the form, below the title "
 "and above the log in text."
@@ -8135,31 +8182,31 @@ msgstr ""
 "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven"
 " de startknop(pen)."
 
-#: openforms/forms/models/form.py:314
+#: openforms/forms/models/form.py:320
 msgid "maintenance mode"
 msgstr "onderhoudsmodus"
 
-#: openforms/forms/models/form.py:317
+#: openforms/forms/models/form.py:323
 msgid "Users will not be able to start the form if it is in maintenance mode."
 msgstr "Gebruikers kunnen een formulier in onderhoudsmodus niet starten."
 
-#: openforms/forms/models/form.py:322
+#: openforms/forms/models/form.py:328
 msgid "activate on"
 msgstr "Activeren op"
 
-#: openforms/forms/models/form.py:325
+#: openforms/forms/models/form.py:331
 msgid "Date and time on which the form should be activated."
 msgstr "Datum en tijdstip waarop het formulier geactiveerd moet worden."
 
-#: openforms/forms/models/form.py:328
+#: openforms/forms/models/form.py:334
 msgid "deactivate on"
 msgstr "Deactiveren op"
 
-#: openforms/forms/models/form.py:331
+#: openforms/forms/models/form.py:337
 msgid "Date and time on which the form should be deactivated."
 msgstr "Datum en tijdstip waarop het formulier gedeactiveerd moet worden."
 
-#: openforms/forms/models/form.py:341
+#: openforms/forms/models/form.py:347
 msgid ""
 "Amount of days successful submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -8167,7 +8214,7 @@ msgstr ""
 "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de "
 "waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:351
+#: openforms/forms/models/form.py:357
 msgid ""
 "How successful submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -8175,7 +8222,7 @@ msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:361
+#: openforms/forms/models/form.py:367
 msgid ""
 "Amount of days incomplete submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -8183,7 +8230,7 @@ msgstr ""
 "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:371
+#: openforms/forms/models/form.py:377
 msgid ""
 "How incomplete submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -8191,7 +8238,7 @@ msgstr ""
 "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om "
 "de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:381
+#: openforms/forms/models/form.py:387
 msgid ""
 "Amount of days errored submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -8200,7 +8247,7 @@ msgstr ""
 "afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene "
 "configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:391
+#: openforms/forms/models/form.py:397
 msgid ""
 "How errored submissions of this form will be removed after the limit. Leave "
 "blank to use value in General Configuration."
@@ -8209,7 +8256,7 @@ msgstr ""
 "worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:401
+#: openforms/forms/models/form.py:407
 msgid ""
 "Amount of days when all submissions of this form will be permanently "
 "deleted. Leave blank to use value in General Configuration."
@@ -8218,21 +8265,21 @@ msgstr ""
 "verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te "
 "gebruiken."
 
-#: openforms/forms/models/form.py:408
+#: openforms/forms/models/form.py:414
 msgid "help callout page display"
 msgstr ""
 
-#: openforms/forms/models/form.py:412
+#: openforms/forms/models/form.py:418
 msgid ""
 "When to display the help callout page. Note that this field is disabled when"
 " the help callout page content in the global configuration is not specified."
 msgstr ""
 
-#: openforms/forms/models/form.py:421
+#: openforms/forms/models/form.py:427
 msgid "enable new logic rule evaluation"
 msgstr "gebruik nieuwe logica-evaluatie"
 
-#: openforms/forms/models/form.py:424
+#: openforms/forms/models/form.py:430
 msgid ""
 "Enabling this will analyze logic rules and re-order them according to their "
 "dependency on other logic rules (happens when the form is saved). Each rule "
@@ -8246,76 +8293,76 @@ msgstr ""
 "Daarnaast zullen ook andere snelheidsverbeteringen toegepast worden waar "
 "mogelijk."
 
-#: openforms/forms/models/form.py:451
+#: openforms/forms/models/form.py:457
 msgid "forms"
 msgstr "formulieren"
 
-#: openforms/forms/models/form.py:455
+#: openforms/forms/models/form.py:461
 #, python-brace-format
 msgid "{name} (deleted)"
 msgstr "{name} (verwijderd)"
 
-#: openforms/forms/models/form.py:515 openforms/forms/models/form.py:531
-#: openforms/forms/models/form.py:544
+#: openforms/forms/models/form.py:521 openforms/forms/models/form.py:537
+#: openforms/forms/models/form.py:550
 #, python-brace-format
 msgid "{backend} (invalid)"
 msgstr "{backend} (ongeldig)"
 
-#: openforms/forms/models/form.py:522
+#: openforms/forms/models/form.py:528
 msgid "registrations"
 msgstr "Registraties"
 
-#: openforms/forms/models/form.py:549
+#: openforms/forms/models/form.py:555
 msgid "logins"
 msgstr "inloggen"
 
-#: openforms/forms/models/form.py:594 openforms/forms/models/form.py:609
+#: openforms/forms/models/form.py:600 openforms/forms/models/form.py:615
 #: openforms/forms/models/form_definition.py:106
 #: openforms/forms/models/form_definition.py:124
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
-#: openforms/forms/models/form.py:598
+#: openforms/forms/models/form.py:604
 #: openforms/forms/models/form_definition.py:110
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:721
+#: openforms/forms/models/form.py:795
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:843
+#: openforms/forms/models/form.py:917
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:845
+#: openforms/forms/models/form.py:919
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:848
+#: openforms/forms/models/form.py:922
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:849
+#: openforms/forms/models/form.py:923
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:855
+#: openforms/forms/models/form.py:929
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:862
+#: openforms/forms/models/form.py:936
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:863
+#: openforms/forms/models/form.py:937
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:866
+#: openforms/forms/models/form.py:940
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
@@ -8772,16 +8819,26 @@ msgstr ""
 " e-mail met een link naar het ZIP-bestand dat alle geëxporteerde formulieren"
 " bevat.</p>"
 
-#: openforms/forms/templates/admin/forms/form/export.html:72
+#: openforms/forms/templates/admin/forms/form/export.html:81
 #: openforms/forms/templates/admin/forms/formsubmissionstatistics/export_form.html:62
 msgid "Export"
 msgstr "Exporteren"
 
-#: openforms/forms/templates/admin/forms/form/import_form.html:9
+#: openforms/forms/templates/admin/forms/form/import_form.html:10
 msgid "Import forms"
 msgstr "Importeer formulieren"
 
-#: openforms/forms/templates/admin/forms/form/import_form.html:33
+#: openforms/forms/templates/admin/forms/form/import_form.html:27
+msgid ""
+"<p> All hyperlinks in the email templates, whose (sub)domains are not "
+"provided in the global configuration allowlist, will be removed during "
+"import. </p>"
+msgstr ""
+"<p>Alle hyperlinks in de e-mailsjablonen waarvan de (sub)domeinen niet zijn "
+"opgenomen in de toelatingslijst van de algemene configuratie, worden tijdens"
+" het importeren verwijderd.</p>"
+
+#: openforms/forms/templates/admin/forms/form/import_form.html:65
 msgid "Import"
 msgstr "Importeren"
 
