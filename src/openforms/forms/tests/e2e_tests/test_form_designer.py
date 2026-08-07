@@ -1423,9 +1423,11 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "label": "Field Set 1",
                             "components": [
                                 {
-                                    "type": "datagrid",
-                                    "key": "datagrid",
+                                    "type": "editgrid",
+                                    "key": "parentEditgrid",
                                     "label": "Repeating group",
+                                    "groupLabel": "Item",
+                                    "components": [],
                                 },
                                 {
                                     "type": "textfield",
@@ -1832,7 +1834,7 @@ class SelectReuseableFormDefinitionsTests(E2ETestCase):
             await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
 
             # Close model
-            await page.get_by_role("button", name="Sluiten").click()
+            await page.get_by_role("button", name="Close").click()
 
             # Delete the second step
             sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")

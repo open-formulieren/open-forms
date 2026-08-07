@@ -1,4 +1,4 @@
-import FormioUtils from 'formiojs/utils';
+import {iterComponents} from '@open-formulieren/formio-builder/formio';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -10,10 +10,12 @@ const CUSTOM_FIELD_TYPES = ['npFamilyMembers'];
 const AuthenticationWarning = ({loginRequired, configuration}) => {
   if (loginRequired) return null;
 
-  const components = FormioUtils.flattenComponents(configuration.components || [], true);
-  const componentsWithCustomFieldTypes = Object.values(components).filter(component =>
-    CUSTOM_FIELD_TYPES.includes(component.type)
-  );
+  const componentsWithCustomFieldTypes = [];
+  for (const {component} of iterComponents(configuration.components || [])) {
+    if (CUSTOM_FIELD_TYPES.includes(component.type)) {
+      componentsWithCustomFieldTypes.push(component);
+    }
+  }
 
   if (!componentsWithCustomFieldTypes.length) return null;
 

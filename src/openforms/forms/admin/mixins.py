@@ -11,6 +11,8 @@ from openforms.config.models import (
     MapWMSTileLayer,
     RichTextColor,
 )
+from openforms.formio.registry import register as component_registry
+from openforms.typing import JSONValue
 
 
 def get_rich_text_colors():
@@ -28,6 +30,40 @@ def get_map_tile_layers():
 
 def get_wms_layers():
     return list(MapWMSTileLayer.objects.values("uuid", "name", "url"))
+
+
+type EmptyValueOption = tuple[str, bool, JSONValue]
+"""
+Data meaning: (component_type, multiple or not, associated empty value).
+"""
+
+
+def get_component_empty_values():
+    # hack to pass the empty values, as it's not readily available in the
+    # formio-renderer or formio-builder...
+    # FIXME: build a proper solution for this.
+    empty_values: list[EmptyValueOption] = []
+    for component_plugin in component_registry:
+        component_type = component_plugin.identifier
+        # this completely ignores if multiple is supported for this component type or not...
+        for multiple in (True, False):
+            _component_mock = {
+                "type": component_plugin.identifier,
+                "multiple": multiple,
+                "key": "dummy",
+                "label": "Dummy",
+            }
+            # digitalAddressTypes is needed for customerProfile component
+            if component_type == "customerProfile":
+                _component_mock["digitalAddressTypes"] = ["email", "phoneNumber"]
+
+            empty_value = component_registry.get_empty_value(_component_mock)  # pyright: ignore[reportArgumentType]
+            if (
+                empty_value is NotImplemented
+            ):  # layout components don't have an empty value
+                continue
+            empty_values.append((component_type, multiple, empty_value))
+    return empty_values
 
 
 class FormioConfigMixin:
@@ -54,6 +90,7 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices
                 ],
+                "component_empty_values": get_component_empty_values(),
             }
         )
 

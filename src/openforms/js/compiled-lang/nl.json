@@ -1,4 +1,18 @@
 {
+  "+/hjpS": [
+    {
+      "type": 0,
+      "value": "De waarde moet "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": " of kleiner zijn."
+    }
+  ],
   "+0eHh2": [
     {
       "type": 0,
@@ -17,16 +31,88 @@
       "value": "Gebruik variabele"
     }
   ],
+  "+AhGyf": [
+    {
+      "type": 0,
+      "value": "Je mag niet meer dan "
+    },
+    {
+      "type": 1,
+      "value": "maxLength"
+    },
+    {
+      "type": 0,
+      "value": " items opgeven."
+    }
+  ],
   "+DztEl": [
     {
       "type": 0,
       "value": "Pad"
     }
   ],
+  "+KBbXH": [
+    {
+      "type": 0,
+      "value": "Klik om een veelhoek (polygoon) te tekenen"
+    }
+  ],
+  "+MVbpZ": [
+    {
+      "type": 0,
+      "value": "Kind toevoegen"
+    }
+  ],
+  "+RF9ZR": [
+    {
+      "type": 0,
+      "value": "Gebruik dit "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "e-mailadres"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "telefoonnummer"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " enkel voor dit formulier."
+    }
+  ],
   "+Te82K": [
     {
       "type": 0,
       "value": "Niet-verplichte instellingen"
+    }
+  ],
+  "+W79Dr": [
+    {
+      "type": 0,
+      "value": "Klik om verder te tekenen"
     }
   ],
   "+XwAuT": [
@@ -87,6 +173,18 @@
       "value": "markeer de formulierstap als van toepassing"
     }
   ],
+  "+xOWBM": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
+    }
+  ],
+  "/RrV7w": [
+    {
+      "type": 0,
+      "value": "Huisnummertoevoeging moet bestaan uit maximaal vier letters en cijfers."
+    }
+  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -129,16 +227,54 @@
       "value": "Geef de knoptekst om een groep te bewaren op."
     }
   ],
-  "/xFb1n": [
-    {
-      "type": 0,
-      "value": "Het 'domein'-attribuut van de Catalogus-entiteit in de Catalogi API."
-    }
-  ],
   "/yDnA3": [
     {
       "type": 0,
       "value": "Geef aan of deze waarde in de (bevestigings-)PDF moet getoond worden. Deze PDF wordt vaak ook als bijlage meegestuurd tijdens de registratie."
+    }
+  ],
+  "/yX9Xl": [
+    {
+      "type": 0,
+      "value": "Tekeningen annuleren"
+    }
+  ],
+  "008V0z": [
+    {
+      "type": 0,
+      "value": "Sla mijn gegevens op voor de volgende keer. "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "U kunt deze later altijd nog wijzigen in het "
+            },
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "portaal"
+                }
+              ],
+              "type": 8,
+              "value": "a"
+            },
+            {
+              "type": 0,
+              "value": "."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasPortalUrl"
     }
   ],
   "01mWK2": [
@@ -159,6 +295,12 @@
       "value": "Objecttype"
     }
   ],
+  "0EdUXi": [
+    {
+      "type": 0,
+      "value": "Opslaan"
+    }
+  ],
   "0FD2pY": [
     {
       "type": 0,
@@ -169,6 +311,12 @@
     {
       "type": 0,
       "value": "DMN-variabele"
+    }
+  ],
+  "0O+VL8": [
+    {
+      "type": 0,
+      "value": "Getal"
     }
   ],
   "0OP7ho": [
@@ -225,6 +373,12 @@
       "value": "Kaartlagen"
     }
   ],
+  "0gGl1O": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
+    }
+  ],
   "0gbtNe": [
     {
       "type": 0,
@@ -237,10 +391,50 @@
       "value": "Geef de zaakeigenschapnaam op."
     }
   ],
+  "0tH+u2": [
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
+  "1+Q55M": [
+    {
+      "type": 0,
+      "value": "Om door te gaan moet je jouw e-mailadres "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "emailAddress"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": " bevestigen. We sturen je eerst een bevestigingscode naar dit e-mailadres. Vervolgens moet je deze bevestigingscode hier invoeren."
+    }
+  ],
   "10KWbo": [
     {
       "type": 0,
       "value": "BRP Personen 'verwerking' header-waarde"
+    }
+  ],
+  "1AgCMs": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
     }
   ],
   "1HfdUc": [
@@ -261,6 +455,12 @@
       "value": "Opties instellen"
     }
   ],
+  "1Q5hq3": [
+    {
+      "type": 0,
+      "value": "Sleep een component in het formulier en laat de muisknop los."
+    }
+  ],
   "1U0I5C": [
     {
       "type": 0,
@@ -279,16 +479,16 @@
       "value": "Reguliere expressie"
     }
   ],
-  "1andg+": [
-    {
-      "type": 0,
-      "value": "Het 'rsin'-attribuut van de catalogus-entiteit in de Catalogi API."
-    }
-  ],
   "1fD+K4": [
     {
       "type": 0,
       "value": "Opschoonmethode voor niet voltooide inzendingen"
+    }
+  ],
+  "1hdvgS": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het presenteren van de inlogopties. Neem alstublieft contact met ons op."
     }
   ],
   "1iwlXs": [
@@ -323,6 +523,12 @@
       "value": " bevat de oorspronkelijke bestandsnaam."
     }
   ],
+  "1pxgtB": [
+    {
+      "type": 0,
+      "value": "Minimaal één digitaal adres moet worden ingevuld."
+    }
+  ],
   "1tLYIe": [
     {
       "type": 0,
@@ -345,6 +551,12 @@
     {
       "type": 0,
       "value": "De minimale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
+    }
+  ],
+  "2/wgNH": [
+    {
+      "type": 0,
+      "value": "Het bestand is te klein."
     }
   ],
   "205QX5": [
@@ -371,10 +583,22 @@
       "value": "Verwijderd"
     }
   ],
-  "2KY/BC": [
+  "2D6ubj": [
     {
       "type": 0,
-      "value": "Selecteer het documenttype voor de geüploade bestanden wanneer ze in de Documenten API opgeslagen worden. De directe URL-referenties zullen vervangen worden met refernties naar de catalogus en omschrijving van het informatieobjecttype."
+      "value": "Lijn"
+    }
+  ],
+  "2HsmfN": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
+  "2KKNKT": [
+    {
+      "type": 0,
+      "value": "Vorig jaar"
     }
   ],
   "2Lg8Vc": [
@@ -393,6 +617,12 @@
     {
       "type": 0,
       "value": "Inhoud van de registratiemail (platte tekst)."
+    }
+  ],
+  "2RWk49": [
+    {
+      "type": 0,
+      "value": "Ongeldig Nederlands kenteken."
     }
   ],
   "2ajYIp": [
@@ -451,12 +681,6 @@
       "value": "API-groep"
     }
   ],
-  "2mgmOj": [
-    {
-      "type": 0,
-      "value": "De titel voor het zaakdocument."
-    }
-  ],
   "2nxTFx": [
     {
       "type": 0,
@@ -481,10 +705,50 @@
       "value": "Maximale waarde"
     }
   ],
+  "33UD7T": [
+    {
+      "type": 0,
+      "value": "Voorvoegsels"
+    }
+  ],
   "36qdVW": [
     {
       "type": 0,
       "value": "De minimale leeftijd die wordt gebruikt om te bepalen welke kinderen worden weergegeven. Laat het veld leeg om alle kinderen weer te geven."
+    }
+  ],
+  "3C29X9": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "label"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 1,
+              "value": "label"
+            },
+            {
+              "type": 0,
+              "value": " (niet verplicht)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "addNotRequiredSuffix"
+    }
+  ],
+  "3DaLqN": [
+    {
+      "type": 0,
+      "value": "Een BSN bestaat uit 9 cijfers."
     }
   ],
   "3FxzLm": [
@@ -551,16 +815,28 @@
       "value": "Vraag verklaring invullen naar waarheid"
     }
   ],
+  "3aKZqi": [
+    {
+      "type": 0,
+      "value": "Annuleren"
+    }
+  ],
+  "3beumC": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
   "3h215E": [
     {
       "type": 0,
       "value": "Weergavestijl"
     }
   ],
-  "3leP68": [
+  "3tz37g": [
     {
       "type": 0,
-      "value": "Documenttype"
+      "value": "Selectievakjes"
     }
   ],
   "3z1hhJ": [
@@ -593,6 +869,20 @@
       "value": "Vaste waarde"
     }
   ],
+  "46fk1B": [
+    {
+      "type": 0,
+      "value": "Het verplichte veld "
+    },
+    {
+      "type": 1,
+      "value": "fieldLabel"
+    },
+    {
+      "type": 0,
+      "value": " is niet ingevuld."
+    }
+  ],
   "4CuHYk": [
     {
       "type": 1,
@@ -601,6 +891,12 @@
     {
       "type": 0,
       "value": " moet een geldige postcode zijn."
+    }
+  ],
+  "4D1HCF": [
+    {
+      "type": 0,
+      "value": "Kaart"
     }
   ],
   "4DkoO5": [
@@ -641,6 +937,12 @@
       "value": " bestanden om te uploaden."
     }
   ],
+  "4IX8hk": [
+    {
+      "type": 0,
+      "value": "Opties ophalen..."
+    }
+  ],
   "4P5kwG": [
     {
       "type": 0,
@@ -653,6 +955,12 @@
       "value": "Variant"
     }
   ],
+  "4ZOmtU": [
+    {
+      "type": 0,
+      "value": "Wijzigingen opslaan"
+    }
+  ],
   "4binPe": [
     {
       "type": 0,
@@ -663,6 +971,30 @@
     {
       "type": 0,
       "value": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie."
+    }
+  ],
+  "4tPKAs": [
+    {
+      "type": 0,
+      "value": "Bevestigen"
+    }
+  ],
+  "4tUcbs": [
+    {
+      "type": 0,
+      "value": "Formuliervelden"
+    }
+  ],
+  "4ui8R+": [
+    {
+      "type": 0,
+      "value": "Klik het laatste punt om de lijn te voltooien"
+    }
+  ],
+  "4xtxl1": [
+    {
+      "type": 0,
+      "value": "NL-adres"
     }
   ],
   "5/5LjA": [
@@ -735,6 +1067,40 @@
       "value": "Nog een waarde toevoegen"
     }
   ],
+  "5TAbGN": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 1,
+              "value": "charCount"
+            },
+            {
+              "type": 0,
+              "value": " karakter."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "charCount"
+            },
+            {
+              "type": 0,
+              "value": " karakters."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "charCount"
+    }
+  ],
   "5XOrxo": [
     {
       "type": 0,
@@ -799,12 +1165,6 @@
       "value": "Optielabel"
     }
   ],
-  "5y8Yt4": [
-    {
-      "type": 0,
-      "value": "Sla het bestand op in de Documenten API met dit documenttype. Indien leeg, dan worden algemene instellingen gebruikt."
-    }
-  ],
   "5yP7G/": [
     {
       "type": 0,
@@ -815,6 +1175,24 @@
     {
       "type": 0,
       "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
+    }
+  ],
+  "6/3Dta": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
+  "62SBjV": [
+    {
+      "type": 0,
+      "value": "Veelhoek (polygoon)"
+    }
+  ],
+  "646077": [
+    {
+      "type": 0,
+      "value": "Ongeldig BSN."
     }
   ],
   "68Aey7": [
@@ -847,12 +1225,6 @@
       "value": "Een verplicht veld moet ingevuld worden voor het formulier verstuurd kan worden."
     }
   ],
-  "6XG2pL": [
-    {
-      "type": 0,
-      "value": "Vertrouwelijkheidaanduiding"
-    }
-  ],
   "6Xhq/T": [
     {
       "type": 0,
@@ -863,6 +1235,12 @@
     {
       "type": 0,
       "value": "Request body"
+    }
+  ],
+  "6g4o2Y": [
+    {
+      "type": 0,
+      "value": "mm"
     }
   ],
   "6hApJ7": [
@@ -887,6 +1265,12 @@
     {
       "type": 0,
       "value": "Sleutel"
+    }
+  ],
+  "6o3CZT": [
+    {
+      "type": 0,
+      "value": "E-mailadres"
     }
   ],
   "6qPITC": [
@@ -1207,10 +1591,44 @@
       "value": "Enkele stap"
     }
   ],
+  "8soi1P": [
+    {
+      "type": 0,
+      "value": "De opgegeven waarde voldoet niet aan het formaat: "
+    },
+    {
+      "type": 1,
+      "value": "pattern"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "8uM5Vx": [
+    {
+      "type": 0,
+      "value": "Verwijder '"
+    },
+    {
+      "type": 1,
+      "value": "fileName"
+    },
+    {
+      "type": 0,
+      "value": "'"
+    }
+  ],
   "91XY1Q": [
     {
       "type": 0,
       "value": "Niet privacy-gevoelig"
+    }
+  ],
+  "94ZHpN": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "96yhxP": [
@@ -1243,10 +1661,32 @@
       "value": "Sleutel"
     }
   ],
+  "9SgPC6": [
+    {
+      "type": 0,
+      "value": "Verwijder item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
+  "9UF9Z7": [
+    {
+      "type": 0,
+      "value": "Geen informatie verstrekt."
+    }
+  ],
   "9UR5jt": [
     {
       "type": 0,
       "value": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient."
+    }
+  ],
+  "9W0yX/": [
+    {
+      "type": 0,
+      "value": "Bestandsupload"
     }
   ],
   "9WZkZg": [
@@ -1277,6 +1717,12 @@
     {
       "type": 0,
       "value": "Omzetten naar geavanceerde logica"
+    }
+  ],
+  "9dLBrj": [
+    {
+      "type": 0,
+      "value": "Verberg het ingestelde label en de bovenrand in de header van de veldengroep."
     }
   ],
   "9dLOs2": [
@@ -1381,6 +1827,12 @@
       "value": "Latitudecoordinaat waarop de kaart gecentreerd wordt."
     }
   ],
+  "AEnddx": [
+    {
+      "type": 0,
+      "value": "De datum en tijd moeten een datumdeel en een tijdsdeel hebben, gescheiden met een spatie (bijvoorbeeld 30-10-2025 17:34)."
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -1403,6 +1855,12 @@
     {
       "type": 0,
       "value": "Eenvoudig"
+    }
+  ],
+  "ALpIwm": [
+    {
+      "type": 0,
+      "value": "De handtekening moet een base64-geëncodeerde PNG-afbeelding zijn."
     }
   ],
   "AMqUHx": [
@@ -1435,10 +1893,26 @@
       "value": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
+  "At/y3w": [
+    {
+      "type": 0,
+      "value": "Bewerk item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
       "value": "Bevestigen"
+    }
+  ],
+  "AustF4": [
+    {
+      "type": 0,
+      "value": "Volgende maand"
     }
   ],
   "Ax7r1y": [
@@ -1447,10 +1921,26 @@
       "value": "Bestandstypen"
     }
   ],
+  "AxDC+M": [
+    {
+      "type": 0,
+      "value": "Inloggen met "
+    },
+    {
+      "type": 1,
+      "value": "provider"
+    }
+  ],
   "AyOwJl": [
     {
       "type": 0,
       "value": "'Groep verwijderen'-tekst"
+    }
+  ],
+  "B/W1uC": [
+    {
+      "type": 0,
+      "value": "Verwijder vormen"
     }
   ],
   "B1ONuu": [
@@ -1507,6 +1997,32 @@
       "value": "Indien opgegeven, dan moet de gebruiker minimaal dit aantal opties aanvinken."
     }
   ],
+  "BWCtbf": [
+    {
+      "type": 0,
+      "value": "Je kan niet meerdere digitale adressen van het type "
+    },
+    {
+      "type": 1,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " invullen."
+    }
+  ],
+  "BYKDMO": [
+    {
+      "type": 0,
+      "value": "De datum moet een geldig formaat hebben (bijvoorbeeld 30-10-2025)."
+    }
+  ],
+  "BboxO6": [
+    {
+      "type": 0,
+      "value": "Gebruik twee vingers om te navigeren in de kaart"
+    }
+  ],
   "Bc8xyG": [
     {
       "type": 0,
@@ -1519,6 +2035,12 @@
       "value": "Waar/vals (boolean)"
     }
   ],
+  "Bfda2A": [
+    {
+      "type": 0,
+      "value": "Mede-ondertekenen"
+    }
+  ],
   "BiKRJT": [
     {
       "type": 0,
@@ -1529,6 +2051,20 @@
     {
       "type": 0,
       "value": "Opslaan"
+    }
+  ],
+  "Bo6onH": [
+    {
+      "type": 0,
+      "value": "Zorg dat dit veld "
+    },
+    {
+      "type": 1,
+      "value": "minSelectedCount"
+    },
+    {
+      "type": 0,
+      "value": " of meer opties aangevinkt heeft.."
     }
   ],
   "Bp3X7R": [
@@ -1551,6 +2087,12 @@
       "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt."
     }
   ],
+  "Bq2hIW": [
+    {
+      "type": 0,
+      "value": "Om door te gaan moet je dit e-mailadres bevestigen."
+    }
+  ],
   "BqA9of": [
     {
       "type": 0,
@@ -1567,6 +2109,12 @@
     {
       "type": 0,
       "value": "Decimalen"
+    }
+  ],
+  "BxPJLU": [
+    {
+      "type": 0,
+      "value": "Voornaam"
     }
   ],
   "C+91tl": [
@@ -1651,6 +2199,12 @@
       "value": "-attribuut."
     }
   ],
+  "CGXGUq": [
+    {
+      "type": 0,
+      "value": "Pas voorkeur aan"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -1667,6 +2221,20 @@
     {
       "type": 0,
       "value": "Placeholder"
+    }
+  ],
+  "CTDEh6": [
+    {
+      "type": 0,
+      "value": "Het BSN "
+    },
+    {
+      "type": 1,
+      "value": "bsn"
+    },
+    {
+      "type": 0,
+      "value": " komt meerdere keren voor. Elk kind moet een uniek BSN hebben."
     }
   ],
   "CXKQZZ": [
@@ -1804,16 +2372,28 @@
       "value": "count"
     }
   ],
+  "D6TdPW": [
+    {
+      "type": 0,
+      "value": "Klik op de kaart om een pin/punt te plaatsen"
+    }
+  ],
   "D717gY": [
     {
       "type": 0,
       "value": "Overige instellingen"
     }
   ],
-  "DE7U4q": [
+  "DBTNgI": [
     {
       "type": 0,
-      "value": "Het RSIN moet uit 9 getallen bestaan."
+      "value": "d"
+    }
+  ],
+  "DDeDij": [
+    {
+      "type": 0,
+      "value": "Telefoonnummer"
     }
   ],
   "DEAqyQ": [
@@ -1832,6 +2412,12 @@
     {
       "type": 0,
       "value": "Bestaand object bijwerken"
+    }
+  ],
+  "DGjM+p": [
+    {
+      "type": 0,
+      "value": "Voornaam"
     }
   ],
   "DGpAyT": [
@@ -1894,6 +2480,12 @@
       "value": "Plugin"
     }
   ],
+  "DZjLaH": [
+    {
+      "type": 0,
+      "value": "Uur moet tussen 0-23 zijn en minuut tussen 0-59."
+    }
+  ],
   "DaG+4u": [
     {
       "type": 0,
@@ -1922,6 +2514,12 @@
     {
       "type": 0,
       "value": "Sessie vervallen"
+    }
+  ],
+  "DcLzdm": [
+    {
+      "type": 0,
+      "value": "De geboortedatum mag hoogstens 120 jaar geleden zijn."
     }
   ],
   "Dm3S1P": [
@@ -1960,10 +2558,60 @@
       "value": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten-API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
     }
   ],
+  "E++Snm": [
+    {
+      "type": 0,
+      "value": "De geboortedatum mag hoogstens 120 jaar geleden zijn."
+    }
+  ],
   "E/biiX": [
     {
       "type": 0,
       "value": "Knopteksten"
+    }
+  ],
+  "E37u5a": [
+    {
+      "type": 0,
+      "value": "(Wordt het "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "voorkeurs-e-mailadres"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "voorkeurs "
+            },
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "voorkeurstelefoonnummer"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "E5FZz/": [
@@ -1982,6 +2630,12 @@
     {
       "type": 0,
       "value": "Laat negatieve waarden toe"
+    }
+  ],
+  "E8UptU": [
+    {
+      "type": 0,
+      "value": "Partner(s)"
     }
   ],
   "EDwCbX": [
@@ -2050,6 +2704,12 @@
       "value": "API-groep"
     }
   ],
+  "EZ7myd": [
+    {
+      "type": 0,
+      "value": "E-mailadres bevestigen"
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -2080,6 +2740,12 @@
     {
       "type": 0,
       "value": "Opslaan als nieuw"
+    }
+  ],
+  "ErdIGO": [
+    {
+      "type": 0,
+      "value": "Wis handtekening"
     }
   ],
   "ErwGIQ": [
@@ -2148,6 +2814,12 @@
       "value": "Versie"
     }
   ],
+  "FDy8nr": [
+    {
+      "type": 0,
+      "value": "De bevestigingscode bestaat uit hoofdletters (A-Z) en getallen (0-9)."
+    }
+  ],
   "FH2sxf": [
     {
       "type": 0,
@@ -2184,6 +2856,12 @@
       "value": "Modus"
     }
   ],
+  "FWCQJu": [
+    {
+      "type": 0,
+      "value": "Huidige locatie"
+    }
+  ],
   "FayNPY": [
     {
       "type": 0,
@@ -2200,6 +2878,12 @@
     {
       "type": 0,
       "value": "is niet gelijk aan"
+    }
+  ],
+  "FfBWqF": [
+    {
+      "type": 0,
+      "value": "Toon tooltip"
     }
   ],
   "FffJxu": [
@@ -2224,6 +2908,12 @@
     {
       "type": 0,
       "value": "Verstuur bevestigingsmail"
+    }
+  ],
+  "G+capl": [
+    {
+      "type": 0,
+      "value": "Profiel"
     }
   ],
   "G+nriX": [
@@ -2284,6 +2974,12 @@
       "value": "Interne naam"
     }
   ],
+  "GHg1V/": [
+    {
+      "type": 0,
+      "value": "Bedrag"
+    }
+  ],
   "GIdTgB": [
     {
       "type": 0,
@@ -2300,6 +2996,26 @@
     {
       "type": 0,
       "value": "Datum en tijdstip waarop het formulier geactiveerd moet worden."
+    }
+  ],
+  "GS1Yjy": [
+    {
+      "type": 0,
+      "value": "Velden zonder antwoord"
+    }
+  ],
+  "GThFIc": [
+    {
+      "type": 0,
+      "value": "Tijd moet na "
+    },
+    {
+      "type": 1,
+      "value": "minTime"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
     }
   ],
   "GV8HnZ": [
@@ -2356,6 +3072,12 @@
       "value": "Geef de grootte van elke kolom op. De som van alle breedtes moet 100% zijn."
     }
   ],
+  "GkuPAG": [
+    {
+      "type": 0,
+      "value": "uu"
+    }
+  ],
   "GsAN0n": [
     {
       "type": 0,
@@ -2372,6 +3094,12 @@
     {
       "type": 0,
       "value": "Variabelekoppelingen (zaak)"
+    }
+  ],
+  "H4VhcO": [
+    {
+      "type": 0,
+      "value": "Huidige locatie kan niet bepaald worden"
     }
   ],
   "H4sILo": [
@@ -2446,6 +3174,12 @@
       "value": "BRP Personen 'doelbinding' header-waarde"
     }
   ],
+  "HY6Irs": [
+    {
+      "type": 0,
+      "value": "Wijzigingen annuleren"
+    }
+  ],
   "Hcwvos": [
     {
       "type": 0,
@@ -2458,10 +3192,64 @@
       "value": "Versie"
     }
   ],
+  "HgLr1F": [
+    {
+      "type": 0,
+      "value": "Annuleer"
+    }
+  ],
   "HhZc5C": [
     {
       "type": 0,
       "value": "(geen)"
+    }
+  ],
+  "Hkq6NE": [
+    {
+      "type": 0,
+      "value": "Tekening voltooien"
+    }
+  ],
+  "HoCa81": [
+    {
+      "type": 0,
+      "value": "Te veel bestanden toegevoegd. Het "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "mag er hoogstens 1 zijn"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "mogen er hoogstens "
+            },
+            {
+              "type": 1,
+              "value": "maxNumberOfFiles"
+            },
+            {
+              "type": 0,
+              "value": " zijn"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "maxNumberOfFiles"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "HrSXGN": [
@@ -2474,6 +3262,48 @@
     {
       "type": 0,
       "value": "Opschoonmethode voor voltooide inzendingen"
+    }
+  ],
+  "I2pBWg": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Nog "
+            },
+            {
+              "type": 1,
+              "value": "remainingCharCount"
+            },
+            {
+              "type": 0,
+              "value": " karakter over."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Nog "
+            },
+            {
+              "type": 1,
+              "value": "remainingCharCount"
+            },
+            {
+              "type": 0,
+              "value": " karakters over."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "remainingCharCount"
     }
   ],
   "I3zyib": [
@@ -2538,6 +3368,12 @@
       "value": "Beslisdefinitie-ID"
     }
   ],
+  "IhLYXK": [
+    {
+      "type": 0,
+      "value": "Toon/verberg de kalender"
+    }
+  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -2578,12 +3414,6 @@
     {
       "type": 0,
       "value": "Weet u zeker dat u dit item wilt verwijderen?"
-    }
-  ],
-  "J1zTQz": [
-    {
-      "type": 0,
-      "value": "Informatieobjecttype-omschrijving"
     }
   ],
   "J5EZDj": [
@@ -2676,6 +3506,12 @@
       "value": "Verborgen"
     }
   ],
+  "K+ha3D": [
+    {
+      "type": 0,
+      "value": "Voorletters"
+    }
+  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -2700,6 +3536,38 @@
     {
       "type": 0,
       "value": "Omschrijving van het ROLTYPE te gebruiken voor medewerkers die een formulier invullen voor een inwoner/bedrijf."
+    }
+  ],
+  "K4JPOy": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Bewerk kind met BSN: "
+            },
+            {
+              "type": 1,
+              "value": "bsn"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Bewerk kind met voornaam: "
+            },
+            {
+              "type": 1,
+              "value": "firstNames"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasFirstNames"
     }
   ],
   "K5TkEU": [
@@ -2748,6 +3616,12 @@
     {
       "type": 0,
       "value": "Er ging helaas iets fout!"
+    }
+  ],
+  "KWP1b9": [
+    {
+      "type": 0,
+      "value": "Vorige maand"
     }
   ],
   "Kdgpxf": [
@@ -2876,10 +3750,22 @@
       "value": "Selecteer component"
     }
   ],
+  "LYjd+f": [
+    {
+      "type": 0,
+      "value": "Gebruik mijn huidige locatie"
+    }
+  ],
   "LZc4TN": [
     {
       "type": 0,
       "value": "Longitude"
+    }
+  ],
+  "LaKfzC": [
+    {
+      "type": 0,
+      "value": "Handtekening"
     }
   ],
   "LbiXCA": [
@@ -2900,10 +3786,22 @@
       "value": "Er ging iets fout bij het ophalen van de beschikbare catalogi, zaak- of documenttypen. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
+  "Lp2KV6": [
+    {
+      "type": 0,
+      "value": "(Voorkeur)"
+    }
+  ],
   "LrlAVD": [
     {
       "type": 0,
       "value": "Gegevensverwerking"
+    }
+  ],
+  "LsgvKh": [
+    {
+      "type": 0,
+      "value": "Postcode"
     }
   ],
   "Ltde29": [
@@ -2916,6 +3814,12 @@
     {
       "type": 0,
       "value": "Authenticatie-opties"
+    }
+  ],
+  "M/Akft": [
+    {
+      "type": 0,
+      "value": "Zoek component(en)"
     }
   ],
   "M1L9/1": [
@@ -2970,10 +3874,22 @@
       "value": "\" attributen nodig heeft. Gebruik een of meerdere authenticatiemethode die dit attribuut aanbieden."
     }
   ],
+  "MJXZYI": [
+    {
+      "type": 0,
+      "value": "m"
+    }
+  ],
   "MTdKuN": [
     {
       "type": 0,
       "value": "Blokkeer het toevoegen/verwijderen van groepen"
+    }
+  ],
+  "MTfsUB": [
+    {
+      "type": 0,
+      "value": "Er zijn te veel karakters opgegeven."
     }
   ],
   "MUfBmP": [
@@ -2994,16 +3910,46 @@
       "value": "Prefill"
     }
   ],
+  "MmjiYz": [
+    {
+      "type": 0,
+      "value": "Verwijder keuze(s)"
+    }
+  ],
   "MnfzL3": [
     {
       "type": 0,
       "value": "Plugin"
     }
   ],
+  "MrlKEu": [
+    {
+      "type": 0,
+      "value": "De geboortedatum mag niet in de toekomst liggen."
+    }
+  ],
   "Mv8yjC": [
     {
       "type": 0,
       "value": "Formuliervariabelenconfiguratie"
+    }
+  ],
+  "N25aMd": [
+    {
+      "type": 0,
+      "value": "Gezinsleden"
+    }
+  ],
+  "N2sZnS": [
+    {
+      "type": 0,
+      "value": "Opslaan"
+    }
+  ],
+  "N46vH2": [
+    {
+      "type": 0,
+      "value": "Zoek component(en)"
     }
   ],
   "N5Hv+1": [
@@ -3040,6 +3986,12 @@
     {
       "type": 0,
       "value": "Catalogus"
+    }
+  ],
+  "NZ8rJn": [
+    {
+      "type": 0,
+      "value": "Je huidige locatie kan niet bepaald worden"
     }
   ],
   "NdaqDN": [
@@ -3138,6 +4090,12 @@
       "value": "Prefix"
     }
   ],
+  "Ob4chA": [
+    {
+      "type": 0,
+      "value": "Er zijn bekende gebruiksproblemen bij de opties om locaties af te leiden en ze werken helemaal niet in herhalende groepen. We raden aan om in plaats hiervan het 'AddressNL'-component te gebruiken. Bestaande formulieren blijven werken zoals voorheen, maar deze functionaliteit hier wordt niet meer doorontwikkeld."
+    }
+  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3182,6 +4140,12 @@
       "value": ")"
     }
   ],
+  "OlHdZq": [
+    {
+      "type": 0,
+      "value": "Kenteken"
+    }
+  ],
   "OlPsaw": [
     {
       "type": 0,
@@ -3200,10 +4164,88 @@
       "value": "Geavanceerd"
     }
   ],
+  "Op4orj": [
+    {
+      "type": 0,
+      "value": "Geen vormen om te verwijderen"
+    }
+  ],
   "OpkUgV": [
     {
       "type": 0,
       "value": "Geeft aan of deze variabele aan de gegevens wordt toegevoegd."
+    }
+  ],
+  "OqrBsx": [
+    {
+      "type": 0,
+      "value": "Er zijn meerdere "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "e-mailadressen"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "telefoonnummers"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " van u bekend. Open de dropdown om ze te zien. "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Voor het instellen van contact voorkeuren kunt u naar het "
+            },
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "portaal"
+                }
+              ],
+              "type": 8,
+              "value": "a"
+            },
+            {
+              "type": 0,
+              "value": "."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasPortalUrl"
     }
   ],
   "Orf0vr": [
@@ -3246,6 +4288,12 @@
     {
       "type": 0,
       "value": "Inhoud"
+    }
+  ],
+  "PCv4sQ": [
+    {
+      "type": 0,
+      "value": "Huisnummer"
     }
   ],
   "PN8vFa": [
@@ -3314,16 +4362,74 @@
       "value": " aan)"
     }
   ],
+  "PzBahf": [
+    {
+      "type": 0,
+      "value": "Geboortedatum"
+    }
+  ],
   "Q0SS8P": [
     {
       "type": 0,
       "value": "Ongeldig e-mailadres."
     }
   ],
+  "Q4fCjD": [
+    {
+      "type": 0,
+      "value": "Je "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "e-mailadres"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "telefoonnummer"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " wordt automatisch enkel voor dit formulier gebruikt. Je kunt deze voorkeur aanpassen via de knop hieronder."
+    }
+  ],
+  "Q6/Lj7": [
+    {
+      "type": 0,
+      "value": "Verwijder het laatst getekende punt"
+    }
+  ],
   "Q8WgtE": [
     {
       "type": 0,
       "value": "Uitvoerparameters"
+    }
+  ],
+  "QAN3ua": [
+    {
+      "type": 0,
+      "value": "Je kan het/de bestand(en) loslaten."
     }
   ],
   "QCEWHo": [
@@ -3354,6 +4460,12 @@
     {
       "type": 0,
       "value": "'Opslaan' tekst"
+    }
+  ],
+  "QPdaOi": [
+    {
+      "type": 0,
+      "value": "Geen opties om te kiezen"
     }
   ],
   "QW32Dd": [
@@ -3422,6 +4534,12 @@
       "value": "hoofdentiteit"
     }
   ],
+  "R7k4JC": [
+    {
+      "type": 0,
+      "value": "Voer de bevestigingscode in"
+    }
+  ],
   "R8/zGm": [
     {
       "type": 0,
@@ -3466,6 +4584,12 @@
       "value": "De gegevens worden opgehaald voor het geselecteerde persoonstype."
     }
   ],
+  "RJ+0F/": [
+    {
+      "type": 0,
+      "value": "Ja"
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -3476,6 +4600,18 @@
     {
       "type": 0,
       "value": "Hoofdentiteit"
+    }
+  ],
+  "RSPyzt": [
+    {
+      "type": 0,
+      "value": "Maand"
+    }
+  ],
+  "Rba7CV": [
+    {
+      "type": 0,
+      "value": "De limiet van het aantal bestanden is bereikt. Je kan geen extra bestanden toevoegen."
     }
   ],
   "RcVlPF": [
@@ -3508,6 +4644,12 @@
       "value": "Verwijderen"
     }
   ],
+  "RulJnf": [
+    {
+      "type": 0,
+      "value": "Verouderd"
+    }
+  ],
   "RvJXSo": [
     {
       "type": 0,
@@ -3520,10 +4662,30 @@
       "value": "Indien ingeschakeld, gebruik dan de algemene instellingen voor toegestane bestandstypen."
     }
   ],
+  "S2Wyuv": [
+    {
+      "type": 0,
+      "value": "De opgegeven waarde voldoet niet aan het formaat: "
+    },
+    {
+      "type": 1,
+      "value": "pattern"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "S4Lvvs": [
     {
       "type": 0,
       "value": "Maak keuze leeg"
+    }
+  ],
+  "S5ydMY": [
+    {
+      "type": 0,
+      "value": "De geboortedatum heeft een ongeldig formaat."
     }
   ],
   "S6eF5o": [
@@ -3576,12 +4738,6 @@
     {
       "type": 0,
       "value": "Validatiemethode"
-    }
-  ],
-  "SEu4I2": [
-    {
-      "type": 0,
-      "value": "Titel"
     }
   ],
   "SH67gH": [
@@ -3698,6 +4854,12 @@
       "value": "Zorg ervoor dat het pad niet met een schuine streep ('/') begint."
     }
   ],
+  "TINs+z": [
+    {
+      "type": 0,
+      "value": "Kolommen"
+    }
+  ],
   "TQv+8T": [
     {
       "type": 0,
@@ -3722,10 +4884,30 @@
       "value": "Afspraak"
     }
   ],
+  "TW+VxA": [
+    {
+      "type": 0,
+      "value": "Tekstvlak"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "TZb5ph": [
+    {
+      "type": 0,
+      "value": "Zorg dat dit veld "
+    },
+    {
+      "type": 1,
+      "value": "maxSelectedCount"
+    },
+    {
+      "type": 0,
+      "value": " of minder opties aagevinkt heeft."
     }
   ],
   "TbFGCG": [
@@ -3740,6 +4922,12 @@
       "value": "Er ging iets fout bij het weergeven van deze logicaregel. Om het probleem te debuggen tonen we de JSON-definitie:"
     }
   ],
+  "Tip5+d": [
+    {
+      "type": 0,
+      "value": "Volgend jaar"
+    }
+  ],
   "TjjvQL": [
     {
       "type": 0,
@@ -3750,6 +4938,12 @@
     {
       "type": 0,
       "value": "Niet uitvragen"
+    }
+  ],
+  "Tmbth6": [
+    {
+      "type": 0,
+      "value": "De geboortedatum heeft een ongeldig formaat."
     }
   ],
   "Tpg442": [
@@ -3798,6 +4992,26 @@
       },
       "type": 5,
       "value": "hasAuth"
+    }
+  ],
+  "U5+FHP": [
+    {
+      "type": 0,
+      "value": "Annuleer"
+    }
+  ],
+  "U7YHLZ": [
+    {
+      "type": 0,
+      "value": "Selecteer "
+    },
+    {
+      "type": 1,
+      "value": "firstname"
+    },
+    {
+      "type": 0,
+      "value": "?"
     }
   ],
   "UCGSib": [
@@ -3892,6 +5106,20 @@
       "value": "Bestand"
     }
   ],
+  "V0B3pn": [
+    {
+      "type": 0,
+      "value": "De datum moet op of na "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
+    }
+  ],
   "V6ClU9": [
     {
       "type": 0,
@@ -3914,6 +5142,46 @@
     {
       "type": 0,
       "value": "Maximaal aantal aangevinkte opties (bijv. 1)"
+    }
+  ],
+  "VSf9fx": [
+    {
+      "type": 0,
+      "value": "Geef het "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "e-mailadres"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "telefoonnummer"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " op waarop je gecontacteerd wilt worden."
     }
   ],
   "VV2TCH": [
@@ -4084,6 +5352,12 @@
       "value": "Type"
     }
   ],
+  "WpfP0s": [
+    {
+      "type": 0,
+      "value": "De ingediende waarde voldoet niet aan het postcode formaat: 1234 AB."
+    }
+  ],
   "WxwqZJ": [
     {
       "type": 0,
@@ -4096,10 +5370,22 @@
       "value": "Actief"
     }
   ],
+  "WzAGB4": [
+    {
+      "type": 0,
+      "value": "Nog één toevoegen"
+    }
+  ],
   "X+NeMd": [
     {
       "type": 0,
       "value": "Variabele toevoegen aan metagegevens"
+    }
+  ],
+  "X/24FO": [
+    {
+      "type": 0,
+      "value": "Zoeken"
     }
   ],
   "X18/UP": [
@@ -4192,6 +5478,12 @@
       "value": "Bestemmingspad huisnummer"
     }
   ],
+  "XiLc3z": [
+    {
+      "type": 0,
+      "value": "Mede-ondertekenen"
+    }
+  ],
   "Xj1uvL": [
     {
       "type": 0,
@@ -4204,6 +5496,12 @@
       "value": "Geeft aan of deze variabele aan de metagegevens wordt toegevoegd."
     }
   ],
+  "XsjoZd": [
+    {
+      "type": 0,
+      "value": "Datum en tijd"
+    }
+  ],
   "XyDeaD": [
     {
       "type": 0,
@@ -4214,6 +5512,12 @@
     {
       "type": 0,
       "value": "Digitale adrestypen waarop een gebruiker te bereiken is."
+    }
+  ],
+  "Y3jHZm": [
+    {
+      "type": 0,
+      "value": "Verwijder laatste punt"
     }
   ],
   "Y4oNhH": [
@@ -4246,6 +5550,12 @@
       "value": "Geavanceerd"
     }
   ],
+  "YKpmvq": [
+    {
+      "type": 0,
+      "value": "Postcode"
+    }
+  ],
   "YObTjL": [
     {
       "type": 0,
@@ -4264,6 +5574,12 @@
       "value": "(inklappen)"
     }
   ],
+  "YZpcRG": [
+    {
+      "type": 0,
+      "value": "Ongeldig telefoonnummer - je mag enkel cijfers, de + of - tekens en spaties gebruiken. Bijvoorbeeld +316 123-456-78."
+    }
+  ],
   "YdHbH9": [
     {
       "type": 0,
@@ -4276,10 +5592,22 @@
       "value": "Item toevoegen"
     }
   ],
+  "Yg2+vS": [
+    {
+      "type": 0,
+      "value": "Ongeldig e-mailadres."
+    }
+  ],
   "YmWeGZ": [
     {
       "type": 0,
       "value": "Selecteer de plugin om te gebruiken voor prefill."
+    }
+  ],
+  "YnTumB": [
+    {
+      "type": 0,
+      "value": "Telefoonnummer"
     }
   ],
   "YzLSHY": [
@@ -4298,6 +5626,38 @@
     {
       "type": 0,
       "value": "Vertrouwelijkheidaanduiding documenten"
+    }
+  ],
+  "ZAq+s7": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Verwijder kind met BSN: "
+            },
+            {
+              "type": 1,
+              "value": "bsn"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Verwijder kind met voornaam: "
+            },
+            {
+              "type": 1,
+              "value": "firstNames"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasFirstNames"
     }
   ],
   "ZB6mnn": [
@@ -4361,6 +5721,12 @@
       "value": "Geeft aan of de gebruiker het formulier tussentijds kan opslaan/pauzeren."
     }
   ],
+  "ZGuxfW": [
+    {
+      "type": 0,
+      "value": "Bestandsnaam"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -4405,6 +5771,12 @@
     {
       "type": 0,
       "value": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
+    }
+  ],
+  "Za0/8c": [
+    {
+      "type": 0,
+      "value": "De bijlage-registratieoptis zijn verplaatst naar de 'variabelen'-tab op de formulier-bewerkpagina."
     }
   ],
   "ZdZ2Mb": [
@@ -4481,6 +5853,12 @@
       "value": "-attribuut"
     }
   ],
+  "aUpjaY": [
+    {
+      "type": 0,
+      "value": "Sorry, dit address kan niet gevonden worden."
+    }
+  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -4503,6 +5881,12 @@
     {
       "type": 0,
       "value": "RSIN Organisatie"
+    }
+  ],
+  "abKEBH": [
+    {
+      "type": 0,
+      "value": "Nee"
     }
   ],
   "adFa0X": [
@@ -4545,6 +5929,20 @@
       "value": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
     }
   ],
+  "ampZcZ": [
+    {
+      "type": 0,
+      "value": "Tijd moet voor "
+    },
+    {
+      "type": 1,
+      "value": "maxTime"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,
@@ -4567,6 +5965,12 @@
     {
       "type": 0,
       "value": "Mappingexpressie"
+    }
+  ],
+  "auqTVZ": [
+    {
+      "type": 0,
+      "value": "Foutmeldingen aangeraden velden"
     }
   ],
   "axygDt": [
@@ -4603,6 +6007,12 @@
       "value": "backendLabel"
     }
   ],
+  "b4uuR7": [
+    {
+      "type": 0,
+      "value": "Er zijn te veel karakters opgegeven."
+    }
+  ],
   "b5Bxb/": [
     {
       "type": 0,
@@ -4627,10 +6037,22 @@
       "value": "Lijst (array)"
     }
   ],
+  "bKPaUj": [
+    {
+      "type": 0,
+      "value": "Huisnummer moet een nummer zijn met maximaal 5 cijfers (bijv. 456)."
+    }
+  ],
   "bRe/yq": [
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "bRtoG6": [
+    {
+      "type": 0,
+      "value": "Verwijder alles"
     }
   ],
   "bYBFBc": [
@@ -4657,12 +6079,6 @@
       "value": "'"
     }
   ],
-  "bh2ky5": [
-    {
-      "type": 0,
-      "value": "Catalogusdomein"
-    }
-  ],
   "bjIQDR": [
     {
       "type": 0,
@@ -4681,10 +6097,22 @@
       "value": "Bronhouder"
     }
   ],
+  "bmnUq8": [
+    {
+      "type": 0,
+      "value": "Achternaam"
+    }
+  ],
   "bnxtnX": [
     {
       "type": 0,
       "value": "Volledige HTTP-request"
+    }
+  ],
+  "bqbXGd": [
+    {
+      "type": 0,
+      "value": "Geen informatie verstrekt."
     }
   ],
   "brvKtm": [
@@ -4711,16 +6139,16 @@
       "value": "Verplaats omhoog"
     }
   ],
+  "c0Ry9H": [
+    {
+      "type": 0,
+      "value": "De bevestigingscode moet precies zes tekens lang zijn."
+    }
+  ],
   "c0dfYJ": [
     {
       "type": 0,
       "value": "Geef een JSON-logic expressie op in JSON."
-    }
-  ],
-  "c770ER": [
-    {
-      "type": 0,
-      "value": "Catalogus-RSIN"
     }
   ],
   "cAC5kL": [
@@ -4743,6 +6171,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "cBsrax": [
+    {
+      "type": 0,
+      "value": "Huisletter"
     }
   ],
   "cDbGU2": [
@@ -4785,6 +6219,12 @@
     {
       "type": 0,
       "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
+    }
+  ],
+  "cKFCTI": [
+    {
+      "type": 0,
+      "value": "Nog één toevoegen"
     }
   ],
   "cLzsxn": [
@@ -4877,16 +6317,24 @@
       "value": "duplicatedKeys"
     }
   ],
-  "ce0Nz4": [
-    {
-      "type": 0,
-      "value": "Je moet een omschrijving opgeven wanneer je een catalogus instelt."
-    }
-  ],
   "ce1N0I": [
     {
       "type": 0,
       "value": "Plugin"
+    }
+  ],
+  "cnQt6v": [
+    {
+      "type": 0,
+      "value": "Het toegevoegde bestand is niet van een toegestaan type. Het moet "
+    },
+    {
+      "type": 1,
+      "value": "allowedTypes"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
     }
   ],
   "cpJErE": [
@@ -4899,6 +6347,12 @@
     {
       "type": 0,
       "value": "Productaanvraagtype"
+    }
+  ],
+  "ct2S70": [
+    {
+      "type": 0,
+      "value": "Sluiten"
     }
   ],
   "cuivC6": [
@@ -4917,6 +6371,20 @@
     {
       "type": 0,
       "value": "Van formulierveld"
+    }
+  ],
+  "d2SYc4": [
+    {
+      "type": 0,
+      "value": "De datum en tijd moet gelijk aan of na "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
     }
   ],
   "d3V6A+": [
@@ -5029,6 +6497,12 @@
       "value": "Annuleren"
     }
   ],
+  "dNGw+S": [
+    {
+      "type": 0,
+      "value": "Klik om verder te tekenen"
+    }
+  ],
   "dQxy1P": [
     {
       "type": 0,
@@ -5095,6 +6569,20 @@
       "value": "Datum"
     }
   ],
+  "dsZqad": [
+    {
+      "type": 0,
+      "value": "Het e-mailadres '"
+    },
+    {
+      "type": 1,
+      "value": "email"
+    },
+    {
+      "type": 0,
+      "value": "' is bevestigd."
+    }
+  ],
   "dvlFuk": [
     {
       "type": 0,
@@ -5137,10 +6625,16 @@
       "value": "Laat de gebruiker toe om (een deel van) de opgehaalde resultaten te selecteren. Enkel de geselecteerde opties worden dan verwerkt."
     }
   ],
+  "e7ovEV": [
+    {
+      "type": 0,
+      "value": "Herhalende groep"
+    }
+  ],
   "eAmrdi": [
     {
       "type": 0,
-      "value": "Aan het laden..."
+      "value": "Laden..."
     }
   ],
   "eC2etA": [
@@ -5255,6 +6749,12 @@
       "value": "Onderwerp van de registratiemail die verstuurd wordt. Je kan de uitdrukkingen {{ form_name }} en {{ public_reference }} gebruiken om formuliernaam en registratienummer op te nemen."
     }
   ],
+  "f9CqUS": [
+    {
+      "type": 0,
+      "value": "Layout"
+    }
+  ],
   "f9Zr9D": [
     {
       "type": 0,
@@ -5271,6 +6771,12 @@
     {
       "type": 0,
       "value": "Achtergrond"
+    }
+  ],
+  "fJVa0u": [
+    {
+      "type": 0,
+      "value": "Pin/punt"
     }
   ],
   "fLCWjk": [
@@ -5327,12 +6833,6 @@
       "value": "De maximale bestandsgrootte voor één enkele bestandsupload."
     }
   ],
-  "fY/8xt": [
-    {
-      "type": 0,
-      "value": "Informatieobjecttype"
-    }
-  ],
   "faAkZs": [
     {
       "type": 0,
@@ -5375,6 +6875,12 @@
       "value": "Gebruik bestaande configuratie"
     }
   ],
+  "fwMwqD": [
+    {
+      "type": 0,
+      "value": "Opslaan"
+    }
+  ],
   "g+ppJj": [
     {
       "type": 0,
@@ -5385,6 +6891,12 @@
     {
       "type": 0,
       "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen kunnen opvragen."
+    }
+  ],
+  "g8jZU+": [
+    {
+      "type": 0,
+      "value": "Kon geen overeenkomstige componenten vinden."
     }
   ],
   "gAf9pR": [
@@ -5441,6 +6953,12 @@
       "value": "Koppel individuele velden"
     }
   ],
+  "gg3Osx": [
+    {
+      "type": 0,
+      "value": "Verborgen formulier veld"
+    }
+  ],
   "gheRkp": [
     {
       "type": 0,
@@ -5485,6 +7003,12 @@
       "value": "Postcode"
     }
   ],
+  "gv32/3": [
+    {
+      "type": 0,
+      "value": "Vrije tekst"
+    }
+  ],
   "gzAzdU": [
     {
       "type": 0,
@@ -5509,10 +7033,22 @@
       "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "h2LzuB": [
+    {
+      "type": 0,
+      "value": "Ben je zeker dat je de getekende vorm wil verwijderen?"
+    }
+  ],
   "h2ZNhM": [
     {
       "type": 0,
       "value": "Veldengroepinhoud"
+    }
+  ],
+  "h7JS6y": [
+    {
+      "type": 0,
+      "value": "Kind toevoegen"
     }
   ],
   "h8DIWk": [
@@ -5525,12 +7061,6 @@
     {
       "type": 0,
       "value": "Minimale betrouwbaarheidsniveaus"
-    }
-  ],
-  "hAc9vQ": [
-    {
-      "type": 0,
-      "value": "Veroudered"
     }
   ],
   "hBxKbW": [
@@ -5557,6 +7087,12 @@
     {
       "type": 0,
       "value": "Formulierveld"
+    }
+  ],
+  "hPHLdv": [
+    {
+      "type": 0,
+      "value": "Kind bewerken"
     }
   ],
   "hPJb+Q": [
@@ -5643,10 +7179,22 @@
       "value": "Interne naam"
     }
   ],
+  "i+nuPv": [
+    {
+      "type": 0,
+      "value": "Veldengroep"
+    }
+  ],
   "i/P7yw": [
     {
       "type": 0,
       "value": "Je moet een tabel selecteren."
+    }
+  ],
+  "i3G0QQ": [
+    {
+      "type": 0,
+      "value": "Pas uw voorkeur aan"
     }
   ],
   "i7HknI": [
@@ -5733,6 +7281,70 @@
       "value": "Plugin-instellingen: MS Graph/Sharepoint"
     }
   ],
+  "iiVLgn": [
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Sleep een bestand of klik om een bestand te selecteren."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Sleep bestanden of klik om "
+            },
+            {
+              "options": {
+                "0": {
+                  "value": [
+                  ]
+                },
+                "other": {
+                  "value": [
+                    {
+                      "type": 0,
+                      "value": "tot "
+                    },
+                    {
+                      "type": 1,
+                      "value": "limit"
+                    }
+                  ]
+                }
+              },
+              "type": 5,
+              "value": "limit"
+            },
+            {
+              "type": 0,
+              "value": " bestanden toe te voegen."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "multiple"
+    },
+    {
+      "type": 0,
+      "value": " Een bestand mag hoogstens "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "fileSize"
+    },
+    {
+      "type": 0,
+      "value": " groot zijn."
+    }
+  ],
   "inhTXo": [
     {
       "type": 0,
@@ -5751,6 +7363,12 @@
       "value": "Wissen als veld verborgen is"
     }
   ],
+  "ixMIBJ": [
+    {
+      "type": 0,
+      "value": "Wat wil je doen?"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -5759,6 +7377,20 @@
     {
       "type": 0,
       "value": " [nieuw]"
+    }
+  ],
+  "j1VL+H": [
+    {
+      "type": 1,
+      "value": "fileTypes"
+    },
+    {
+      "type": 0,
+      "value": " of "
+    },
+    {
+      "type": 1,
+      "value": "lastOption"
     }
   ],
   "j2vQH3": [
@@ -5815,6 +7447,12 @@
       "value": "Dit zorgt ervoor dat het tekstvlak automatisch groter wordt wanneer de gebruiker tekst invoert."
     }
   ],
+  "jXYcaq": [
+    {
+      "type": 0,
+      "value": "Tekstveld"
+    }
+  ],
   "jYFS/i": [
     {
       "type": 0,
@@ -5849,6 +7487,20 @@
     {
       "type": 0,
       "value": "Maplocatie"
+    }
+  ],
+  "jqQOW0": [
+    {
+      "type": 0,
+      "value": "Het bestand moet "
+    },
+    {
+      "type": 1,
+      "value": "fileMaxSize"
+    },
+    {
+      "type": 0,
+      "value": " of kleiner zijn."
     }
   ],
   "jtJACV": [
@@ -5945,6 +7597,12 @@
       "value": "Verwijder standaardwaarde"
     }
   ],
+  "k8V0/f": [
+    {
+      "type": 0,
+      "value": "Als je dit component verwijdert, worden ook alle onderliggende componenten verwijderd. Ben je zeker dat je door wil gaan?"
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6021,6 +7679,46 @@
     {
       "type": 0,
       "value": "Categorie"
+    }
+  ],
+  "kpiWvx": [
+    {
+      "type": 0,
+      "value": "Voeg "
+    },
+    {
+      "options": {
+        "email": {
+          "value": [
+            {
+              "type": 0,
+              "value": "e-mailadres"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "digitalAddressType"
+            }
+          ]
+        },
+        "phoneNumber": {
+          "value": [
+            {
+              "type": 0,
+              "value": "telefoonnummer"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "digitalAddressType"
+    },
+    {
+      "type": 0,
+      "value": " toe"
     }
   ],
   "ksJN3E": [
@@ -6133,6 +7831,12 @@
       "value": "Authenticatiemethode"
     }
   ],
+  "lQY+Zm": [
+    {
+      "type": 0,
+      "value": "Een bevestigingscode invullen"
+    }
+  ],
   "lTJ2Hi": [
     {
       "type": 0,
@@ -6145,6 +7849,12 @@
       "value": "De minimale datum die gekozen kan worden."
     }
   ],
+  "lVNV/d": [
+    {
+      "type": 0,
+      "value": "Huisnummertoevoeging"
+    }
+  ],
   "lZw4g0": [
     {
       "type": 0,
@@ -6155,6 +7865,12 @@
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "lmWBQT": [
+    {
+      "type": 0,
+      "value": "De bevestigingscode is precies 6 tekens lang en bestaat uit hoofdletters en getallen."
     }
   ],
   "ln72CJ": [
@@ -6277,10 +7993,36 @@
       "value": "Naam"
     }
   ],
+  "mgtQm3": [
+    {
+      "type": 0,
+      "value": "Speciale velden"
+    }
+  ],
   "mpzdoT": [
     {
       "type": 0,
       "value": "De som van de kolombreedtes mag niet meer dan 12 zijn."
+    }
+  ],
+  "muPw1F": [
+    {
+      "type": 0,
+      "value": "De datum en tijd moet gelijk aan of voor "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
+    }
+  ],
+  "n8XxZg": [
+    {
+      "type": 0,
+      "value": "IBAN"
     }
   ],
   "n9T2Oy": [
@@ -6301,6 +8043,12 @@
       "value": "Metagegevens:"
     }
   ],
+  "nF6MTl": [
+    {
+      "type": 0,
+      "value": "Tijdstip"
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -6311,6 +8059,18 @@
     {
       "type": 0,
       "value": "Triggervoorwaarde"
+    }
+  ],
+  "nKLmfd": [
+    {
+      "type": 0,
+      "value": "Voorgedefinieerd"
+    }
+  ],
+  "nLymjB": [
+    {
+      "type": 0,
+      "value": "Gebruik CTRL + scroll om te zoomen in de kaart"
     }
   ],
   "nNbK3G": [
@@ -6325,16 +8085,16 @@
       "value": "Grootte"
     }
   ],
+  "nTNZBL": [
+    {
+      "type": 0,
+      "value": "Sla alle rijen op voordat je doorgaat."
+    }
+  ],
   "nVCVzl": [
     {
       "type": 0,
       "value": "Are you sure that you want to clear the image?"
-    }
-  ],
-  "nW5g1S": [
-    {
-      "type": 0,
-      "value": "Bronorganisatie"
     }
   ],
   "nXKEYN": [
@@ -6369,6 +8129,12 @@
       "value": "Het registratieresultaat zal een object van dit type zijn."
     }
   ],
+  "nfRRDu": [
+    {
+      "type": 0,
+      "value": "jjjj"
+    }
+  ],
   "nhBYT3": [
     {
       "type": 0,
@@ -6391,6 +8157,20 @@
     {
       "type": 0,
       "value": "Tooltip"
+    }
+  ],
+  "o3TabP": [
+    {
+      "type": 0,
+      "value": "De datum moet op of voor "
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": " zijn."
     }
   ],
   "o4AUIi": [
@@ -6423,6 +8203,12 @@
       "value": "Tekst (string)"
     }
   ],
+  "oCHirf": [
+    {
+      "type": 0,
+      "value": "Uploaden..."
+    }
+  ],
   "oCo2mP": [
     {
       "type": 0,
@@ -6433,6 +8219,12 @@
     {
       "type": 0,
       "value": "Minimaal aantal aangevinkte opties (bijv. 1)"
+    }
+  ],
+  "oHr4Nz": [
+    {
+      "type": 0,
+      "value": "Kinderen"
     }
   ],
   "oR677a": [
@@ -6477,12 +8269,6 @@
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
-  "oiB6Kg": [
-    {
-      "type": 0,
-      "value": "De instelling met een URL naar een informatieobjecttype(versie) zal verwijderd worden. Indien je een URL én de bovenstaande velden ingesteld hebt, dan worden de nieuwe instellingen gebruikt."
-    }
-  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -6492,7 +8278,7 @@
   "osSl3z": [
     {
       "type": 0,
-      "value": "Stad"
+      "value": "Plaats"
     }
   ],
   "osl4X2": [
@@ -6501,10 +8287,22 @@
       "value": "Het patroon van reguliere expressie waar de stad aan moet voldoen voor het formulier kan verstuurd worden."
     }
   ],
+  "ovI+W7": [
+    {
+      "type": 0,
+      "value": "Gebruik ⌘ + scroll om te zoomen in de kaart"
+    }
+  ],
   "ow5LZk": [
     {
       "type": 0,
       "value": "Variabelen die aan de gegevens worden toegevoegd."
+    }
+  ],
+  "oxM3rx": [
+    {
+      "type": 0,
+      "value": "Sluiten"
     }
   ],
   "oxYXJX": [
@@ -6585,10 +8383,22 @@
       "value": "Aantal rijen"
     }
   ],
+  "pErllF": [
+    {
+      "type": 0,
+      "value": "Er is iets fout gegaan bij het presenteren van de inlogopties. Neem alstublieft contact met ons op."
+    }
+  ],
   "pGmjYH": [
     {
       "type": 0,
       "value": "Gebruiker"
+    }
+  ],
+  "pHX3oF": [
+    {
+      "type": 0,
+      "value": "Huisletter moet één enkele letter zijn."
     }
   ],
   "pM92DZ": [
@@ -6649,6 +8459,12 @@
       "value": "Registratiemethode"
     }
   ],
+  "pitnjr": [
+    {
+      "type": 0,
+      "value": "Bevestigen"
+    }
+  ],
   "pjbN8m": [
     {
       "type": 0,
@@ -6671,6 +8487,12 @@
     {
       "type": 0,
       "value": "Servicebevraging:"
+    }
+  ],
+  "pzR8ui": [
+    {
+      "type": 0,
+      "value": "Er is iets fout gegaan bij het presenteren van de inlogopties. Neem alstublieft contact met ons op."
     }
   ],
   "q+qVVR": [
@@ -6745,6 +8567,12 @@
       "value": "Plugin-instellingen: Generieke JSON"
     }
   ],
+  "qyWfE+": [
+    {
+      "type": 0,
+      "value": "Een bevestigingscode ontvangen"
+    }
+  ],
   "qzISfx": [
     {
       "type": 0,
@@ -6757,6 +8585,28 @@
       "value": "Registratie"
     }
   ],
+  "r0uvHk": [
+    {
+      "type": 0,
+      "value": "'"
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": "' verwijderen"
+    }
+  ],
   "r4OkBj": [
     {
       "type": 0,
@@ -6767,6 +8617,12 @@
     {
       "type": 0,
       "value": "Betaalstatusupdates"
+    }
+  ],
+  "r6qiY/": [
+    {
+      "type": 0,
+      "value": "Geboortedatum"
     }
   ],
   "r9MTrz": [
@@ -6815,6 +8671,12 @@
       "value": "isPublished"
     }
   ],
+  "rQ5vC9": [
+    {
+      "type": 0,
+      "value": "Postcode moet bestaan uit vier cijfers gevolgd door twee letters (bijv. 1234 AB)."
+    }
+  ],
   "rQy+Yq": [
     {
       "type": 0,
@@ -6851,10 +8713,28 @@
       "value": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen."
     }
   ],
+  "rZy0zu": [
+    {
+      "type": 0,
+      "value": "Datum"
+    }
+  ],
+  "re7vQZ": [
+    {
+      "type": 0,
+      "value": "De upload moet klaar zijn voor je door kan gaan."
+    }
+  ],
   "riS49K": [
     {
       "type": 0,
       "value": "Naar variabele"
+    }
+  ],
+  "riuSfc": [
+    {
+      "type": 0,
+      "value": "Verstuur code"
     }
   ],
   "rkJLBr": [
@@ -6923,6 +8803,12 @@
       "value": "Indien opgegeven, dan mag de gebruiker maximaal dit aantal opties aanvinken."
     }
   ],
+  "sSmY1N": [
+    {
+      "type": 0,
+      "value": "Zoek adres"
+    }
+  ],
   "sU/n0S": [
     {
       "type": 0,
@@ -6933,6 +8819,12 @@
     {
       "type": 0,
       "value": "Minimale leeftijd"
+    }
+  ],
+  "sYb+eZ": [
+    {
+      "type": 0,
+      "value": "Verwijder alle vormen van de kaart"
     }
   ],
   "sdnxHe": [
@@ -7005,6 +8897,12 @@
       "value": "Identificatievariabele (BSN)"
     }
   ],
+  "syyEii": [
+    {
+      "type": 0,
+      "value": "Geboortedatum"
+    }
+  ],
   "t+B+/4": [
     {
       "type": 0,
@@ -7047,6 +8945,12 @@
       "value": "één of meer acties zijn ongeldig"
     }
   ],
+  "t5vd9s": [
+    {
+      "type": 0,
+      "value": "Tijd"
+    }
+  ],
   "t9+e9k": [
     {
       "type": 0,
@@ -7057,6 +8961,12 @@
     {
       "type": 0,
       "value": "BSN"
+    }
+  ],
+  "tBQ8TL": [
+    {
+      "type": 0,
+      "value": "Niet medeondertekend"
     }
   ],
   "tJQoMq": [
@@ -7139,12 +9049,6 @@
       "value": "Adres afleiden"
     }
   ],
-  "tzAOAm": [
-    {
-      "type": 0,
-      "value": "Je moet het domein en RSIN beide instellen."
-    }
-  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7155,6 +9059,12 @@
     {
       "type": 0,
       "value": "Bestemmingspad huisnummertoevoeging"
+    }
+  ],
+  "u1vsoV": [
+    {
+      "type": 0,
+      "value": "Ongeldig IBAN."
     }
   ],
   "u3P/1E": [
@@ -7193,12 +9103,6 @@
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
-  "uOtaSP": [
-    {
-      "type": 0,
-      "value": "Het documenttype wordt opgehaald binnen de ingestelde catalogus. De juiste versie van het documenttype wordt automatisch bepaald aan de hand van de inzendingsdatum. Wanneer je via de ZGW-API's registreert, let er dan op dat het documenttype bij het ingestelde zaaktype hoort!"
-    }
-  ],
   "uUf7cu": [
     {
       "type": 0,
@@ -7215,6 +9119,12 @@
     {
       "type": 0,
       "value": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund."
+    }
+  ],
+  "uXkEQJ": [
+    {
+      "type": 0,
+      "value": "Radio"
     }
   ],
   "uaHUFc": [
@@ -7271,6 +9181,34 @@
     {
       "type": 0,
       "value": "Bronpad"
+    }
+  ],
+  "vCObuG": [
+    {
+      "type": 0,
+      "value": "Dag"
+    }
+  ],
+  "vMKP5p": [
+    {
+      "type": 0,
+      "value": "Tijd moet vallen tussen "
+    },
+    {
+      "type": 1,
+      "value": "minTime"
+    },
+    {
+      "type": 0,
+      "value": " en "
+    },
+    {
+      "type": 1,
+      "value": "maxTime"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "vN6yXh": [
@@ -7349,6 +9287,12 @@
       "value": "Foutmeldingen"
     }
   ],
+  "vfKvuS": [
+    {
+      "type": 0,
+      "value": "Klik op het eerste punt, om de veelhoek te voltooien"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -7371,12 +9315,6 @@
       "value": " Ben je zeker dat je wil doorgaan?"
     }
   ],
-  "vlY36U": [
-    {
-      "type": 0,
-      "value": "Vertrouwelijkheidaanduiding van het document in de Documenten API. Indien leeg, dan worden algemene instellingen gebruikt."
-    }
-  ],
   "vng/5K": [
     {
       "type": 0,
@@ -7387,6 +9325,12 @@
     {
       "type": 0,
       "value": "Geef het attribuut op wat de prefill-gegevens bevat."
+    }
+  ],
+  "w4culW": [
+    {
+      "type": 0,
+      "value": "De ingevoerde postcode en huisnummer leiden niet tot een bekend adres."
     }
   ],
   "w4e4jx": [
@@ -7401,6 +9345,12 @@
       "value": "Extra print-statement"
     }
   ],
+  "wBLfLz": [
+    {
+      "type": 0,
+      "value": "Handtekening"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -7411,6 +9361,12 @@
     {
       "type": 0,
       "value": "Kaartinstellingen"
+    }
+  ],
+  "wLPbi4": [
+    {
+      "type": 0,
+      "value": "E-mail"
     }
   ],
   "wOMoEs": [
@@ -7467,6 +9423,12 @@
       "value": "API-groep"
     }
   ],
+  "wiPGoP": [
+    {
+      "type": 0,
+      "value": "Partner toevoegen"
+    }
+  ],
   "wnTTZr": [
     {
       "type": 0,
@@ -7497,16 +9459,34 @@
       "value": "Overige data"
     }
   ],
-  "wqhr+0": [
-    {
-      "type": 0,
-      "value": "Vul alle drie de onderstaande velden velden in om een documenttype in te stellen, of laat ze allemaal leeg om niets in te stellen."
-    }
-  ],
   "x+ORaW": [
     {
       "type": 0,
       "value": "Deactiveren op"
+    }
+  ],
+  "x/mWt2": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Toegevoegde bestanden"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Toegevoegd bestand"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "single"
     }
   ],
   "x38ph4": [
@@ -7531,6 +9511,20 @@
     {
       "type": 0,
       "value": "Kies eerst een objecttype en versie voor je een brondpad kan selecteren."
+    }
+  ],
+  "xHVrv5": [
+    {
+      "type": 0,
+      "value": "De waarde moet "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": " of groter zijn."
     }
   ],
   "xI6md8": [
@@ -7569,22 +9563,28 @@
       "value": "Aanduiding van de mate waarin het document voor de openbaarheid bestemd is. Geeft dit alleen op als je het standaarddocumenttype wilt overschrijven."
     }
   ],
-  "xUt2+r": [
-    {
-      "type": 0,
-      "value": "Je moet het domein en RSIN beide instellen."
-    }
-  ],
   "xcp+LU": [
     {
       "type": 0,
       "value": "Formulierdefinitie aanmaken"
     }
   ],
+  "xe7bA1": [
+    {
+      "type": 0,
+      "value": "Bevestigen"
+    }
+  ],
   "xgcUQF": [
     {
       "type": 0,
       "value": "Genereer JSON-schema"
+    }
+  ],
+  "xh+7Vv": [
+    {
+      "type": 0,
+      "value": "Voltooi"
     }
   ],
   "xrfkiI": [
@@ -7661,6 +9661,12 @@
       "value": "Gemachtigde"
     }
   ],
+  "yKo62N": [
+    {
+      "type": 0,
+      "value": "Jaar"
+    }
+  ],
   "yL9Ql7": [
     {
       "type": 0,
@@ -7679,16 +9685,22 @@
       "value": "Omschrijving van het ROLTYPE voor de registratie van de partners (als betrokkene) van de burger die het formulier invult."
     }
   ],
-  "yQUV3M": [
+  "yPD9g1": [
     {
       "type": 0,
-      "value": "RSIN van de organisatie die document registreert in de Documenten API. Indien leeg, dan worden algemene instellingen gebruikt."
+      "value": "Keuzelijst"
     }
   ],
   "yQtFln": [
     {
       "type": 0,
       "value": "Verberg een veld in het formulier."
+    }
+  ],
+  "ySaVSL": [
+    {
+      "type": 0,
+      "value": "De bestandsuploadgegevens komen niet overeen."
     }
   ],
   "ySkT14": [
@@ -7721,6 +9733,18 @@
       "value": "Clear image"
     }
   ],
+  "yaI9aD": [
+    {
+      "type": 0,
+      "value": "Wijzigen"
+    }
+  ],
+  "ybTcqX": [
+    {
+      "type": 0,
+      "value": "Partner verwijderen"
+    }
+  ],
   "ydnh2t": [
     {
       "type": 0,
@@ -7731,6 +9755,18 @@
     {
       "type": 0,
       "value": "Before start page"
+    }
+  ],
+  "yjCrXX": [
+    {
+      "type": 0,
+      "value": "De geboortedatum mag niet in de toekomst liggen."
+    }
+  ],
+  "yr8cz5": [
+    {
+      "type": 0,
+      "value": "Selectievakje"
     }
   ],
   "yrz/oC": [
@@ -7847,6 +9883,12 @@
       "value": "\" inlogopties nodig. Selecteer één van deze opties of verwijder de prefill-plugin."
     }
   ],
+  "zpHAro": [
+    {
+      "type": 0,
+      "value": "Klik om een lijn te tekenen"
+    }
+  ],
   "zqnTBZ": [
     {
       "type": 0,
@@ -7863,6 +9905,18 @@
     {
       "type": 0,
       "value": "Er is een fout opgetreden tijdens het genereren van het schema"
+    }
+  ],
+  "zvoXSU": [
+    {
+      "type": 0,
+      "value": "Adres in de buurt: "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "address"
     }
   ],
   "zwOwrD": [

@@ -2351,6 +2351,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' label",
     "originalDefault": "Product request type"
   },
+  "ct2S70": {
+    "defaultMessage": "Sluiten",
+    "description": "Modal close button accessible label",
+    "originalDefault": "Close"
+  },
   "cuivC6": {
     "defaultMessage": "Versie",
     "description": "ZGW APIs registration options 'objecttypeVersion' label",
