@@ -1,0 +1,24 @@
+@use '../lib/bem';
+@use '../lib/responsive';
+
+.openforms-radio-group {
+  // FIXME: CSS specificity from the SDK is resetting the line-height
+  .utrecht-form-label.utrecht-form-label--radio {
+    line-height: var(--of-radio-group-option-label-line-height, var(--utrecht-radio-button-size));
+  }
+
+  @include bem.modifier('inline') {
+    flex-direction: row;
+    gap: 1em;
+    justify-content: start;
+
+    .utrecht-form-field--radio {
+      flex-basis: 100%;
+      flex-grow: 1;
+    }
+
+    @include responsive.mobile-only {
+      display: block;
+    }
+  }
+}

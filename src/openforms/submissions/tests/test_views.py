@@ -329,7 +329,9 @@ class SearchSubmissionForCosignViewTests(WebTest):
 
         self.assertEqual(200, submission_response.status_code)
 
-        error_node = submission_response.html.find("div", class_="error")
+        error_node = submission_response.html.find(
+            "div", class_="utrecht-form-field__error-message"
+        )
         self.assertEqual(
             "Could not find a submission corresponding to this code that requires co-signing",
             error_node.text.strip(),
@@ -388,7 +390,9 @@ class SearchSubmissionForCosignViewTests(WebTest):
 
         self.assertEqual(200, submission_response.status_code)
 
-        error_node = submission_response.html.find("div", class_="error")
+        error_node = submission_response.html.find(
+            "div", class_="utrecht-form-field__error-message"
+        )
         expected_message = _(
             "Could not find a submission corresponding to this code that requires co-signing"
         )
@@ -490,7 +494,9 @@ class SearchSubmissionForCosignViewTests(WebTest):
 
         self.assertEqual(submission_response.status_code, 200)
 
-        error_node = submission_response.html.find("div", class_="error")
+        error_node = submission_response.html.find(
+            "div", class_="utrecht-form-field__error-message"
+        )
         expected_message = _(
             "The submission cannot be co-signed by the original submitter."
         )
