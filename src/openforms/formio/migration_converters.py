@@ -343,6 +343,10 @@ def fix_empty_default_value(component: Component) -> bool:
         changed = True
 
     if component.get("multiple", False):
+        if not isinstance(component["defaultValue"], list):
+            component["defaultValue"] = []
+            changed = True
+
         for index, value in enumerate(component["defaultValue"]):
             if value is None:
                 component["defaultValue"][index] = ""
@@ -458,6 +462,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "fix_empty_default_value": fix_empty_default_value,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
@@ -465,6 +470,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "fix_empty_default_value": fix_empty_default_value,
         "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
