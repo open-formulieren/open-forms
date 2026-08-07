@@ -27,8 +27,10 @@ const hasChildren = component => {
 
 const isLayoutComponent = component => {
   const entry = getBuilderRegistryEntry(component['type']);
-  // Return true if the component has children and doesn't hold data itself
-  return hasChildren(component) && !entry.holdsData;
+  // if the component is not marked as "holding data", it is by definition a layout
+  // component that only serves a presentational aspect. Whether the component has
+  // children or not, is not relevant.
+  return !entry.holdsData;
 };
 
 export {getComponentEmptyValue, hasChildren, isLayoutComponent, flattenComponents};

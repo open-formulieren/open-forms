@@ -95,9 +95,8 @@ const getFormVariables = (formDefinition, configuration) => {
   const newFormVariables = [];
 
   for (const {component} of iterComponents(configuration?.components || [])) {
-    if (component.type === 'softRequiredErrors') continue;
-    // Previous formio implementation skipped layout components that don't hold data
-    // (everything but 'editgrid'), so we do the same now.
+    // Layout components don't hold data, so there is no variable to create for them (as
+    // the variable can never have a value).
     if (isLayoutComponent(component)) continue;
 
     // See #5035 - the client side upload components variables are created on load, and
@@ -134,7 +133,7 @@ const updateFormVariables = (
     // the layout component need to be generated.
     if (isLayoutComponent(newComponent)) {
       for (const {component} of iterComponents([newComponent])) {
-        // Previous formio implementation skipped layout components, so we do the same now.
+        // Layout comopnents don't need variables - they don't hold data/values
         if (isLayoutComponent(component)) continue;
         updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
       }
