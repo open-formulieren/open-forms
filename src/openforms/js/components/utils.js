@@ -3,13 +3,18 @@ import {getRegistryEntry as getBuilderRegistryEntry} from '@open-formulieren/for
 
 import jsonScriptToVar from 'utils/json-script';
 
-const COMPONENT_EMPTY_VALUES = jsonScriptToVar('config-COMPONENT_EMPTY_VALUES', {default: {}});
+const COMPONENT_EMPTY_VALUES = jsonScriptToVar('config-COMPONENT_EMPTY_VALUES', {
+  default: [],
+}).reduce((accumulator, currentValue) => {
+  const [componentType, multiple, emptyValue] = currentValue;
+  accumulator.set([componentType, multiple], emptyValue);
+  return accumulator;
+}, new Map());
 
 const getComponentEmptyValue = component => {
-  const emptyValues = COMPONENT_EMPTY_VALUES[component.type];
-  if (emptyValues)
-    return emptyValues[component.multiple ? 'empty_value_multiple' : 'empty_value_single'];
-
+  const multiple = !!component.multiple;
+  const emptyValue = COMPONENT_EMPTY_VALUES.get([component.type, multiple]);
+  if (emptyValue !== undefined) return emptyValue;
   return null;
 };
 
