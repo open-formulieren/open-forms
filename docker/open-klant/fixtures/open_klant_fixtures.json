@@ -105,6 +105,41 @@
     }
 },
 {
+    "model": "klantinteracties.partij",
+    "pk": 4,
+    "fields": {
+        "bezoekadres_nummeraanduiding_id": "",
+        "bezoekadres_straatnaam": "",
+        "bezoekadres_huisnummer": null,
+        "bezoekadres_huisnummertoevoeging": "",
+        "bezoekadres_postcode": "",
+        "bezoekadres_stad": "",
+        "bezoekadres_adresregel1": "",
+        "bezoekadres_adresregel2": "",
+        "bezoekadres_adresregel3": "",
+        "bezoekadres_land": "",
+        "correspondentieadres_nummeraanduiding_id": "",
+        "correspondentieadres_straatnaam": "",
+        "correspondentieadres_huisnummer": null,
+        "correspondentieadres_huisnummertoevoeging": "",
+        "correspondentieadres_postcode": "",
+        "correspondentieadres_stad": "",
+        "correspondentieadres_adresregel1": "",
+        "correspondentieadres_adresregel2": "",
+        "correspondentieadres_adresregel3": "",
+        "correspondentieadres_land": "",
+        "uuid": "320e5dd3-7bdd-4bf6-b4a8-0f81564ccb87",
+        "voorkeurs_digitaal_adres": null,
+        "voorkeurs_rekeningnummer": null,
+        "nummer": "0000000004",
+        "interne_notitie": "",
+        "soort_partij": "persoon",
+        "indicatie_geheimhouding": null,
+        "voorkeurstaal": "",
+        "indicatie_actief": true
+    }
+},
+{
     "model": "klantinteracties.organisatie",
     "pk": 1,
     "fields": {
@@ -129,6 +164,17 @@
         "contactnaam_voorvoegsel_achternaam": "",
         "contactnaam_achternaam": "Smith",
         "partij": 1
+    }
+},
+{
+    "model": "klantinteracties.persoon",
+    "pk": 2,
+    "fields": {
+        "contactnaam_voorletters": "J",
+        "contactnaam_voornaam": "Jan",
+        "contactnaam_voorvoegsel_achternaam": "",
+        "contactnaam_achternaam": "Janssen",
+        "partij": 4
     }
 },
 {
@@ -171,6 +217,20 @@
         "partij_identificator_code_soort_object_id": "vestigingsnummer",
         "partij_identificator_object_id": "123456791201",
         "partij_identificator_code_register": "hr"
+    }
+},
+{
+    "model": "klantinteracties.partijidentificator",
+    "pk": 4,
+    "fields": {
+        "uuid": "b94040c9-465b-4e33-a390-a0d09680a866",
+        "sub_identificator_van": null,
+        "partij": 4,
+        "andere_partij_identificator": "",
+        "partij_identificator_code_objecttype": "natuurlijk_persoon",
+        "partij_identificator_code_soort_object_id": "bsn",
+        "partij_identificator_object_id": "111111110",
+        "partij_identificator_code_register": "brp"
     }
 },
 {
@@ -309,6 +369,51 @@
     }
 },
 {
+    "model": "klantinteracties.digitaaladres",
+    "pk": 10,
+    "fields": {
+        "uuid": "72094ad1-b0bf-4625-97e2-0951fec9a55e",
+        "partij": 4,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": true,
+        "adres": "jan.janssen@example.nl",
+        "omschrijving": "",
+        "referentie": "portaalvoorkeur",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 11,
+    "fields": {
+        "uuid": "02cc62d6-95e2-491b-8f6b-ad9b980e25d8",
+        "partij": 4,
+        "betrokkene": null,
+        "soort_digitaal_adres": "telefoonnummer",
+        "is_standaard_adres": true,
+        "adres": "0611111111",
+        "omschrijving": "",
+        "referentie": "mijnvoorkeur",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 12,
+    "fields": {
+        "uuid": "40bb4799-bdaa-4688-9af9-63a71f371061",
+        "partij": 4,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": false,
+        "adres": "more@email.nl",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -328,7 +433,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$1000000$XymCZ3jfG526ZKdmcX2hMw$dd4+txbydv9bIRcTF3+5SA3jli3o5pGVVpYjj6PlVIw=",
-        "last_login": "2025-12-22T17:06:44.657Z",
+        "last_login": "2026-07-24T09:52:48.658Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",

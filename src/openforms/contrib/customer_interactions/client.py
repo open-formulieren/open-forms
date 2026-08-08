@@ -171,7 +171,8 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         address_type: SoortDigitaalAdres,
         is_preferred: bool,
         betrokkene_uuid: str,
-        party_uuid="",
+        party_uuid: str = "",
+        reference: str = "",
     ) -> DigitaalAdres:
         party_data: ForeignKeyRef | None = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
@@ -182,10 +183,12 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             verstrektDoorPartij=party_data,
             omschrijving="",
         )
+        if reference:
+            data["referentie"] = reference
         return self.digitaal_adres.create(data=data)
 
     def update_digital_address_for_party(
-        self, address: str, party_uuid: str, is_preferred: bool
+        self, address: str, party_uuid: str, is_preferred: bool, reference: str = ""
     ) -> DigitaalAdres:
         """
         find an address for the party and update its preference
@@ -193,6 +196,8 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         digital_address = self.get_digital_address_for_party(address, party_uuid)
 
         data = DigitaalAdresPartialUpdateData(isStandaardAdres=is_preferred)
+        if reference:
+            data["referentie"] = reference
         return self.digitaal_adres.partial_update(
             uuid=digital_address["uuid"], data=data
         )
