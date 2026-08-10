@@ -30,6 +30,8 @@ docker compose -f docker-compose.open-zaak.yml run openzaak-web.local \
     python src/manage.py dumpdata \
         --indent=4 \
         --output /app/fixtures/open_zaak_fixtures.json \
+        --natural-foreign \
+        --natural-primary \
         authorizations.applicatie \
         vng_api_common.jwtsecret \
         config.featureflags \

@@ -34,6 +34,7 @@ services:
       - CACHE_AXES=referentielijsten-redis:6379/0
       - SUBPATH=${SUBPATH:-/}
       - DJANGO_SUPERUSER_PASSWORD=admin
+      - OTEL_SDK_DISABLED=true
     ports:
       - 8004:8000
     volumes: &referentielijsten_web_volumes
