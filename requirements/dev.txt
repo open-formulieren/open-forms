@@ -1363,7 +1363,7 @@ waitress==3.0.2
     #   webtest
 wcmatch==10.1
     # via bump-my-version
-wcwidth==0.6.0
+wcwidth==0.8.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
