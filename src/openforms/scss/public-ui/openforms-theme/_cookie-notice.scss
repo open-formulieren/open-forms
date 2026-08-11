@@ -3,9 +3,10 @@
 @mixin theme-styles {
   .cookie-notice {
     line-height: 1.5;
+    max-inline-size: 75dvw;
 
-    @include responsive.laptop {
-      max-inline-size: 75vw;
+    @include responsive.mobile-only {
+      max-inline-size: 100dvw;
     }
   }
 }
