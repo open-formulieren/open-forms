@@ -4,6 +4,11 @@ from ..utils import strip_tags_plus
 
 
 class StripTagsPlusTests(SimpleTestCase):
+    def test_empty_content(self):
+        output = strip_tags_plus("")
+
+        self.assertEqual(output, "")
+
     def test_strip_tags_no_keep_leading_whitespace(self):
         markup = """
         <p>Some paragraph</p>

@@ -8,7 +8,7 @@ from django.template.loader import get_template
 
 from mail_cleaner.mail import send_mail_plus
 from mail_cleaner.sanitizer import sanitize_content as _sanitize_content
-from mail_cleaner.text import strip_tags_plus
+from mail_cleaner.text import strip_tags_plus as _strip_tags_plus
 
 from openforms.config.models import GlobalConfiguration, Theme
 from openforms.template import openforms_backend, render_from_string
@@ -19,6 +19,13 @@ from .context import get_wrapper_context
 MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
 
 RE_NON_WHITESPACE = re.compile(r"\S")
+
+
+def strip_tags_plus(text: str, keep_leading_whitespace: bool = False) -> str:
+    if not text:
+        return ""
+
+    return _strip_tags_plus(text, keep_leading_whitespace=keep_leading_whitespace)
 
 
 def get_system_netloc_allowlist() -> list[str]:
