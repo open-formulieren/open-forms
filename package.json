@@ -55,7 +55,6 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-geosearch": "^4.2.0",
     "leaflet-gesture-handling": "^1.2.2",
-    "microscope-sass": "^2.0.0",
     "paper-css": "^0.4.1",
     "prop-types": "^15.7.2",
     "react": "^18.2.0",
