@@ -785,6 +785,12 @@
       "value": "Copy configuration from registration"
     }
   ],
+  "3TrEX2": [
+    {
+      "type": 0,
+      "value": "Content"
+    }
+  ],
   "3W3Px9": [
     {
       "type": 0,
@@ -3121,6 +3127,20 @@
       "value": "Plugin configuration: ZGW APIs"
     }
   ],
+  "GyPFbN": [
+    {
+      "type": 0,
+      "value": "FAQ item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": " content"
+    }
+  ],
   "H2IXy5": [
     {
       "type": 0,
@@ -3983,6 +4003,12 @@
       "value": "Description"
     }
   ],
+  "NGNhqX": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "NJ3Psx": [
     {
       "type": 0,
@@ -4797,6 +4823,20 @@
       "value": "Mode preset"
     }
   ],
+  "SGQSae": [
+    {
+      "type": 0,
+      "value": "FAQ item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": " label"
+    }
+  ],
   "SH67gH": [
     {
       "type": 0,
@@ -5269,6 +5309,20 @@
     {
       "type": 0,
       "value": " on which you want to be contacted."
+    }
+  ],
+  "VU8w/6": [
+    {
+      "type": 0,
+      "value": "Translation for label with value \""
+    },
+    {
+      "type": 1,
+      "value": "value"
+    },
+    {
+      "type": 0,
+      "value": "\""
     }
   ],
   "VV2TCH": [
@@ -6227,6 +6281,12 @@
     {
       "type": 0,
       "value": "Build a JsonLogic expression using raw JSON."
+    }
+  ],
+  "c8xuWX": [
+    {
+      "type": 0,
+      "value": "Add FAQ item"
     }
   ],
   "cAC5kL": [
@@ -7489,6 +7549,12 @@
       "value": "Submission report PDF informatieobjecttype"
     }
   ],
+  "jFF6Dp": [
+    {
+      "type": 0,
+      "value": "FAQ item translations"
+    }
+  ],
   "jLg5l6": [
     {
       "type": 0,
@@ -8341,6 +8407,12 @@
     {
       "type": 0,
       "value": "Which merchant should be used for payments related to this form."
+    }
+  ],
+  "ocXvs8": [
+    {
+      "type": 0,
+      "value": "FAQ items"
     }
   ],
   "oqv4fM": [

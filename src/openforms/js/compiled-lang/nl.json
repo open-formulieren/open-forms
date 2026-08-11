@@ -785,6 +785,12 @@
       "value": "Neem registratie-instellingen over"
     }
   ],
+  "3TrEX2": [
+    {
+      "type": 0,
+      "value": "Uitleg"
+    }
+  ],
   "3W3Px9": [
     {
       "type": 0,
@@ -3090,6 +3096,20 @@
       "value": "Plugin-instellingen: Zaakgericht Werken API's"
     }
   ],
+  "GyPFbN": [
+    {
+      "type": 0,
+      "value": "FAQ-item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": " uitleg"
+    }
+  ],
   "H2IXy5": [
     {
       "type": 0,
@@ -3964,6 +3984,12 @@
       "value": "Omschrijving"
     }
   ],
+  "NGNhqX": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "NJ3Psx": [
     {
       "type": 0,
@@ -4740,6 +4766,20 @@
       "value": "Validatiemethode"
     }
   ],
+  "SGQSae": [
+    {
+      "type": 0,
+      "value": "FAQ-item "
+    },
+    {
+      "type": 1,
+      "value": "index"
+    },
+    {
+      "type": 0,
+      "value": " label"
+    }
+  ],
   "SH67gH": [
     {
       "type": 0,
@@ -5182,6 +5222,20 @@
     {
       "type": 0,
       "value": " op waarop je gecontacteerd wilt worden."
+    }
+  ],
+  "VU8w/6": [
+    {
+      "type": 0,
+      "value": "Vertaling van label met waarde \""
+    },
+    {
+      "type": 1,
+      "value": "value"
+    },
+    {
+      "type": 0,
+      "value": "\""
     }
   ],
   "VV2TCH": [
@@ -6149,6 +6203,12 @@
     {
       "type": 0,
       "value": "Geef een JSON-logic expressie op in JSON."
+    }
+  ],
+  "c8xuWX": [
+    {
+      "type": 0,
+      "value": "Voeg FAQ-item toe"
     }
   ],
   "cAC5kL": [
@@ -7411,6 +7471,12 @@
       "value": "Informatieobjecttype inzendings-PDF"
     }
   ],
+  "jFF6Dp": [
+    {
+      "type": 0,
+      "value": "FAQ-itemvertalingen"
+    }
+  ],
   "jLg5l6": [
     {
       "type": 0,
@@ -8267,6 +8333,12 @@
     {
       "type": 0,
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
+    }
+  ],
+  "ocXvs8": [
+    {
+      "type": 0,
+      "value": "FAQ-items"
     }
   ],
   "oqv4fM": [
