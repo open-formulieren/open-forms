@@ -287,7 +287,7 @@ def remove_empty_conditional_values(component: Component) -> bool:
         if not (known_key in conditional and conditional[known_key] == ""):
             continue
         elif known_key == "eq" and all(
-            conditional.get(key) for key in known_keys - {"eq"}
+            conditional.get(key) is not None for key in known_keys - {"eq"}
         ):
             continue
 

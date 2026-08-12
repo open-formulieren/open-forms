@@ -21,6 +21,8 @@ from ..validators import validate_template_expressions
 if TYPE_CHECKING:
     from openforms.formio.service import FormioConfigurationWrapper
 
+    from ..models import FormStep
+
 
 def _get_number_of_components(form_definition: "FormDefinition") -> int:
     """
@@ -67,6 +69,8 @@ class FormDefinition(models.Model):
         default=0,
         help_text=_("The total number of Formio components used in the configuration"),
     )
+
+    formstep_set: models.Manager["FormStep"]
 
     class Meta:
         verbose_name = _("Form definition")
