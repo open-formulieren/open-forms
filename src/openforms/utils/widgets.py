@@ -13,12 +13,10 @@ class OpenFormsRadioSelect(forms.RadioSelect):
         attrs = kwargs.pop("attrs") or {}
         attrs.update(
             {
-                "class": " ".join(
-                    [
-                        "utrecht-radio-button",
-                        "utrecht-radio-button--html-input",
-                        "utrecht-form-field__input",
-                    ]
+                "class": (
+                    "utrecht-radio-button "
+                    "utrecht-radio-button--html-input "
+                    "utrecht-form-field__input"
                 )
             }
         )
@@ -36,7 +34,10 @@ class OpenFormsTextInput(forms.TextInput):
         context = super().get_context(name, value, attrs)
         context["widget"]["attrs"].update(
             {
-                "class": "utrecht-textbox utrecht-textbox--html-input utrecht-textbox--openforms"
+                "class": (
+                    "utrecht-textbox utrecht-textbox--html-input "
+                    "utrecht-textbox--openforms"
+                )
             }
         )
         return context

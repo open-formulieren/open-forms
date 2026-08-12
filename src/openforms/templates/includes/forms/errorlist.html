@@ -1,7 +1,4 @@
-<div class="utrecht-form-field-description utrecht-form-field-description--invalid utrecht-form-field-description--openforms-errors">
-    {% for error in errors %}
-        <div class="form-text error">
-            {{ error }}
-        </div>
-    {% endfor %}
-</div>
+{% for error in errors %}
+    {# Don't add any line breaks here, as the CSS will display them! #}
+    <div class="utrecht-form-field-error-message utrecht-form-field-error-message--openforms-errors">{{ error }}</div>
+{% endfor %}

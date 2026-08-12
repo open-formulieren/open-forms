@@ -9,26 +9,24 @@
 /**
  * DJANGO ADMIN INDEX
  */
-$djai-padding: 40px;
-$djai-padding--mobile: 15px;
-$djai-padding--tablet: 30px;
-
 .djai-dropdown-menu {
   // by default, the header has 40px padding on both sides. To make the border stretch
   // full width, set negative margins and positive paddings. On mobile and tablet these
   // values are 15px and 30px respectively.
-  @include responsive.responsive(
-    (margin-left, margin-right),
-    -$djai-padding--mobile,
-    -$djai-padding--tablet,
-    -$djai-padding
-  );
-  @include responsive.responsive(
-    (padding-left, padding-right),
-    $djai-padding--mobile,
-    $djai-padding--tablet,
-    $djai-padding
-  );
+  --_of-djai-padding: 15px;
+
+  padding-inline-end: var(--_of-djai-padding);
+  padding-inline-start: var(--_of-djai-padding);
+  margin-inline-end: calc(-1 * var(--_of-djai-padding));
+  margin-inline-start: calc(-1 * var(--_of-djai-padding));
+
+  @include responsive.tablet {
+    --_of-djai-padding: 30px;
+  }
+
+  @include responsive.laptop {
+    --_of-djai-padding: 40px;
+  }
 
   // use full width on mobile & tablet
   width: 100%;

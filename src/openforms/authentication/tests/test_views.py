@@ -24,6 +24,7 @@ from ..constants import (
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
+    ModeChoices,
 )
 from ..registry import Registry
 from ..views import (
@@ -635,6 +636,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("invalid bsn"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.citizen
             form["bsn"] = "123"
             response = form.submit(status=200)
             message = _("BSN should have %(size)i characters.") % {
@@ -645,6 +647,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("invalid kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["kvk"] = "123"
             response = form.submit(status=200)
             message = _("%(type)s should have %(size)i characters.") % {
@@ -656,6 +659,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("kvk branch number without kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["bsn"] = "115736499"
             form["kvk_branch_number"] = "000038509490"
             response = form.submit(status=200)
@@ -667,6 +671,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("invalid with both bsn and kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.citizen
             form["bsn"] = "115736499"
             form["kvk"] = "12345678"
             response = form.submit(status=200)
@@ -675,6 +680,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("valid bsn"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.citizen
             form["bsn"] = "115736499"
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
@@ -682,6 +688,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("valid kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["kvk"] = "12345678"
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
@@ -689,6 +696,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("valid kvk with branch number"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["kvk"] = "12345678"
             form["kvk_branch_number"] = "000038509490"
             response = form.submit(status=302)
@@ -697,6 +705,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("valid click skip_subject"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.employee
             response = form.submit("skip_subject", status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
@@ -704,6 +713,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("bsn"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.citizen
             form["bsn"] = "115736499"
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
@@ -717,6 +727,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["kvk"] = "12345678"
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
@@ -734,6 +745,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("kvk with branch number"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.company
             form["kvk"] = "12345678"
             form["kvk_branch_number"] = "000038509490"
             response = form.submit(status=302)
@@ -753,6 +765,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("skip_subject"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
+            form["mode"] = ModeChoices.employee
             response = form.submit("skip_subject", status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 

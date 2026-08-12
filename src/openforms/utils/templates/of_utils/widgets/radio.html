@@ -1,10 +1,8 @@
-<div class="openforms-choice-list {% if widget.inline %}openforms-choice-list--inline{% endif %}">
+<div class="openforms-radio-group {% if widget.inline %}openforms-radio-group--inline{% endif %}">
 {% for group, options, index in widget.optgroups %}
-    <div class="openforms-choice-list__choice">
-        {% if group %}OPTGROUPS ARE NOT SUPPORTED{% endif %}
-        {% for option in options %}
-            {% include option.template_name with widget=option %}
-        {% endfor %}
-    </div>
+    {% if group %}OPTGROUPS ARE NOT SUPPORTED{% endif %}
+    {% for option in options %}
+        {% include option.template_name with widget=option %}
+    {% endfor %}
 {% endfor %}
 </div>

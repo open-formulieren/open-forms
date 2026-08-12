@@ -1,5 +1,4 @@
 @use '../../lib/bem';
-@use '../../lib/responsive';
 
 $logic-line-breakpoint: 1800px !default;
 
@@ -26,7 +25,7 @@ $logic-trigger-border: solid 1px #eee;
   padding: 1em;
   border-bottom: $logic-trigger-border;
 
-  @include responsive.breakpoint($max: $logic-line-breakpoint) {
+  @media screen and (max-width: $logic-line-breakpoint) {
     flex-wrap: wrap;
   }
 
@@ -36,7 +35,7 @@ $logic-trigger-border: solid 1px #eee;
 
   &__data-preview {
     min-width: 200px;
-    @include responsive.breakpoint($min: $logic-line-breakpoint) {
+    @media screen and (min-width: $logic-line-breakpoint) {
       min-width: 400px;
     }
     max-width: 800px;

@@ -172,7 +172,7 @@ Most of our repositories have helpers to build the correct BEM class names or de
 with responsiveness:
 
 * ``formio-renderer`` -> use ``@/scss/bem``
-* ``formio-builder`` -> no helper available
+* ``formio-builder`` -> use ``@/scss/bem``
 * ``open-forms`` (backend) -> use ``src/openforms/scss/lib/{bem,responsive}``, usually
   through relative imports.
 * remainder -> use ``@bbt/bem`` - we're replacing microscope-sass' version with it

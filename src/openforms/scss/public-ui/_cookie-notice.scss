@@ -16,6 +16,7 @@
 
   margin-inline-start: auto;
   margin-inline-end: auto;
+  margin-block-end: 1rem;
   padding-block-end: var(--of-cookie-notice-padding-block-end, 20px);
   padding-block-start: var(--of-cookie-notice-padding-block-start, 20px);
   padding-inline-end: var(--of-cookie-notice-padding-inline-end, 20px);
@@ -27,10 +28,7 @@
     flex-direction: column;
     align-items: stretch;
     bottom: 0;
-  }
-
-  @include responsive.tablet {
-    margin-bottom: 1rem;
+    margin-block-end: unset;
   }
 
   @include bem.element('form') {

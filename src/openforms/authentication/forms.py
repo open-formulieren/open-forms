@@ -12,10 +12,8 @@ class RegistratorSubjectInfoForm(forms.Form):
     mode = forms.ChoiceField(
         label=_("Continue as..."),
         choices=ModeChoices.choices,
-        required=False,
-        widget=OpenFormsRadioSelect(
-            inline=True,
-        ),
+        required=True,
+        widget=OpenFormsRadioSelect(inline=True),
     )
     bsn = forms.CharField(
         label=_("BSN of customer"),

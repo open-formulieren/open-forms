@@ -1,26 +1,22 @@
-<div class="utrecht-form-fieldset utrecht-form-fieldset--openforms">
+<div class="utrecht-form-fieldset utrecht-form-fieldset--openforms utrecht-form-fieldset--openforms-radio{% if field.errors %} utrecht-form-fieldset--invalid{% endif %}">
     <fieldset
         {% if field.help_text %}aria-describedby="{{ field.auto_id }}"{% endif %}
         role="radiogroup"
         class="utrecht-form-fieldset__fieldset utrecht-form-fieldset--html-fieldset"
     >
-        <legend class="
-            utrecht-form-fieldset__legend
-            utrecht-form-fieldset__legend--html-legend
-            utrecht-form-field__label">
-            <label class="utrecht-form-label utrecht-form-label--openforms utrecht-form-label--openforms-required">
+        <legend class="utrecht-form-fieldset__legend utrecht-form-fieldset__legend--html-legend">
+            <span class="utrecht-form-label utrecht-form-label--openforms {% if field.field.required %}utrecht-form-label--openforms-required{% endif %}">
                 {{ field.label }}
-            </label>
+            </span>
         </legend>
+
+        {% if field.help_text %}
+            <div class="utrecht-form-field-description" id="{{ field.auto_id }}">{{ field.help_text }}</div>
+        {% endif %}
+
+        {% include "includes/forms/errorlist.html" with errors=field.errors only %}
 
         {{ field }}
 
-        {% if field.help_text %}
-        <div id="{{ field.auto_id }}"
-             class="utrecht-form-field-description
-                    utrecht-form-field-description--openforms-helptext
-                    utrecht-form-field__description"
-        >{{ field.help_text }}</div>
-        {% endif %}
     </fieldset>
 </div>
