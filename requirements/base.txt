@@ -625,7 +625,7 @@ sqlparse==0.5.5
     # via django
 structlog==25.5.0
     # via django-structlog
-tablib==3.9.0
+tablib==3.10.0
     # via
     #   -r requirements/base.in
     #   django-import-export

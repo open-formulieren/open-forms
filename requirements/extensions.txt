@@ -1030,7 +1030,7 @@ structlog==25.5.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-structlog
-tablib==3.9.0
+tablib==3.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
