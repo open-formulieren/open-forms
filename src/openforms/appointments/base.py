@@ -84,6 +84,9 @@ class RequiredGroupFields(TypedDict):
     error_message: str
 
 
+type RequiredCustomerFields = tuple[list[Component], list[RequiredGroupFields]]
+
+
 class BasePlugin[F: TextChoices](ABC, AbstractBasePlugin):
     """
     Base Appointment plugin.
@@ -167,9 +170,8 @@ class BasePlugin[F: TextChoices](ABC, AbstractBasePlugin):
 
     @abstractmethod
     def get_required_customer_fields(
-        self,
-        products: list[Product],
-    ) -> tuple[list[Component], list[RequiredGroupFields] | None]:
+        self, products: list[Product]
+    ) -> RequiredCustomerFields:
         """
         Given a list of products, return the additional required customer fields and their
         specific rules for a group of fields (if exists).

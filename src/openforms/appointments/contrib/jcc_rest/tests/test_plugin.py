@@ -9,6 +9,7 @@ from freezegun import freeze_time
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.date import TIMEZONE_AMS, get_today
 from openforms.utils.tests.cache import clear_caches
@@ -335,6 +336,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -342,17 +344,20 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "ca615f88-e579-4c0c-b98a-b9306baf0182",
                         "type": "radio",
                         "key": "gender",
                         "label": "Gender",
                         "validate": {"required": False},
                         "values": [
-                            {"value": 1, "label": "Male"},
-                            {"value": 2, "label": "Female"},
-                            {"value": 0, "label": "Other"},
+                            {"value": "1", "label": "Male"},
+                            {"value": "2", "label": "Female"},
+                            {"value": "0", "label": "Other"},
                         ],
+                        "openForms": {"dataSrc": DataSrcOptions.manual},
                     },
                     {
+                        "id": "40f16215-df91-4799-98e2-af7fad562942",
                         "type": "textfield",
                         "key": "firstName",
                         "label": "First name",
@@ -360,6 +365,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": False},
                     },
                     {
+                        "id": "538ddcc3-1f0a-49b1-8e46-b801cfb76723",
                         "type": "textfield",
                         "key": "lastNamePrefix",
                         "label": "Last name prefix",
@@ -367,6 +373,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": False},
                     },
                     {
+                        "id": "bcb0b78b-e8d0-4ad9-a0cd-dc7cbb996bc7",
                         "type": "date",
                         "key": "birthDate",
                         "label": "Date of birth",
@@ -375,6 +382,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "openForms": {"widget": "inputGroup"},
                     },
                     {
+                        "id": "816e74d4-ac1b-4fa9-93a8-f6857aecec50",
                         "type": "email",
                         "key": "emailAddress",
                         "label": "Email address",
@@ -382,6 +390,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 254, "required": False},
                     },
                     {
+                        "id": "af5c2881-a5c6-48dd-b15a-1d191bb79ece",
                         "type": "textfield",
                         "key": "socialSecurityNumber",
                         "label": "Social security number",
@@ -389,7 +398,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 16, "required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -435,6 +444,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -442,6 +452,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "40f16215-df91-4799-98e2-af7fad562942",
                         "type": "textfield",
                         "key": "firstName",
                         "label": "First name",
@@ -450,6 +461,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "description": "At least one of the following fields must be filled in: First name, Initials",
                     },
                     {
+                        "id": "8ee54b5d-1553-4e22-a15a-ff8cd18deb34",
                         "type": "textfield",
                         "key": "initials",
                         "label": "Initials",
@@ -512,6 +524,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "40f16215-df91-4799-98e2-af7fad562942",
                         "type": "textfield",
                         "key": "firstName",
                         "label": "First name",
@@ -519,6 +532,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -526,7 +540,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -574,6 +588,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -581,6 +596,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "40f16215-df91-4799-98e2-af7fad562942",
                         "type": "textfield",
                         "key": "firstName",
                         "label": "First name",
@@ -588,6 +604,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "8ee54b5d-1553-4e22-a15a-ff8cd18deb34",
                         "type": "textfield",
                         "key": "initials",
                         "label": "Initials",
@@ -595,7 +612,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -642,6 +659,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -649,6 +667,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "8ee54b5d-1553-4e22-a15a-ff8cd18deb34",
                         "type": "textfield",
                         "key": "initials",
                         "label": "Initials",
@@ -656,7 +675,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -701,6 +720,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -708,6 +728,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "a6a480d8-0a99-4192-bf19-5716a15460b8",
                         "type": "phoneNumber",
                         "key": "mobilePhoneNumber",
                         "label": "Mobile phone number",
@@ -716,6 +737,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
                     },
                     {
+                        "id": "b43d624e-0a64-43a8-9b59-70d4945748b1",
                         "type": "phoneNumber",
                         "key": "phoneNumber",
                         "label": "Phone number",
@@ -778,6 +800,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -785,6 +808,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "a6a480d8-0a99-4192-bf19-5716a15460b8",
                         "type": "phoneNumber",
                         "key": "mobilePhoneNumber",
                         "label": "Mobile phone number",
@@ -792,6 +816,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 16, "required": True},
                     },
                     {
+                        "id": "b43d624e-0a64-43a8-9b59-70d4945748b1",
                         "type": "phoneNumber",
                         "key": "phoneNumber",
                         "label": "Phone number",
@@ -799,7 +824,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -847,6 +872,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -854,6 +880,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "b43d624e-0a64-43a8-9b59-70d4945748b1",
                         "type": "phoneNumber",
                         "key": "phoneNumber",
                         "label": "Phone number",
@@ -861,7 +888,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 
@@ -908,6 +935,7 @@ class PluginTests(OFVCRMixin, TestCase):
             (
                 [
                     {
+                        "id": "b66d5a44-2dc1-4136-a831-c25760b632e3",
                         "type": "textfield",
                         "key": "lastName",
                         "label": "Last name",
@@ -915,6 +943,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
+                        "id": "a6a480d8-0a99-4192-bf19-5716a15460b8",
                         "type": "phoneNumber",
                         "key": "mobilePhoneNumber",
                         "label": "Mobile phone number",
@@ -922,7 +951,7 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 16, "required": True},
                     },
                 ],
-                None,
+                [],
             ),
         )
 

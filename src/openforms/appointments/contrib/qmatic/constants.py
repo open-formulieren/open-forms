@@ -52,6 +52,7 @@ class CustomerFields(TextChoices):
 
 FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
     CustomerFields.first_name: {
+        "id": "68532fc7-e745-4b49-96b8-abdb39728486",
         "type": "textfield",
         "key": CustomerFields.first_name.value,
         "label": CustomerFields.first_name.label,
@@ -62,6 +63,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.last_name: {
+        "id": "6d773462-c8b2-4d71-a691-a095b4f520dc",
         "type": "textfield",
         "key": CustomerFields.last_name.value,
         "label": CustomerFields.last_name.label,
@@ -72,6 +74,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.email: {
+        "id": "515963be-6407-487e-a522-46afd0fc83de",
         "type": "email",
         "key": CustomerFields.email.value,
         "label": CustomerFields.email.label,
@@ -82,6 +85,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.phone_number: {
+        "id": "c1af01a3-f6bf-45c0-8409-ead5d8bba48b",
         "type": "phoneNumber",
         "key": CustomerFields.phone_number.value,
         "label": CustomerFields.phone_number.label,
@@ -92,6 +96,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_line_1: {
+        "id": "9c42ff0a-9c3b-4420-a5e0-5c4fd44a99ab",
         "type": "textfield",
         "key": CustomerFields.address_line_1.value,
         "label": CustomerFields.address_line_1.label,
@@ -102,6 +107,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_line_2: {
+        "id": "c5489db9-c4a0-4b70-8d67-a1e34b9c57f9",
         "type": "textfield",
         "key": CustomerFields.address_line_2.value,
         "label": CustomerFields.address_line_2.label,
@@ -112,6 +118,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_city: {
+        "id": "a3e60cff-9e74-476e-b3f4-2a902420a357",
         "type": "textfield",
         "key": CustomerFields.address_city.value,
         "label": CustomerFields.address_city.label,
@@ -122,6 +129,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_state: {
+        "id": "c1be0975-e23d-481f-a472-1bcbb21b8092",
         "type": "textfield",
         "key": CustomerFields.address_state.value,
         "label": CustomerFields.address_state.label,
@@ -132,6 +140,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_zip: {
+        "id": "6212f0a8-68cf-4327-9f22-10f1957f4a93",
         "type": "textfield",
         "key": CustomerFields.address_zip.value,
         "label": CustomerFields.address_zip.label,
@@ -142,6 +151,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.address_country: {
+        "id": "ba2a596a-600b-41f7-9825-c17dfcc89bce",
         "type": "textfield",
         "key": CustomerFields.address_country.value,
         "label": CustomerFields.address_country.label,
@@ -152,6 +162,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.identification_number: {
+        "id": "11707678-80e5-449d-9d4c-34b22b5216fe",
         "type": "bsn",
         "key": CustomerFields.identification_number.value,
         "label": CustomerFields.identification_number.label,
@@ -161,6 +172,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
         },
     },
     CustomerFields.birthday: {
+        "id": "f81eb8c1-1f9b-43b7-b24e-24fcb2d3e049",
         "type": "date",
         "key": CustomerFields.birthday.value,
         "label": CustomerFields.birthday.label,
