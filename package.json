@@ -59,7 +59,6 @@
     "prop-types": "^15.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-formio": "^4.3.0",
     "react-intl": "^6.4.2",
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.6",
@@ -163,7 +162,7 @@
     "trailingComma": "es5",
     "useTabs": false,
     "importOrder": [
-      "^((api-mocks|components|data|formio|hooks|map|story-utils|types|utils)/(.*)|(api|api-mocks|cache|Context|errors|headers|i18n|sdk|sentry|story-utils|types))$",
+      "^((components|hooks|utils)/(.*))$",
       "^[./]"
     ],
     "importOrderSeparation": true,
