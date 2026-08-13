@@ -385,7 +385,8 @@ body.popup {
  * aren't great.
  */
 .btn {
-  &.btn-primary {
+  &.btn-primary,
+  &.btn-outline-primary {
     background-color: transparent;
     border-color: transparent;
     color: inherit;

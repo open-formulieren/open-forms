@@ -16,6 +16,45 @@ $fa-font-path: '../fonts';
 // since we include flatpickr in the global scope, we need to embed the CSS ourselves
 @import 'flatpickr/dist/flatpickr.css';
 
+:root {
+  --offb-modal-overlay-z-index: 2;
+  --offb-modal-content-margin-block: 70px;
+  // same font size as django admin form field labels
+  --offb-component-group-component-button-font-size: 0.8125rem;
+  --offb-cosign-v1-button-border-color: #ccc;
+}
+
+body:has(.offb-modal) {
+  overflow: hidden;
+}
+
+.offb-modal {
+  @include bem.element('overlay') {
+    overflow: auto;
+  }
+
+  @include bem.element('content') {
+    overflow: unset;
+    max-height: unset;
+    position: relative;
+  }
+}
+
+.offb-builder {
+  .list-group {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.offb-dnd-sortable-item {
+  label {
+    cursor: move;
+  }
+}
+
+// TODO: check what's still used from below
+
 .field-configuration {
   overflow: unset;
   .flex-container {
@@ -165,23 +204,6 @@ div.flatpickr-calendar.open {
       margin-left: 0;
       margin-right: 0;
     }
-  }
-}
-
-.gu-transit {
-  // #748 client requested increased contrast for this element
-  // here we clobber formio's compiled 0.2 opacity of the drag-and-drop target indicator
-  opacity: 0.7;
-
-  &.drag-copy {
-    border: solid 1px #ccc;
-  }
-}
-
-// specifically for co-sign in form builder
-.co-sign {
-  .btn {
-    border: solid 1px #ccc;
   }
 }
 

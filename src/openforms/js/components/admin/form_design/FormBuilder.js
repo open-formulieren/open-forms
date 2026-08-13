@@ -77,72 +77,70 @@ const FormBuilder = ({
   } = useContext(FormContext);
   const [theme] = useGlobalState(currentTheme);
   return (
-    <div className="formio builder">
-      <BareFormBuilder
-        components={components}
-        onChange={(formSchema, event) => {
-          setComponents(formSchema.components);
-          onChange?.(formSchema, event);
+    <BareFormBuilder
+      components={components}
+      onChange={(formSchema, event) => {
+        setComponents(formSchema.components);
+        onChange?.(formSchema, event);
 
-          // moving components without mutations produces no event
-          if (!event) return;
+        // moving components without mutations produces no event
+        if (!event) return;
 
-          // update the namespace of used component keys based on the type of change event
-          switch (event.type) {
-            // creation -> new component key needs to be added
-            case 'created': {
-              const {component} = event;
-              setUsedComponentKeys([...usedComponentKeys, component.key]);
-              break;
-            }
-            // update -> remove old component key and add the new one if the key changed
-            case 'updated': {
-              const {component, originalComponent} = event;
-              if (component.key !== originalComponent.key) {
-                const newComponentKeys = usedComponentKeys
-                  .filter(key => key !== originalComponent.key)
-                  .concat([component.key]);
-                setUsedComponentKeys(newComponentKeys);
-              }
-              break;
-            }
-            // delete -> remove the component key entirely
-            case 'deleted': {
-              const {component} = event;
-              setUsedComponentKeys(usedComponentKeys.filter(key => key !== component.key));
-              break;
-            }
-            default: {
-              throw new Error(`Unknown event ${event.type}`);
-            }
+        // update the namespace of used component keys based on the type of change event
+        switch (event.type) {
+          // creation -> new component key needs to be added
+          case 'created': {
+            const {component} = event;
+            setUsedComponentKeys([...usedComponentKeys, component.key]);
+            break;
           }
-        }}
-        // Context binding
-        formType={formType}
-        uniquifyKey={key => getUniqueKey(toCamelCase(key), usedComponentKeys)}
-        supportedLanguageCodes={LANGUAGES}
-        theme={theme}
-        richTextColors={RICH_TEXT_COLORS}
-        getMapTileLayers={async () => MAP_TILE_LAYERS}
-        getMapOverlayTileLayers={getMapOverlayTileLayers}
-        getFormComponents={() => components}
-        getValidatorPlugins={getValidatorPlugins}
-        getRegistrationAttributes={getRegistrationAttributes}
-        getServices={getServices}
-        getReferenceListsTables={getReferenceListsTables}
-        getReferenceListsTableItems={getReferenceListsTableItems}
-        getPrefillPlugins={getPrefillPlugins}
-        getPrefillAttributes={async plugin =>
-          await getPrefillAttributes(plugin, {
-            authBackends,
-            availablePrefillPlugins,
-          })
+          // update -> remove old component key and add the new one if the key changed
+          case 'updated': {
+            const {component, originalComponent} = event;
+            if (component.key !== originalComponent.key) {
+              const newComponentKeys = usedComponentKeys
+                .filter(key => key !== originalComponent.key)
+                .concat([component.key]);
+              setUsedComponentKeys(newComponentKeys);
+            }
+            break;
+          }
+          // delete -> remove the component key entirely
+          case 'deleted': {
+            const {component} = event;
+            setUsedComponentKeys(usedComponentKeys.filter(key => key !== component.key));
+            break;
+          }
+          default: {
+            throw new Error(`Unknown event ${event.type}`);
+          }
         }
-        getFileTypes={async () => FILE_TYPES}
-        serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
-        getAuthPlugins={getAvailableAuthPlugins}
-      />
-    </div>
+      }}
+      // Context binding
+      formType={formType}
+      uniquifyKey={key => getUniqueKey(toCamelCase(key), usedComponentKeys)}
+      supportedLanguageCodes={LANGUAGES}
+      theme={theme}
+      richTextColors={RICH_TEXT_COLORS}
+      getMapTileLayers={async () => MAP_TILE_LAYERS}
+      getMapOverlayTileLayers={getMapOverlayTileLayers}
+      getFormComponents={() => components}
+      getValidatorPlugins={getValidatorPlugins}
+      getRegistrationAttributes={getRegistrationAttributes}
+      getServices={getServices}
+      getReferenceListsTables={getReferenceListsTables}
+      getReferenceListsTableItems={getReferenceListsTableItems}
+      getPrefillPlugins={getPrefillPlugins}
+      getPrefillAttributes={async plugin =>
+        await getPrefillAttributes(plugin, {
+          authBackends,
+          availablePrefillPlugins,
+        })
+      }
+      getFileTypes={async () => FILE_TYPES}
+      serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
+      getAuthPlugins={getAvailableAuthPlugins}
+    />
   );
 };
 
