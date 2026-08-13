@@ -8,10 +8,11 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
-import {COSIGN_V1_TYPE} from 'components/form/coSignOld';
 
 import TYPES from './types';
 import {VARIABLE_SOURCES} from './variables/constants';
+
+const COSIGN_V1_TYPE = 'coSign';
 
 /**
  * Component to render the metadata admin form for an Open Forms form.

@@ -4,7 +4,6 @@ import {useGlobalState} from 'state-pool';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {getUniqueKey} from 'components/admin/form_design/utils';
-import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getMapOverlayTileLayers} from 'components/formio_builder/mapLayers';
 import {
   getPrefillAttributes,
@@ -18,14 +17,22 @@ import {
   getServices,
 } from 'components/formio_builder/referenceLists';
 import {flattenComponents} from 'components/utils';
+import {get} from 'utils/fetch';
 import jsonScriptToVar from 'utils/json-script';
 import {currentTheme} from 'utils/theme';
+
+import {AUTH_PLUGINS_ENDPOINT} from './constants';
 
 const LANGUAGES = jsonScriptToVar('languages', {default: []}).map(([langCode]) => langCode);
 const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
 const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
 const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
+
+const getAvailableAuthPlugins = async () => {
+  const response = await get(AUTH_PLUGINS_ENDPOINT);
+  return response.data;
+};
 
 export const getInitialUsedComponentKeys = components => {
   const allComponents = Object.values(flattenComponents(components));
