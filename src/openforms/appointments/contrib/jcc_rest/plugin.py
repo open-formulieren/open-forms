@@ -24,6 +24,7 @@ from ...base import (
     CustomerDetails,
     Location,
     Product,
+    RequiredCustomerFields,
     RequiredGroupFields,
 )
 from ...exceptions import (
@@ -78,6 +79,9 @@ def with_graceful_default[T, **P](
         return wrapper
 
     return decorator
+
+
+EMPTY_CUSTOMER_FIELDS: RequiredCustomerFields = ([], [])
 
 
 @register("jcc_rest")
@@ -279,11 +283,11 @@ class JccRestPlugin(BasePlugin):
 
         return fields
 
-    @with_graceful_default(default=tuple([]))
+    @with_graceful_default(default=EMPTY_CUSTOMER_FIELDS)
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> tuple[list[Component], list[RequiredGroupFields] | None]:
+    ) -> RequiredCustomerFields:
         product_ids = [product.identifier for product in products]
         with JccRestClient() as client:
             # Each field from the API has a value which determines if it's visible, hidden
@@ -325,7 +329,7 @@ class JccRestPlugin(BasePlugin):
             required_fields, saved_components_by_key
         )
 
-        components = []
+        components: list[Component] = []
         # Name / initials defaults
         components.extend(
             self._get_default_component(
@@ -363,7 +367,7 @@ class JccRestPlugin(BasePlugin):
             components.append(saved_components_by_key[field])
 
         rendered_keys = {component["key"] for component in components}
-        required_group_fields = []
+        required_group_fields: list[RequiredGroupFields] = []
 
         for rule in GROUP_RULES:
             if not rule.enabled:
@@ -408,7 +412,7 @@ class JccRestPlugin(BasePlugin):
         get_translated_custom_error_messages(config_wrapper, current_language)
         localize_components(config_wrapper, current_language)
 
-        return components, required_group_fields or None
+        return (components, required_group_fields)
 
     def create_appointment(
         self,
@@ -427,6 +431,11 @@ class JccRestPlugin(BasePlugin):
                 start_at.date(), activities
             )
 
+            # API requires number, formio component requires string...
+            gender = client.details.pop(CustomerFields.gender, GenderType.other.value)
+            assert isinstance(gender, str | int)
+            gender = int(gender)
+
             appointment_data: AppointmentData = {
                 "id": None,  # id (as null) is required by JCC even for a new appointment
                 "activityList": [
@@ -436,7 +445,7 @@ class JccRestPlugin(BasePlugin):
                     # We send a default to 0 (other) gender because it's a required field in JCC
                     # (0=other, 1=male, 2=female)
                     {
-                        "gender": GenderType.other.value,
+                        "gender": gender,
                         **client.details,
                         "id": None,
                         "isMainCustomer": True,
