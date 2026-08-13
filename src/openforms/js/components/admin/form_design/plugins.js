@@ -2,6 +2,13 @@ import {getPrefillAttributes as getYiviPrefillAttributes} from 'components/admin
 import {getYiviAttributeGroups} from 'components/admin/forms/yivi/AttributeGroups';
 import {get} from 'utils/fetch';
 
+import {AUTH_PLUGINS_ENDPOINT, PREFILL_PLUGINS_ENDPOINT} from './constants';
+
+export const getAvailableAuthPlugins = async () => {
+  const response = await get(AUTH_PLUGINS_ENDPOINT);
+  return response.data;
+};
+
 export const getValidatorPlugins = async componentType => {
   const resp = await get(
     '/api/v2/validation/plugins',
@@ -16,7 +23,7 @@ export const getRegistrationAttributes = async () => {
 };
 
 export const getPrefillPlugins = async componentType => {
-  const resp = await get('/api/v2/prefill/plugins', {componentType});
+  const resp = await get(PREFILL_PLUGINS_ENDPOINT, {componentType});
   return resp.data;
 };
 
@@ -33,6 +40,6 @@ export const getPrefillAttributes = async (plugin, context = {}) => {
     return attributes.map(([attribute, label]) => ({id: attribute, label}));
   }
 
-  const resp = await get(`/api/v2/prefill/plugins/${plugin}/attributes`);
+  const resp = await get(`${PREFILL_PLUGINS_ENDPOINT}/${plugin}/attributes`);
   return resp.data;
 };
