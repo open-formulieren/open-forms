@@ -13,8 +13,6 @@ $fa-font-path: '../fonts';
  * See https://github.com/formio/formio.js/blob/master/gulpfile.js#L113
  */
 @import 'formiojs/dist/formio.builder.css';
-// since we include flatpickr in the global scope, we need to embed the CSS ourselves
-@import 'flatpickr/dist/flatpickr.css';
 
 :root {
   --offb-modal-overlay-z-index: 2;
