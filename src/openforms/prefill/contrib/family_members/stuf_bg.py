@@ -1,5 +1,6 @@
 from typing import assert_never
 
+from openforms.submissions.models import Submission
 from stuf.stuf_bg.client import get_client as get_stufbg_client
 from stuf.stuf_bg.data import NaturalPersonDetails
 
@@ -9,7 +10,7 @@ from .typing import FamilyMemberOptions
 
 
 def get_data_from_stuf_bg(
-    bsn: str, options: FamilyMemberOptions
+    bsn: str, options: FamilyMemberOptions, submission: Submission
 ) -> list[NaturalPersonDetails]:
     with get_stufbg_client() as client:
         match options["type"]:

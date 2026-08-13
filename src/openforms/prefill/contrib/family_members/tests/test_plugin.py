@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
 
@@ -14,6 +14,8 @@ from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.tests.utils import disable_timelinelog
+from openforms.pre_requests.base import PreRequestHookBase
+from openforms.pre_requests.registry import Registry
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -373,6 +375,49 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         self.assertEqual(
             state.variables["hc_prefill_children_immutable"].value, expected_data
         )
+
+    def test_pre_request_hooks_called(self):
+        pre_req_register = Registry()
+        mock = MagicMock()
+
+        @pre_req_register("test")
+        class PreRequestHook(PreRequestHookBase):
+            def __call__(self, *args, **kwargs):
+                mock(*args, **kwargs)
+
+        submission = SubmissionFactory.from_components(
+            auth_info__value="999970124",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "hc_prefill_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+        )
+        FormVariableFactory.create(
+            key="hc_prefill_partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "hc_prefill_partners_mutable",
+            },
+        )
+
+        with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
+            prefill_variables(submission=submission)
+
+        # 2 API calls expected, 1 for logged in person data, 1 for partner data
+        self.assertEqual(mock.call_count, 2)
+
+        # assert that the pre request hooks are called with the
+        # expected context to make sure that token exchange works properly
+        context = mock.call_args.kwargs["context"]
+        self.assertEqual(context, {"submission": submission})
 
 
 @disable_timelinelog()
