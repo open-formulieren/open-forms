@@ -460,67 +460,51 @@ function reducer(draft, action) {
       break;
     }
     case 'EDIT_STEP': {
-      const {index, configuration} = action.payload;
-      draft.formSteps[index].configuration = configuration;
-      break;
-    }
-    case 'EDIT_STEP_COMPONENT_MUTATED': {
-      const {mutationType, schema, args, formDefinition} = action.payload;
+      const {index, configuration, builderMutationEvent = undefined} = action.payload;
+      const formStep = draft.formSteps[index];
+      formStep.configuration = configuration;
+      // no mutation event -> no components were changed, just re-arranged
+      if (!builderMutationEvent) {
+        break;
+      }
 
-      let originalComp;
-      let isNew;
-      let configuration;
-      switch (mutationType) {
-        case 'changed': {
-          originalComp = args[0];
-          configuration = args[1];
-          isNew = args[4];
+      const formDefinitionReference = formStep.formDefinition || formStep._generatedId;
+
+      let validationErrorsKeyToClear = '';
+      switch (builderMutationEvent.type) {
+        // creation -> nothing special to do
+        case 'created': {
           break;
         }
-        case 'removed': {
-          originalComp = null;
-          configuration = args[0];
-          isNew = false;
+        // update -> remove old component key and add the new one if the key changed
+        case 'updated': {
+          const {component, originalComponent} = builderMutationEvent;
+          validationErrorsKeyToClear = originalComponent.key;
+          // handle potential key change
+          if (component.key !== originalComponent.key) {
+            updateKeyReferencesInLogic(draft.logicRules, originalComponent.key, component.key);
+          }
           break;
         }
-        default:
-          throw new Error(`Unknown mutation type '${mutationType}'`);
+        // delete -> remove the component key entirely
+        case 'deleted': {
+          const {component} = builderMutationEvent;
+          validationErrorsKeyToClear = component.key;
+          updateRemovedKeyInLogic(draft.logicRules, component.key);
+          break;
+        }
+        default: {
+          throw new Error(`Unknown event ${builderMutationEvent.type}`);
+        }
       }
 
-      // Check if a key has been changed and if the logic rules need updating
-      const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
-      if (mutationType === 'changed' && hasKeyChanged) {
-        updateKeyReferencesInLogic(draft.logicRules, originalComp.key, schema.key);
-      } else if (mutationType === 'removed') {
-        updateRemovedKeyInLogic(draft.logicRules, schema.key);
-      }
-
-      // Issue #1729 - Workaround for bug in FormIO
-      if (mutationType === 'changed' && !schema.multiple && Array.isArray(schema.defaultValue)) {
-        // Formio has a getter for the:
-        // - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
-        // - defaultValue:
-        //    https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/Component.js#L2302
-        // By setting the defaultValue to null, then the component will be populated with the emptyValue
-        // in the form data.
-        schema.defaultValue = null;
-      }
-
-      // TODO: This could break if a reusable definition is used multiple times in a form
-      const step = getFormStep(formDefinition, draft.formSteps, true);
-
-      if (!isNew) {
-        // In the case the component was removed, originalComp is null
-        const componentKey = originalComp ? originalComp.key : schema.key;
-        // the component was either changed or removed. Using the original key and
-        // step configuration, we can build the full json path, after which we can
-        // clear validation errors for that.
-        const path = getPathToComponent(step.configuration, componentKey);
+      if (validationErrorsKeyToClear) {
+        const path = getPathToComponent(formStep.configuration, validationErrorsKeyToClear);
         // split into component path + field name
         const pathBits = path.split('.');
         pathBits.pop();
         const componentPath = `configuration.${pathBits.join('.')}`;
-        step.validationErrors = step.validationErrors.filter(
+        formStep.validationErrors = formStep.validationErrors.filter(
           ([path]) =>
             !path.startsWith(componentPath) && !['formDefinition', 'configuration'].includes(path)
         );
@@ -531,32 +515,35 @@ function reducer(draft, action) {
       }
 
       // Check if the formVariables need updating
-      draft.formVariables = updateFormVariables(
-        formDefinition,
-        mutationType,
-        isNew,
-        schema,
-        originalComp,
+      updateFormVariables(
+        formDefinitionReference,
+        builderMutationEvent.type,
+        {
+          component: builderMutationEvent.component,
+          // undefined for created/deleted events
+          originalComponent: builderMutationEvent.originalComponent,
+        },
         draft.formVariables,
-        step.configuration
+        formStep.configuration
       );
       draft.validationErrors = checkForDuplicateKeys(
         draft.formVariables,
         draft.staticVariables,
         draft.validationErrors
       );
-
       // apply updates to the backendRegistration Options if needed
       draft.form.registrationBackends = draft.form.registrationBackends.map(configuredBackend => {
         const {backend: registrationBackend, options: registrationBackendOptions} =
           configuredBackend;
         const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
         if (handler == null) return configuredBackend;
-        const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+        const {component, originalComponent = null} = builderMutationEvent;
+        const updatedOptions = handler(registrationBackendOptions, component, originalComponent);
         if (!updatedOptions) return configuredBackend;
 
         return {...configuredBackend, options: updatedOptions};
       });
+
       break;
     }
     case 'STEP_FIELD_CHANGED': {
@@ -1052,27 +1039,13 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     });
   };
 
-  // TODO: we can probably remove a lot of state updates by tapping into onComponentMutated
-  // rather than onChange
-  const onStepEdit = (index, configuration) => {
+  const onStepEdit = (index, configuration, event = undefined) => {
     dispatch({
       type: 'EDIT_STEP',
       payload: {
         index: index,
         configuration: configuration,
-      },
-    });
-  };
-
-  // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
-  const onComponentMutated = (formDefinition, mutationType, schema, ...rest) => {
-    dispatch({
-      type: 'EDIT_STEP_COMPONENT_MUTATED',
-      payload: {
-        mutationType,
-        schema,
-        formDefinition,
-        args: rest,
+        builderMutationEvent: event,
       },
     });
   };
@@ -1392,7 +1365,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                   steps={state.formSteps}
                   loadingErrors={state.errors.loadingErrors}
                   onEdit={onStepEdit}
-                  onComponentMutated={onComponentMutated}
                   onFieldChange={onStepFieldChange}
                   onDelete={onStepDelete}
                   onReorder={onStepReorder}
