@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, tag
 
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models.config import GlobalConfiguration
 from openforms.tests.search_strategies import json_primitives
@@ -383,6 +383,24 @@ class FormSerializerTest(TestCase):
 
         self.assertEqual(len(login_options), 1)
         self.assertTrue(login_options[0]["visible"])
+
+    @tag("sentry-496315")
+    def test_validation_auto_login_backend_with_partial_update(self):
+        # regression detected via Sentry issue 496315
+        form = FormFactory.create(authentication_backend="digid")
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        request.user = SuperUserFactory.create()
+        serializer = FormSerializer(
+            instance=form,
+            data={"auto_login_authentication_backend": "eherkenning"},
+            partial=True,
+            context={"request": request},
+        )
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
 
 
 class SynchronizeVariablesActionConfigSerializerTest(TestCase):

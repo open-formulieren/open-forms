@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -636,6 +636,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         auth_backends = get_from_serializer_data_or_instance(
             "auth_backends", attrs, self
         )
+        if isinstance(auth_backends, models.Manager):
+            auth_backends = auth_backends.values()
 
         # If an auto login backend is supplied, it must be present in
         # `auth_backends`
