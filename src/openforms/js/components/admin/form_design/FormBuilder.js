@@ -63,6 +63,12 @@ const toCamelCase = source =>
  * reflected through the `onChange` prop, which gives the new configuration and an `event`
  * detailing the nature of changes. Note that the `event` key is absent/`undefined` when
  * components have only been re-ordered without any configuration changes.
+ *
+ * Careful! If you're looking here because of react-modal warnings about modal instances
+ * that cannot be registered that are already open, that warning is safe to ignore! It's
+ * because we use React StrictMode, which unmounts-remounts components in development,
+ * and react-modal seems to have a race condition triggered in this particular scenario
+ * due to delayed/lost state updates. Don't spend hours on this like I did.
  */
 const FormBuilder = ({
   initialComponents = [],
