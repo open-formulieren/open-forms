@@ -1,4 +1,5 @@
 import random
+import uuid
 
 import factory.fuzzy
 
@@ -165,6 +166,7 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
         lambda n: {
             "components": [
                 {
+                    "id": str(uuid.uuid4()),
                     "type": "textfield",
                     "key": f"test-key-{n}",
                     "label": f"Test label {n}",

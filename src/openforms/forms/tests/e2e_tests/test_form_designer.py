@@ -26,33 +26,18 @@ from ..factories import (
     FormRegistrationBackendFactory,
     FormStepFactory,
 )
-from .helpers import close_modal, open_component_options_modal, phase
+from .helpers import (
+    close_modal,
+    drag_and_drop_component,
+    open_component_options_modal,
+    phase,
+)
 
 
 async def add_new_step(page: Page):
     await page.get_by_role("tab", name="Steps and fields").click()
     await page.get_by_role("button", name="Add step").click()
     await page.get_by_role("button", name="Create a new form definition").click()
-
-
-async def drag_and_drop_component(
-    page: Page, component: str, parent_ref: str = "sidebar-groups"
-):
-    await (
-        page.locator(f'css=[ref="{parent_ref}"]')
-        .get_by_text(component, exact=True)
-        .hover()
-    )
-    await page.mouse.down()
-    # This is added to make it work for when there is already a component in the container.
-    # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
-    # It says:
-    # "If your page relies on the dragover event being dispatched, you need at least two mouse moves to trigger it in
-    # all browsers. To reliably issue the second mouse move, repeat your mouse.move() or locator.hover() twice."
-    # ... but repeating the hover didn't work. Hence, the extra move.
-    await page.mouse.move(0, 0)
-    await page.locator('css=[ref="-container"]').hover()
-    await page.mouse.up()
 
 
 class FormDesignerComponentTranslationTests(E2ETestCase):
@@ -71,7 +56,14 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="First step",
                 formstep__form_definition__configuration={
-                    "components": [{"key": "textField", "type": "textfield"}],
+                    "components": [
+                        {
+                            "id": "53732868-55cf-45f2-9067-ee8e81eee237",
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "textfield",
+                        }
+                    ],
                 },
             )
             form_def = FormDefinitionFactory.create(
@@ -97,14 +89,14 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # Go to the second form step
             await page.get_by_text("Second step").click()
-            await drag_and_drop_component(page, "Tekstveld")
+            await drag_and_drop_component(page, "Textfield")
 
             # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+            await expect(page.get_by_role("dialog")).to_be_visible()
 
             # Check that the key has been made unique (textField1 vs textField)
             key_input = page.get_by_label("Property Name")
-            await expect(key_input).to_have_value("textField1")
+            await expect(key_input).to_have_value("textfield1")
 
     @tag("gh-2805")
     async def test_enable_translations_and_create_new_step(self):
@@ -127,7 +119,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             ).to_be_visible()
 
             await add_new_step(page)
-            await page.get_by_text("Speciale velden").click()
+            await page.get_by_text("Special fields").click()
             await drag_and_drop_component(page, "IBAN")
             # save with the defaults
             await close_modal(page, "Save", exact=True)
@@ -274,6 +266,7 @@ class FormDesignerRegressionTests(E2ETestCase):
                 formstep__form_definition__configuration={
                     "components": [
                         {
+                            "id": "aa1f8597-2dd6-491c-a6bd-604af5f517d4",
                             "type": "textfield",
                             "key": "textfield",
                             "label": "Some Field",
@@ -378,7 +371,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             error_node = page.locator("css=.error")
             await expect(error_node).not_to_be_visible()
 
-    @tag("gh-3921")
+    @tag("gh-3921", "gh-4061")
     async def test_all_components_are_visible_in_component_select_dropdown(self):
         @sync_to_async
         def setUpTestData():
@@ -390,19 +383,41 @@ class FormDesignerRegressionTests(E2ETestCase):
                 formstep__form_definition__configuration={
                     "components": [
                         {
+                            "id": "aa1f8597-2dd6-491c-a6bd-604af5f517d4",
                             "type": "textfield",
                             "key": "field1",
                             "label": "Field 1",
                         },
                         {
+                            "id": "8cffdc85-9a26-40d3-82ec-f1a1b4aa5b5a",
                             "type": "fieldset",
                             "key": "fieldset",
                             "components": [
                                 {
+                                    "id": "5efda90e-ba5b-4af9-a52f-3e623190a7b0",
                                     "type": "textfield",
                                     "key": "field2",
                                     "label": "Field 2",
                                 },
+                            ],
+                        },
+                        {
+                            "id": "bc32bb18-9ce9-4cd1-824b-26f9065d26c2",
+                            "type": "columns",
+                            "key": "columns",
+                            "columns": [
+                                {
+                                    "size": 6,
+                                    "sizeMobile": 4,
+                                    "components": [
+                                        {
+                                            "id": "d41ab8ff-b5cb-4e9b-9da9-33ff90c27e1b",
+                                            "type": "textfield",
+                                            "key": "field3",
+                                            "label": "Field 3",
+                                        },
+                                    ],
+                                }
                             ],
                         },
                     ],
@@ -432,71 +447,8 @@ class FormDesignerRegressionTests(E2ETestCase):
             await expect(
                 page.get_by_role("option", name="Field 1 (field1)")
             ).to_be_visible()
-
-    @tag("gh-4061")
-    async def test_column_components_are_visible_in_component_select_dropdown(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "field1",
-                            "label": "Field 1",
-                        },
-                        {
-                            "type": "columns",
-                            "key": "columns",
-                            "columns": [
-                                {
-                                    "size": 6,
-                                    "sizeMobile": 4,
-                                    "width": 6,
-                                    "offset": 0,
-                                    "push": 0,
-                                    "pull": 0,
-                                    "currentWidth": 6,
-                                    "components": [
-                                        {
-                                            "type": "textfield",
-                                            "key": "field2",
-                                            "label": "Field 2",
-                                        },
-                                    ],
-                                }
-                            ],
-                        },
-                    ],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-
-            await page.get_by_role("tab", name="Steps and fields").click()
-            await open_component_options_modal(page, "Field 1")
-            await page.get_by_role("tab", name="Location").click()
-
-            dropdown = page.get_by_role("combobox", name="Postcode component")
-            await dropdown.focus()
-            await page.keyboard.press("ArrowDown")
             await expect(
-                page.get_by_role("option", name="Field 2 (field2)")
+                page.get_by_role("option", name="Field 3 (field3)")
             ).to_be_visible()
 
     @tag("gh-4969")
