@@ -223,6 +223,7 @@ def collect_failed_emails(since: datetime) -> Sequence[FailedEmail]:
         extra_data__status=Message.STATUS_FAILED,
         extra_data__include_in_daily_digest=True,
     ).distinct("content_type", "extra_data__status", "extra_data__event")
+    _logs_with_content_object = (log for log in logs if log.content_object is not None)
 
     if not logs:
         return []
@@ -231,7 +232,7 @@ def collect_failed_emails(since: datetime) -> Sequence[FailedEmail]:
         FailedEmail(
             submission_uuid=log.content_object.uuid, event=log.extra_data["event"]
         )
-        for log in logs
+        for log in _logs_with_content_object
     ]
 
     return failed_emails
@@ -244,9 +245,11 @@ def collect_failed_registrations(
         timestamp__gt=since,
         extra_data__log_event="registration_failure",
     ).order_by("timestamp")
+    _logs_with_content_object = (log for log in logs if log.content_object is not None)
 
-    form_sorted_logs = sorted(logs, key=lambda x: x.content_object.form.admin_name)
-
+    form_sorted_logs = sorted(
+        _logs_with_content_object, key=lambda x: x.content_object.form.admin_name
+    )
     grouped_logs = groupby(form_sorted_logs, key=lambda log: log.content_object.form)
 
     failed_registrations = []
@@ -283,8 +286,11 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
             "prefill_retrieve_failure",
         ],
     ).order_by("extra_data__plugin_label")
+    _logs_with_content_object = (log for log in logs if log.content_object is not None)
 
-    grouped_logs = groupby(logs, key=lambda x: x.extra_data["plugin_label"])
+    grouped_logs = groupby(
+        _logs_with_content_object, key=lambda x: x.extra_data["plugin_label"]
+    )
 
     failed_prefill_plugins = []
     for prefill_plugin, submission_logs in grouped_logs:
