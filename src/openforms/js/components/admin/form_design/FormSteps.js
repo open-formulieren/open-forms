@@ -13,7 +13,6 @@ import TYPES from './types';
 const FormSteps = ({
   steps = [],
   onEdit,
-  onComponentMutated,
   onFieldChange,
   onDelete,
   onReorder,
@@ -49,7 +48,6 @@ const FormSteps = ({
             <FormStep
               data={activeStep}
               onEdit={onEdit.bind(null, activeStepIndex)}
-              onComponentMutated={onComponentMutated}
               onFieldChange={onFieldChange.bind(null, activeStepIndex)}
               onReplace={onReplace.bind(null, activeStepIndex)}
             />
@@ -68,7 +66,6 @@ const FormSteps = ({
 FormSteps.propTypes = {
   steps: PropTypes.arrayOf(TYPES.FormStep),
   onEdit: PropTypes.func.isRequired,
-  onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,

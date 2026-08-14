@@ -1,4 +1,4 @@
-// Django admin styling fixes!!
+// Django admin styling fixes
 // These are overridden by the form-builder because of clashing class names
 
 .submit-row .deletelink-box .deletelink {
@@ -7,10 +7,6 @@
 
 .submit-row .deletelink {
   box-sizing: content-box;
-}
-
-.formio-dialog-content {
-  margin: 50px auto !important;
 }
 
 body {

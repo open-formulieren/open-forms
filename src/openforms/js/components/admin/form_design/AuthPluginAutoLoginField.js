@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import Field from 'components/admin/forms/Field';
 import {Radio} from 'components/admin/forms/Inputs';
 import RadioList from 'components/admin/forms/RadioList';
 
@@ -36,6 +34,7 @@ const AuthPluginAutoLoginField = ({name, eligiblePlugins, value, onChange}) => {
         description="Label for option to disable autoLoginAuthenticationBackend"
       />
     ),
+    providesAuth: [],
   };
   return (
     <RadioList keyProp="plugin.id">

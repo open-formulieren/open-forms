@@ -1,3 +1,5 @@
+@use '../../lib/bem';
+
 /**
  * Dark theme implementation.
  *
@@ -38,6 +40,8 @@
   --input-group-text-bg: #333;
   --input-group-text-fg: var(--body-fg);
   --formio-dropdown-highlighted-bg: #333;
+
+  --offb-modal-content-background: var(--body-bg);
 }
 
 @mixin djai-variables {
@@ -91,17 +95,6 @@
     color: var(--body-fg);
   }
 
-  .formio-dialog {
-    background: rgba(0, 0, 0, 0.7);
-    color: var(--body-fg);
-  }
-
-  .formio-dialog.formio-dialog-theme-default {
-    .formio-dialog-content {
-      background: var(--body-bg);
-    }
-  }
-
   .nav-tabs {
     .nav-link.active {
       color: var(--body-fg);
@@ -116,10 +109,6 @@
         border-color: var(--hairline-color) var(--hairline-color) var(--body-bg);
       }
     }
-  }
-
-  .formio-button-add-another {
-    color: var(--body-fg) !important;
   }
 
   pre {
@@ -186,6 +175,14 @@
   }
 }
 
+@mixin formio-builder {
+  --offb-modal-overlay-background-color: rgba(0, 0, 0, 0.7);
+
+  .offb-modal {
+    color: var(--body-fg);
+  }
+}
+
 /**
  * Aggregate the bits and pieces to define the dark theme style rules.
  */
@@ -207,6 +204,7 @@
       @include bootstrap;
       @include tinymce;
       @include ckeditor;
+      @include formio-builder;
     }
   }
 
@@ -219,5 +217,6 @@
     @include tinymce;
     @include ckeditor;
     @include ckeditor-variables;
+    @include formio-builder;
   }
 }

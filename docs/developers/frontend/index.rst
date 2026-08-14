@@ -17,8 +17,8 @@ of software projects and associated code repositories. So, first, let's clear th
 * The `formio builder`_ package is used by the Django backend, as part of the
   form designer user interface.
 
-* The `formio renderer`_ package will replace formiojs/react-formio as the library used
-  by the SDK.
+* The `formio renderer`_ package provides the code to actually render formio form
+  definitions - it's primarily used in the SDK.
 
 
 So, this means we can identify the following **first party repositories**:

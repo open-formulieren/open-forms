@@ -1,20 +1,72 @@
 @use '../../lib/bem';
 
-$fa-font-path: '../fonts';
+:root {
+  --offb-modal-overlay-z-index: 2;
+  --offb-modal-content-margin-block: 70px;
+  // same font size as django admin form field labels
+  --offb-component-group-component-button-font-size: 0.8125rem;
+  --offb-cosign-v1-button-border-color: #ccc;
+}
 
-@import '@fortawesome/fontawesome-free/scss/fontawesome';
-@import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
-@import '@fortawesome/fontawesome-free/scss/brands';
-@import '@fortawesome/fontawesome-free/scss/regular';
-@import '@fortawesome/fontawesome-free/scss/solid';
-/**
- * Builder is full minus font-awesome.
- *
- * See https://github.com/formio/formio.js/blob/master/gulpfile.js#L113
- */
-@import 'formiojs/dist/formio.builder.css';
-// since we include flatpickr in the global scope, we need to embed the CSS ourselves
-@import 'flatpickr/dist/flatpickr.css';
+body:has(.offb-modal) {
+  overflow: hidden;
+}
+
+.offb-modal {
+  @include bem.element('overlay') {
+    overflow: auto;
+  }
+
+  @include bem.element('content') {
+    overflow: unset;
+    max-height: unset;
+    position: relative;
+  }
+
+  .tab-pane.active {
+    min-block-size: 50vh;
+
+    &:has(.formio-component-content, .formio-component-softRequiredErrors) {
+      min-block-size: 0;
+    }
+  }
+
+  .formio-component-content .tab-pane.active {
+    min-block-size: 0;
+  }
+
+  // bootstrap 4 doesn't do dark themes...
+  .list-group-item {
+    background-color: var(--body-bg);
+    border-color: var(--hairline-color);
+  }
+}
+
+.offb-builder {
+  .list-group {
+    margin: 0;
+    padding: 0;
+  }
+
+  // bootstrap 4 doesn't do dark themes...
+  .list-group-item {
+    background-color: var(--body-bg);
+    border-color: var(--hairline-color);
+  }
+
+  .col-form-label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-inline-size: 100%;
+  }
+}
+
+.offb-dnd-sortable-item {
+  label {
+    cursor: move;
+  }
+}
 
 .field-configuration {
   overflow: unset;
@@ -37,151 +89,28 @@ li.nav-item {
   list-style-type: none;
 }
 
-.card {
-  &.form-builder-panel {
-    padding: 0;
-  }
-}
-
-// django wrapper
-.aligned {
-  .field-configuration,
-  .formio.builder {
-    max-width: 100%;
-    label {
-      float: none;
-      width: 100%;
-    }
-  }
-
-  .row {
-    margin: 0 !important;
-  }
-}
-
-.formio-dialog,
 .ck-body .ck.ck-balloon-panel,
 div.flatpickr-calendar.open {
   z-index: 10000000;
-}
-
-.component-edit-container {
-  .tab-pane.active {
-    min-block-size: 50vh;
-
-    &:has(.formio-component-content, .formio-component-softRequiredErrors) {
-      min-block-size: 0;
-    }
-  }
-  .formio-component-content .tab-pane.active {
-    min-block-size: 0;
-  }
-
-  .formio-component-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  // the select dropdowns are overflowing, which is hidden by the modal. this is the
-  // easiest way to enforce they're always visible.
-  overflow-y: auto;
 }
 
 .formio-builder-wrapper {
   padding-top: 10px;
 }
 
-[ref='editForm'],
-[ref='component'] {
-  .choices__list {
-    &--dropdown {
-      background-color: var(--body-bg);
-      color: var(--body-fg);
-      border-color: var(--border-color);
-    }
-
-    .choices__input {
-      background-color: var(--form-input-bg);
-      border-color: var(--border-color);
-    }
-
-    .choices__item--selectable.is-highlighted {
-      background-color: var(--formio-dropdown-highlighted-bg);
-    }
-  }
-
-  .choices__list + .choices__input {
-    border: none;
-    border-radius: unset;
-    padding: 4px 0 4px 2px;
-  }
-
-  .choices__list:not(:empty) + .choices__input {
-    width: 1ch;
-  }
-}
-
-.builder-sidebar_scroll {
-  top: 100px;
-}
-
-.formio.builder,
-.component-preview {
-  .col-form-label {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-inline-size: 100%;
-
-    // don't do this in the modal preview
-    @at-root .formio-dialog.component-settings & {
-      max-inline-size: unset;
-      white-space: normal;
-      overflow: unset;
-    }
-  }
-
-  ul.list-group {
-    display: block;
-    padding-left: 0;
-    padding-right: 0;
-    margin: 0;
-  }
-}
-
 // bootstrap competing with django admin form styling...
 .react-form-create {
-  :not([ref='editForm']) {
-    .form-row {
-      &,
-      :not(select) {
-        box-sizing: initial;
-      }
-    }
-
-    .form-row {
-      display: block;
-      margin-left: 0;
-      margin-right: 0;
+  .form-row {
+    &,
+    :not(select) {
+      box-sizing: initial;
     }
   }
-}
 
-.gu-transit {
-  // #748 client requested increased contrast for this element
-  // here we clobber formio's compiled 0.2 opacity of the drag-and-drop target indicator
-  opacity: 0.7;
-
-  &.drag-copy {
-    border: solid 1px #ccc;
-  }
-}
-
-// specifically for co-sign in form builder
-.co-sign {
-  .btn {
-    border: solid 1px #ccc;
+  .form-row {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 

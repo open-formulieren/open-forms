@@ -13,6 +13,25 @@ def phase(desc: str):
     yield
 
 
+async def drag_and_drop_component(page: Page, component: str, nth: int | None = None):
+    draggable_button = page.get_by_role("button", name=component, exact=True)
+    if nth is not None:
+        draggable_button = draggable_button.locator(f"nth={nth}")
+
+    await draggable_button.hover()
+    await page.mouse.down()
+    # This is added to make it work for when there is already a component in the container.
+    # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
+    # It says:
+    # "If your page relies on the dragover event being dispatched, you need at least two mouse moves to trigger it in
+    # all browsers. To reliably issue the second mouse move, repeat your mouse.move() or locator.hover() twice."
+    # ... but repeating the hover didn't work. Hence, the extra move.
+    # await page.mouse.move(0, 0)
+    await page.get_by_test_id("main-dropzone").hover()
+    await page.get_by_test_id("main-dropzone").hover()
+    await page.mouse.up()
+
+
 async def open_fieldset(page: Page, title: str) -> None:
     """
     Toggle a fieldset from collapsed to open state.
@@ -32,14 +51,17 @@ async def open_component_options_modal(page: Page, label: str, exact: bool = Fal
     """
     # hover over component to bring up action icons
     await page.get_by_text(label, exact=exact).hover()
-    # formio doesn't have accessible roles here, so use CSS selector
-    await page.locator('css=[ref="editComponent"]').locator("visible=true").last.click()
+    await (
+        page.get_by_role("button", name="Edit component")
+        .filter(visible=True)
+        .last.click()
+    )
     # check that the modal is open now
-    await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+    await expect(page.get_by_role("dialog")).to_be_visible()
 
 
 async def click_modal_button(page: Page, button_text: str, **kwargs):
-    modal = page.locator("css=.formio-dialog-content")
+    modal = page.get_by_role("dialog")
     await modal.get_by_role("button", name=button_text, **kwargs).click()
     return modal
 
@@ -56,7 +78,7 @@ skip_on_webtest = skipIf(
 
 def _raise_for_webkit():
     if BROWSER == "webkit":
-        raise Exception(
+        raise Exception(  # noqa: TRY002
             "This functionality does not work on Webkit with Playwright. Best is to "
             "conditionally skip the test with @skip_on_webtest."
         )

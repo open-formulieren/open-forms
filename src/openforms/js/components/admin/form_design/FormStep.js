@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 
 import FormStepDefinition from './FormStepDefinition';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 import TYPES from './types';
 
-const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) => {
+const FormStep = ({data, onEdit, onFieldChange, onReplace}) => {
   const {
     _generatedId,
     index,
@@ -51,8 +50,6 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
       isReusable={isReusable}
       onFieldChange={onFieldChange}
       onChange={onEdit}
-      onComponentMutated={onComponentMutated}
-      forceUpdate={forceBuilderUpdate}
       errors={validationErrors}
     />
   );
@@ -61,7 +58,6 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
 FormStep.propTypes = {
   data: TYPES.FormStep.isRequired,
   onEdit: PropTypes.func.isRequired,
-  onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,
 };

@@ -7,11 +7,11 @@ import Field, {normalizeErrors} from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
-import FormIOBuilder from 'components/formio_builder/builder';
 
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import {FormContext} from './Context';
+import OFFormBuilder, {getInitialUsedComponentKeys} from './FormBuilder';
 import LanguageTabs, {DEFAULT_LANGUAGE} from './LanguageTabs';
 import LogicWarning from './LogicWarning';
 import PluginWarning from './PluginWarning';
@@ -19,9 +19,7 @@ import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
 import {slugify} from './utils';
 
-const emptyConfiguration = {
-  display: 'form',
-};
+const EMPTY_CONFIGURATION = {components: []};
 
 /**
  * Load the form builder for a given form definition.
@@ -45,17 +43,14 @@ const FormStepDefinition = ({
   loginRequired = false,
   isReusable = false,
   translations = {},
-  configuration = emptyConfiguration,
+  configuration = EMPTY_CONFIGURATION,
   onChange,
-  onComponentMutated,
   onFieldChange,
   errors,
-  ...props
 }) => {
   const intl = useIntl();
   const {
     formSteps,
-    registrationBackends,
     form: {type},
   } = useContext(FormContext);
 
@@ -80,7 +75,9 @@ const FormStepDefinition = ({
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
   // a key is unique across steps
-  const componentNamespace = formSteps.map(step => step.configuration?.components || []).flat(1);
+  const componentsFromAllSteps = formSteps
+    .map(step => step.configuration?.components || [])
+    .flat(1);
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
@@ -90,7 +87,7 @@ const FormStepDefinition = ({
     return accumulator;
   }, []);
 
-  const duplicatedKeys = getDuplicatedComponents(componentNamespace)
+  const duplicatedKeys = getDuplicatedComponents(componentsFromAllSteps)
     .filter(component =>
       configuration.components.some(configComponent => configComponent.key === component.key)
     )
@@ -170,7 +167,7 @@ const FormStepDefinition = ({
           />
         }
         collapsible
-        initialCollapsed={hasName && slug && !errors.length}
+        initialCollapsed={hasName && slug !== '' && !errors.length}
       >
         <LanguageTabs haveErrors={[...erroredLanguages]}>
           {(langCode, defaultLang) => (
@@ -397,13 +394,11 @@ const FormStepDefinition = ({
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
         <MessageList messages={componentMessages} />
-        <FormIOBuilder
-          configuration={configuration}
+        <OFFormBuilder
+          key={url || generatedId}
+          initialComponents={configuration?.components || []}
+          initialUsedComponentKeys={getInitialUsedComponentKeys(componentsFromAllSteps)}
           onChange={onChange}
-          onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
-          componentNamespace={componentNamespace}
-          registrationBackendInfo={registrationBackends}
-          {...props}
         />
       </div>
     </>
@@ -418,7 +413,6 @@ FormStepDefinition.propTypes = {
   loginRequired: PropTypes.bool,
   isReusable: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   translations: PropTypes.objectOf(

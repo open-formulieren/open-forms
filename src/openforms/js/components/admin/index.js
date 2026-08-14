@@ -1,4 +1,3 @@
-import React from 'react';
 import {createRoot} from 'react-dom/client';
 import ReactModal from 'react-modal';
 
@@ -17,11 +16,11 @@ const mountForm = wrapperProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');
   if (!formCreationFormNodes.length) return;
 
+  ReactModal.setAppElement(formCreationFormNodes);
   for (const formCreationFormNode of formCreationFormNodes) {
     const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl, outgoingRequestsUrl} =
       formCreationFormNode.dataset;
 
-    ReactModal.setAppElement(formCreationFormNode);
     const root = createRoot(formCreationFormNode);
 
     root.render(
