@@ -150,34 +150,6 @@ ALLOWED_SVG_ATTRIBUTES: dict[str, set[str]] = {
     "svg": {"xmlns", "viewBox"},
 }
 
-ALLOWED_HTML_TAGS: set[str] = {
-    # Basic text tags
-    "a",
-    "b",
-    "br",
-    "em",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "i",
-    "p",
-    "s",
-    "strong",
-    "sup",
-    "u",
-    # Lists
-    "li",
-    "ol",
-    "ul",
-}
-
-ALLOWED_HTML_ATTRIBUTES: dict[str, set[str]] = {
-    "a": {"href", "target", "rel", "data-fr-linked"},
-}
-
 ALLOWED_URL_SCHEMES: set[str] = {"http", "https", "mailto"}
 
 
@@ -230,24 +202,5 @@ def sanitize_svg_content(svg_content: str) -> str:
         clean_content_tags={"script"},
         attributes=ALLOWED_SVG_ATTRIBUTES,
         strip_comments=True,
-        url_schemes=ALLOWED_URL_SCHEMES,
-    )
-
-
-def sanitize_html_content(html_content: str) -> str:
-    """
-    Defuse html string.
-
-    The provided string is replaced by a html sanitized version. All tags and attributes
-    that aren't explicitly allowed, are removed from the SVG content.
-
-    :param html_content: the html string to sanitize.
-    """
-    return nh3.clean(
-        html_content,
-        tags=ALLOWED_HTML_TAGS,
-        attributes=ALLOWED_HTML_ATTRIBUTES,
-        strip_comments=True,
-        link_rel=None,
         url_schemes=ALLOWED_URL_SCHEMES,
     )
