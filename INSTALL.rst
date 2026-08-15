@@ -89,7 +89,7 @@ Optionally, if you would like to have complete LSP support in your IDE, you can 
 
    .. code-block:: bash
 
-       $ npm ci --legacy-peer-deps
+       $ npm ci
        $ npm run build
 
 5. Create a ``.env`` file with database settings. See dotenv.example for an example.
@@ -212,7 +212,7 @@ When updating an existing installation:
 
        $ git pull
        $ pip install -r requirements/dev.txt
-       $ npm install --legacy-peer-deps
+       $ npm install
        $ npm run build
 
 3. Update the statics and database:

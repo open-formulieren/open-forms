@@ -34,8 +34,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Install prettier
-        run: |
-          npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Run prettier
         run: |

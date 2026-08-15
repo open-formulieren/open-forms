@@ -63,7 +63,7 @@ WORKDIR /app
 COPY ./*.json ./*.js /app/
 
 # install WITH dev tooling
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 
 # extract only @formatjs/cli subtree from node_modules (needed for the final stage)
 RUN npm --prefix node_modules/@formatjs/cli ls --all --parseable \
