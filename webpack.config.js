@@ -105,18 +105,6 @@ module.exports = {
           },
         ],
       },
-
-      // .ejs
-      {
-        test: /\.ejs$/,
-        loader: 'ejs-loader',
-        options: {
-          variable: 'ctx',
-          evaluate: /\{%([\s\S]+?)%\}/g,
-          interpolate: /\{\{([\s\S]+?)\}\}/g,
-          escape: /\{\{\{([\s\S]+?)\}\}\}/g,
-        },
-      },
     ],
   },
 
