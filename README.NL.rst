@@ -52,7 +52,8 @@ Deze software is open source en vrij te gebruiken binnen de voorwaarden van de E
 
 De `Stakeholders`_ verwachten van publieke organisaties, die deze software in productie gebruiken, een financiele bijdrage aan de gezamenlijke instandhouding.
 
-Lees meer over de beheerorganisatie, bijdragen en verantwoordelijkheden in `GOVERNANCE.md`_.
+Lees meer over de beheerorganisatie, bijdragen en verantwoordelijkheden in `PROJECT_GOVERNANCE.md`_.
+
 
 Component
 =========
@@ -88,7 +89,7 @@ Licensed under the `EUPL`_.
 .. _`English version`: README.rst
 .. _`Maykin B.V.`: https://www.maykin.nl
 .. _`Stakeholders`: STAKEHOLDERS.md
-.. _`GOVERNANCE.md`: GOVERNANCE.md
+.. _`PROJECT_GOVERNANCE.md`: PROJECT_GOVERNANCE.md
 .. _`EUPL`: LICENSE.md
 
 .. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg

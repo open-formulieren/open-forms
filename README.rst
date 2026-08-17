@@ -43,6 +43,18 @@ both end users and administrators.
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
 
 
+Sustainable Management
+======================
+
+This software is open source and free to use under the terms of the EUPL. However, safe and reliable use in a production environment requires structured management, including security updates, dependency and release management, quality assurance, and vulnerability handling. Maintaining public-facing functions associated with the open-source product also requires a sustained commitment.
+
+**Public code calls for public responsibility.**
+
+The `Stakeholders`_ expect public organizations, using this software in production, to make a financial contribution towards its collective maintenance.
+
+Read more about the management organization, contributions, and responsibilities in `PROJECT_GOVERNANCE.md`_.
+
+
 Component
 =========
 
@@ -77,6 +89,7 @@ Licensed under the `EUPL`_.
 .. _`Nederlandse versie`: README.NL.rst
 .. _`Maykin B.V.`: https://www.maykin.nl
 .. _`Stakeholders`: STAKEHOLDERS.md
+.. _`PROJECT_GOVERNANCE.md`: PROJECT_GOVERNANCE.md
 .. _`EUPL`: LICENSE.md
 
 .. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg
