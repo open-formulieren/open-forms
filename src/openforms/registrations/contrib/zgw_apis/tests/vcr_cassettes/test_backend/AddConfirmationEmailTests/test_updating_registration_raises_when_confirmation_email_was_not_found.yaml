@@ -25,12 +25,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -71,12 +71,12 @@ interactions:
       Content-Length:
       - '2091'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -95,9 +95,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-07-31", "startdatum": "2026-07-31", "productenOfDiensten":
-      [], "omschrijving": "Form 002", "toelichting": "", "betalingsindicatie": "nvt",
-      "identificatie": "OF-WXVRSG"}'
+      "registratiedatum": "2026-08-17", "startdatum": "2026-08-17", "productenOfDiensten":
+      [], "omschrijving": "Form 240", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-637YLA"}'
     headers:
       Accept:
       - '*/*'
@@ -119,8 +119,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c","uuid":"0a71652f-8744-498e-90c8-257a8baa8c5c","identificatie":"OF-WXVRSG","bronorganisatie":"000000000","omschrijving":"Form
-        002","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-07-31","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-07-31","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-01","publicatiedatum":null,"laatstGemuteerd":"2026-07-31T15:31:38.802791Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac","uuid":"ed92d428-3f28-401a-b954-f7b4cceea4ac","identificatie":"OF-637YLA","bronorganisatie":"000000000","omschrijving":"Form
+        240","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-08-17","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-08-17","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-18","publicatiedatum":null,"laatstGemuteerd":"2026-08-17T15:57:52.740606Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"eerdereOpschorting":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"gerelateerdeZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -132,18 +132,18 @@ interactions:
       Content-Length:
       - '1473'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c
+      - http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac
       Referrer-Policy:
       - same-origin
       Vary:
@@ -181,12 +181,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -228,12 +228,12 @@ interactions:
       Content-Length:
       - '1117'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -274,12 +274,12 @@ interactions:
       Content-Length:
       - '2039'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -299,9 +299,9 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-      "bronorganisatie": "000000000", "creatiedatum": "2026-07-31", "titel": "Form
-      002 (PDF)", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf",
-      "inhoud": "", "status": "definitief", "bestandsnaam": "open-forms-Form 002 (PDF).pdf",
+      "bronorganisatie": "000000000", "creatiedatum": "2026-08-17", "titel": "Form
+      240 (PDF)", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf",
+      "inhoud": "", "status": "definitief", "bestandsnaam": "open-forms-Form 240 (PDF).pdf",
       "ontvangstdatum": null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht":
       false, "bestandsomvang": 0}'
     headers:
@@ -321,9 +321,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a314ec06-dbfc-45e4-bae1-d7fe778bb72d","identificatie":"DOCUMENT-2026-0000000006","bronorganisatie":"000000000","creatiedatum":"2026-07-31","titel":"Form
-        002 (PDF)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-07-31T15:31:39.094429Z","bestandsnaam":"open-forms-Form
-        002 (PDF).pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a314ec06-dbfc-45e4-bae1-d7fe778bb72d/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1d97968c-b9a6-4f6a-92c9-488cdf8efcc4","identificatie":"DOCUMENT-2026-0000000122","bronorganisatie":"000000000","creatiedatum":"2026-08-17","titel":"Form
+        240 (PDF)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-08-17T15:57:53.048436Z","bestandsnaam":"open-forms-Form
+        240 (PDF).pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1d97968c-b9a6-4f6a-92c9-488cdf8efcc4/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":null,"integriteit":null,"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -333,18 +333,18 @@ interactions:
       Content-Length:
       - '996'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a314ec06-dbfc-45e4-bae1-d7fe778bb72d
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1d97968c-b9a6-4f6a-92c9-488cdf8efcc4
       Referrer-Policy:
       - same-origin
       Vary:
@@ -357,8 +357,8 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c",
-      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a314ec06-dbfc-45e4-bae1-d7fe778bb72d"}'
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac",
+      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1d97968c-b9a6-4f6a-92c9-488cdf8efcc4"}'
     headers:
       Accept:
       - '*/*'
@@ -376,8 +376,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaakinformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/0adc3fe1-4b37-4d97-b596-ef251d404314","uuid":"0adc3fe1-4b37-4d97-b596-ef251d404314","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a314ec06-dbfc-45e4-bae1-d7fe778bb72d","zaak":"http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c","aardRelatieWeergave":"Hoort
-        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-07-31T15:31:39.266099Z","vernietigingsdatum":null,"status":null}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/d09e65f5-187b-4873-9007-79de4f45aa1e","uuid":"d09e65f5-187b-4873-9007-79de4f45aa1e","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1d97968c-b9a6-4f6a-92c9-488cdf8efcc4","zaak":"http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac","aardRelatieWeergave":"Hoort
+        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-08-17T15:57:53.181635Z","vernietigingsdatum":null,"status":null}'
     headers:
       API-version:
       - 1.5.1
@@ -386,18 +386,18 @@ interactions:
       Content-Length:
       - '534'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/0adc3fe1-4b37-4d97-b596-ef251d404314
+      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/d09e65f5-187b-4873-9007-79de4f45aa1e
       Referrer-Policy:
       - same-origin
       Vary:
@@ -433,12 +433,12 @@ interactions:
       Content-Length:
       - '524'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -455,7 +455,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac",
       "betrokkeneType": "natuurlijk_persoon", "roltype": "http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b",
       "roltoelichting": "inzender formulier", "indicatieMachtiging": "", "betrokkeneIdentificatie":
       {"inpBsn": "123456782"}}'
@@ -476,8 +476,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/rollen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/3b702503-4a80-4080-828c-b74c402bba9c","uuid":"3b702503-4a80-4080-828c-b74c402bba9c","zaak":"http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
-        formulier","registratiedatum":"2026-07-31T15:31:39.474379Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"beginGeldigheid":null,"eindeGeldigheid":null,"betrokkeneIdentificatie":{"inpBsn":"123456782","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null},"authenticatieContext":null}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/b5ec130b-eb43-4274-b153-4bc4c058dc54","uuid":"b5ec130b-eb43-4274-b153-4bc4c058dc54","zaak":"http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
+        formulier","registratiedatum":"2026-08-17T15:57:53.344007Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"beginGeldigheid":null,"eindeGeldigheid":null,"betrokkeneIdentificatie":{"inpBsn":"123456782","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null},"authenticatieContext":null}'
     headers:
       API-version:
       - 1.5.1
@@ -486,18 +486,18 @@ interactions:
       Content-Length:
       - '1009'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/rollen/3b702503-4a80-4080-828c-b74c402bba9c
+      - http://localhost:8003/zaken/api/v1/rollen/b5ec130b-eb43-4274-b153-4bc4c058dc54
       Referrer-Policy:
       - same-origin
       Vary:
@@ -533,12 +533,12 @@ interactions:
       Content-Length:
       - '1343'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -555,9 +555,9 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac",
       "statustype": "http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34",
-      "datumStatusGezet": "2026-07-31T15:31:39.601596+00:00", "statustoelichting":
+      "datumStatusGezet": "2026-08-17T15:57:53.451316+00:00", "statustoelichting":
       ""}'
     headers:
       Accept:
@@ -576,7 +576,7 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/statussen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/ad6abdf2-087a-4cc0-898e-3777cbaf0cfa","uuid":"ad6abdf2-087a-4cc0-898e-3777cbaf0cfa","zaak":"http://localhost:8003/zaken/api/v1/zaken/0a71652f-8744-498e-90c8-257a8baa8c5c","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2026-07-31T15:31:39.601596Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/1c610a61-c477-4534-aa13-85dc6a6f4329","uuid":"1c610a61-c477-4534-aa13-85dc6a6f4329","zaak":"http://localhost:8003/zaken/api/v1/zaken/ed92d428-3f28-401a-b954-f7b4cceea4ac","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2026-08-17T15:57:53.451316Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
     headers:
       API-version:
       - 1.5.1
@@ -585,18 +585,18 @@ interactions:
       Content-Length:
       - '479'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/statussen/ad6abdf2-087a-4cc0-898e-3777cbaf0cfa
+      - http://localhost:8003/zaken/api/v1/statussen/1c610a61-c477-4534-aa13-85dc6a6f4329
       Referrer-Policy:
       - same-origin
       Vary:

@@ -25,12 +25,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -71,12 +71,12 @@ interactions:
       Content-Length:
       - '2438'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -95,9 +95,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-07-31", "startdatum": "2026-07-31", "productenOfDiensten":
+      "registratiedatum": "2026-08-17", "startdatum": "2026-08-17", "productenOfDiensten":
       [], "omschrijving": "Description: BBQ permission", "toelichting": "Extra explanation
-      about BBQ permission", "betalingsindicatie": "nvt", "identificatie": "OF-CC7YA9"}'
+      about BBQ permission", "betalingsindicatie": "nvt", "identificatie": "OF-E3V6XQ"}'
     headers:
       Accept:
       - '*/*'
@@ -119,8 +119,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/d7b25fac-8f94-4681-b953-c7fd06f06212","uuid":"d7b25fac-8f94-4681-b953-c7fd06f06212","identificatie":"OF-CC7YA9","bronorganisatie":"000000000","omschrijving":"Description:
-        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-07-31","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-07-31","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-01","publicatiedatum":null,"laatstGemuteerd":"2026-07-31T15:32:13.984834Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/07d8c4ce-114e-4bb9-a480-3cba3b3101c8","uuid":"07d8c4ce-114e-4bb9-a480-3cba3b3101c8","identificatie":"OF-E3V6XQ","bronorganisatie":"000000000","omschrijving":"Description:
+        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-08-17","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-08-17","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-18","publicatiedatum":null,"laatstGemuteerd":"2026-08-17T15:58:27.069115Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"eerdereOpschorting":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"gerelateerdeZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -132,18 +132,18 @@ interactions:
       Content-Length:
       - '1530'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/d7b25fac-8f94-4681-b953-c7fd06f06212
+      - http://localhost:8003/zaken/api/v1/zaken/07d8c4ce-114e-4bb9-a480-3cba3b3101c8
       Referrer-Policy:
       - same-origin
       Vary:
@@ -171,11 +171,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/d7b25fac-8f94-4681-b953-c7fd06f06212
+    uri: http://localhost:8003/zaken/api/v1/zaken/07d8c4ce-114e-4bb9-a480-3cba3b3101c8
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/d7b25fac-8f94-4681-b953-c7fd06f06212","uuid":"d7b25fac-8f94-4681-b953-c7fd06f06212","identificatie":"OF-CC7YA9","bronorganisatie":"000000000","omschrijving":"Description:
-        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-07-31","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-07-31","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-01","publicatiedatum":null,"laatstGemuteerd":"2026-07-31T15:32:13.984834Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/07d8c4ce-114e-4bb9-a480-3cba3b3101c8","uuid":"07d8c4ce-114e-4bb9-a480-3cba3b3101c8","identificatie":"OF-E3V6XQ","bronorganisatie":"000000000","omschrijving":"Description:
+        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-08-17","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-08-17","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":"2026-08-18","publicatiedatum":null,"laatstGemuteerd":"2026-08-17T15:58:27.069115Z","laatstGeopend":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"eerdereOpschorting":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"gerelateerdeZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""},"_expand":{}}'
     headers:
       API-version:
@@ -187,18 +187,18 @@ interactions:
       Content-Length:
       - '1543'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
-        tile.openstreetmap.org; frame-src ''self''; object-src ''none''; default-src
-        ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
-        cdn.jsdelivr.net; frame-ancestors ''none'''
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"91306cf416cda8682053cdcfe3d1d19c"'
+      - '"4e1064cb8f2d20060886771ab8314ba1"'
       Referrer-Policy:
       - same-origin
       Vary:

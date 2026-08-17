@@ -150,7 +150,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         with self.subTest("objects API record"):
             self.assertEqual(
                 result["type"],
-                "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
             self.assertEqual(
                 result["record"]["typeVersion"], v2_options["objecttype_version"]
@@ -922,23 +922,15 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         assert result is not None
         record_data = result["record"]["data"]
+        # despite #6012 not being implemented yet, the nested fieldset data is not present
+        # since as of OF 4.0 hidden field data (with clear on hide) is simply not present
+        # in the submission data at all, and logic evaluation no longer populates this with
+        # the default/empty value
         self.assertEqual(
             record_data,
             {
                 "fieldsetShown": False,
-                "repeatingGroupItems": [
-                    {
-                        "editgridTextfield": "foo",
-                        # the component key structure is used in the output of the mapped
-                        # item of the edit grid.
-                        # Note that DH would expect this parent key and child not to be
-                        # present at all, however because of #6007 we can't do that,
-                        # unless #6012 gets implemented.
-                        "container": {
-                            "nestedTextfield": "",
-                        },
-                    },
-                ],
+                "repeatingGroupItems": [{"editgridTextfield": "foo"}],
             },
         )
 

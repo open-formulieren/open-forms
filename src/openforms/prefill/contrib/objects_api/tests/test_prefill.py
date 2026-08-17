@@ -49,7 +49,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     },
                     objecttype_version=3,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
 
         submission = SubmissionFactory.from_components(
@@ -156,7 +156,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     data={"bsn": "111222333"},
                     objecttype_version=3,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
 
         submission = SubmissionFactory.from_components(

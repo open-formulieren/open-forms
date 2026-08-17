@@ -1,8 +1,8 @@
 interactions:
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"name": {"voornaam": "My last name"}},
-      "startAt": "2026-06-25"}}'
+      "startAt": "2026-08-17"}}'
     headers:
       Accept:
       - '*/*'
@@ -13,38 +13,40 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '198'
+      - '192'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: POST
-    uri: http://localhost:8002/api/v2/objects
+    uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1","uuid":"edcc7d6e-7bc2-4401-8974-452e13e1c5a1","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"name":{"voornaam":"My
-        last name"}},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"name":{"voornaam":"My
+        last name"}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '427'
+      - '435'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:39 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1
+      - http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -64,29 +66,31 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '887'
+      - '857'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:39 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -97,11 +101,11 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "My last
       name"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "c54b0807-a4dd-461e-8dc7-f69ca1ba5896", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-06-25"}}'
+      "0a28fbb3-eb07-4252-b3f3-7b7f3ee10fee", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
     headers:
       Accept:
       - '*/*'
@@ -112,38 +116,40 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '418'
+      - '412'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: POST
-    uri: http://localhost:8002/api/v2/objects
+    uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/1d968589-9db9-4c8f-aeda-330dfceb2d42","uuid":"1d968589-9db9-4c8f-aeda-330dfceb2d42","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"My
-        last name"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"c54b0807-a4dd-461e-8dc7-f69ca1ba5896","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/9927f194-b13b-4832-a7aa-5a667a73e701","uuid":"9927f194-b13b-4832-a7aa-5a667a73e701","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"My
+        last name"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"0a28fbb3-eb07-4252-b3f3-7b7f3ee10fee","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '627'
+      - '635'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:39 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/1d968589-9db9-4c8f-aeda-330dfceb2d42
+      - http://localhost:8001/api/v2/objects/9927f194-b13b-4832-a7aa-5a667a73e701
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -163,29 +169,31 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '887'
+      - '857'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -198,9 +206,9 @@ interactions:
 - request:
     body: '{"record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam":
       "Updated value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [],
-      "submission_id": "9dcb5e06-b717-4a1c-a03a-4b2440b80f8b", "language_code": "nl",
+      "submission_id": "48d13091-4420-44d5-8ff4-bebbdc073195", "language_code": "nl",
       "payment": {"completed": false, "amount": 0, "public_order_ids": []}}, "startAt":
-      "2026-06-25"}}'
+      "2026-08-17"}}'
     headers:
       Accept:
       - '*/*'
@@ -215,32 +223,34 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1
+    uri: http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1","uuid":"edcc7d6e-7bc2-4401-8974-452e13e1c5a1","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"name":{"voornaam":"My
-        last name"},"data":{"fd-test":{"voornaam":"Updated value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"9dcb5e06-b717-4a1c-a03a-4b2440b80f8b","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"name":{"voornaam":"My
+        last name"},"data":{"fd-test":{"voornaam":"Updated value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"48d13091-4420-44d5-8ff4-bebbdc073195","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '663'
+      - '671'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -262,32 +272,34 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8002/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1
+    uri: http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/edcc7d6e-7bc2-4401-8974-452e13e1c5a1","uuid":"edcc7d6e-7bc2-4401-8974-452e13e1c5a1","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"bsn":"","data":{"fd-test":{"voornaam":"Updated
-        value"}},"name":{"voornaam":"My last name"},"type":"","payment":{"amount":0,"completed":false,"public_order_ids":[]},"pdf_url":"","attachments":[],"language_code":"nl","submission_id":"9dcb5e06-b717-4a1c-a03a-4b2440b80f8b"},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"bsn":"","data":{"fd-test":{"voornaam":"Updated
+        value"}},"name":{"voornaam":"My last name"},"type":"","payment":{"amount":0,"completed":false,"public_order_ids":[]},"pdf_url":"","attachments":[],"language_code":"nl","submission_id":"48d13091-4420-44d5-8ff4-bebbdc073195"},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '663'
+      - '671'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -307,29 +319,31 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '887'
+      - '857'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -340,11 +354,11 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "Updated
       value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "3b9efb7d-dfc7-40c8-b380-27c362603e99", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-06-25"}}'
+      "73032fb7-5121-4c8e-9918-2fb36fbe5cb3", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
     headers:
       Accept:
       - '*/*'
@@ -355,38 +369,40 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '419'
+      - '413'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: POST
-    uri: http://localhost:8002/api/v2/objects
+    uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/d782a376-e326-41f4-9d55-738a13975847","uuid":"d782a376-e326-41f4-9d55-738a13975847","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
-        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"3b9efb7d-dfc7-40c8-b380-27c362603e99","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/792cb1a2-ee9a-42a1-9aa1-e487355c29ad","uuid":"792cb1a2-ee9a-42a1-9aa1-e487355c29ad","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
+        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"73032fb7-5121-4c8e-9918-2fb36fbe5cb3","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '628'
+      - '636'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/d782a376-e326-41f4-9d55-738a13975847
+      - http://localhost:8001/api/v2/objects/792cb1a2-ee9a-42a1-9aa1-e487355c29ad
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -406,29 +422,31 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '887'
+      - '857'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -439,11 +457,11 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "Updated
       value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "e1a2b5c0-ab81-4851-9ffd-5b0e464e8d21", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-06-25"}}'
+      "57dcbdfb-91d0-4d2d-82f7-8f382adc415c", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
     headers:
       Accept:
       - '*/*'
@@ -454,38 +472,40 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '419'
+      - '413'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: POST
-    uri: http://localhost:8002/api/v2/objects
+    uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/2bef7b4a-8acd-49cc-a080-9e64c2bb0925","uuid":"2bef7b4a-8acd-49cc-a080-9e64c2bb0925","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
-        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"e1a2b5c0-ab81-4851-9ffd-5b0e464e8d21","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/30b39d95-1d04-4711-a66b-2b8a1ba30c44","uuid":"30b39d95-1d04-4711-a66b-2b8a1ba30c44","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
+        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"57dcbdfb-91d0-4d2d-82f7-8f382adc415c","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '628'
+      - '636'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:40 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/2bef7b4a-8acd-49cc-a080-9e64c2bb0925
+      - http://localhost:8001/api/v2/objects/30b39d95-1d04-4711-a66b-2b8a1ba30c44
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:

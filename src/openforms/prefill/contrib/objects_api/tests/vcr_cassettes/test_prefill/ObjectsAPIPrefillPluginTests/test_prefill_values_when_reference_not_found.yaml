@@ -11,31 +11,34 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8002/api/v2/objects/048a37ca-a602-4158-9e60-9f06f3e47e2a
+    uri: http://localhost:8001/api/v2/objects/048a37ca-a602-4158-9e60-9f06f3e47e2a
   response:
     body:
-      string: '{"detail":"Not found."}'
+      string: '{"type":"http://localhost:8001/ref/fouten/NotFound/","code":"not_found","title":"Not
+        found.","status":404,"detail":"Not found.","instance":"urn:uuid:0a21d3d9-1f90-45e6-8b76-063eedd7e4f1"}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '23'
+      - '187'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Wed, 25 Mar 2026 11:43:59 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

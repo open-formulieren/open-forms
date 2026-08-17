@@ -89,7 +89,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
         with self.subTest("metadata"):
             self.assertEqual(
                 result["type"],
-                "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                "http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
             self.assertIn("uuid", result)
 
@@ -139,6 +139,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
                     "registrationAt": record["registrationAt"],
                     "endAt": None,
                     "index": 1,
+                    "references": [],
                 },
             )
 
@@ -208,7 +209,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
         with self.subTest("metadata"):
             self.assertEqual(
                 result["type"],
-                "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                "http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
             self.assertIn("uuid", result)
 
@@ -268,6 +269,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
                     "registrationAt": record["registrationAt"],
                     "endAt": None,
                     "index": 1,
+                    "references": [],
                 },
             )
 

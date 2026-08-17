@@ -3319,8 +3319,8 @@ class ObjectsAPITests(BaseRegistrationTestCase):
             objecttype_version_url: str,
         ):
             object_url = object_url.replace(
-                "http://objects-web:8000",
-                "http://host.docker.internal:8002",
+                "http://localhost:8001",
+                "http://host.docker.internal:8001",
                 1,
             )
             return original_create_zaakobject(
@@ -3345,7 +3345,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
             self.assertEqual(
                 created_object["type"],
                 (
-                    "http://host.docker.internal:8001/api/v2/"
+                    "http://localhost:8001/api/v2/"
                     "objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e"
                 ),
             )
@@ -3400,6 +3400,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
                     "registrationAt": today,
                     "correctionFor": None,
                     "correctedBy": None,
+                    "references": [],
                 },
             )
 
@@ -3410,7 +3411,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
             self.assertEqual(
                 zaakobject["object"],
                 created_object["url"].replace(
-                    "objects-web:8000", "host.docker.internal:8002"
+                    "localhost:8001", "host.docker.internal:8001"
                 ),
             )
             self.assertEqual(zaakobject["objectType"], "overige")

@@ -39,7 +39,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
                     objecttype_version=1,
                 ),
                 objecttype_url=(
-                    "http://objecttypes-web:8000/api/v2/objecttypes/"
+                    "http://localhost:8001/api/v2/objecttypes/"
                     "8faed0fa-7864-4409-aa6d-533a37616a9e"
                 ),
             )
@@ -84,7 +84,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
                     objecttype_version=1,
                 ),
                 objecttype_url=(
-                    "http://objecttypes-web:8000/api/v2/objecttypes/"
+                    "http://localhost:8001/api/v2/objecttypes/"
                     "8faed0fa-7864-4409-aa6d-533a37616a9e"
                 ),
             )

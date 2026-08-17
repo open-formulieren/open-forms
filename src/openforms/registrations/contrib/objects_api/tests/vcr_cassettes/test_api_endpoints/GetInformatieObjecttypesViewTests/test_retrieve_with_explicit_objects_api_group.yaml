@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen
   response:
@@ -30,6 +30,13 @@ interactions:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
       - '3780'
+      Content-Security-Policy:
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -37,7 +44,7 @@ interactions:
       Referrer-Policy:
       - same-origin
       Vary:
-      - Accept, origin
+      - Accept, origin, Cookie
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
@@ -55,7 +62,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen
   response:
@@ -88,6 +95,13 @@ interactions:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
       - '8750'
+      Content-Security-Policy:
+      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
+        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
+        default-src ''self''; base-uri ''self''; frame-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -95,7 +109,7 @@ interactions:
       Referrer-Policy:
       - same-origin
       Vary:
-      - Accept, origin
+      - Accept, origin, Cookie
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:

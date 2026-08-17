@@ -35,7 +35,7 @@ class ObjectsAPIPrefillPluginConfigTests(OFVCRMixin, APITestCase):
 
     def test_invalid_service_raises_exception(self):
         objects_service = ServiceFactory.create(
-            api_root="http://localhost:8002/api/v2/invalid",
+            api_root="http://localhost:8001/api/v2/invalid",
             api_type=APITypes.orc,
             header_key="Authorization",
             header_value="Token INVALID",

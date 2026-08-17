@@ -39,7 +39,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                     data={"bsn": "111222333", "foo": "bar"},
                     objecttype_version=1,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
         cls.object_ref = obj["uuid"]
 
@@ -104,7 +104,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                     data={"nested": {"bsn": "111222333"}, "foo": "bar"},
                     objecttype_version=1,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
             object_ref = object["uuid"]
 
@@ -130,7 +130,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                     data={"nested": {"bsn": "111222333"}, "foo": "bar"},
                     objecttype_version=1,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
             object_ref = object["uuid"]
 
