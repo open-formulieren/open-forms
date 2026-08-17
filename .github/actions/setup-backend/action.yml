@@ -35,5 +35,4 @@ runs:
         optimize-postgres: ${{ inputs.optimize-postgres }}
         pg-service: 'postgres'
         setup-node: ${{ inputs.setup-node }}
-        npm-ci-flags: '--legacy-peer-deps'
         working-directory: ${{ inputs.working-directory }}
