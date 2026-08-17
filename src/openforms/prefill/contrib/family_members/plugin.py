@@ -39,7 +39,10 @@ class HasDictDump(Protocol):
 
 class Handler(Protocol):
     def __call__(
-        self, bsn: str, options: FamilyMemberOptions
+        self,
+        bsn: str,
+        options: FamilyMemberOptions,
+        submission: Submission,
     ) -> Sequence[HasDictDump]: ...
 
 
@@ -82,9 +85,8 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
 
         handler = get_handler()
         results: Sequence[JSONObject] = [
-            item.model_dump(by_alias=True) for item in handler(bsn, options)
+            item.model_dump(by_alias=True) for item in handler(bsn, options, submission)
         ]
-
         # we need to update both variables (the one that contains the initial data and the
         # prefill configuration and the mutable one) with the data that we have retrieved
         return {

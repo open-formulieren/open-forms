@@ -4,6 +4,7 @@ import structlog
 
 from openforms.contrib.haal_centraal.clients import get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import NaturalPersonDetails
+from openforms.submissions.models import Submission
 
 from .constants import FamilyMembersTypeChoices
 from .filters import filter_members_by_age
@@ -13,9 +14,9 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_data_from_haal_centraal(
-    bsn: str, options: FamilyMemberOptions
+    bsn: str, options: FamilyMemberOptions, submission: Submission
 ) -> list[NaturalPersonDetails]:
-    with get_brp_client() as client:
+    with get_brp_client(submission=submission) as client:
         match options["type"]:
             case FamilyMembersTypeChoices.partners:
                 return client.get_family_members(
