@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import copy
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -14,6 +13,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.formio.typing import Component
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
@@ -38,6 +38,12 @@ class ContainerMixin:
     mode: RenderModes
     parent_node: Node | None = None
 
+    if TYPE_CHECKING:
+
+        def _is_visible_in_editgrid_item(
+            self, formio_config_wrapper: FormioConfigurationWrapper
+        ) -> bool: ...
+
     @property
     def is_visible(self) -> bool:
         # fieldset/editgrid components do not support the showInFoo properties, so we don't use the super
@@ -55,21 +61,7 @@ class ContainerMixin:
         # We only pass the step data, since frontend logic only has access to the
         # current step data.
         if isinstance(self.parent_node, EditGridGroupNode):
-            # Frontend logic for repeating group does not specify the index of the
-            # iteration. So we need to look at the data for a specific iteration to
-            # figure out if a field within the iteration is visible
-            artificial_repeating_group_data = copy.deepcopy(self.step_data)
-            current_iteration_data = self.step_data.get(self.path, None)
-            artificial_repeating_group_data[self.parent_node.path] = (
-                current_iteration_data
-            )
-            if is_hidden(
-                self.component,
-                artificial_repeating_group_data,
-                # we can pass the root config wrapper because all editgrid item component
-                # keys are already exposed in the config wrapper with their prefixed paths
-                configuration=formio_config_wrapper,
-            ):
+            if not self._is_visible_in_editgrid_item(formio_config_wrapper):
                 return False
         elif is_hidden(
             self.component,
