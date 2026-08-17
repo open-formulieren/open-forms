@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import Any, Literal, NotRequired, TypedDict
@@ -14,6 +15,7 @@ from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.formio.typing import Component
+from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
@@ -30,8 +32,10 @@ class ContainerMixin:
 
     renderer: Renderer
     step_data: FormioData
+    path: str = ""  # Path in the data (#TODO rename to data_path?)
     component: Component
     mode: RenderModes
+    parent_node: Node | None = None
 
     @property
     def is_visible(self) -> bool:
@@ -45,11 +49,32 @@ class ContainerMixin:
         if self.mode in visible_modes:
             return True
 
-        # We only pass the step data, since frontend logic only has access to the current step data.
-        if not is_visible_in_frontend(
+        formio_config_wrapper = self.renderer.submission.total_configuration_wrapper
+
+        # We only pass the step data, since frontend logic only has access to the
+        # current step data.
+        if isinstance(self.parent_node, EditGridGroupNode):
+            # Frontend logic for repeating group does not specify the index of the
+            # iteration. So we need to look at the data for a specific iteration to
+            # figure out if a field within the iteration is visible
+            artificial_repeating_group_data = copy.deepcopy(self.step_data)
+            current_iteration_data = self.step_data.get(self.path, None)
+            artificial_repeating_group_data[self.parent_node.path] = (
+                current_iteration_data
+            )
+
+            if not is_visible_in_frontend(
+                self.component,
+                artificial_repeating_group_data,
+                # we can pass the root config wrapper because all editgrid item component
+                # keys are already exposed in the config wrapper with their prefixed paths
+                configuration_wrapper=formio_config_wrapper,
+            ):
+                return False
+        elif not is_visible_in_frontend(
             self.component,
             self.step_data,
-            configuration_wrapper=self.renderer.submission.total_configuration_wrapper,
+            configuration_wrapper=formio_config_wrapper,
         ):
             return False
 
