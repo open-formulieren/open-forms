@@ -18,6 +18,7 @@ from collections.abc import Iterator, Mapping
 from django.template.backends.django import Template as DjangoTemplate
 from django.template.base import FilterExpression, Node, Variable, VariableNode
 from django.template.defaulttags import ForNode, IfNode, TemplateLiteral
+from django.template.smartif import OPERATORS, TokenBase
 
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
@@ -103,38 +104,56 @@ def _iter_variables_from_node(node: Node) -> Iterator[str]:
             # Note that variables inside the if statement are already extracted by
             # iterating over the complete node list
             for condition, _ in node.conditions_nodelists:
-                # Example: {% if someVar %} -> someVar
-                # condition is None for {% else %} branches (see django.template.defaulttags
-                # and specifically the do_if function)
-                if condition is None:
-                    continue
+                yield from _iter_variables_from_token(condition)
 
-                if (
-                    isinstance(condition, TemplateLiteral)
-                    and isinstance(condition.value, FilterExpression)
-                    and isinstance(condition.value.var, Variable)
-                ):
-                    # This check is performed in the constructor of `Variable`
-                    assert isinstance(condition.value.var.var, str)
-                    yield condition.value.var.var
-                    continue
 
-                # A condition can also be of type "Operation". We cannot check the
-                # instance, because this class is defined inside another function
-                # (`django.template.smartif.infix`), so we just check the "first" and
-                # "second" attributes manually.
-                # Example 'first': {% if someVar == "foo" % } -> someVar
-                # Example 'second': {% if "foo" == someVar % } -> someVar
-                for name in ("first", "second"):
-                    if (
-                        (attr := getattr(condition, name))
-                        and isinstance(attr, TemplateLiteral)
-                        and isinstance(attr.value, FilterExpression)
-                        and isinstance(attr.value.var, Variable)
-                    ):
-                        # This check is performed in the constructor of `Variable`
-                        assert isinstance(attr.value.var.var, str)
-                        yield attr.value.var.var
+def _iter_variables_from_token(token: TokenBase | None) -> Iterator[str]:
+    # TokenBase as type hint because Operator is created dynamically through the
+    # ``infix`` factory
+
+    # Example: {% if someVar %} -> someVar
+    # condition is None for {% else %} branches (see django.template.defaulttags
+    # and specifically the do_if function)
+    if token is None:
+        return
+
+    match token.id:  # see django.template.smartif.OPERATORS
+        # A condition can also be of type "Operation". We cannot check the
+        # instance, because this class is defined inside another function
+        # (`django.template.smartif.infix`), so we just check the "first" and
+        # "second" attributes manually.
+        # Example 'first': {% if someVar == "foo" % } -> someVar
+        # Example 'second': {% if "foo" == someVar % } -> someVar
+        #
+        # Expressions can be more complex, which is why we need to recurse
+        case (
+            "or"
+            | "and"
+            | "not"
+            | "not in"
+            | "is"
+            | "is not"
+            | "=="
+            | "!="
+            | ">"
+            | ">="
+            | "<"
+            | "<="
+        ):
+            Operator = OPERATORS[token.id]
+            assert isinstance(token, Operator)
+            first, second = token.first, token.second
+            yield from _iter_variables_from_token(first)
+            yield from _iter_variables_from_token(second)
+        case "literal":
+            assert isinstance(token, TemplateLiteral)
+            if isinstance(token.value, FilterExpression) and isinstance(
+                token.value.var, Variable
+            ):
+                # This check is performed in the constructor of `Variable`
+                assert isinstance(token.value.var.var, str)
+                yield token.value.var.var
+            # else -> literal string, not a variable to resolve
 
 
 def extract_variables_used(source: str, backend=sandbox_backend) -> set[str]:

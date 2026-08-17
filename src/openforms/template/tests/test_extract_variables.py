@@ -104,3 +104,30 @@ class ExtractVariablesTests(SimpleTestCase):
                 "achternaam",
             },
         )
+
+    def test_var_in_if_elif_blocks(self):
+        source = """
+            {% if varA or varB %}
+                {{otherVar}}
+            {% elif varC != 'asdf' and varD > varE or varF %}
+                {{yetAnotherVar}}
+            {% else %}
+                {{finalVar}}
+            {% endif %}
+            """
+        variable_names = set(extract_variables_used(source))
+
+        self.assertEqual(
+            variable_names,
+            {
+                "varA",
+                "varB",
+                "otherVar",
+                "varC",
+                "varD",
+                "varE",
+                "varF",
+                "yetAnotherVar",
+                "finalVar",
+            },
+        )
