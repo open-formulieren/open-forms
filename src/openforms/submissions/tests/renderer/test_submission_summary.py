@@ -690,7 +690,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                         "selectievakje": True,
                         "tekstveld2": "c",
                         "tekstveld3": "d",
-                    }
+                    },
+                    {
+                        "tekstveld0": "e",
+                        "tekstveld1": "f",
+                        "selectievakje": False,
+                    },
                 ],
             },
             with_report=True,
@@ -716,7 +721,12 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 ("Veldengroep", None),
                 ("Tekstveld2", "c"),
                 ("Tekstveld3", "d"),
+                ("Item 2", None),
+                ("Tekstveld0", "e"),
+                ("Tekstveld1", "f"),
+                ("Selectievakje", False),
             ]
+            self.assertEqual(len(summary_data), len(expected))
             for index, (name, value) in enumerate(expected):
                 with self.subTest(label=name, expected_value=value):
                     summary_item = summary_data[index]
