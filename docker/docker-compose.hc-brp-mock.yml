@@ -17,6 +17,17 @@ services:
     networks:
       - open-forms-dev
 
+  personen-mock-init:
+    build:
+      context: haal_centraal_brp
+    volumes:
+      # mount test data dir to volume so we can easily apply patches in an automated
+      # way. docker engine will copy the data to the volume initially if this is a fresh
+      # container/volume
+      - hc-test-data:/test-data/
+      - ./haal_centraal_brp/apply_patches.sh:/apply_patches.sh
+      - ../patches/haal_centraal_brp/:/patches/
+
 volumes:
   hc-test-data:
 
