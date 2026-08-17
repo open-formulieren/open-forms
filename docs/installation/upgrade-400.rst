@@ -19,16 +19,48 @@ NL Design System related changes
 
 We frequently check our own markup and CSS code for opportunities to replace custom
 implementations with existing NL Design System (community) components. As an organization
-that uses NL DS, you benefit from this with more consistent appearance of the same
-logical components in different places.
+that uses NL Design System, you benefit from this with more consistent appearance of the
+same logical components in different places.
 
-However, because Open Forms existed *before* NL DS was commonplace, this sometimes leads
-to changes in appearance, because what used to be hardcoded CSS is now parametrized,
-and we don't have any guarantees that the relevant design tokens are set.
+However, because Open Forms existed *before* NL Design System was commonplace, this
+sometimes leads to changes in appearance, because what used to be hardcoded CSS is now
+parametrized, and we don't have any guarantees that the relevant design tokens are set.
 
 Below you find a summary of components that were moved from custom CSS to existing
-NL DS components that may require visual inspection/additional definitions in your
-custom theme stylesheet(s).
+NL Design System components that may require visual inspection/additional definitions in
+your custom theme stylesheet(s).
+
+SDK and renderer updates
+------------------------
+
+The SDK and renderer (the "public frontend") have been considerably updated - most
+notably the positioning of validation errors and field descriptions has changed. They
+are now shown between the field label and field input. This required a large number of
+markup and CSS changes that custom themes may have been relying on.
+
+The detailed `upgrade notes are documented online
+<https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-4-0-0--docs>`_,
+including `renderer upgrade notes
+<https://open-formulieren.github.io/formio-renderer/?path=/docs/upgrade-notes-v2-0-0--docs>`_.
+
+For organizations that maintain their own themes, we strongly recommended integrating
+at least the renderer package in your own storybook to capture visual regressions. The
+package is available on NPM: ``@open-formulieren/formio-renderer@^2.0.0``.
+
+A summary of affected components:
+
+* ``openforms-body``
+* ``openforms-card``
+* ``utrecht-form-field-label``
+* ``utrecht-form-field``
+* ``utrecht-form-field-error-message``
+* ``utrecht-form-field-description``
+* ``checkbox``
+* ``selectboxes``
+* ``radio``
+* ``customer-profile``
+* ``openforms-fieldset``
+* ``file-upload``
 
 Default design token values removal
 -----------------------------------
@@ -60,7 +92,7 @@ The cookie notice/banner has been slightly revised. The styling that causes the 
 to only take up part of the viewport width is now scoped to the Open Formulieren theme,
 meaning that you should include a similar rule if you have custom themes. This is an
 ongoing effort to consistently deal with different viewports (mobile vs. desktop) in the
-NL DS ecosystem.
+NL Design System ecosystem.
 
 The CSS rule to include is:
 
@@ -84,7 +116,7 @@ Removed deprecations
 
 The following fallbacks were deprecated and have been removed.
 
-**``backtotop-link`` component**
+**backtotop-link component**
 
 * removed fallback to ``--utrecht-button-column-gap``, specify
   ``--of-backtotop-link-column-gap`` explicitly
