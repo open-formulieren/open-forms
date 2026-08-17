@@ -12,6 +12,14 @@ impact items first.
    :local:
    :backlinks: none
 
+Upgrade checklist
+=================
+
+1. Ensure all forms are converted to use the new logic evaluation.
+2. Ensure (custom) themes have been updated/prepared for 4.0.
+3. Ensure legacy ZGW URLs have been migrated if you use the Objects API or ZGW APIs
+   registration plugins.
+
 NL Design System related changes
 ================================
 
@@ -134,20 +142,26 @@ The support for legacy logic evaluation has been removed, which means all forms 
 Since Open Forms will now automatically assign all logic rules to the relevant form steps, it is also no longer
 possible to specify a "trigger from step" for a logic rule.
 
-TODO: this should probably a separate page describing the logic engine in more detail
 For more information about the new logic evaluation, please refer to the
 :ref:`detailed release notes of 3.5.0 <installation_upgrade_350>`.
 
+Migration step (on 3.5.x)
+-------------------------
+
 .. warning::
 
-    Before upgrading, all existing forms should be converted to the new logic evaluation. This can be done on a
-    per-form basis, or in bulk using the following management command. Any forms which contain cycles in their
-    logic rules need to be resolved manually. The output of the management command will include relevant form
-    details if this is the case.
+    You must convert all existing forms to the new logic evaluation. Open Forms 4.0 will
+    refuse to upgrade if forms with the old logic evaluation are detected or inconsistent
+    configurations are detected.
 
-    .. code-block:: bash
+Conversion can be done on a per-form basis, or in bulk using the following management
+command. Any forms which contain cycles in their logic rules need to be resolved
+manually. The output of the management command will include relevant form details if
+this is the case.
 
-        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+.. code-block:: bash
+
+    python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
 
 Clearing of values
 ------------------
