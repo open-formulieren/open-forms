@@ -1,3 +1,4 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import {fileURLToPath} from 'node:url';
 import path, {dirname} from 'path';
