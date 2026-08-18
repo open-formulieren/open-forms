@@ -333,7 +333,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     },
                     objecttype_version=3,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
 
         with self.subTest("Create an object"):

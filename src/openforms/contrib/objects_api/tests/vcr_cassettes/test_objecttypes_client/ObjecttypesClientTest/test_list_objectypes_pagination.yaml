@@ -9,29 +9,31 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":8,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","uuid":"db4e8653-1f84-4df7-82bd-96787c52b298","name":"Children","namePlural":"Children","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1"]}]}'
+      string: '{"count":8,"next":"http://localhost:8001/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://localhost:8001/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","uuid":"db4e8653-1f84-4df7-82bd-96787c52b298","name":"Children","namePlural":"Children","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1"]}]}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '713'
+      - '695'
+      Content-Security-Policy:
+      - 'script-src ''self'' ''unsafe-inline''; default-src ''self''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; form-action ''self''; frame-src ''self'';
+        img-src ''self'' data: cdn.redoc.ly; base-uri ''self''; object-src ''none'';
+        font-src ''self'' fonts.gstatic.com; frame-ancestors ''none''; worker-src
+        ''self'' blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Wed, 25 Mar 2026 11:39:51 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

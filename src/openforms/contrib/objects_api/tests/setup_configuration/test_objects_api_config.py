@@ -30,19 +30,10 @@ class ObjectsAPIConfigurationStepTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.objecttypes_service = ServiceFactory.create(
-            slug="objecttypen-test",
-            label="Objecttypen API test",
+        cls.open_object_service = ServiceFactory.create(
+            slug="open-object-test",
+            label="Open Object test",
             api_root="http://localhost:8001/api/v2/",
-            api_type=APITypes.orc,
-            auth_type=AuthTypes.api_key,
-            header_key="Authorization",
-            header_value="Token foo",
-        )
-        cls.objects_service = ServiceFactory.create(
-            slug="objecten-test",
-            label="Objecten API test",
-            api_root="http://localhost:8002/api/v2/",
             api_type=APITypes.orc,
             auth_type=AuthTypes.api_key,
             header_key="Authorization",
@@ -76,16 +67,16 @@ class ObjectsAPIConfigurationStepTests(TestCase):
 
         self.assertEqual(config1.name, "Config 1")
         self.assertEqual(config1.identifier, "config-1")
-        self.assertEqual(config1.objects_service, self.objects_service)
-        self.assertEqual(config1.objecttypes_service, self.objecttypes_service)
+        self.assertEqual(config1.objects_service, self.open_object_service)
+        self.assertEqual(config1.objecttypes_service, self.open_object_service)
         self.assertEqual(config1.drc_service, self.drc_service)
         self.assertEqual(config1.catalogi_service, self.catalogi_service)
         self.assertEqual(config1.organisatie_rsin, "000000000")
 
         self.assertEqual(config2.name, "Config 2")
         self.assertEqual(config2.identifier, "config-2")
-        self.assertEqual(config2.objects_service, self.objects_service)
-        self.assertEqual(config2.objecttypes_service, self.objecttypes_service)
+        self.assertEqual(config2.objects_service, self.open_object_service)
+        self.assertEqual(config2.objecttypes_service, self.open_object_service)
         self.assertEqual(config2.drc_service, self.drc_service)
         self.assertEqual(config2.catalogi_service, self.catalogi_service)
         self.assertEqual(config2.organisatie_rsin, "000000000")
@@ -116,8 +107,8 @@ class ObjectsAPIConfigurationStepTests(TestCase):
 
         self.assertEqual(config.name, "Config 1")
         self.assertEqual(config.identifier, "config-1")
-        self.assertEqual(config.objects_service, self.objects_service)
-        self.assertEqual(config.objecttypes_service, self.objecttypes_service)
+        self.assertEqual(config.objects_service, self.open_object_service)
+        self.assertEqual(config.objecttypes_service, self.open_object_service)
 
         self.assertIsNone(config.drc_service)
         self.assertIsNone(config.catalogi_service)
@@ -134,8 +125,8 @@ class ObjectsAPIConfigurationStepTests(TestCase):
 
         self.assertEqual(config.name, "Config 1")
         self.assertEqual(config.identifier, "config-1")
-        self.assertEqual(config.objects_service, self.objects_service)
-        self.assertEqual(config.objecttypes_service, self.objecttypes_service)
+        self.assertEqual(config.objects_service, self.open_object_service)
+        self.assertEqual(config.objecttypes_service, self.open_object_service)
         self.assertEqual(config.drc_service, self.drc_service)
         self.assertEqual(config.catalogi_service, self.catalogi_service)
         self.assertEqual(config.organisatie_rsin, "000000000")
@@ -159,11 +150,11 @@ class ObjectsAPIConfigurationStepTests(TestCase):
             self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
 
     def test_execute_service_not_found_raises_error(self):
-        self.objecttypes_service.delete()
+        self.open_object_service.delete()
 
         with self.assertRaisesMessage(
             Service.DoesNotExist,
-            "Service matching query does not exist. (identifier = objecttypen-test)",
+            "Service matching query does not exist. (identifier = open-object-test)",
         ):
             execute_single_step(
                 ObjectsAPIConfigurationStep,

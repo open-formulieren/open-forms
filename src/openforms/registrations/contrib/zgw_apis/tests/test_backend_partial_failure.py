@@ -363,5 +363,5 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
 
         object_data = intermediate_results["objects_api_object"]
         self.assertTrue(
-            object_data["url"].startswith("http://objects-web:8000/api/v2/objects/")
+            object_data["url"].startswith("http://localhost:8001/api/v2/objects/")
         )

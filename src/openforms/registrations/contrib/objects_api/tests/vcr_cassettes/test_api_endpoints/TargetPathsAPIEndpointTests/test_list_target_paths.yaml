@@ -9,34 +9,36 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.34.2
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","version":2,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"published","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":18,"description":"Age
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","version":2,"objectType":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"published","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":18,"description":"Age
         in years which must be equal to or greater than 18."},"lastName":{"type":"string","description":"The
         person''s last name."},"firstName":{"type":"string","description":"The person''s
         first name."}}},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","publishedAt":"2024-02-08"}'
     headers:
+      API-version:
+      - 2.7.0
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
-      Connection:
-      - keep-alive
       Content-Length:
-      - '731'
+      - '719'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
+        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
+        blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
-      Date:
-      - Thu, 25 Jun 2026 18:51:36 GMT
       Referrer-Policy:
       - same-origin
-      Server:
-      - nginx/1.29.7
       Vary:
-      - origin
+      - origin, Cookie
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:

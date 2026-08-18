@@ -184,7 +184,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 1,
     "fields": {
         "object_type": 1,
@@ -217,7 +217,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 2,
     "fields": {
         "object_type": 1,
@@ -250,7 +250,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 3,
     "fields": {
         "object_type": 1,
@@ -312,7 +312,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 4,
     "fields": {
         "object_type": 2,
@@ -336,7 +336,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 5,
     "fields": {
         "object_type": 3,
@@ -364,7 +364,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 6,
     "fields": {
         "object_type": 4,
@@ -399,7 +399,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 7,
     "fields": {
         "object_type": 5,
@@ -421,7 +421,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 8,
     "fields": {
         "object_type": 6,
@@ -436,7 +436,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 9,
     "fields": {
         "object_type": 1,
@@ -501,7 +501,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 10,
     "fields": {
         "object_type": 7,
@@ -556,7 +556,7 @@
     }
 },
 {
-    "model": "core.objectversion",
+    "model": "core.objecttypeversion",
     "pk": 11,
     "fields": {
         "object_type": 8,

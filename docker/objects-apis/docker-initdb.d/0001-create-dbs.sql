@@ -1,0 +1,2 @@
+CREATE USER objects;
+CREATE DATABASE objects WITH OWNER objects;

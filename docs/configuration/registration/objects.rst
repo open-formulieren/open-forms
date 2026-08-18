@@ -200,7 +200,19 @@ through the admin interface. Find or create the record with:
 Technical
 =========
 
+Open Object / Objects API
+-------------------------
+
 Open Forms requires Objects API v2.2 or newer and the Objecttypes API v2.0 or newer.
+
+================  ===============================================
+Open Object       Test status
+================  ===============================================
+4.1.x             Automated end-to-end testing in CI.
+4.0.x             Should work.
+================  ===============================================
+
+Or, if you're still using the separate Objects & Objecttypes services:
 
 ================  ===============================================
 Objects API       Test status
@@ -230,6 +242,9 @@ Objecttypes API   Test status
 2.1.x             Manually verified
 2.2.x             Manually verified, automated end-to-end testing
 ================  ===============================================
+
+Documents API
+-------------
 
 For Documents API integration (to upload attachments), Open Forms requires the
 Catalogi API and Documenten API.

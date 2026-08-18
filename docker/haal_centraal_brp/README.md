@@ -15,15 +15,14 @@ Start a HaalCentraal-BRP instance in your local environment from the parent dire
 docker compose -f docker-compose.hc-brp-mock.yml up -d
 ```
 
+This will automatically apply our test-data patches for situations that aren't covered in the
+upstream dataset.
+
 ## Testing
 
 This brings up the service and you can now make API calls by using
 http://localhost:5010/haalcentraal/api/brp/personen. Of course these calls have to be according to
 the specification (https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc).
-
-Note: before running the related tests in the code, please make sure to apply all patches from
-_open-forms/patches/haal_centraal_brp_ to the test data. See below for more detailed instructions on
-how to create and apply patches.
 
 ### Test data
 
@@ -34,24 +33,36 @@ expected with a validation error (400).
 
 #### Adding a new patch to modify test data:
 
-- Copy the _/app/Data/test-data.json_ file into your local machine. Ensure it is placed inside a
-  folder that is tracked by `git`.
+The docker compose setup creates a volume that will have a (modified) copy of the test data, taken
+from `/app/Data/test-data.json` inside the container. The volume name ends with `hc-test-data`. You
+can list the available volumes with:
 
-  `docker cp <container_id>:/app/Data/test-data.json /desired_path/test-data.json`
+```bash
+[sudo] docker volume ls
+```
 
-- Make sure you first apply all the available patches until now, that are located in the patches
-  folder. See below ("Applying an existing patch") for more details.
+Copy this test data to a folder that is tracked by `git`:
+
+```bash
+sudo cp /var/lib/docker/volumes/docker_hc-test-data/_data/test-data.json /desired_path/test-data.json
+```
+
 - Commit the file to ensure changes are being tracked.
 - Modify the data of the local file according to your needs.
-- Create a patch file (_some-change-bsnNumber.patch_) and save it to
-  _open-forms/patches/haal_centraal_brp_ directory by using the last commit (with the changes you
-  made).
+- Create a patch file (`XXX-some-change-bsnNumber.patch`) and save it to the
+  `open-forms/patches/haal_centraal_brp` directory by using the last commit (with the changes you
+  made). Make sure to replace `XXX` with the next number, as the patches need to be applied in the
+  right order.
 
-  `git diff --no-color > /path/to/open-forms/patches/haal_centraal_brp_/some-change-bsnNumber.patch`
+  ```bash
+  git diff --no-color > /path/to/open-forms/patches/haal_centraal_brp/XXX-some-change-bsnNumber.patch
+  ```
 
-- Copy the new json file into the container.
+- Copy (and overwrite) the new json file into the volume:
 
-  `docker cp /desired_path/test-data.json <container_id>:/app/Data/test-data.json`
+  ```bash
+  sudo cp /desired_path/test-data.json /var/lib/docker/volumes/docker_hc-test-data/_data/test-data.json
+  ```
 
 - Restart the container and you can test your new test cases.
 
@@ -61,18 +72,7 @@ When you are done testing:
 
 #### Applying an existing patch:
 
-- If not done already, copy the _/app/Data/test-data.json_ file into your local machine. This must
-  be the initial file, without any changes/patches already applied and inside a directory tracked by
-  git.
-
-  `docker cp <container_id>:/app/Data/test-data.json /desired_path/test-data.json`
-
-- Apply the patches to your local json file by running the script with the necessary local directory
-  (contains the local json file).
-
-  `./patches/haal_centraal_brp/apply_patch_and_copy.sh /desired_path`
-
-The script should now have applied all patches and copied the updated file into the container.
+The patches are automatically applied whenever the docker compose service is started.
 
 ### Extras
 

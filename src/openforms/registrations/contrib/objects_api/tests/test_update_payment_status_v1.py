@@ -42,11 +42,9 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                     data={},
                     objecttype_version=1,
                 ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                objecttype_url="http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
             )
-            # Because of the nginx reverse proxy, we need to set the correct
-            # host as this URL will be used by the plugin to update the payment status:
-            self.objects_url = data["url"].replace("objects-web:8000", "localhost:8002")
+            self.objects_url = data["url"]
 
     def test_update_payment_status(self):
         submission = SubmissionFactory.from_components(
