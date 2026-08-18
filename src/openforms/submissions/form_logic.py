@@ -311,8 +311,12 @@ def check_submission_logic(
 
     # Note that the total configuration wrapper is a cached property, so we need to
     # reset to ensure we are not operating on outdated configurations later.
-    # XXX: not sure why this is necessary - removing it entirely doesn't seem to break
-    # any tests? Check with Viktor.
+    # We also need to reset the configuration itself, as demonstrated (again) in #6468,
+    # because mutations to the configuration wrapper result in dict mutations shared in
+    # the formstep configuration, which can lead to the wrong begin-state for the actual
+    # logic evaluation/check because this function does *not* receive the dirty input
+    # data that may result in a rule trigger *not* hitting, but by then the damage is
+    # already done from the permission check logic evaluation (for example).
     if reset_configuration_wrapper:
         submission._total_configuration_wrapper = None
     submission._form_logic_evaluated = True

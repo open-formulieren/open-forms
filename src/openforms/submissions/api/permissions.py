@@ -1,3 +1,4 @@
+from copy import deepcopy
 from uuid import UUID
 
 from rest_framework import permissions
@@ -114,7 +115,9 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
 
         submission = obj.submission
         state = submission.load_execution_state()
-        check_submission_logic(submission)
+        assert obj.form_step is not None
+        configuration_copy = deepcopy(obj.form_step.form_definition.configuration)
+        check_submission_logic(submission, reset_configuration_wrapper=True)
 
         incomplete_steps = [
             submission_step
@@ -123,6 +126,8 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
         ]
 
         submission.clear_execution_state()
+        obj.form_step.form_definition.configuration = configuration_copy
+        del obj.form_step.form_definition.configuration_wrapper
 
         if not incomplete_steps:
             return True
