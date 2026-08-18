@@ -10,12 +10,14 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
@@ -1369,6 +1371,229 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             ]
             self.assertTrue(textfield["hidden"])
             self.assertTrue(editgrid["hidden"])
+
+    @tag("gh-6468")
+    def test_logic_evaluation_as_admin_same_as_not_logged_in(self):
+        def _run_test(as_admin: bool):
+            form = FormFactory.create(
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "selectboxes",
+                            "key": "inputOptions",
+                            "label": "Options",
+                            "values": [
+                                {"value": "a", "label": "A"},
+                                {"value": "b", "label": "B"},
+                                {"value": "c", "label": "C"},
+                            ],
+                        },
+                    ]
+                },
+            )
+            step1 = form.formstep_set.get()
+            step2 = FormStepFactory.create(
+                form=form,
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "radio",
+                            "key": "choice",
+                            "label": "Preference",
+                            "values": [],
+                            "openForms": {
+                                "dataSrc": "variable",
+                                "itemsExpression": {"var": "preferenceOptions"},
+                            },
+                            "hidden": False,
+                        },
+                        {
+                            "type": "selectboxes",
+                            "key": "derived",
+                            "label": "Label using {{choice}}",
+                            "values": [
+                                {"value": "1", "label": "1"},
+                                {"value": "2", "label": "2"},
+                            ],
+                            "hidden": False,
+                        },
+                    ],
+                },
+            )
+            FormVariableFactory.create(
+                form=form,
+                user_defined=True,
+                key="preferenceOptions",
+                data_type=FormVariableDataTypes.array,
+                data_subtype="",
+                initial_value=[],
+            )
+            FormLogicFactory.create(
+                form=form,
+                json_logic_trigger={
+                    "or": [
+                        {"var": "inputOptions.a"},
+                        {"var": "inputOptions.b"},
+                        {"var": "inputOptions.c"},
+                    ]
+                },
+                actions=[
+                    {
+                        "action": {
+                            "type": "variable",
+                            "value": {
+                                "reduce": [
+                                    [
+                                        {"if": [{"var": "inputOptions.a"}, ["a", "A"]]},
+                                        {"if": [{"var": "inputOptions.b"}, ["b", "B"]]},
+                                        {"if": [{"var": "inputOptions.c"}, ["c", "C"]]},
+                                    ],
+                                    {
+                                        "if": [
+                                            {"var": "current"},
+                                            {
+                                                "merge": [
+                                                    {"var": "accumulator"},
+                                                    [{"var": "current"}],
+                                                ]
+                                            },
+                                            {"var": "accumulator"},
+                                        ]
+                                    },
+                                    [],
+                                ],
+                            },
+                        },
+                        "variable": "preferenceOptions",
+                    }
+                ],
+            )
+            FormLogicFactory.create(
+                form=form,
+                json_logic_trigger={
+                    "or": [
+                        {"==": [{"var": "choice"}, None]},
+                        {"==": [{"var": "choice"}, ""]},
+                        {"==": [{"var": "choice"}, "None"]},
+                    ]
+                },
+                actions=[
+                    {
+                        "action": {
+                            "type": "property",
+                            "property": {"type": "bool", "value": "hidden"},
+                            "state": True,
+                        },
+                        "component": "derived",
+                    },
+                ],
+            )
+            # form.apply_logic_analysis()
+            submission = SubmissionFactory.create(form=form)
+            assert isinstance(submission, Submission)
+            self._add_submission_to_session(submission)
+            # simulating submitting the first step
+            endpoint = reverse(
+                "api:submission-steps-detail",
+                kwargs={"submission_uuid": submission.uuid, "step_uuid": step1.uuid},
+            )
+            response = self.client.put(
+                endpoint,
+                data={"data": {"inputOptions": {"a": False, "b": True, "c": True}}},
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+            submission.refresh_from_db()
+            state = submission.load_submission_value_variables_state()
+            assert state.get_data()["preferenceOptions"]
+
+            logic_check_endpoint = reverse(
+                "api:submission-steps-logic-check",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step2.uuid,
+                },
+            )
+
+            with self.subTest("without radio choice", as_admin=as_admin):
+                response = self.client.post(
+                    logic_check_endpoint,
+                    {"data": {"choice": ""}},
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                step_components = response.json()["step"]["formStep"]["configuration"][
+                    "components"
+                ]
+                self.assertEqual(
+                    step_components,
+                    [
+                        {
+                            "type": "radio",
+                            "key": "choice",
+                            "label": "Preference",
+                            "hidden": False,
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "b", "label": "B"},
+                                {"value": "c", "label": "C"},
+                            ],
+                        },
+                        {
+                            "type": "selectboxes",
+                            "key": "derived",
+                            "label": "Label using ",
+                            "values": [
+                                {"label": "1", "value": "1"},
+                                {"label": "2", "value": "2"},
+                            ],
+                            "hidden": True,
+                        },
+                    ],
+                )
+
+            with self.subTest("with radio choice", as_admin=as_admin):
+                response = self.client.post(
+                    logic_check_endpoint,
+                    {"data": {"choice": "b"}},
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                step_components = response.json()["step"]["formStep"]["configuration"][
+                    "components"
+                ]
+                self.assertEqual(
+                    step_components,
+                    [
+                        {
+                            "type": "radio",
+                            "key": "choice",
+                            "label": "Preference",
+                            "hidden": False,
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "b", "label": "B"},
+                                {"value": "c", "label": "C"},
+                            ],
+                        },
+                        {
+                            "type": "selectboxes",
+                            "key": "derived",
+                            "label": "Label using b",
+                            "values": [
+                                {"label": "1", "value": "1"},
+                                {"label": "2", "value": "2"},
+                            ],
+                            "hidden": False,
+                        },
+                    ],
+                )
+
+        _run_test(as_admin=False)
+
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        _run_test(as_admin=True)
 
 
 @tag("gh-6005")
