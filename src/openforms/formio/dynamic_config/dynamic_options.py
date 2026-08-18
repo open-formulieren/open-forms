@@ -116,10 +116,13 @@ def add_options_to_config(
                 raise ServiceUnavailable(
                     _("Could not retrieve options from Referentielijsten API."),
                 )
+            del component["openForms"]["service"]
+            del component["openForms"]["code"]
         case DataSrcOptions.variable:
             items_array = get_options_from_variable(component, data, submission)
             if items_array is None:
                 return
+            del component["openForms"]["itemsExpression"]
         case _:
             return
 
@@ -133,3 +136,5 @@ def add_options_to_config(
         ],
         missing=dict,
     )
+    # ensure the new renderer assertions are met
+    assign(component, "openForms.dataSrc", "manual")
