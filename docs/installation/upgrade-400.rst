@@ -4,149 +4,71 @@ Upgrade details to Open Forms 4.0.0
 
 Open Forms 4.0 is a major version release that contains breaking changes.
 
+We've collected the migration steps on this page - topics are sorted with the highest
+impact items first.
+
 .. contents:: Jump to
    :depth: 1
    :local:
    :backlinks: none
 
-Removal of JCC SOAP appointment plugin
-======================================
+Upgrade checklist
+=================
 
-The JCC plugin for appointments in Open Forms has stopped working as of Jan. 1st 2026 due
-to JCC shutting down their SOAP service.
-
-This has been replaced (since Open Forms v3.5) with their RESTful API service.
-
-Removal of the unused HaalCentraal version 1.3
-==============================================
-
-.. note:: Relevant for: form designers/administrators.
-
-HaalCentraal BRP Personen bevragen 1.3 was never in production so this is not available
-any more in Open Forms. The only supported version is v2 by default.
-
-In case v1.3 was used, the prefill configuration of components may require updating (fix
-plugin + attribute), as this cannot be done automatically.
-
-Removal of legacy OpenID Connect callback endpoints
-====================================================
-
-.. note:: Relevant for: devops, identity provider administrators.
-
-The legacy plugin-specific OIDC callback endpoints have been removed. These were
-introduced as a migration path in Open Forms 2.x and have been deprecated since then.
-
-The following URL paths no longer exist:
-
-* ``/digid-oidc/callback/``
-* ``/digid-machtigen-oidc/callback/``
-* ``/eherkenning-oidc/callback/``
-* ``/eherkenning-bewindvoering-oidc/callback/``
-* ``/org-oidc/callback/``
-
-All OIDC identity providers must now redirect to ``https://<domain>/auth/oidc/callback/``.
-
-The following environment variables are no longer read and can be removed from your
-deployment configuration:
-
-* ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS``
-* ``USE_LEGACY_ORG_OIDC_ENDPOINTS``
-* ``USE_LEGACY_OIDC_ENDPOINTS``
-
-Removal of the UMD bundle (SDK)
-===============================
-
-.. note:: Relevant for: external integration developers.
-
-Since Open Forms 3.1, we prefer ESM bundles over UMD bundles because they're smaller
-and better suited for users with slow (mobile) network connections. The UMD bundle
-support has now been removed.
-
-**Impact**
-
-If you are loading the Javascript assets from any of the following endpoints:
-
-* ``/static/sdk/bundles/open-forms-sdk.js``
-* ``/static/sdk/open-forms-sdk.js``
-
-these URLs will no longer work. Instead, replace the ``.js`` extension with ``.mjs``:
-
-* ``/static/sdk/bundles/open-forms-sdk.mjs``
-* ``/static/sdk/open-forms-sdk.mjs``
-
-Additionally, the global ``window.OpenForms`` no longer exists, and you must use
-``import`` syntax to initialize the SDK, for example:
-
-.. code-block:: html
-
-    <link href="https://open-forms.example.com/static/sdk/bundles/open-forms-sdk.mjs" rel="modulepreload" />
-    <div
-        class="open-forms-sdk-root"
-        id="openforms-container"
-        data-sdk-module="https://open-forms.example.com/static/sdk/bundles/open-forms-sdk.mjs"
-        data-form-id="123"
-        data-base-url="https://open-forms.example.com/api/v2/"
-        data-base-path="/my-form/"
-        data-csp-nonce="POBdlO9C3gRmVC8l6/Facw=="
-    ></div>
-    <script type="module" src="/open-forms-sdk-wrapper.mjs"></script>
-
-with the ``open-forms-sdk-wrapper.mjs`` example code:
-
-.. code-block:: js
-
-    /**
-     * Given a form node on the page, extract the options from the data-* attributes and
-     * initialize it.
-     * @param  {HTMLDivElement} node The root node for the SDK where the form must be
-     * rendered. It must have the expected data attributes.
-     * @return {Void}
-     */
-    const initializeSDK = async node => {
-      const {
-        sdkModule,
-        formId,
-        baseUrl,
-        basePath,
-        cspNonce,
-        sentryDsn = '',
-        sentryEnv = '',
-      } = node.dataset;
-      const {OpenForm} = await import(sdkModule);
-
-      // initialize the SDK
-      const options = {
-        baseUrl,
-        formId,
-        basePath,
-        CSPNonce: cspNonce,
-      };
-      if (sentryDsn) options.sentryDSN = sentryDsn;
-      if (sentryEnv) options.sentryEnv = sentryEnv;
-      const form = new OpenForm(node, options);
-      form.init();
-    };
-
-    const sdkNodes = document.querySelectorAll('.open-forms-sdk-root');
-    sdkNodes.forEach(node => initializeSDK(node));
+1. Ensure all forms are converted to use the new logic evaluation.
+2. Ensure (custom) themes have been updated/prepared for 4.0.
+3. Ensure legacy ZGW URLs have been migrated if you use the Objects API or ZGW APIs
+   registration plugins.
 
 NL Design System related changes
 ================================
 
-.. note:: Relevant for: custom theme developers.
+.. note:: Relevant for: custom theme maintainers.
 
 We frequently check our own markup and CSS code for opportunities to replace custom
 implementations with existing NL Design System (community) components. As an organization
-that uses NL DS, you benefit from this with more consistent appearance of the same
-logical components in different places.
+that uses NL Design System, you benefit from this with more consistent appearance of the
+same logical components in different places.
 
-However, because Open Forms existed *before* NL DS was commonplace, this sometimes leads
-to changes in appearance, because what used to be hardcoded CSS is now parametrized,
-and we don't have any guarantees that the relevant design tokens are set.
+However, because Open Forms existed *before* NL Design System was commonplace, this
+sometimes leads to changes in appearance, because what used to be hardcoded CSS is now
+parametrized, and we don't have any guarantees that the relevant design tokens are set.
 
 Below you find a summary of components that were moved from custom CSS to existing
-NL DS components that may require visual inspection/additional definitions in your
-custom theme stylesheet(s).
+NL Design System components that may require visual inspection/additional definitions in
+your custom theme stylesheet(s).
+
+SDK and renderer updates
+------------------------
+
+The SDK and renderer (the "public frontend") have been considerably updated - most
+notably the positioning of validation errors and field descriptions has changed. They
+are now shown between the field label and field input. This required a large number of
+markup and CSS changes that custom themes may have been relying on.
+
+The detailed `upgrade notes are documented online
+<https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-4-0-0--docs>`_,
+including `renderer upgrade notes
+<https://open-formulieren.github.io/formio-renderer/?path=/docs/upgrade-notes-v2-0-0--docs>`_.
+
+For organizations that maintain their own themes, we strongly recommended integrating
+at least the renderer package in your own storybook to capture visual regressions. The
+package is available on NPM: ``@open-formulieren/formio-renderer@^2.0.0``.
+
+A summary of affected components:
+
+* ``openforms-body``
+* ``openforms-card``
+* ``utrecht-form-field-label``
+* ``utrecht-form-field``
+* ``utrecht-form-field-error-message``
+* ``utrecht-form-field-description``
+* ``checkbox``
+* ``selectboxes``
+* ``radio``
+* ``customer-profile``
+* ``openforms-fieldset``
+* ``file-upload``
 
 Default design token values removal
 -----------------------------------
@@ -178,7 +100,7 @@ The cookie notice/banner has been slightly revised. The styling that causes the 
 to only take up part of the viewport width is now scoped to the Open Formulieren theme,
 meaning that you should include a similar rule if you have custom themes. This is an
 ongoing effort to consistently deal with different viewports (mobile vs. desktop) in the
-NL DS ecosystem.
+NL Design System ecosystem.
 
 The CSS rule to include is:
 
@@ -202,7 +124,7 @@ Removed deprecations
 
 The following fallbacks were deprecated and have been removed.
 
-**``backtotop-link`` component**
+**backtotop-link component**
 
 * removed fallback to ``--utrecht-button-column-gap``, specify
   ``--of-backtotop-link-column-gap`` explicitly
@@ -210,30 +132,6 @@ The following fallbacks were deprecated and have been removed.
   ``--of-backtotop-link-padding-block-end`` explicitly
 * removed fallback to ``--utrecht-button-padding-block-start``, specify
   ``--of-backtotop-link-padding-block-start`` explicitly
-
-Removal of the Elastic APM agent
-================================
-
-Elastic APM has historically been the mechanism to get some performance-related
-telemetry from Open Forms into an observability platform. Since Open Forms 3.3 (released
-9 months ago), we've been adding support for Open Telemetry as replacement, which is a
-vendor-agnostic observability protocol and ecosystem.
-
-You can remove any ``ELASTIC_APM_*`` related environment variables from your deployment
-code, and if you haven't done so yet, recommend you to set up the necessary
-:ref:`observability <installation_observability_index>` tooling. See
-:ref:`installation_observability_otel_config` on how to configure Open Forms to produce
-telemetry.
-
-Change default to use OF-generated public reference
-===================================================
-
-.. note:: Relevant for: form designers/administrators.
-
-The default way to generate public references for the ZGW APIs registration plugin has changed.
-Previously, Open Forms always used case numbers as the submission public references.
-Since Open Forms 3.5, both options have been available, but the default remained the ZGW API-generated
-case numbers. The default is now switched to Open Forms-generated public references.
 
 Logic engine rework
 ===================
@@ -244,20 +142,26 @@ The support for legacy logic evaluation has been removed, which means all forms 
 Since Open Forms will now automatically assign all logic rules to the relevant form steps, it is also no longer
 possible to specify a "trigger from step" for a logic rule.
 
-TODO: this should probably a separate page describing the logic engine in more detail
 For more information about the new logic evaluation, please refer to the
 :ref:`detailed release notes of 3.5.0 <installation_upgrade_350>`.
 
+Migration step (on 3.5.x)
+-------------------------
+
 .. warning::
 
-    Before upgrading, all existing forms should be converted to the new logic evaluation. This can be done on a
-    per-form basis, or in bulk using the following management command. Any forms which contain cycles in their
-    logic rules need to be resolved manually. The output of the management command will include relevant form
-    details if this is the case.
+    You must convert all existing forms to the new logic evaluation. Open Forms 4.0 will
+    refuse to upgrade if forms with the old logic evaluation are detected or inconsistent
+    configurations are detected.
 
-    .. code-block:: bash
+Conversion can be done on a per-form basis, or in bulk using the following management
+command. Any forms which contain cycles in their logic rules need to be resolved
+manually. The output of the management command will include relevant form details if
+this is the case.
 
-        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+.. code-block:: bash
+
+    python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
 
 Clearing of values
 ------------------
@@ -327,6 +231,8 @@ Before 4.0, these would be evaluated with their implicit empty value.
 
 Removal of legacy ZGW URLs support in registration plugins
 ==========================================================
+
+.. note:: Relevant for: form designers/administrators.
 
 The support for direct URL references to the Catalogi API for document types
 ("informatieobjecttype") and case types is removed. Open Forms 3.5 provides a migration
@@ -478,10 +384,122 @@ upgraded to 4.0. We cannot run this script as an upgrade blocking check because 
 simply not possible to fix this pre-4.0 (one of the reasons for the breaking changes in
 4.0 is making it possible to prevent/fix this).
 
+Changed the default to use OF-generated public references
+=========================================================
+
+.. note:: Relevant for: form designers/administrators.
+
+The default way to generate public references for the ZGW APIs registration plugin has changed.
+Previously, Open Forms always used case numbers as the submission public references.
+Since Open Forms 3.5, both options have been available, but the default remained the ZGW API-generated
+case numbers. The default is now switched to Open Forms-generated public references.
+
+Removal of legacy OpenID Connect callback endpoints
+====================================================
+
+.. note:: Relevant for: devops, identity provider administrators.
+
+The legacy plugin-specific OIDC callback endpoints have been removed. These were
+introduced as a migration path in Open Forms 2.x and have been deprecated since then.
+
+The following URL paths no longer exist:
+
+* ``/digid-oidc/callback/``
+* ``/digid-machtigen-oidc/callback/``
+* ``/eherkenning-oidc/callback/``
+* ``/eherkenning-bewindvoering-oidc/callback/``
+* ``/org-oidc/callback/``
+
+All OIDC identity providers must now redirect to ``https://<domain>/auth/oidc/callback/``.
+
+The following environment variables are no longer read and can be removed from your
+deployment configuration:
+
+* ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS``
+* ``USE_LEGACY_ORG_OIDC_ENDPOINTS``
+* ``USE_LEGACY_OIDC_ENDPOINTS``
+
+Removal of the UMD bundle (SDK)
+===============================
+
+.. note:: Relevant for: external integration developers.
+
+Since Open Forms 3.1, we prefer ESM bundles over UMD bundles because they're smaller
+and better suited for users with slow (mobile) network connections. The UMD bundle
+support has now been removed.
+
+**Impact**
+
+If you are loading the Javascript assets from any of the following endpoints:
+
+* ``/static/sdk/bundles/open-forms-sdk.js``
+* ``/static/sdk/open-forms-sdk.js``
+
+these URLs will no longer work. Instead, replace the ``.js`` extension with ``.mjs``:
+
+* ``/static/sdk/bundles/open-forms-sdk.mjs``
+* ``/static/sdk/open-forms-sdk.mjs``
+
+Additionally, the global ``window.OpenForms`` no longer exists, and you must use
+``import`` syntax to initialize the SDK, for example:
+
+.. code-block:: html
+
+    <link href="https://open-forms.example.com/static/sdk/bundles/open-forms-sdk.mjs" rel="modulepreload" />
+    <div
+        class="open-forms-sdk-root"
+        id="openforms-container"
+        data-sdk-module="https://open-forms.example.com/static/sdk/bundles/open-forms-sdk.mjs"
+        data-form-id="123"
+        data-base-url="https://open-forms.example.com/api/v2/"
+        data-base-path="/my-form/"
+        data-csp-nonce="POBdlO9C3gRmVC8l6/Facw=="
+    ></div>
+    <script type="module" src="/open-forms-sdk-wrapper.mjs"></script>
+
+with the ``open-forms-sdk-wrapper.mjs`` example code:
+
+.. code-block:: js
+
+    /**
+     * Given a form node on the page, extract the options from the data-* attributes and
+     * initialize it.
+     * @param  {HTMLDivElement} node The root node for the SDK where the form must be
+     * rendered. It must have the expected data attributes.
+     * @return {Void}
+     */
+    const initializeSDK = async node => {
+      const {
+        sdkModule,
+        formId,
+        baseUrl,
+        basePath,
+        cspNonce,
+        sentryDsn = '',
+        sentryEnv = '',
+      } = node.dataset;
+      const {OpenForm} = await import(sdkModule);
+
+      // initialize the SDK
+      const options = {
+        baseUrl,
+        formId,
+        basePath,
+        CSPNonce: cspNonce,
+      };
+      if (sentryDsn) options.sentryDSN = sentryDsn;
+      if (sentryEnv) options.sentryEnv = sentryEnv;
+      const form = new OpenForm(node, options);
+      form.init();
+    };
+
+    const sdkNodes = document.querySelectorAll('.open-forms-sdk-root');
+    sdkNodes.forEach(node => initializeSDK(node));
+
 Internal file upload processing rework
 ======================================
 
-.. note:: Relevant for: devops
+.. note:: Relevant for: devops.
 
 We've done internal code cleanup with regard to how file uploads in forms are processed.
 The changes are backwards compatible, but it requires some data migrations that can take
@@ -523,3 +541,40 @@ these interfaces.
 As of Open Forms 4.0, the interfaces keep existing, but are no longer documented public
 API and will no longer be subject to our semantic versioning policy, meaning that
 breaking changes to extension interfaces may be introduced in regular minor releases.
+
+Removal of JCC SOAP appointment plugin
+======================================
+
+.. note:: Relevant for: form designers/administrators.
+
+The JCC plugin for appointments in Open Forms has stopped working as of Jan. 1st 2026 due
+to JCC shutting down their SOAP service.
+
+This has been replaced (since Open Forms v3.5) with their RESTful API service.
+
+Removal of the unused HaalCentraal version 1.3
+==============================================
+
+.. note:: Relevant for: form designers/administrators.
+
+HaalCentraal BRP Personen bevragen 1.3 was never in production so this is not available
+any more in Open Forms. The only supported version is v2 by default.
+
+In case v1.3 was used, the prefill configuration of components may require updating (fix
+plugin + attribute), as this cannot be done automatically.
+
+Removal of the Elastic APM agent
+================================
+
+.. note:: Relevant for: devops.
+
+Elastic APM has historically been the mechanism to get some performance-related
+telemetry from Open Forms into an observability platform. Since Open Forms 3.3 (released
+9 months ago), we've been adding support for Open Telemetry as replacement, which is a
+vendor-agnostic observability protocol and ecosystem.
+
+You can remove any ``ELASTIC_APM_*`` related environment variables from your deployment
+code, and if you haven't done so yet, recommend you to set up the necessary
+:ref:`observability <installation_observability_index>` tooling. See
+:ref:`installation_observability_otel_config` on how to configure Open Forms to produce
+telemetry.
