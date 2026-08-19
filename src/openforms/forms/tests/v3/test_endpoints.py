@@ -3412,6 +3412,16 @@ class FormEndpointLogicRulesTests(APITestCase):
                     "dataType": FormVariableDataTypes.string,
                 },
             ],
+            "registrationBackends": [
+                {
+                    "name": "Email registration",
+                    "key": "email-fu",
+                    "backend": "email",
+                    "options": {
+                        "to_emails": ["foo@example.com"],
+                    },
+                }
+            ],
             "logic_rules": [
                 {
                     "order": 0,
@@ -3425,7 +3435,13 @@ class FormEndpointLogicRulesTests(APITestCase):
                                 "value": "",
                                 "state": True,
                             },
-                        }
+                        },
+                        {
+                            "action": {
+                                "type": "set-registration-backend",
+                                "value": "email-fu",
+                            },
+                        },
                     ],
                 },
             ],
@@ -3602,6 +3618,63 @@ class FormEndpointLogicRulesTests(APITestCase):
             },
         )
 
+    def test_invalid_component_reference_is_caught_during_validation(self):
+        url = reverse("api:v3:form-detail", kwargs={"uuid": uuid4()})
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "badReference",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.component",
+                "code": "invalid",
+                "reason": "Could not find the component with key 'badReference'.",
+            },
+        )
+
     def test_variable_missing_from_action_and_present_in_form(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(form=form, slug="step-1")
@@ -3728,7 +3801,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.0.variable",
                 "code": "invalid",
-                "reason": "The variable wrong does not exist.",
+                "reason": "Could not find the variable with key 'wrong'.",
             },
         )
 
@@ -3791,9 +3864,12 @@ class FormEndpointLogicRulesTests(APITestCase):
         self.assertEqual(
             response_data["invalidParams"][0],
             {
-                "name": "logicRules.0.actions.0.value",
+                "name": "logicRules.0.actions.0.action.value",
                 "code": "invalid",
-                "reason": "Value for date variable must be a string in the format yyyy-mm-dd (e.g. 2023-07-03)",
+                "reason": (
+                    "The value for a date variable must be a string in the format "
+                    "yyyy-mm-dd (e.g. 2023-07-03)"
+                ),
             },
         )
 
@@ -3859,7 +3935,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.0.component",
                 "code": "invalid",
-                "reason": "'disabled' property can't be used for layout components.",
+                "reason": "You cannot used the 'disabled' property on layout components'.",
             },
         )
 
@@ -3987,7 +4063,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.0.formStepSlug",
                 "code": "invalid",
-                "reason": "Invalid form step specified in logic action.",
+                "reason": "Could not find a step with the slug 'wrong'.",
             },
         )
 
@@ -4196,7 +4272,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.1.variable",
                 "code": "blank",
-                "reason": "This field may not be blank.",
+                "reason": "You must specify a variable.",
             },
         )
 

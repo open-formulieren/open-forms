@@ -1,5 +1,3 @@
-from collections.abc import Set
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -31,9 +29,9 @@ class LogicActionTypes(models.TextChoices):
         return dict(cls.choices)[value]
 
 
-LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: Set[str] = {LogicActionTypes.property.value}
-LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: Set[str] = {LogicActionTypes.variable.value}
-LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID: Set[str] = {
+LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: set[str] = {LogicActionTypes.property.value}
+LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {LogicActionTypes.variable.value}
+LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID: set[str] = {
     LogicActionTypes.step_applicable.value,
     LogicActionTypes.step_not_applicable.value,
     LogicActionTypes.disable_next.value,

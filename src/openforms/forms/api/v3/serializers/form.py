@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
-from collections.abc import Collection, Mapping
-from datetime import date
+from collections.abc import Collection, Mapping, MutableMapping, Sequence
+from typing import TypedDict
 from uuid import UUID
 
 from django.db import transaction
@@ -8,8 +8,6 @@ from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema_serializer
-from glom import glom
-from json_logic.typing import Primitive
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
@@ -21,16 +19,15 @@ from openforms.formio.service import (
     DuplicateKeyError,
     FormioConfigurationWrapper,
     get_branch_representation,
-    holds_submission_data,
 )
-from openforms.formio.typing.base import Component
+from openforms.formio.typing import Component
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
 from openforms.products.models import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import StrOrPromise
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import get_static_variables
 
@@ -41,13 +38,7 @@ from ....api.serializers.form import (
     HelpDialogSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
-from ....constants import (
-    LOGIC_ACTION_TYPES_REQUIRING_COMPONENT,
-    LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG,
-    LOGIC_ACTION_TYPES_REQUIRING_VARIABLE,
-    FormTypeChoices,
-    LogicActionTypes,
-)
+from ....constants import FormTypeChoices
 from ....logic_analysis import CyclesDetected, analyze_rules
 from ....models import (
     Category,
@@ -59,11 +50,32 @@ from ....models import (
     FormVariable,
 )
 from ...validators import RequireAppointmentsPlugin
-from ..typing import FormLogicData, FormStepData, FormValidatedData, FormVariableData
+from ..typing import (
+    FormLogicActionData,
+    FormLogicData,
+    FormStepData,
+    FormValidatedData,
+    FormVariableData,
+)
+from ..validation import ActionsErrors, validate_logic_actions
 from .form_step import FormStepSerializer
 from .logic_rules import FormLogicSerializer
 from .payment import FormPaymentSerializer
 from .variables import FormVariableSerializer
+
+
+class RuleErrors(TypedDict):
+    """
+    Validation errors for a single logic rule.
+    """
+
+    actions: ActionsErrors
+
+
+type RulesErrors = MutableMapping[int, RuleErrors]
+"""
+Mapping of rule errors for the collection of rules, keyed by rule index.
+"""
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -198,187 +210,46 @@ class FormSerializer(serializers.ModelSerializer):
         form_variables = {
             var.key: var for var in FormVariable.objects.filter(form=form)
         }
-        form_step_slugs = form.formstep_set.values_list("slug", flat=True)
+        form_step_slugs = set(form.formstep_set.values_list("slug", flat=True))
+        rule_errors: RulesErrors = {}
 
-        for rule in temp_rules:
-            for action_index, action in enumerate(rule.actions):
-                action_type = action.get("action", {}).get("type")
-                action_value = action.get("action", {}).get("value")
-                component = action.get("component")
-                form_step_slug = action.get("form_step_slug")
-                variable = action.get("variable")
+        _total_configuration_wrapper: FormioConfigurationWrapper | None = None
 
-                # validate component exists in action
-                if (
-                    action_type
-                    and action_type in LOGIC_ACTION_TYPES_REQUIRING_COMPONENT
-                    and not component
-                ):
-                    raise serializers.ValidationError(
-                        {
-                            "logic_rules": {
-                                str(rule.order): {
-                                    "actions": {
-                                        str(action_index): {
-                                            "action": {
-                                                "component": _(
-                                                    "This field may not be blank."
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        code="blank",
+        def _find_component(key: str) -> Component | None:
+            """
+            Find the component with key ``key`` in any of the form steps.
+            """
+            nonlocal _total_configuration_wrapper
+
+            if _total_configuration_wrapper is None:
+                _total_configuration_wrapper = FormioConfigurationWrapper(
+                    {"components": []}
+                )
+                for form_step in form.formstep_set.select_related("form_definition"):
+                    assert isinstance(form_step.form_definition, FormDefinition)
+                    _total_configuration_wrapper += (
+                        form_step.form_definition.configuration_wrapper
                     )
 
-                if action_type and action_type in LOGIC_ACTION_TYPES_REQUIRING_VARIABLE:
-                    # validate variable exists in action
-                    if not variable:
-                        raise serializers.ValidationError(
-                            {
-                                "logic_rules": {
-                                    str(rule.order): {
-                                        "actions": {
-                                            str(action_index): {
-                                                "action": {
-                                                    "variable": _(
-                                                        "You must specify a variable."
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            code="blank",
-                        )
-                    # validate variable exists in form
-                    if variable not in form_variables:
-                        raise serializers.ValidationError(
-                            {
-                                "logic_rules": {
-                                    str(rule.order): {
-                                        "actions": {
-                                            str(action_index): {
-                                                "action": {
-                                                    "variable": _(
-                                                        "The variable {varname} does not exist."
-                                                    ).format(varname=variable),
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            code="invalid",
-                        )
+            if key in _total_configuration_wrapper:
+                return _total_configuration_wrapper[key]
 
-                # validate format of value for date variable
-                if action_type == LogicActionTypes.variable and isinstance(
-                    action_value, Primitive
-                ):
-                    form_var = form_variables.get(variable)
-                    if form_var and form_var.data_type == FormVariableDataTypes.date:
-                        try:
-                            # type check muted since we handle it at runtime
-                            date.fromisoformat(
-                                action_value  # pyright: ignore[reportArgumentType]
-                            )
-                        except (ValueError, TypeError) as ex:
-                            raise serializers.ValidationError(
-                                {
-                                    "logic_rules": {
-                                        str(rule.order): {
-                                            "actions": {
-                                                str(action_index): {
-                                                    "action": {
-                                                        "value": _(
-                                                            "Value for date variable must be a string in the "
-                                                            "format yyyy-mm-dd (e.g. 2023-07-03)"
-                                                        ),
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            ) from ex
+            return None
 
-                if action_type in LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG:
-                    # validate form step slug exists in action
-                    if not form_step_slug:
-                        raise serializers.ValidationError(
-                            {
-                                "logic_rules": {
-                                    str(rule.order): {
-                                        "actions": {
-                                            str(action_index): {
-                                                "form_step_slug": _(
-                                                    "This field may not be null."
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            code="null",
-                        )
-                    # validate form step slug is valid
-                    if form_step_slug not in form_step_slugs:
-                        raise serializers.ValidationError(
-                            {
-                                "logic_rules": {
-                                    str(rule.order): {
-                                        "actions": {
-                                            str(action_index): {
-                                                "form_step_slug": _(
-                                                    "Invalid form step specified in logic action."
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            code="invalid",
-                        )
+        for index, rule in enumerate(temp_rules):
+            # at this point, the shape of the actions has been validated, but their semantic
+            # meaning hasn't yet
+            actions: Sequence[FormLogicActionData] = rule.actions
+            if rule_action_errors := validate_logic_actions(
+                actions,
+                find_component=_find_component,
+                form_variables=form_variables,
+                form_step_slugs=form_step_slugs,
+            ):
+                rule_errors[index] = {"actions": rule_action_errors}
 
-                # check that "disabled" property is not changed for layout components
-                if action_type == LogicActionTypes.property:
-                    formio_component: None | Component = None
-                    for form_step in form.formstep_set.select_related(
-                        "form_definition"
-                    ):
-                        if component in (
-                            wrapper := form_step.form_definition.configuration_wrapper
-                        ):
-                            formio_component = wrapper[component]
-                            break
-
-                    if (
-                        formio_component
-                        and not holds_submission_data(formio_component)
-                        and glom(action, "action.property.value") == "disabled"
-                    ):
-                        raise serializers.ValidationError(
-                            {
-                                "logic_rules": {
-                                    str(rule.order): {
-                                        "actions": {
-                                            str(action_index): {
-                                                "action": {
-                                                    "component": _(
-                                                        "'disabled' property can't be used for layout components."
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            code="invalid",
-                        )
+        if rule_errors:
+            raise ValidationError({"logic_rules": rule_errors})  # pyright:ignore[reportArgumentType]
 
     def _validate_and_process_logic_rules(
         self,
