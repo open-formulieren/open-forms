@@ -335,8 +335,8 @@ def check_submission_logic(
 
     # Note that the total configuration wrapper is a cached property, so we need to
     # reset to ensure we are not operating on outdated configurations later.
-    # XXX: not sure why this is necessary - removing it entirely doesn't seem to break
-    # any tests? Check with Viktor.
+    # XXX: not sure why/if this is necessary - removing it entirely doesn't seem to break
+    # any tests.
     if reset_configuration_wrapper:
         submission._total_configuration_wrapper = None
     submission._form_logic_evaluated = True
