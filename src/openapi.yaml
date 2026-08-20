@@ -9616,8 +9616,8 @@ components:
           description: The slug of the form step that will be affected by the action.
             This field is required for action types `disable-next`, `step-applicable`,
             `step-not-applicable` - otherwise it's optional. We deliberately use the
-            slug instead of the uuid because the uuid is not fixed, as we create from
-            scratch the form steps dusring form update.
+            slug instead of the uuid because the uuid is not fixed, as we create the
+            form steps from scratch during form update.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
