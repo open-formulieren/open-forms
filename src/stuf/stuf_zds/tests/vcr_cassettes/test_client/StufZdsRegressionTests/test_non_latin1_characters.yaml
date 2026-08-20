@@ -7,7 +7,7 @@ interactions:
       \   xmlns:BG=\"http://www.egem.nl/StUF/sector/bg/0310\"\n    xmlns:GML=\"http://www.opengis.net/gml\"\n>\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-1</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-1</StUF:applicatie>\n<StUF:administratie>zender_administratie-1</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-1</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-1</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-1</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-1</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-1</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>123</StUF:referentienummer>\n<StUF:tijdstipBericht>20260325191930</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-1</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-1</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-1</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-1</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>123</StUF:referentienummer>\n<StUF:tijdstipBericht>20260820104155</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAK\">\n
@@ -41,7 +41,7 @@ interactions:
       SOAPAction:
       - http://www.egem.nl/StUF/sector/zkn/0310/irrelevant
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: https://commonground.nl/
   response:
@@ -77,30 +77,30 @@ interactions:
       Content-Length:
       - '1866'
       Content-Security-Policy:
-      - 'frame-src ''self'' https://*.pleio.nl https://www.youtube-nocookie.com https://player.vimeo.com
-        https://api.eu.kaltura.com https://feed.mikle.com https://*.bbvms.com https://collabora.pleio.nl
-        https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
-        https://fonts.googleapis.com https://fonts.gstatic.com; font-src ''self''
-        https://embed.email-provider.eu https://fonts.googleapis.com https://fonts.gstatic.com;
+      - 'upgrade-insecure-requests; connect-src ''self'' https://*.pleio.nl https://statistiek.rijksoverheid.nl
+        https://vimeo.com https://*.sentry.io https://collabora.pleio.nl https://embed.email-provider.eu;
         img-src ''self'' data: https://*.pleio.nl https://statistiek.rijksoverheid.nl
         https://i.ytimg.com https://i.vimeocdn.com https://*.bbvms.com https://account.pleio.nl
         https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
-        https://fonts.googleapis.com https://fonts.gstatic.com; style-src ''self''
+        https://fonts.googleapis.com https://fonts.gstatic.com https://77.161.190.210:8080/viz/react/registraties.html;
+        base-uri ''none''; script-src ''strict-dynamic'' https://embed.email-provider.eu;
+        form-action ''self'' https://embed.email-provider.eu; default-src ''self''
+        https://embed.email-provider.eu; frame-ancestors ''self''; style-src ''self''
         ''unsafe-inline'' https://formulieren.pleio.nl https://embed.email-provider.eu
-        https://fonts.googleapis.com; connect-src ''self'' https://*.pleio.nl https://statistiek.rijksoverheid.nl
-        https://vimeo.com https://*.sentry.io https://collabora.pleio.nl https://embed.email-provider.eu;
-        script-src ''strict-dynamic'' https://embed.email-provider.eu; object-src
-        ''none''; default-src ''self'' https://embed.email-provider.eu; frame-ancestors
-        ''self''; base-uri ''none''; upgrade-insecure-requests; form-action ''self''
-        https://embed.email-provider.eu'
+        https://fonts.googleapis.com; object-src ''none''; font-src ''self'' https://embed.email-provider.eu
+        https://fonts.googleapis.com https://fonts.gstatic.com; frame-src ''self''
+        https://*.pleio.nl https://www.youtube-nocookie.com https://player.vimeo.com
+        https://api.eu.kaltura.com https://feed.mikle.com https://*.bbvms.com https://collabora.pleio.nl
+        https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
+        https://fonts.googleapis.com https://fonts.gstatic.com https://77.161.190.210:8080/viz/react/registraties.html'
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Wed, 25 Mar 2026 19:19:31 GMT
+      - Thu, 20 Aug 2026 10:41:55 GMT
       Referrer-Policy:
       - strict-origin-when-cross-origin
       Set-Cookie:
-      - sessionid=hde1f3rm5bw9mx6fzsj6qmdq9j3wpjd5; expires=Wed, 08 Apr 2026 19:19:30
+      - sessionid=xp4ra6ot3kop7uvx1f74ntqykbllvs00; expires=Thu, 03 Sep 2026 10:41:55
         GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax; Secure
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
@@ -109,7 +109,7 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Pod:
-      - backend2-api-6cfdfc4667-m5hk9
+      - backend2-api-796984bf89-jm8ck
       X-Xss-Protection:
       - 1; mode=block
     status:
