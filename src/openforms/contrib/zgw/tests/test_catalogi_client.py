@@ -9,12 +9,16 @@ These tests make use of requests-mock rather than VCR for two reasons:
   API to run in docker-compose is supposed to be impossible.
 """
 
+import time
 from datetime import date
 
-from django.test import TestCase
+from django.core.cache import caches
+from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from furl import furl
+
+from openforms.contrib.zgw.clients.catalogi import cache_result
 
 from ..clients import CatalogiClient
 from ..exceptions import StandardViolation
@@ -384,3 +388,157 @@ class CatalogiClientTests(TestCase):
 
         all_results = list(results)
         self.assertEqual(len(all_results), 3)
+
+
+class CacheResultTests(SimpleTestCase):
+    def tearDown(self) -> None:
+        self.cache.clear()
+
+    @property
+    def cache(self):
+        return caches["catalogi_client"]
+
+    def test_cache_keys_no_function_params(self):
+        with self.assertRaises(AssertionError) as context_manager:
+
+            @cache_result(cache_keys=["foo"])
+            def foo() -> str:
+                return "bar"
+
+        self.assertEqual(
+            str(context_manager.exception), "Function foo has no arguments"
+        )
+
+    def test_unknown_param(self):
+        with self.assertRaises(AssertionError) as context_manager:
+
+            @cache_result(cache_keys=["foo"])
+            def foo(bar: str) -> str:
+                return "boing"
+
+        self.assertEqual(
+            str(context_manager.exception), "foo is not an available argument for foo"
+        )
+
+    def test_positional_arguments(self):
+        @cache_result(cache_keys=["bar"])
+        def foo(bar: str) -> str:
+            return "boing"
+
+        expected_cache_key = "ZGW|catalogi|foo|argument"
+        self.assertIsNone(self.cache.get(expected_cache_key))
+
+        return_value = foo("argument")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the function accepts both keyword and positional arguments
+        # and the decorator handles this properly
+        self.cache.clear()
+        return_value = foo(bar="argument")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the cached value is looked up first
+        self.cache.set(expected_cache_key, "foobar")
+        return_value = foo("argument")
+        self.assertEqual(return_value, "foobar")
+
+        # assert that other params are not affected by the cache lookup
+        return_value = foo("argument-2")
+        self.assertEqual(return_value, "boing")
+
+    def test_keyword_arguments(self):
+        @cache_result(cache_keys=["bar"])
+        def foo(bar: str = "zoing") -> str:
+            return "boing"
+
+        expected_cache_key = "ZGW|catalogi|foo|argument"
+        self.assertIsNone(self.cache.get(expected_cache_key))
+
+        return_value = foo(bar="argument")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the function accepts both keyword and positional arguments
+        # and the decorator handles this properly
+        self.cache.clear()
+        return_value = foo("argument")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the cached value is looked up first
+        self.cache.set(expected_cache_key, "foobar")
+        return_value = foo(bar="argument")
+        self.assertEqual(return_value, "foobar")
+
+        # assert that other params are not affected by the cache lookup
+        return_value = foo(bar="argument-2")
+        self.assertEqual(return_value, "boing")
+
+    def test_mixed_arguments(self):
+        @cache_result(cache_keys=["bar", "car"])
+        def foo(bar: str, car: str = "") -> str:
+            return "boing"
+
+        expected_cache_key = "ZGW|catalogi|foo|argument|ferrari"
+        self.assertIsNone(self.cache.get(expected_cache_key))
+
+        return_value = foo("argument", car="ferrari")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the function accepts both keyword and positional arguments
+        # and the decorator handles this properly
+        self.cache.clear()
+        return_value = foo(bar="argument", car="ferrari")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        self.cache.clear()
+        return_value = foo("argument", "ferrari")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        # assert that the cached value is looked up first
+        self.cache.set(expected_cache_key, "foobar")
+        return_value = foo("argument", car="ferrari")
+        self.assertEqual(return_value, "foobar")
+
+        return_value = foo(bar="argument", car="ferrari")
+        self.assertEqual(return_value, "foobar")
+
+        return_value = foo("argument", "ferrari")
+        self.assertEqual(return_value, "foobar")
+
+        # assert that other params are not affected by the cache lookup
+        return_value = foo("argument", "lamborghini")
+        self.assertEqual(return_value, "boing")
+
+    def test_ignore_params(self):
+        @cache_result(cache_keys=["bar"])
+        def foo(bar: str, car: str = "") -> str:
+            return "boing"
+
+        expected_cache_key = "ZGW|catalogi|foo|argument"
+        self.assertIsNone(self.cache.get(expected_cache_key))
+
+        return_value = foo("argument", car="ferrari")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+        self.assertIsNone(self.cache.get("ZGW|catalogi|foo|argument|ferrari"))
+
+    def test_timeout(self):
+        @cache_result(cache_keys=["bar"], timeout=0.5)
+        def foo(bar: str) -> str:
+            return "boing"
+
+        expected_cache_key = "ZGW|catalogi|foo|argument"
+        self.assertIsNone(self.cache.get(expected_cache_key))
+
+        return_value = foo("argument")
+        self.assertEqual(return_value, "boing")
+        self.assertEqual(self.cache.get(expected_cache_key), "boing")
+
+        time.sleep(0.5)
+        self.assertIsNone(self.cache.get(expected_cache_key))

@@ -1,8 +1,12 @@
+import inspect
 from collections.abc import Callable, Iterator
 from datetime import date
 from functools import cached_property
 from operator import itemgetter
-from typing import Literal, NotRequired, TypedDict
+from typing import Any, Literal, NotRequired, TypedDict
+
+from django.core.cache import caches
+from django.core.cache.backends.base import DEFAULT_TIMEOUT, memcached_error_chars_re
 
 from flags.state import flag_enabled
 from requests import Response
@@ -10,6 +14,7 @@ from zgw_consumers.nlx import NLXClient
 
 from openforms.contrib.client import LoggingMixin
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
+from openforms.utils.cache import RequestProxyCache
 
 from ..exceptions import StandardViolation
 
@@ -138,6 +143,78 @@ class RoleTypeListParams(TypedDict, total=False):
     page: int
 
 
+# TODO: truncate cache_key (to MEMCACHE_MAX_KEY_LENGTH) to allow the use of
+# memcached caches? See warnings in CI for more info.
+def _contruct_cache_key(*args: str) -> str:
+    combination = "|".join([str(arg) for arg in args])
+    cleaned_combination = memcached_error_chars_re.sub("-", combination)
+    return f"ZGW|catalogi|{cleaned_combination}"
+
+
+def cache_result(
+    cache_keys: list[str], timeout: float = DEFAULT_TIMEOUT
+) -> Callable[[Callable], Callable]:
+    _cache_keys = set(cache_keys)
+
+    def cache_decorator(func: Callable) -> Callable:
+        cache = caches["catalogi_client"]
+        assert isinstance(cache, RequestProxyCache)
+
+        function_parameters = inspect.signature(func).parameters
+        if not function_parameters:
+            assert not _cache_keys, f"Function {func.__name__} has no arguments"
+        for cache_key in _cache_keys or []:
+            assert cache_key in function_parameters, (
+                f"{cache_key} is not an available argument for {func.__name__}"
+            )
+
+        positional_param_kinds = (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+        positional_params: list[inspect.Parameter] = [
+            parameter
+            for parameter in function_parameters.values()
+            if parameter.kind in positional_param_kinds
+            and parameter.name in _cache_keys
+        ]
+        keyword_param_kinds = (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+        keyword_params: list[inspect.Parameter] = [
+            parameter
+            for parameter in function_parameters.values()
+            if parameter.kind in keyword_param_kinds and parameter.name in _cache_keys
+        ]
+
+        def wrapper(*args, **kwargs):
+            # TODO: remove Any usage
+            keyword_values: dict[str, Any] = {
+                kwarg.name: kwargs.get(kwarg.name, kwarg.default)
+                for kwarg in keyword_params
+                if kwarg.name in kwargs
+                and kwargs[kwarg.name] != inspect.Parameter.empty
+            }
+            positional_values: dict[str, Any] = {
+                arg.name: args[index]
+                for index, arg in enumerate(positional_params)
+                if arg.name not in keyword_values
+            }
+            cache_key = _contruct_cache_key(
+                func.__name__, *positional_values.values(), *keyword_values.values()
+            )
+            if (cached_value := cache.get(cache_key)) is not None:
+                return cached_value
+            result = func(*args, **kwargs)
+            cache.set(cache_key, result, timeout=timeout)
+            return result
+
+        return wrapper
+
+    return cache_decorator
+
+
 class CatalogiClient(LoggingMixin, NLXClient):
     _api_version: CatalogiAPIVersion | None = None
 
@@ -184,6 +261,8 @@ class CatalogiClient(LoggingMixin, NLXClient):
         data = response.json()
         yield from pagination_helper(self, data)
 
+    # 12 hour cache timeout
+    @cache_result(cache_keys=["domain", "rsin"], timeout=(60 * 60 * 12))
     def find_catalogus(self, *, domain: str, rsin: str) -> Catalogus | None:
         """
         Look up the catalogus uniquely identified by domain and rsin.
@@ -213,6 +292,10 @@ class CatalogiClient(LoggingMixin, NLXClient):
         data = response.json()
         yield from pagination_helper(self, data)
 
+    # 12 hour cache timeout
+    @cache_result(
+        cache_keys=["catalogus", "identification", "valid_on"], timeout=(60 * 60 * 12)
+    )
     def find_case_types(
         self,
         *,
@@ -279,6 +362,11 @@ class CatalogiClient(LoggingMixin, NLXClient):
         data = response.json()
         yield from pagination_helper(self, data)
 
+    # 12 hour cache timeout
+    @cache_result(
+        cache_keys=["catalogus", "description", "valid_on", "within_casetype"],
+        timeout=(60 * 60 * 12),
+    )
     def find_informatieobjecttypen(
         self,
         *,
