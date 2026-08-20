@@ -58,6 +58,7 @@ body:has(.offb-modal) {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    inline-size: 100%;
     max-inline-size: 100%;
   }
 }
