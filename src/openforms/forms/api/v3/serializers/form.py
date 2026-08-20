@@ -1,4 +1,6 @@
 from collections import Counter, defaultdict
+from collections.abc import Collection, Mapping, MutableMapping, Sequence
+from typing import TypedDict
 from uuid import UUID
 
 from django.db import transaction
@@ -18,7 +20,7 @@ from openforms.formio.service import (
     FormioConfigurationWrapper,
     get_branch_representation,
 )
-from openforms.formio.typing.base import Component
+from openforms.formio.typing import Component
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
@@ -37,19 +39,43 @@ from ....api.serializers.form import (
     SubmissionsRemovalOptionsSerializer,
 )
 from ....constants import FormTypeChoices
+from ....logic_analysis import CyclesDetected, analyze_rules
 from ....models import (
     Category,
     Form,
     FormDefinition,
+    FormLogic,
     FormRegistrationBackend,
     FormStep,
     FormVariable,
 )
 from ...validators import RequireAppointmentsPlugin
-from ..typing import FormStepData, FormValidatedData, FormVariableData
+from ..typing import (
+    FormLogicActionData,
+    FormLogicData,
+    FormStepData,
+    FormValidatedData,
+    FormVariableData,
+)
+from ..validation import ActionsErrors, validate_logic_actions
 from .form_step import FormStepSerializer
+from .logic_rules import FormLogicSerializer
 from .payment import FormPaymentSerializer
 from .variables import FormVariableSerializer
+
+
+class RuleErrors(TypedDict):
+    """
+    Validation errors for a single logic rule.
+    """
+
+    actions: ActionsErrors
+
+
+type RulesErrors = MutableMapping[int, RuleErrors]
+"""
+Mapping of rule errors for the collection of rules, keyed by rule index.
+"""
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -77,6 +103,7 @@ class FormSerializer(serializers.ModelSerializer):
     variables = FormVariableSerializer(
         many=True, source="formvariable_set", required=False
     )
+    logic_rules = FormLogicSerializer(many=True, required=False, source="formlogic_set")
 
     payment = FormPaymentSerializer(required=False, source="*")
 
@@ -109,6 +136,7 @@ class FormSerializer(serializers.ModelSerializer):
         "confirmation_email_template",
         "formstep_set",
         "formvariable_set",
+        "formlogic_set",
         "registration_backends",
     )
 
@@ -145,6 +173,7 @@ class FormSerializer(serializers.ModelSerializer):
             "category",
             "theme",
             "steps",
+            "logic_rules",
             "show_progress_indicator",
             "show_summary_progress",
             "maintenance_mode",
@@ -177,12 +206,103 @@ class FormSerializer(serializers.ModelSerializer):
             "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
+    def _validate_actions(self, form: Form, temp_rules: Mapping[FormLogic, int]):
+        form_variables = {
+            var.key: var for var in FormVariable.objects.filter(form=form)
+        }
+        form_step_slugs = set(form.formstep_set.values_list("slug", flat=True))
+        rule_errors: RulesErrors = {}
+
+        _total_configuration_wrapper: FormioConfigurationWrapper | None = None
+
+        def _find_component(key: str) -> Component | None:
+            """
+            Find the component with key ``key`` in any of the form steps.
+            """
+            nonlocal _total_configuration_wrapper
+
+            if _total_configuration_wrapper is None:
+                _total_configuration_wrapper = FormioConfigurationWrapper(
+                    {"components": []}
+                )
+                for form_step in form.formstep_set.select_related("form_definition"):
+                    assert isinstance(form_step.form_definition, FormDefinition)
+                    _total_configuration_wrapper += (
+                        form_step.form_definition.configuration_wrapper
+                    )
+
+            if key in _total_configuration_wrapper:
+                return _total_configuration_wrapper[key]
+
+            return None
+
+        for index, rule in enumerate(temp_rules):
+            # at this point, the shape of the actions has been validated, but their semantic
+            # meaning hasn't yet
+            actions: Sequence[FormLogicActionData] = rule.actions
+            if rule_action_errors := validate_logic_actions(
+                actions,
+                find_component=_find_component,
+                form_variables=form_variables,
+                form_step_slugs=form_step_slugs,
+            ):
+                rule_errors[index] = {"actions": rule_action_errors}
+
+        if rule_errors:
+            raise ValidationError({"logic_rules": rule_errors})  # pyright:ignore[reportArgumentType]
+
+    def _validate_and_process_logic_rules(
+        self,
+        form: Form,
+        logic_rules_raw: list[FormLogicData],
+        temp_logic_rules: dict[FormLogic, int],
+    ):
+        first_step: FormStep | None = min(
+            form.form_step_map.values(), key=lambda step: step.order, default=None
+        )
+
+        try:
+            updated_rules_and_steps = analyze_rules(
+                form,
+                rules=list(temp_logic_rules.keys()),
+                first_step=first_step,
+            )
+        except CyclesDetected as exc:
+            msg = _("Rule contains cycles through variable(s): {variables}.")
+            errors: defaultdict[str, list[ErrorDetail]] = defaultdict(list)
+            for cycle in exc.cycles:
+                # Sort to get consistent order in the error message (rules of a cycle do
+                # not have a start or end, so the order in which they are processed is
+                # not always consistent).
+                var_keys = ", ".join(sorted(cycle.variables))
+                for rule in sorted(cycle.rules, key=lambda r: r.order):
+                    errors[f"{rule.order}.json_logic_trigger"].append(
+                        ErrorDetail(
+                            msg.format(variables=var_keys), code="cycles-detected"
+                        )
+                    )
+            raise serializers.ValidationError(errors)
+
+        # Reorder the incoming data according to the determined order.
+        steps: list[Collection[FormStep]] = []
+        reordered_rule_data: list[FormLogicData] = []
+        for rule, rule_steps in updated_rules_and_steps:
+            # Lookup the original rule data by checking our rule-to-index map created
+            # earlier.
+            rule_data_index = temp_logic_rules[rule]
+            reordered_rule_data.append(logic_rules_raw[rule_data_index])
+            steps.append(rule_steps)
+
+        self.context["steps_for_each_rule"] = steps
+        return reordered_rule_data
+
     @transaction.atomic()
     def create(self, validated_data: FormValidatedData) -> Form:
         instance = super().create(
             {k: v for k, v in validated_data.items() if k not in self._nested_fields}
         )
 
+        # 1. confirmation email template
         confirmation_email_template = validated_data.get("confirmation_email_template")
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
@@ -197,7 +317,10 @@ class FormSerializer(serializers.ModelSerializer):
         )
         # fmt:on
         len(form_definitions)  # Evaluate the queryset to acquire the locks.
+
+        # 2. form definitions/steps
         form_definitions_created: dict[UUID, FormDefinition] = {}
+        form_steps: list[FormStep] = []
         for index, step_data in enumerate(form_step_data):
             form_definition_data = step_data["form_definition"]
             form_definition, _ = form_definitions.update_or_create(
@@ -205,24 +328,32 @@ class FormSerializer(serializers.ModelSerializer):
                 defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
             )
             form_definitions_created[form_definition_data["uuid"]] = form_definition
-
-            FormStep.objects.create(
-                **{**step_data, "form_definition": form_definition},
-                order=index,
-                form=instance,
+            form_steps.append(
+                FormStep(
+                    **{
+                        **step_data,
+                        "form_definition": form_definition,
+                        "form": instance,
+                        "order": index,
+                    }
+                )
             )
+
+        form_steps = FormStep.objects.bulk_create(form_steps)
 
         # These calls are required to create the corresponding component form variables
         # from the form definitions.
         for form_definition in form_definitions_created.values():
             FormVariable.objects.synchronize_for(form_definition)
 
+        # 3. registration backends
         registration_backends = validated_data.get("registration_backends", [])
         FormRegistrationBackend.objects.bulk_create(
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
         )
 
+        #  4. form variables
         form_variables_data = validated_data.get("formvariable_set", [])
         form_variables: list[FormVariable] = []
         for variable_data in form_variables_data:
@@ -250,6 +381,36 @@ class FormSerializer(serializers.ModelSerializer):
             form_variables.append(form_variable)
         FormVariable.objects.bulk_create(form_variables)
 
+        # 5. logic rules
+        logic_rules_raw: list[FormLogicData] = validated_data.get("formlogic_set", [])
+
+        if not logic_rules_raw:
+            return instance
+
+        # Note: model instances without a pk are not hashable, which is a requirement to
+        # use them in the analysis graph, so we assign it manually. These rules will just
+        # live in memory and they will be saved below, after they are analyzed.
+        temp_rules_instances: dict[FormLogic, int] = {
+            FormLogic(**logic_rule_data, pk=-index, form=instance): index
+            for index, logic_rule_data in enumerate(logic_rules_raw)
+        }
+
+        # We have to do these steps in the create method instead of the ideal/proper
+        # choice to do that inside the validate method. The form instance is important
+        # to have been created at the time that we do these validations, as the related
+        # nested fields are needed (have to be saved and available to access). Adding
+        # that to the validate method would require a huge refactor as a lot of our
+        # current implementation depends on the (saved) form instance.
+        self._validate_actions(instance, temp_rules_instances)
+        reordered_rules = self._validate_and_process_logic_rules(
+            instance, logic_rules_raw, temp_rules_instances
+        )
+
+        # Save the form logic rules in the correct/updated order
+        FormLogic.objects.bulk_create(
+            [FormLogic(**rule, form=instance) for rule in reordered_rules]
+        )
+
         return instance
 
     @transaction.atomic()
@@ -259,6 +420,7 @@ class FormSerializer(serializers.ModelSerializer):
             {k: v for k, v in validated_data.items() if k not in self._nested_fields},
         )
 
+        # 1. confirmation email template
         confirmation_email_template = validated_data.get(
             "confirmation_email_template", None
         )
@@ -266,6 +428,7 @@ class FormSerializer(serializers.ModelSerializer):
             form=instance, data=confirmation_email_template
         )
 
+        # 2. form definitions/steps
         assigned_steps: list[FormStep] = []
         form_step_data = validated_data["formstep_set"]
         # fmt:off
@@ -292,7 +455,7 @@ class FormSerializer(serializers.ModelSerializer):
             )
             assigned_steps.append(step)
 
-        # Remove the form steps not that are not part of the request along with their
+        # Remove the form steps that are not part of the request along with their
         # form definitions when applicable.
         steps_to_delete = instance.formstep_set.exclude(
             pk__in=(step.pk for step in assigned_steps)
@@ -317,6 +480,7 @@ class FormSerializer(serializers.ModelSerializer):
         for form_definition in form_definitions_created.values():
             FormVariable.objects.synchronize_for(form_definition)
 
+        # 3. registration backends
         registration_backends = validated_data.get("registration_backends", None)
         if registration_backends is not None:
             instance.registration_backends.all().delete()
@@ -325,6 +489,7 @@ class FormSerializer(serializers.ModelSerializer):
                 for backend in registration_backends
             )
 
+        # 4. form variables
         form_variables_data = validated_data.get("formvariable_set", [])
         form_variables: list[FormVariable] = []
         for variable_data in form_variables_data:
@@ -353,6 +518,37 @@ class FormSerializer(serializers.ModelSerializer):
         # Remove the stale variables that were not part of the request.
         instance.formvariable_set.exclude(source=FormVariableSources.component).delete()
         FormVariable.objects.bulk_create(form_variables)
+
+        # 5. logic rules
+        logic_rules_raw = validated_data.get("formlogic_set", [])
+        if not logic_rules_raw:
+            return instance
+
+        # Note: model instances without a pk are not hashable, which is a requirement to
+        # use them in the analysis graph, so we assign it manually. These rules will just
+        # live in memory and they will be saved below, after they are analyzed.
+        temp_rules_instances: dict[FormLogic, int] = {
+            FormLogic(**logic_rule_data, pk=-index, form=instance): index
+            for index, logic_rule_data in enumerate(logic_rules_raw)
+        }
+
+        # We have to do these steps in the create method instead of the ideal/proper
+        # choice to do that inside the validate method. The form instance is important
+        # to have been created at the time that we do these validations, as the related
+        # nested fields are needed (have to be saved and available to access). Adding
+        # that to the validate method would require a huge refactor as a lot of our
+        # current implementation depends on the (saved) form instance.
+        self._validate_actions(instance, temp_rules_instances)
+        reordered_rules = self._validate_and_process_logic_rules(
+            instance, logic_rules_raw, temp_rules_instances
+        )
+
+        # Remove the existing logic rules.
+        instance.formlogic_set.all().delete()
+        # Save the form logic rules in the correct/updated order.
+        FormLogic.objects.bulk_create(
+            [FormLogic(**rule, form=instance) for rule in reordered_rules]
+        )
 
         return instance
 
