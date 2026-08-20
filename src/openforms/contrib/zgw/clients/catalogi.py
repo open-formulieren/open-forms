@@ -4,12 +4,15 @@ from functools import cached_property
 from operator import itemgetter
 from typing import Literal, NotRequired, TypedDict
 
+from django.core.cache import caches
+
 from flags.state import flag_enabled
 from requests import Response
 from zgw_consumers.nlx import NLXClient
 
 from openforms.contrib.client import LoggingMixin
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
+from openforms.utils.cache import RequestProxyCache
 
 from ..exceptions import StandardViolation
 
@@ -138,16 +141,34 @@ class RoleTypeListParams(TypedDict, total=False):
     page: int
 
 
+CATALOGI_LOOKUP_CACHE_TIMEOUT = 60 * 60 * 12  # 12 hours
+CATALOGI_VERSION_LOOKUP_CACHE_TIMEOUT = 60 * 60 * 12  # 12 hours
+CATALOGI_CASE_TYPE_LOOKUP_CACHE_TIMEOUT = 60 * 60 * 1  # 1 hour
+CATALOGI_IOT_LOOKUP_CACHE_TIMEOUT = 60 * 60 * 1  # 1 hours
+
+
 class CatalogiClient(LoggingMixin, NLXClient):
     _api_version: CatalogiAPIVersion | None = None
 
     @property
+    def cache(self) -> RequestProxyCache:
+        cache = caches["catalogi_client"]
+        assert isinstance(cache, RequestProxyCache)
+        return cache
+
+    @property
     def api_version(self) -> CatalogiAPIVersion:
-        if self._api_version is None:
-            # hit a known endpoint and parse the response headers. VRSN is just a made
-            # up domain to limit the result set, hopefully it's even entirely empty.
-            response = self.get("catalogussen", params={"domein": "VRSN"})
-            self._api_version = self._determine_api_version(response)
+        cache_key = f"ZGW|catalogi|version|{self.base_url}"
+        if (version := self.cache.get(cache_key)) is not None:
+            return version
+
+        # hit a known endpoint and parse the response headers. VRSN is just a made
+        # up domain to limit the result set, hopefully it's even entirely empty.
+        response = self.get("catalogussen", params={"domein": "VRSN"})
+        version = self._determine_api_version(response)
+        assert version is not None
+        self.cache.set(cache_key, version, CATALOGI_VERSION_LOOKUP_CACHE_TIMEOUT)
+        self._api_version = version
         return self._api_version
 
     def _determine_api_version(self, response: Response) -> CatalogiAPIVersion:
@@ -190,17 +211,24 @@ class CatalogiClient(LoggingMixin, NLXClient):
 
         If no match is found, ``None`` is returned.
         """
+        cache_key_combination = f"{self.base_url}|{domain}|{rsin}"
+        cache_key = f"ZGW|catalogi|find_catalogus|{cache_key_combination}"
+        if (catalogus := self.cache.get(cache_key)) is not None:
+            return catalogus
+
         response = self.get("catalogussen", params={"domein": domain, "rsin": rsin})
         response.raise_for_status()
         data: PaginatedResponseData[Catalogus] = response.json()
-
         if (num_results := len(data["results"])) > 1:
             raise StandardViolation(
                 "Combination of domain + rsin must be unique according to the standard."
             )
         if num_results == 0:
             return None
-        return data["results"][0]
+
+        catalogus = data["results"][0]
+        self.cache.set(cache_key, catalogus, CATALOGI_LOOKUP_CACHE_TIMEOUT)
+        return catalogus
 
     def get_all_case_types(self, *, catalogus: str) -> Iterator[CaseType]:
         params: CaseTypeListParams = {
@@ -231,6 +259,13 @@ class CatalogiClient(LoggingMixin, NLXClient):
         if self.allow_drafts:
             params["status"] = "alles"
 
+        cache_key_combination = (
+            f"{self.base_url}{'|'.join(str(param) for param in params.values())}"
+        )
+        cache_key = f"ZGW|catalogi|find_case_types|{cache_key_combination}"
+        if (case_types := self.cache.get(cache_key)) is not None:
+            return case_types
+
         response = self.get("zaaktypen", params=params)  # type: ignore
         response.raise_for_status()
 
@@ -260,6 +295,7 @@ class CatalogiClient(LoggingMixin, NLXClient):
                 f"'{identification}'. Version (date) ranges may not overlap."
             )
 
+        self.cache.set(cache_key, all_versions, CATALOGI_CASE_TYPE_LOOKUP_CACHE_TIMEOUT)
         return all_versions
 
     def get_all_informatieobjecttypen(
@@ -306,6 +342,13 @@ class CatalogiClient(LoggingMixin, NLXClient):
         if self.allow_drafts:
             params["status"] = "alles"
 
+        cache_key_combination = (
+            f"{self.base_url}{'|'.join(str(param) for param in params.values())}"
+        )
+        cache_key = f"ZGW|catalogi|find_informatieobjecttypen|{cache_key_combination}"
+        if (existing_results := self.cache.get(cache_key)) is not None:
+            return existing_results
+
         response = self.get("informatieobjecttypen", params=params)  # type: ignore
 
         response.raise_for_status()
@@ -348,6 +391,7 @@ class CatalogiClient(LoggingMixin, NLXClient):
                 if version["url"] in case_type_document_types
             ]
 
+        self.cache.set(cache_key, all_versions, CATALOGI_IOT_LOOKUP_CACHE_TIMEOUT)
         return all_versions
 
     def list_statustypen(self, zaaktype: str) -> list[dict]:
