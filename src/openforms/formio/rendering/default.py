@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -13,7 +13,9 @@ from django.utils.translation import gettext, gettext_lazy as _
 from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.formio.typing import Component
+from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
@@ -31,8 +33,16 @@ class ContainerMixin:
 
     renderer: Renderer
     step_data: FormioData
+    path: str = ""  # Path in the data (#TODO rename to data_path?)
     component: Component
     mode: RenderModes
+    parent_node: Node | None = None
+
+    if TYPE_CHECKING:
+
+        def _is_visible_in_editgrid_item(
+            self, formio_config_wrapper: FormioConfigurationWrapper
+        ) -> bool: ...
 
     @property
     def is_visible(self) -> bool:
@@ -46,11 +56,17 @@ class ContainerMixin:
         if self.mode in visible_modes:
             return True
 
-        # We only pass the step data, since frontend logic only has access to the current step data.
-        if is_hidden(
+        formio_config_wrapper = self.renderer.submission.total_configuration_wrapper
+
+        # We only pass the step data, since frontend logic only has access to the
+        # current step data.
+        if isinstance(self.parent_node, EditGridGroupNode):
+            if not self._is_visible_in_editgrid_item(formio_config_wrapper):
+                return False
+        elif is_hidden(
             self.component,
             self.step_data,
-            configuration=self.renderer.submission.total_configuration_wrapper,
+            configuration=formio_config_wrapper,
         ):
             return False
 

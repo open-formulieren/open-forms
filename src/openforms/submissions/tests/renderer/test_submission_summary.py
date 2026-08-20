@@ -1,6 +1,7 @@
 from django.test import TestCase, tag
 from django.urls import reverse
 
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -620,3 +621,122 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    @temp_private_root()
+    @tag("gh-6142")
+    def test_summary_with_editgrid_items_that_have_conditional_visibility(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "fieldset",
+                    "key": "fieldset",
+                    "label": "fieldset",
+                    "components": [
+                        {"type": "textfield", "key": "textfield", "label": "textfield"}
+                    ],
+                },
+                {
+                    "type": "editgrid",
+                    "key": "herhalendeGroep",
+                    "label": "editgrid",
+                    "groupLabel": "Item",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "tekstveld0",
+                            "label": "Tekstveld0",
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "tekstveld1",
+                            "label": "Tekstveld1",
+                        },
+                        {
+                            "type": "checkbox",
+                            "key": "selectievakje",
+                            "label": "Selectievakje",
+                        },
+                        {
+                            "type": "fieldset",
+                            "key": "veldengroep",
+                            "label": "Veldengroep",
+                            "conditional": {
+                                "eq": True,
+                                "show": True,
+                                "when": "herhalendeGroep.selectievakje",
+                            },
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "tekstveld2",
+                                    "label": "Tekstveld2",
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "tekstveld3",
+                                    "label": "Tekstveld3",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "textfield": "zzz",
+                "herhalendeGroep": [
+                    {
+                        "tekstveld0": "a",
+                        "tekstveld1": "b",
+                        "selectievakje": True,
+                        "tekstveld2": "c",
+                        "tekstveld3": "d",
+                    },
+                    {
+                        "tekstveld0": "e",
+                        "tekstveld1": "f",
+                        "selectievakje": False,
+                    },
+                ],
+            },
+            with_report=True,
+        )
+        self._add_submission_to_session(submission)
+
+        with self.subTest("summary endpoint data"):
+            url = reverse("api:submission-summary", kwargs={"uuid": submission.uuid})
+
+            response = self.client.get(url)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            summary_data = response.json()[0]["data"]
+
+            expected = [
+                ("fieldset", None),
+                ("textfield", "zzz"),
+                ("editgrid", None),
+                ("Item 1", None),
+                ("Tekstveld0", "a"),
+                ("Tekstveld1", "b"),
+                ("Selectievakje", True),
+                ("Veldengroep", None),
+                ("Tekstveld2", "c"),
+                ("Tekstveld3", "d"),
+                ("Item 2", None),
+                ("Tekstveld0", "e"),
+                ("Tekstveld1", "f"),
+                ("Selectievakje", False),
+            ]
+            self.assertEqual(len(summary_data), len(expected))
+            for index, (name, value) in enumerate(expected):
+                with self.subTest(label=name, expected_value=value):
+                    summary_item = summary_data[index]
+                    self.assertEqual(summary_item["name"], name)
+                    self.assertEqual(summary_item["value"], value)
+
+        with self.subTest("summary pdf generation"):
+            html = submission.report.generate_submission_report_pdf()
+
+            self.assertIn("Tekstveld0", html)
+            self.assertIn("Tekstveld1", html)
+            self.assertIn("Tekstveld2", html)
+            self.assertIn("Tekstveld3", html)

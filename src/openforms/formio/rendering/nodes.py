@@ -11,7 +11,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..datastructures import FormioData
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..service import format_value, get_component_empty_value, holds_submission_data
 from ..typing import Component
 from ..utils import iter_components
@@ -123,21 +123,7 @@ class ComponentNode(Node):
         # We only pass the step data, since frontend logic only has access to the
         # current step data.
         if isinstance(self.parent_node, EditGridGroupNode):
-            # Frontend logic for repeating group does not specify the index of the
-            # iteration. So we need to look at the data for a specific iteration to
-            # figure out if a field within the iteration is visible
-            artificial_repeating_group_data = copy.deepcopy(self.step_data)
-            current_iteration_data = self.step_data.get(self.path, None)
-            artificial_repeating_group_data[self.parent_node.path] = (
-                current_iteration_data
-            )
-            if is_hidden(
-                self.component,
-                artificial_repeating_group_data,
-                # we can pass the root config wrapper because all editgrid item component
-                # keys are already exposed in the config wrapper with their prefixed paths
-                configuration=formio_config_wrapper,
-            ):
+            if not self._is_visible_in_editgrid_item(formio_config_wrapper):
                 return False
         elif is_hidden(
             self.component,
@@ -158,6 +144,26 @@ class ComponentNode(Node):
             render_configuration.key, render_configuration.default
         )
         return should_render
+
+    def _is_visible_in_editgrid_item(
+        self, formio_config_wrapper: FormioConfigurationWrapper
+    ) -> bool:
+        from .default import EditGridGroupNode
+
+        assert isinstance(self.parent_node, EditGridGroupNode)
+        # Frontend logic for repeating group does not specify the index of the
+        # iteration. So we need to look at the data for a specific iteration to
+        # figure out if a field within the iteration is visible
+        artificial_repeating_group_data = copy.deepcopy(self.step_data)
+        current_iteration_data = self.step_data.get(self.path, None)
+        artificial_repeating_group_data[self.parent_node.path] = current_iteration_data
+        return not is_hidden(
+            self.component,
+            artificial_repeating_group_data,
+            # we can pass the root config wrapper because all editgrid item component
+            # keys are already exposed in the config wrapper with their prefixed paths
+            configuration=formio_config_wrapper,
+        )
 
     @property
     def key(self):
