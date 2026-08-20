@@ -515,7 +515,7 @@ function reducer(draft, action) {
       }
 
       // Check if the formVariables need updating
-      updateFormVariables(
+      draft.formVariables = updateFormVariables(
         formDefinitionReference,
         builderMutationEvent.type,
         {

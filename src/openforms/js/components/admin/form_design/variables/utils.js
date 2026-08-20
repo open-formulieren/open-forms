@@ -29,7 +29,7 @@ const isInEditGrid = (targetComponent, configuration) => {
 
     // Check if any of the components in the editgrid has the same key as the component
     // we're looking for.
-    const flatChildren = flattenComponents([component]);
+    const flatChildren = flattenComponents(component.components);
     if (flatChildren[targetComponent.key] !== undefined) return true;
   }
 
@@ -115,15 +115,13 @@ const updateFormVariables = (
   formDefinition,
   mutationType,
   {component, originalComponent = null},
-  currentFormVariables,
+  formVariables,
   stepConfiguration
 ) => {
   // Not all components are associated with variables
   if (shouldNotUpdateVariables(component, originalComponent, mutationType, stepConfiguration)) {
-    return currentFormVariables;
+    return formVariables;
   }
-
-  let updatedFormVariables = _.cloneDeep(currentFormVariables);
 
   // This is a 'create' or a 'paste' event
   if (mutationType === 'created') {
@@ -133,34 +131,24 @@ const updateFormVariables = (
       for (const {component} of iterComponents([component])) {
         // Layout comopnents don't need variables - they don't hold data/values
         if (isLayoutComponent(component)) continue;
-        updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
+        formVariables.push(makeNewVariableFromComponent(component, formDefinition));
       }
     } else {
-      // When a new component is created, the callback is called multiple times by Formio. So we need to avoid adding
-      // the variable more than once.
-      const existingIds = updatedFormVariables
-        .filter(variable => !!variable._id)
-        .map(variable => variable._id);
-      if (existingIds.includes(component.id)) return updatedFormVariables;
-
-      updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
+      formVariables.push(makeNewVariableFromComponent(component, formDefinition));
     }
   } else if (mutationType === 'updated') {
     let indicesVariablesWithoutIds = [];
     let variableUpdated = false;
 
-    for (let variableIndex = 0; variableIndex < updatedFormVariables.length; variableIndex++) {
-      const variable = updatedFormVariables[variableIndex];
+    for (let variableIndex = 0; variableIndex < formVariables.length; variableIndex++) {
+      const variable = formVariables[variableIndex];
       if (!variable._id) {
         indicesVariablesWithoutIds.push(variableIndex);
         continue;
       }
 
       if (variable._id === originalComponent.id) {
-        updatedFormVariables[variableIndex] = makeNewVariableFromComponent(
-          component,
-          formDefinition
-        );
+        formVariables[variableIndex] = makeNewVariableFromComponent(component, formDefinition);
         variableUpdated = true;
         break;
       }
@@ -169,11 +157,11 @@ const updateFormVariables = (
     if (!variableUpdated) {
       // Variables that don't have an _id have been loaded from the backend (which means they can't have duplicate keys)
       for (const index of indicesVariablesWithoutIds) {
-        const variable = updatedFormVariables[index];
+        const variable = formVariables[index];
         // Case 1: the component key has changed (possibly among other attributes)
         // Case 2: other attributes (not the key) of the component have changed.
         if (variable.key === originalComponent.key) {
-          updatedFormVariables[index] = makeNewVariableFromComponent(component, formDefinition);
+          formVariables[index] = makeNewVariableFromComponent(component, formDefinition);
           break;
         }
       }
@@ -190,7 +178,7 @@ const updateFormVariables = (
       }
     }
 
-    updatedFormVariables = updatedFormVariables.filter(variable => {
+    formVariables = formVariables.filter(variable => {
       const matchKeyToRemove = keysToRemove.includes(variable.key);
 
       // In the case that there are duplicate keys, we need to figure out which of the variables with duplicate keys
@@ -199,7 +187,7 @@ const updateFormVariables = (
     });
   }
 
-  return updatedFormVariables;
+  return formVariables;
 };
 
 const checkForDuplicateKeys = (formVariables, staticVariables, validationErrors) => {
