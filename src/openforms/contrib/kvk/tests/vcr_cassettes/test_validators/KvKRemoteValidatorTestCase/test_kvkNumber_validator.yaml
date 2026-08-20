@@ -11,17 +11,17 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       apikey:
       - l7xx1f2691f2520d487b902f4e0b57a0b197
     method: GET
     uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=69599084
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}},"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}},"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
-        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging"},{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}},"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
+      string: '{"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
+        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}}},{"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
         EMZ Dagobert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Abebe
-        Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging"}]}'
+        Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}}}'
     headers:
       API-Version:
       - 2.1.0
@@ -34,7 +34,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 25 Mar 2026 19:25:46 GMT
+      - Thu, 20 Aug 2026 10:30:40 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -43,15 +43,20 @@ interactions:
       - no-referrer
       Server:
       - unknown
+      Strict-Transport-Security:
+      - max-age=157680002; includeSubDomains
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - DENY
+      ap:
+      - Prerelease BR
+      apiAuthzDetails:
+      - Not Set|l7xx1f2691f2520d487b902f4e0b57a0b197|0feb89a2-67e4-4af4-a4fd-24533eaeeee9|quota?ok|rate?
       content-length:
       - '991'
-      strict-transport-security:
-      - max-age=157680000 ; includeSubDomains
-      - max-age=0; includeSubDomains
+      counter.id:
+      - ''
     status:
       code: 200
       message: ''
@@ -67,7 +72,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       apikey:
       - l7xx1f2691f2520d487b902f4e0b57a0b197
     method: GET
@@ -86,7 +91,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 25 Mar 2026 19:25:46 GMT
+      - Thu, 20 Aug 2026 10:30:40 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -95,15 +100,20 @@ interactions:
       - no-referrer
       Server:
       - unknown
+      Strict-Transport-Security:
+      - max-age=157680002; includeSubDomains
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - DENY
+      ap:
+      - Prerelease BR
+      apiAuthzDetails:
+      - Not Set|l7xx1f2691f2520d487b902f4e0b57a0b197|0feb89a2-67e4-4af4-a4fd-24533eaeeee9|quota?ok|rate?
       content-length:
       - '122'
-      strict-transport-security:
-      - max-age=157680000 ; includeSubDomains
-      - max-age=0; includeSubDomains
+      counter.id:
+      - ''
     status:
       code: 404
       message: ''

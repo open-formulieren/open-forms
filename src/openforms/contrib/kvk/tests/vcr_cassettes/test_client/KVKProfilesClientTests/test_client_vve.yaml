@@ -11,7 +11,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       apikey:
       - l7xx1f2691f2520d487b902f4e0b57a0b197
     method: GET
@@ -20,9 +20,9 @@ interactions:
     body:
       string: '{"kvkNummer":"90000749","indNonMailing":"Ja","naam":"Global Conron","formeleRegistratiedatum":"20100208","materieleRegistratie":{"datumAanvang":"19991103"},"statutaireNaam":"Global
         Conron","sbiActiviteiten":[{"sbiCode":"94997","sbiOmschrijving":"Overige belangenbehartiging
-        (rest)","indHoofdactiviteit":"Ja"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}],"_embedded":{"eigenaar":{"rsin":"992340597","rechtsvorm":"Vereniging
+        (rest)","indHoofdactiviteit":"Ja"}],"_embedded":{"eigenaar":{"rsin":"992340597","rechtsvorm":"Vereniging
         van Eigenaars","uitgebreideRechtsvorm":"Vereniging van Eigenaars","adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Blaauwweg
-        163 3328XD Dordrecht","straatnaam":"Blaauwweg","huisnummer":163,"postcode":"3328XD","plaats":"Dordrecht","land":"Nederland"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"},{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}]}}}'
+        163 3328XD Dordrecht","straatnaam":"Blaauwweg","huisnummer":163,"postcode":"3328XD","plaats":"Dordrecht","land":"Nederland"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}}}},"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}}}'
     headers:
       API-Version:
       - 1.5.0
@@ -35,7 +35,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 25 Mar 2026 19:25:44 GMT
+      - Thu, 20 Aug 2026 10:30:37 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -44,15 +44,20 @@ interactions:
       - no-referrer
       Server:
       - unknown
+      Strict-Transport-Security:
+      - max-age=157680002; includeSubDomains
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - DENY
+      ap:
+      - Prerelease BR
+      apiAuthzDetails:
+      - Not Set|l7xx1f2691f2520d487b902f4e0b57a0b197|0feb89a2-67e4-4af4-a4fd-24533eaeeee9|quota?ok|rate?
       content-length:
-      - '931'
-      strict-transport-security:
-      - max-age=157680000 ; includeSubDomains
-      - max-age=0; includeSubDomains
+      - '915'
+      counter.id:
+      - ''
     status:
       code: 200
       message: ''
