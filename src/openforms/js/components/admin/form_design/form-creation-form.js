@@ -156,10 +156,14 @@ const initialFormState = {
 };
 
 const newStepData = {
-  configuration: {display: 'form'},
-  formDefinition: '',
+  configuration: {display: 'form', components: []},
+  formDefinition: '', // API endpoint URL
   slug: '',
   url: '',
+  isApplicable: true,
+  internalName: '',
+  loginRequired: false,
+  isReusable: false,
   _generatedId: '', // Consumers should generate this if there is no form definition url
   isNew: true,
   validationErrors: [],
