@@ -14,8 +14,115 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.0-beta.0 (2026-08-21)
+=========================
+
+Beta release for the upcoming 4.0.0 release.
+
+The stable version is scheduled to be released at the end of August.
+
+Detailed changes
+----------------
+
+**Breaking changes**
+
+See the `4.0 upgrade notes <https://open-forms.readthedocs.io/en/latest/installation/upgrade-400.html>`_
+for details.
+
+* [:backend:`6164`] Removed deprecated code (please review the instructions in the
+  documentation under **Installation** > **Upgrade details to Open Forms 4.0.0** for all
+  the necessary details):
+
+  - Removed the ``PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION`` feature flag.
+
+* [:backend:`6182`] Moved the position of validation errors and field descriptions to
+  be between the label and input field for improved accessibility. The markup and CSS
+  involved have been updated to make this possible, which may affect custom themes.
+
+**New features**
+
+* [:formio-builder:`265`, :backend:`5714`] Replaced the Formiojs builder with our own
+  implementation, allowing us to remove and update dependencies with known vulnerabilities.
+* [:backend:`6453`] The pre-requests hook (used in token exchange extension) is now
+  called in the ``partners`` and ``children`` family members.
+* [:backend:`5787`] Added a help function for users needing assistance while filling out
+  a form:
+
+  - [:backend:`6317`] You can now globally configure content for the callout page at the
+    start that explains the help function, with an optional image.
+  - [:backend:`6318`] You can now help instructions and an optional image in each form.
+    Additionally, you can control when the help callout page is displayed.
+
+* [:backend:`6315`] You can now provide "FAQ Items/additional tooltips" on form
+  components to provide more context to users filling out forms.
+* [:backend:`6470`] Improved the wording for the domain allowlist configuration description.
+* [:backend:`5913`] Added support for external Consent Management Platforms instead of
+  the built-in cookie consent machinery.
+* [:backend:`5958`] The internal API endpoint to manage forms now supports ``logic_rules``.
+
+**Bugfixes**
+
+* [:backend:`6468`] Fixed inconsistency in logic evaluation for admin and non-admin
+  users.
+* [:backend:`4004`, :backend:`6142`] Fixed components with visibilty logic inside
+  repeating group missing in the summary page.
+* [:backend:`6292`] Fixed extracting variables from template expressions.
+* [:backend:`5834`] Fixed special character like ``&`` being unexpectedly escaped.
+* [Sentry#453857] Fixed crash in digest email regarding logs without ``content_object``.
+* [Sentry#496315] Fixed crash when updating ``auto_login_authentication_backend`` on a
+  form with a ``PATCH`` request.
+* [:backend:`5879`] Fixed incorrect removal of ``eq`` properties in logic conditions.
+* [:backend:`6297`] Fixed two bugs regarding components with ``multiple=true``:
+
+  - Fixed component empty list default value incorrectly being changed to empty string.
+  - Fixed required hidden multiple fields triggering validation.
+
+* [:backend:`6510`] Fixed default value for ``checkbox`` and ``selectboxes`` in logic
+  trigger not being saved.
+* Fixed clear on hide check script.
+* [:backend:`6458`] Fixed an issue in the new logic evaluation when the ``today``
+  operator was used in client-side evaluated logic.
+* Fixed V3 form API endpoint automatically changing the form configuration from
+  ``camelCase`` to ``snake_case``.
+* [:backend:`5629`] Fixed invalid component prefill configuration producing a vague,
+  generic error - you now get proper validation errors.
+
+**Project maintenance**
+
+* Updated Haal Centraal test tooling, improving the DX.
+* Updated objecttypes/objects API test tooling to use Open Object.
+* Updated 4.0.0 upgrade notes and added logic engine documentation.
+* Dropped a bunch of frontend legacy peer dependencies.
+* Dropped microscope-sass frontend dependency.
+* Updated Open Zaak version in test tooling from 1.13 to 1.29.
+* Updated frontend dependencies to their latest versions:
+
+  - Bumped storybook to 10.5.8.
+  - Bumped @fortawesome/fontawesome-free to 6.7.2.
+  - Bumped react-intl to 7.1.14.
+  - Bumped typescript to 5.9.3.
+  - Bumped @open-formulieren/design-tokens to 1.0.0.
+  - Bumped @open-formulieren/formio-builder to 1.3.0.
+
+* Upgraded build tooling:
+
+  - Upgraded to NodeJS 24.
+
+* Updated backend dependencies to their latest versions:
+
+  - cryptography
+  - django
+  - gitpython
+  - msal
+  - pillow
+  - pyasn1
+  - pyopenssl
+  - sqlparse
+  - tablib
+  - wcwidth
+
 3.5.6 (2026-07-27)
-===================
+==================
 
 Regular bugfix release.
 
