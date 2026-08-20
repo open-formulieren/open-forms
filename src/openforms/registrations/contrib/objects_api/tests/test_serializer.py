@@ -1,11 +1,17 @@
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     """
     Test validation of the Objects API registration serializer.
@@ -29,6 +35,11 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_invalid_fields_v1(self):
         options = ObjectsAPIOptionsSerializer(

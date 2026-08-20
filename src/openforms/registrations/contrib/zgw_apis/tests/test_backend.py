@@ -6,6 +6,7 @@ from unittest import expectedFailure
 from unittest.mock import patch
 from uuid import uuid4
 
+from django.conf import settings
 from django.test import TestCase, override_settings, tag
 
 from glom import glom
@@ -35,6 +36,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
@@ -95,6 +97,9 @@ NP_INITIATOR_DATA = {
     "huisnummer": 101,
 }
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
+
 
 def _run_preregistration(
     submission: Submission,
@@ -119,7 +124,13 @@ class BaseRegistrationTestCase(OFVCRMixin, TestCase):
             organisatie_rsin="000000000",
         )
 
+    def setUp(self) -> None:
+        super().setUp()
 
+        self.addCleanup(clear_caches)
+
+
+@override_settings(CACHES=CACHES)
 class PreRegistrationTests(BaseRegistrationTestCase):
     def test_submission_has_reference_after_pre_registration(self):
         submission = SubmissionFactory.create(
@@ -550,6 +561,7 @@ class PreRegistrationTests(BaseRegistrationTestCase):
             )
 
 
+@override_settings(CACHES=CACHES)
 class AddConfirmationEmailTests(BaseRegistrationTestCase):
     @patch(
         "openforms.registrations.contrib.zgw_apis.plugin.get_last_confirmation_email",
@@ -782,6 +794,7 @@ class AddConfirmationEmailTests(BaseRegistrationTestCase):
             plugin.update_registration_with_confirmation_email(submission, options)
 
 
+@override_settings(CACHES=CACHES)
 class FamilyMembersTests(BaseRegistrationTestCase):
     @patch(
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
@@ -1759,6 +1772,7 @@ class FamilyMembersTests(BaseRegistrationTestCase):
         )
 
 
+@override_settings(CACHES=CACHES)
 class CasePropertiesTests(BaseRegistrationTestCase):
     def test_submission_with_multiple_eigenschappen_creation(self):
         submission = SubmissionFactory.from_components(
@@ -1923,6 +1937,7 @@ class CasePropertiesTests(BaseRegistrationTestCase):
         )
 
 
+@override_settings(CACHES=CACHES)
 class FileAttachmentTests(BaseRegistrationTestCase):
     def test_default_document_type_reference_is_used_for_attachments(self):
         submission = SubmissionFactory.from_components(
@@ -2349,6 +2364,7 @@ class FileAttachmentTests(BaseRegistrationTestCase):
         )
 
 
+@override_settings(CACHES=CACHES)
 class RolAndBetrokkeneTests(BaseRegistrationTestCase):
     def test_natuurlijk_persoon_initiator(self):
         submission = SubmissionFactory.from_components(
@@ -2937,6 +2953,7 @@ class RolAndBetrokkeneTests(BaseRegistrationTestCase):
         )
 
 
+@override_settings(CACHES=CACHES)
 class PaymentStatusTests(ParametrizedTestCase, BaseRegistrationTestCase):
     def test_register_and_update_paid_product(self):
         submission = SubmissionFactory.from_components(
@@ -3197,6 +3214,7 @@ class PaymentStatusTests(ParametrizedTestCase, BaseRegistrationTestCase):
         self.assertIsNone(initiator_data["betrokkeneIdentificatie"]["verblijfsadres"])
 
 
+@override_settings(CACHES=CACHES)
 class ObjectsAPITests(BaseRegistrationTestCase):
     @tag("gh-5803")
     def test_submission_with_zgw_and_objects_api_backends(self):
@@ -3431,6 +3449,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
             self.assertIsNone(zaakobject["objectIdentificatie"])
 
 
+@override_settings(CACHES=CACHES)
 class SummaryDocumentTests(BaseRegistrationTestCase):
     def test_all_summary_documents(self):
         submission = SubmissionFactory.from_components(
@@ -3765,6 +3784,7 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
         self.assertTrue("json" not in document_results)
 
 
+@override_settings(CACHES=CACHES)
 class CaseObjectsTests(BaseRegistrationTestCase):
     def test_submission_with_case_objects_creation(self):
         submission = SubmissionFactory.from_components(

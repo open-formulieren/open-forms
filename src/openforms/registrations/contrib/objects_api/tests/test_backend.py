@@ -6,7 +6,8 @@ from datetime import UTC, datetime
 from unittest.mock import patch
 from uuid import UUID
 
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 from requests import RequestException
@@ -30,6 +31,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -47,6 +49,11 @@ class BeforeRecordRequestWrapper:
         return request
 
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
+
+
+@override_settings(CACHES=CACHES)
 @temp_private_root()
 class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
     _vcr_before_record_request: BeforeRecordRequestWrapper = (
@@ -67,6 +74,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
+        self.addCleanup(clear_caches)
 
         def _reset_vcr_hook():
             self._vcr_before_record_request.hook = None

@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from unittest.mock import patch
 from uuid import UUID
 
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, override_settings, tag
 
@@ -16,13 +17,18 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV1
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 @temp_private_root()
 class JSONTemplatingTests(OFVCRMixin, TestCase):
     maxDiff = None
@@ -47,6 +53,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
+        self.addCleanup(clear_caches)
 
     @freeze_time("2026-06-25T18:07:00+00:00")
     def test_default_template(self):

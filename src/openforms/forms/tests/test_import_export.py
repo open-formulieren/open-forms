@@ -7,6 +7,7 @@ from textwrap import dedent
 from unittest.mock import patch
 from uuid import UUID
 
+from django.conf import settings
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
@@ -52,6 +53,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
 from openforms.registrations.contrib.zgw_apis.typing import (
     RegistrationOptions as ZGWRegistrationOptions,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
@@ -80,6 +82,9 @@ from .factories import (
 )
 
 PATH = Path(__file__).parent
+
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
 
 class TempdirMixin:
@@ -2160,11 +2165,17 @@ class ExportObjectsAPITests(TempdirMixin, TestCase):
             )
 
 
+@override_settings(CACHES=CACHES)
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
 
     See the relevant Docker compose in the ``docker/`` folder.
     """
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_import_form_with_objects_registration_backend_no_group(self):
         resources = {
@@ -2678,11 +2689,17 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             self.assertEqual(len(backend_with_initial_files.options["files"]), 0)
 
 
+@override_settings(CACHES=CACHES)
 class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Open Zaak Docker Compose to be running.
 
     See the relevant Docker compose in the ``docker/`` folder.
     """
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     @staticmethod
     def _create_export(filepath: Path, *backends: dict):

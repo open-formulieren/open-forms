@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.test import override_settings
+
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
@@ -6,12 +9,17 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..tests.factories import ZGWApiGroupConfigFactory
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
     endpoint = reverse_lazy("api:zgw_apis:catalogue-list")
 
@@ -30,6 +38,11 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
             ztc_service=catalogi_service,
         )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_auth_required(self):
         response = self.client.get(self.endpoint)
@@ -63,8 +76,14 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
         self.assertEqual(len(test_catalogus), 1)
 
 
+@override_settings(CACHES=CACHES)
 class GetCaseTypesViewTests(OFVCRMixin, APITestCase):
     endpoint = reverse_lazy("api:zgw_apis:case-type-list")
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     @classmethod
     def setUpTestData(cls):
@@ -180,6 +199,7 @@ class GetCaseTypesViewTests(OFVCRMixin, APITestCase):
                 self.assertFalse(item["isPublished"])
 
 
+@override_settings(CACHES=CACHES)
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
     endpoint = reverse_lazy("api:zgw_apis:document-type-list")
 
@@ -198,6 +218,11 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
             ztc_service=catalogi_service,
         )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_must_be_logged_in_as_admin(self):
         user = UserFactory.create()
@@ -310,6 +335,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertEqual(data, [])
 
 
+@override_settings(CACHES=CACHES)
 class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
     endpoint = reverse_lazy("api:zgw_apis:role-type-list")
 
@@ -328,6 +354,11 @@ class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
             ztc_service=catalogi_service,
         )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_must_be_logged_in_as_admin(self):
         user = UserFactory.create()
@@ -430,6 +461,7 @@ class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
         self.assertIsNotNone(draft)
 
 
+@override_settings(CACHES=CACHES)
 class GetProductsListViewTests(OFVCRMixin, APITestCase):
     endpoint = reverse_lazy("api:zgw_apis:product-list")
 
@@ -446,6 +478,11 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
             for_test_docker_compose=True
         )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_must_be_logged_in_as_admin(self):
         user = UserFactory.create()

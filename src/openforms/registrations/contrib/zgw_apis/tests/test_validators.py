@@ -1,12 +1,18 @@
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import ZaakOptionsSerializer
 from .factories import ZGWApiGroupConfigFactory
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 @override_settings(LANGUAGE_CODE="en")
 class OptionsSerializerTests(OFVCRMixin, TestCase):
     """
@@ -28,6 +34,11 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         super().setUpTestData()
 
         cls.zgw_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     def test_no_zgw_api_group(self):
         # No zgw_api_group provided

@@ -11,16 +11,26 @@ These tests make use of requests-mock rather than VCR for two reasons:
 
 from datetime import date
 
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 import requests_mock
 from furl import furl
 
+from openforms.utils.tests.cache import clear_caches
+
 from ..clients import CatalogiClient
 from ..exceptions import StandardViolation
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 class CatalogiClientTests(TestCase):
+    def setUp(self) -> None:
+        self.addCleanup(clear_caches)
+
     @requests_mock.Mocker()
     def test_automatic_version_information_extraction(self, m: requests_mock.Mocker):
         client = CatalogiClient(base_url="https://dummy/")

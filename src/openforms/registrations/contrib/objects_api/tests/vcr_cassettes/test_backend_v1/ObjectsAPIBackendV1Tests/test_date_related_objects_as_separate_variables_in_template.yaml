@@ -24,11 +24,11 @@ interactions:
       Content-Length:
       - '607'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-src ''self'';
+        base-uri ''self''; form-action ''self''; object-src ''none''; default-src
+        ''self''; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -48,7 +48,7 @@ interactions:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"bron": {"naam": "Open Formulieren"},
       "aanvraaggegevens": {"datum": "2025-12-10", "datumtijd": "2025-12-11T12:34:56+01:00",
-      "editgrid": "[{''time'': ''12:34:56''}]"}}, "startAt": "2026-08-17"}}'
+      "editgrid": "[{''time'': ''12:34:56''}]"}}, "startAt": "2026-08-25"}}'
     headers:
       Accept:
       - '*/*'
@@ -68,9 +68,9 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/407e2bc4-b2f9-485a-a053-de3fc04069a3","uuid":"407e2bc4-b2f9-485a-a053-de3fc04069a3","type":"http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
+      string: '{"url":"http://localhost:8001/api/v2/objects/a974b022-fbbe-45d5-be8d-9f0b4667fe80","uuid":"a974b022-fbbe-45d5-be8d-9f0b4667fe80","type":"http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
         Formulieren"},"aanvraaggegevens":{"datum":"2025-12-10","datumtijd":"2025-12-11T12:34:56+01:00","editgrid":"[{''time'':
-        ''12:34:56''}]"}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+        ''12:34:56''}]"}},"geometry":null,"references":[],"startAt":"2026-08-25","endAt":null,"registrationAt":"2026-08-25","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -81,17 +81,17 @@ interactions:
       Content-Length:
       - '553'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-src ''self'';
+        base-uri ''self''; form-action ''self''; object-src ''none''; default-src
+        ''self''; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/407e2bc4-b2f9-485a-a053-de3fc04069a3
+      - http://localhost:8001/api/v2/objects/a974b022-fbbe-45d5-be8d-9f0b4667fe80
       Referrer-Policy:
       - same-origin
       Vary:

@@ -2,7 +2,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from unittest.mock import patch
 
-from django.test import TestCase, tag
+from django.conf import settings
+from django.test import TestCase, override_settings, tag
 
 from privates.test import temp_private_root
 from requests import RequestException
@@ -16,6 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....exceptions import RegistrationFailed
@@ -33,8 +35,13 @@ class BeforeRecordRequestWrapper:
         return request
 
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
+
+
 @tag("gh-1183")
 @temp_private_root(reset_storage=False)
+@override_settings(CACHES=CACHES)
 class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
     """
     Test that partial results are stored and don't cause excessive registration calls.
@@ -69,6 +76,7 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
             self._vcr_before_record_request.hook = None
 
         self.addCleanup(_reset_vcr_hook)
+        self.addCleanup(clear_caches)
 
         # set up a simple form to track the partial result storing state
         self.submission = SubmissionFactory.from_components(

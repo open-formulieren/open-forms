@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from unittest.mock import patch
 from uuid import UUID
 
+from django.conf import settings
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
@@ -19,6 +20,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
@@ -34,6 +36,11 @@ from ..typing import RegistrationOptionsV1
 FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
+
+
+@override_settings(CACHES=CACHES)
 @temp_private_root()
 class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     maxDiff = None
@@ -87,6 +94,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
+        self.addCleanup(clear_caches)
 
     def test_objecttype_and_document_types_are_resolved(self):
         submission = SubmissionFactory.from_components(

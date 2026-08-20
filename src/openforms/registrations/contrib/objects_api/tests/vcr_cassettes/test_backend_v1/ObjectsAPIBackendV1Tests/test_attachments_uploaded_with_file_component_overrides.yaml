@@ -25,12 +25,12 @@ interactions:
       Content-Length:
       - '802'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+      - 'object-src ''none''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
+        tile.openstreetmap.org; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline''
+        cdnjs.cloudflare.com cdn.jsdelivr.net; default-src ''self''; base-uri ''self'';
+        font-src ''self'' fonts.gstatic.com; frame-src ''self''; form-action ''self'';
         style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+        cdn.jsdelivr.net; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -72,12 +72,12 @@ interactions:
       Content-Length:
       - '856'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+      - 'object-src ''none''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
+        tile.openstreetmap.org; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline''
+        cdnjs.cloudflare.com cdn.jsdelivr.net; default-src ''self''; base-uri ''self'';
+        font-src ''self'' fonts.gstatic.com; frame-src ''self''; form-action ''self'';
         style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+        cdn.jsdelivr.net; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -119,12 +119,12 @@ interactions:
       Content-Length:
       - '863'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+      - 'object-src ''none''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
+        tile.openstreetmap.org; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline''
+        cdnjs.cloudflare.com cdn.jsdelivr.net; default-src ''self''; base-uri ''self'';
+        font-src ''self'' fonts.gstatic.com; frame-src ''self''; form-action ''self'';
         style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+        cdn.jsdelivr.net; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -142,8 +142,8 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-      "bronorganisatie": "111222333", "creatiedatum": "2026-08-17", "titel": "A Custom
-      Title", "auteur": "Aanvrager", "taal": "eng", "formaat": "text/css", "inhoud":
+      "bronorganisatie": "111222333", "creatiedatum": "2026-08-25", "titel": "A Custom
+      Title", "auteur": "Aanvrager", "taal": "eng", "formaat": "message/rfc822", "inhoud":
       "Y29udGVudA==", "status": "definitief", "bestandsnaam": "some-attachment.jpg",
       "ontvangstdatum": "2026-06-10", "beschrijving": "Bijgevoegd document", "indicatieGebruiksrecht":
       false, "bestandsomvang": 7, "vertrouwelijkheidaanduiding": "geheim"}'
@@ -155,7 +155,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '529'
+      - '535'
       Content-Type:
       - application/json
       User-Agent:
@@ -164,8 +164,8 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b","identificatie":"DOCUMENT-2026-0000000097","bronorganisatie":"111222333","creatiedatum":"2026-08-17","titel":"A
-        Custom Title","vertrouwelijkheidaanduiding":"geheim","auteur":"Aanvrager","status":"definitief","formaat":"text/css","taal":"eng","versie":1,"beginRegistratie":"2026-08-17T15:57:17.328052Z","bestandsnaam":"some-attachment.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182","identificatie":"DOCUMENT-2026-0000000038","bronorganisatie":"111222333","creatiedatum":"2026-08-25","titel":"A
+        Custom Title","vertrouwelijkheidaanduiding":"geheim","auteur":"Aanvrager","status":"definitief","formaat":"message/rfc822","taal":"eng","versie":1,"beginRegistratie":"2026-08-25T13:07:19.347351Z","bestandsnaam":"some-attachment.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
         document","ontvangstdatum":"2026-06-10","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":null,"integriteit":null,"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -173,20 +173,20 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '984'
+      - '990'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+      - 'object-src ''none''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
+        tile.openstreetmap.org; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline''
+        cdnjs.cloudflare.com cdn.jsdelivr.net; default-src ''self''; base-uri ''self'';
+        font-src ''self'' fonts.gstatic.com; frame-src ''self''; form-action ''self'';
         style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+        cdn.jsdelivr.net; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182
       Referrer-Policy:
       - same-origin
       Vary:
@@ -223,11 +223,11 @@ interactions:
       Content-Length:
       - '607'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-src ''self'';
+        base-uri ''self''; form-action ''self''; object-src ''none''; default-src
+        ''self''; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -246,16 +246,16 @@ interactions:
 - request:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"bron": {"naam": "Open Formulieren", "kenmerk":
-      "e988c90c-6f3e-4ffa-b173-9a4625b21192"}, "type": "terugbelnotitie", "aanvraaggegevens":
-      {"fd-67": {"fileUpload": [{"url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+      "0c423960-2acf-4696-be1f-b6b8fabe9f77"}, "type": "terugbelnotitie", "aanvraaggegevens":
+      {"fd-1": {"fileUpload": [{"url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
       "data": {"url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
       "form": "", "name": "some-attachment.jpg", "size": 46114, "baseUrl": "http://server/form",
       "project": ""}, "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
       "size": 46114, "type": "image/jpg", "storage": "url", "originalName": "some-attachment.jpg"}]}},
       "taal": "en", "betrokkenen": [{"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}],
-      "pdf": "", "csv": "", "bijlagen": ["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b"],
+      "pdf": "", "csv": "", "bijlagen": ["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182"],
       "payment": {"completed": false, "amount": 0, "public_order_ids": [], "payment_ids":
-      []}}, "startAt": "2026-08-17"}}'
+      []}}, "startAt": "2026-08-25"}}'
     headers:
       Accept:
       - '*/*'
@@ -266,7 +266,7 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1085'
+      - '1084'
       Content-Type:
       - application/json
       User-Agent:
@@ -275,8 +275,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/c2b4c5df-0473-4e80-b110-1581b265e9ab","uuid":"c2b4c5df-0473-4e80-b110-1581b265e9ab","type":"http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
-        Formulieren","kenmerk":"e988c90c-6f3e-4ffa-b173-9a4625b21192"},"type":"terugbelnotitie","aanvraaggegevens":{"fd-67":{"fileUpload":[{"url":"http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483","data":{"url":"http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483","form":"","name":"some-attachment.jpg","size":46114,"baseUrl":"http://server/form","project":""},"name":"my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg","size":46114,"type":"image/jpg","storage":"url","originalName":"some-attachment.jpg"}]}},"taal":"en","betrokkenen":[{"inpBsn":"","rolOmschrijvingGeneriek":"initiator"}],"pdf":"","csv":"","bijlagen":["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b"],"payment":{"completed":false,"amount":0,"public_order_ids":[],"payment_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/6275bd9e-0067-4501-bef0-675d26724a66","uuid":"6275bd9e-0067-4501-bef0-675d26724a66","type":"http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
+        Formulieren","kenmerk":"0c423960-2acf-4696-be1f-b6b8fabe9f77"},"type":"terugbelnotitie","aanvraaggegevens":{"fd-1":{"fileUpload":[{"url":"http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483","data":{"url":"http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483","form":"","name":"some-attachment.jpg","size":46114,"baseUrl":"http://server/form","project":""},"name":"my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg","size":46114,"type":"image/jpg","storage":"url","originalName":"some-attachment.jpg"}]}},"taal":"en","betrokkenen":[{"inpBsn":"","rolOmschrijvingGeneriek":"initiator"}],"pdf":"","csv":"","bijlagen":["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182"],"payment":{"completed":false,"amount":0,"public_order_ids":[],"payment_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-25","endAt":null,"registrationAt":"2026-08-25","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -285,19 +285,19 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1274'
+      - '1273'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-src ''self'';
+        base-uri ''self''; form-action ''self''; object-src ''none''; default-src
+        ''self''; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline'';
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/c2b4c5df-0473-4e80-b110-1581b265e9ab
+      - http://localhost:8001/api/v2/objects/6275bd9e-0067-4501-bef0-675d26724a66
       Referrer-Policy:
       - same-origin
       Vary:
@@ -321,11 +321,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b
+    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b","identificatie":"DOCUMENT-2026-0000000097","bronorganisatie":"111222333","creatiedatum":"2026-08-17","titel":"A
-        Custom Title","vertrouwelijkheidaanduiding":"geheim","auteur":"Aanvrager","status":"definitief","formaat":"text/css","taal":"eng","versie":1,"beginRegistratie":"2026-08-17T15:57:17.328052Z","bestandsnaam":"some-attachment.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/f01a3a75-93ab-41e1-ae68-b376547a1c7b/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182","identificatie":"DOCUMENT-2026-0000000038","bronorganisatie":"111222333","creatiedatum":"2026-08-25","titel":"A
+        Custom Title","vertrouwelijkheidaanduiding":"geheim","auteur":"Aanvrager","status":"definitief","formaat":"message/rfc822","taal":"eng","versie":1,"beginRegistratie":"2026-08-25T13:07:19.347351Z","bestandsnaam":"some-attachment.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/d34cfcf4-f3a1-41fa-987b-4983f90bf182/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
         document","ontvangstdatum":"2026-06-10","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":null,"integriteit":null,"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81","locked":false,"bestandsdelen":[],"trefwoorden":[],"_expand":{}}'
     headers:
       API-version:
@@ -333,20 +333,20 @@ interactions:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
       Content-Length:
-      - '987'
+      - '993'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
+      - 'object-src ''none''; img-src ''self'' data: cdn.redoc.ly cdnjs.cloudflare.com
+        tile.openstreetmap.org; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline''
+        cdnjs.cloudflare.com cdn.jsdelivr.net; default-src ''self''; base-uri ''self'';
+        font-src ''self'' fonts.gstatic.com; frame-src ''self''; form-action ''self'';
         style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+        cdn.jsdelivr.net; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"64c85c2664b069d785beae07f20816b9"'
+      - '"da67f72bc2c8fbd75642425df82e23a2"'
       Referrer-Policy:
       - same-origin
       Vary:

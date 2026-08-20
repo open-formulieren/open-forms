@@ -3,7 +3,8 @@ from decimal import Decimal
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
-from django.test import TestCase, tag
+from django.conf import settings
+from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -32,6 +33,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -46,7 +48,11 @@ from ..plugin import ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
 
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
 
+
+@override_settings(CACHES=CACHES)
 @temp_private_root()
 class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
@@ -63,6 +69,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
 
     @freeze_time("2026-06-25T18:07:00+00:00")
     def test_register_with_mapping_and_objecttype_and_document_types_resolve(self):
