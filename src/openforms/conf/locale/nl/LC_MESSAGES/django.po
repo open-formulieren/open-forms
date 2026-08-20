@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 15:40+0200\n"
-"PO-Revision-Date: 2026-08-18 17:10+0200\n"
+"POT-Creation-Date: 2026-08-20 17:36+0200\n"
+"PO-Revision-Date: 2026-08-20 17:36+0200\n"
 "Last-Translator:   <admin@admin.com>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -1135,7 +1135,7 @@ msgid "Hidden"
 msgstr "Verborgen"
 
 #: openforms/appointments/contrib/jcc_rest/constants.py:17
-#: openforms/forms/constants.py:62
+#: openforms/forms/constants.py:66
 msgid "Required"
 msgstr "Verplicht"
 
@@ -1150,7 +1150,7 @@ msgid "First name"
 msgstr "Voornaam"
 
 #: openforms/appointments/contrib/jcc_rest/constants.py:40
-#: openforms/formio/rendering/default.py:435 stuf/stuf_bg/constants.py:29
+#: openforms/formio/rendering/default.py:451 stuf/stuf_bg/constants.py:29
 msgid "Initials"
 msgstr "Voorletters"
 
@@ -1160,8 +1160,8 @@ msgid "Last name prefix"
 msgstr "Voorvoegsel"
 
 #: openforms/appointments/contrib/jcc_rest/constants.py:55
-#: openforms/formio/rendering/default.py:450
-#: openforms/formio/rendering/default.py:571 stuf/stuf_bg/constants.py:50
+#: openforms/formio/rendering/default.py:466
+#: openforms/formio/rendering/default.py:587 stuf/stuf_bg/constants.py:50
 msgid "Date of birth"
 msgstr "Geboortedatum"
 
@@ -1691,8 +1691,8 @@ msgstr "Authenticatiemodule"
 #: openforms/authentication/constants.py:34
 #: openforms/authentication/constants.py:38
 #: openforms/authentication/contrib/demo/plugin.py:32
-#: openforms/formio/rendering/default.py:430
-#: openforms/formio/rendering/default.py:561 stuf/stuf_bg/constants.py:26
+#: openforms/formio/rendering/default.py:446
+#: openforms/formio/rendering/default.py:577 stuf/stuf_bg/constants.py:26
 msgid "BSN"
 msgstr "BSN"
 
@@ -2113,6 +2113,7 @@ msgstr ""
 
 #: openforms/authentication/contrib/yivi_oidc/models.py:20
 #: openforms/forms/api/serializers/logic/action_serializers.py:214
+#: openforms/forms/api/v3/serializers/logic_rules.py:52
 #: openforms/forms/models/category.py:10 openforms/forms/models/form.py:80
 #: openforms/forms/models/form.py:860
 #: openforms/forms/models/form_definition.py:41
@@ -5213,27 +5214,27 @@ msgstr "Weergeven in PDF"
 msgid "Show in confirmation email"
 msgstr "Weergeven in bevestigingsmail"
 
-#: openforms/formio/rendering/default.py:304
+#: openforms/formio/rendering/default.py:320
 msgid "Item"
 msgstr "Item"
 
-#: openforms/formio/rendering/default.py:415
+#: openforms/formio/rendering/default.py:431
 msgid "Partner"
 msgstr "Partner"
 
-#: openforms/formio/rendering/default.py:440
+#: openforms/formio/rendering/default.py:456
 msgid "Affixes"
 msgstr "Voorvoegsels"
 
-#: openforms/formio/rendering/default.py:445
+#: openforms/formio/rendering/default.py:461
 msgid "Lastname"
 msgstr "Achternaam"
 
-#: openforms/formio/rendering/default.py:546
+#: openforms/formio/rendering/default.py:562
 msgid "Child"
 msgstr "Kind"
 
-#: openforms/formio/rendering/default.py:566
+#: openforms/formio/rendering/default.py:582
 msgid "Firstnames"
 msgstr "Voornamen"
 
@@ -5486,7 +5487,7 @@ msgid ""
 "a step. Leave blank to disable this functionality."
 msgstr ""
 "De tekst die getoond wordt in een dialoogvenster wanneer de gebruiker op de "
-"\"Hulp\" knop klikt. Laat deze leeg om deze functionaliteit uit te schakelen."
+"\"Hulp\"-knop klikt. Laat deze leeg om deze functionaliteit uit te schakelen."
 
 #: openforms/forms/api/serializers/form.py:181
 msgid "Optional image"
@@ -5578,12 +5579,12 @@ msgstr ""
 "componentdefinities, allemaal van het type 'checkbox'."
 
 #: openforms/forms/api/serializers/form.py:319
-#: openforms/forms/api/v3/serializers/form.py:121
+#: openforms/forms/api/v3/serializers/form.py:149
 msgid "Help dialog configuration"
 msgstr "Hulpdialoogvensterconfiguratie"
 
 #: openforms/forms/api/serializers/form.py:321
-#: openforms/forms/api/v3/serializers/form.py:123
+#: openforms/forms/api/v3/serializers/form.py:151
 msgid ""
 "When the nested content field is not empty, the SDK should render help "
 "controls to assist the user filling out the form."
@@ -5715,7 +5716,7 @@ msgstr ""
 "{static_data}."
 
 #: openforms/forms/api/serializers/form_variable.py:117
-#: openforms/forms/api/v3/serializers/form.py:462
+#: openforms/forms/api/v3/serializers/form.py:658
 msgid ""
 "This profile form variable is already used in another communication "
 "preferences prefill plugin."
@@ -5738,7 +5739,7 @@ msgstr ""
 "sleutel in de formulierdefinitie."
 
 #: openforms/forms/api/serializers/form_variable.py:252
-#: openforms/forms/api/v3/serializers/form.py:481
+#: openforms/forms/api/v3/serializers/form.py:677
 msgid ""
 "Prefill plugin, attribute and options can not be specified at the same time."
 msgstr ""
@@ -5752,7 +5753,7 @@ msgstr ""
 "afgeleid zijn."
 
 #: openforms/forms/api/serializers/form_variable.py:272
-#: openforms/forms/api/v3/serializers/form.py:492
+#: openforms/forms/api/v3/serializers/form.py:688
 msgid ""
 "Prefill plugin must be specified with either prefill attribute or prefill "
 "options."
@@ -5879,6 +5880,7 @@ msgid "Action type for this particular action."
 msgstr "Soort actie"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:221
+#: openforms/forms/api/v3/serializers/logic_rules.py:59
 #, python-brace-format
 msgid ""
 "Key of the Form.io component that the action applies to. This field is "
@@ -5888,10 +5890,12 @@ msgstr ""
 "is verplicht voor de actietypes {action_types} - anders is het optioneel. "
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:230
+#: openforms/forms/api/v3/serializers/logic_rules.py:68
 msgid "Key of the target variable"
 msgstr "Sleutel van de bestemmingsvariabele"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:232
+#: openforms/forms/api/v3/serializers/logic_rules.py:70
 #, python-brace-format
 msgid ""
 "Key of the target variable whose value will be changed. This field is "
@@ -5941,12 +5945,14 @@ msgid "Appointment forms cannot have logic rules."
 msgstr "Afspraakformulieren kunnen geen logicaregels bevatten."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:65
+#: openforms/forms/api/v3/serializers/form.py:271
 #, python-brace-format
 msgid "Rule contains cycles through variable(s): {variables}."
 msgstr ""
 "De regel bevat verwijzingen naar zichzelf, via de variabele(n): {variables}."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:134
+#: openforms/forms/api/v3/serializers/logic_rules.py:100
 #: openforms/submissions/api/serializers.py:246
 msgid "Actions triggered when the trigger expression evaluates to 'truthy'."
 msgstr ""
@@ -5967,6 +5973,7 @@ msgstr ""
 "logicaregel-analyse."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:168
+#: openforms/forms/api/v3/serializers/logic_rules.py:119
 msgid ""
 "The trigger expression to determine if the actions should execute or not. "
 "Note that this must be a valid JsonLogic expression, and the first operand "
@@ -5977,6 +5984,7 @@ msgstr ""
 "moet een verwijzing zijn naar een variabele in het formulier."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:182
+#: openforms/forms/api/v3/serializers/logic_rules.py:128
 msgid ""
 "Order of the rule relative to the form it belongs to. Logic rules are "
 "evaluated in this order. Note that specifying a value for the order here "
@@ -5986,47 +5994,74 @@ msgstr ""
 "volgorde uitgevoerd. Merk op dat het zetten van een volgnummer ervoor zorgt "
 "dat het volgnummer van regels voor/na deze regel opnieuw berekend wordt."
 
-#: openforms/forms/api/v3/serializers/form.py:364
+#: openforms/forms/api/v3/serializers/form.py:560
 msgid "Non-unique form step - form definition duplicate(s) detected."
 msgstr ""
 "Niet-unieke formulierstap – er zijn dubbele formulierdefinities gevonden."
 
-#: openforms/forms/api/v3/serializers/form.py:384
+#: openforms/forms/api/v3/serializers/form.py:580
 #, python-brace-format
 msgid "Duplicate component key detected in form definition {form_definition}."
 msgstr ""
 "Er is een dubbele componentsleutel gedetecteerd in de formulierdefinitie "
 "{form_definition}."
 
-#: openforms/forms/api/v3/serializers/form.py:404
+#: openforms/forms/api/v3/serializers/form.py:600
 #: openforms/forms/validators.py:91 openforms/forms/validators.py:160
 #, python-brace-format
 msgid "\"{duplicate_key}\" (in {paths})"
 msgstr "\"{duplicate_key}\" (in {paths})"
 
-#: openforms/forms/api/v3/serializers/form.py:411
+#: openforms/forms/api/v3/serializers/form.py:607
 #: openforms/forms/validators.py:99 openforms/forms/validators.py:167
 #, python-brace-format
 msgid "Detected duplicate keys in configuration: {errors}"
 msgstr "Er zijn dubbele sleutels gedetecteerd in de configuratie: {errors}."
 
-#: openforms/forms/api/v3/serializers/form.py:447
+#: openforms/forms/api/v3/serializers/form.py:643
 #: openforms/prefill/contrib/customer_interactions/config.py:57
 msgid ""
 "Only variables of 'profile' components are allowed as profile form variable."
 msgstr "Je kan enkel variabelen gebruiken die bij profielcomponenten horen."
 
-#: openforms/forms/api/v3/serializers/form.py:565
+#: openforms/forms/api/v3/serializers/form.py:761
 msgid "At least one form step is required in a regular form."
 msgstr "Ten minste één formulierstap is verplicht in een standaardformulier."
 
-#: openforms/forms/api/v3/serializers/form.py:570
+#: openforms/forms/api/v3/serializers/form.py:766
 msgid "Form steps are not allowed in an appointment form."
 msgstr "Formulierstappen zijn niet toegestaan in afspraakformulieren."
 
-#: openforms/forms/api/v3/serializers/form.py:575
+#: openforms/forms/api/v3/serializers/form.py:771
 msgid "Exactly one form step is required in a single step form."
 msgstr "Precies één formulierstap is verplicht in een formulier met één stap."
+
+#: openforms/forms/api/v3/serializers/logic_rules.py:57
+msgid "Form.io component key"
+msgstr "Form.io componentsleutel"
+
+#: openforms/forms/api/v3/serializers/logic_rules.py:79
+msgid "form step slug"
+msgstr "formulierstap URL-deel"
+
+#: openforms/forms/api/v3/serializers/logic_rules.py:81
+#, python-brace-format
+msgid ""
+"The slug of the form step that will be affected by the action. This field is "
+"required for action types {action_types} - otherwise it's optional. We "
+"deliberately use the slug instead of the uuid because the uuid is not fixed, "
+"as we create the form steps from scratch during form update."
+msgstr ""
+"Het URL-deel van de formulierstap waarop de actie van invloed is. Dit veld "
+"is verplicht voor actietypen {action_types} - anders is het optioneel. We "
+"gebruiken bewust het URL-deel in plaats van de UUID, aangezien de UUID niet "
+"vaststaat. Bij het bijwerken van het formulier worden de formulierstappen "
+"namelijk volledig opnieuw aangemaakt."
+
+#: openforms/forms/api/v3/serializers/logic_rules.py:98
+#: openforms/forms/models/logic.py:61
+msgid "actions"
+msgstr "acties"
 
 #: openforms/forms/api/v3/serializers/service_fetch_config.py:20
 #: openforms/variables/api/serializers.py:13 openforms/variables/models.py:59
@@ -6044,6 +6079,44 @@ msgstr "Extra HTTP-request headers (en eventuele overrides) voor de service."
 #: openforms/variables/api/serializers.py:21 openforms/variables/models.py:68
 msgid "HTTP query string"
 msgstr "HTTP query string"
+
+#: openforms/forms/api/v3/validation.py:63
+#: openforms/forms/api/v3/validation.py:150
+msgid "This field may not be blank."
+msgstr "Dit veld mag niet leeg zijn."
+
+#: openforms/forms/api/v3/validation.py:72
+#, python-brace-format
+msgid "Could not find the component with key '{key}'."
+msgstr "Kon de component met sleutel '{key}' niet vinden."
+
+#: openforms/forms/api/v3/validation.py:88
+msgid "You cannot used the 'disabled' property on layout components'."
+msgstr ""
+"Het 'uitgeschakeld' attribuut kan niet gebruikt worden voor layout-"
+"componenten."
+
+#: openforms/forms/api/v3/validation.py:103
+msgid "You must specify a variable."
+msgstr "Je moet een formuliervariabele opgeven."
+
+#: openforms/forms/api/v3/validation.py:112
+#, python-brace-format
+msgid "Could not find the variable with key '{key}'."
+msgstr "Kon de formuliervariabele met sleutel '{key}' niet vinden."
+
+#: openforms/forms/api/v3/validation.py:134
+msgid ""
+"The value for a date variable must be a string in the format yyyy-mm-dd (e."
+"g. 2023-07-03)"
+msgstr ""
+"De waarde van een datumvariabele moet een string zijn met het formaat jjjj-"
+"mm-dd (bijv. 2023-07-03)."
+
+#: openforms/forms/api/v3/validation.py:158
+#, python-brace-format
+msgid "Could not find a step with the slug '{slug}'."
+msgstr "Kon geen formulierstap vinden met het URL-deel '{slug}'."
 
 #: openforms/forms/api/v3/viewsets.py:30
 msgid "Create or update all details of a form"
@@ -6373,103 +6446,103 @@ msgstr "Formulierversies weergeven"
 msgid "Import form"
 msgstr "Formulier importeren"
 
-#: openforms/forms/constants.py:12
+#: openforms/forms/constants.py:10
 msgid "Mark the form step as not-applicable"
 msgstr "Markeer de formulierstap als niet van toepassing"
 
-#: openforms/forms/constants.py:14
+#: openforms/forms/constants.py:12
 msgid "Mark the form step as applicable"
 msgstr "Markeer de formulierstap als van toepassing"
 
-#: openforms/forms/constants.py:15
+#: openforms/forms/constants.py:13
 msgid "Disable the next step"
 msgstr "Volgende stap uitschakelen"
 
-#: openforms/forms/constants.py:16
+#: openforms/forms/constants.py:14
 msgid "Modify a component property"
 msgstr "Wijzig een veld attribuut"
 
-#: openforms/forms/constants.py:17
+#: openforms/forms/constants.py:15
 msgid "Set the value of a variable"
 msgstr "Stel de waarde van een variabele in"
 
-#: openforms/forms/constants.py:18
+#: openforms/forms/constants.py:16
 msgid "Fetch the value from a service"
 msgstr "Haal de waarde op uit een externe registratie"
 
-#: openforms/forms/constants.py:21
+#: openforms/forms/constants.py:19
 msgid "Set the registration backend to use for the submission"
 msgstr "Zet registratieplugin voor de inzending"
 
-#: openforms/forms/constants.py:23
+#: openforms/forms/constants.py:21
 msgid "Evaluate DMN"
 msgstr "DMN evalueren"
 
-#: openforms/forms/constants.py:26
+#: openforms/forms/constants.py:24
 msgid "Synchronize a variable with another one"
 msgstr "Synchroniseer een variable met een andere"
 
-#: openforms/forms/constants.py:44 openforms/variables/constants.py:16
+#: openforms/forms/constants.py:48 openforms/variables/constants.py:16
 msgid "Boolean"
 msgstr "Ja/Nee"
 
-#: openforms/forms/constants.py:45
+#: openforms/forms/constants.py:49
 msgid "JSON"
 msgstr "JSON"
 
-#: openforms/forms/constants.py:49
+#: openforms/forms/constants.py:53
 msgid "Form specific email"
 msgstr "Formulierspecifieke e-mail"
 
-#: openforms/forms/constants.py:50
+#: openforms/forms/constants.py:54
 msgid "Global email"
 msgstr "Globale e-mail"
 
-#: openforms/forms/constants.py:51
+#: openforms/forms/constants.py:55
 msgid "No email"
 msgstr "Geen e-mail"
 
-#: openforms/forms/constants.py:55
+#: openforms/forms/constants.py:59
 msgid "Yes"
 msgstr "Ja"
 
-#: openforms/forms/constants.py:56
+#: openforms/forms/constants.py:60
 msgid "No (with overview page)"
 msgstr "Nee (met overzichtspagina)"
 
-#: openforms/forms/constants.py:57
+#: openforms/forms/constants.py:61
 msgid "No (without overview page)"
 msgstr "Nee (zonder overzichtspagina)"
 
-#: openforms/forms/constants.py:61
+#: openforms/forms/constants.py:65
 msgid "Global setting"
 msgstr "Globale instelling"
 
-#: openforms/forms/constants.py:63
+#: openforms/forms/constants.py:67
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
-#: openforms/forms/constants.py:67
+#: openforms/forms/constants.py:71
 msgid "Regular"
 msgstr "Standaard"
 
-#: openforms/forms/constants.py:68 openforms/submissions/admin.py:274
+#: openforms/forms/constants.py:72 openforms/submissions/admin.py:274
 msgid "Appointment"
 msgstr "Afspraak"
 
-#: openforms/forms/constants.py:69
+#: openforms/forms/constants.py:73
 msgid "Single step"
 msgstr "Enkele stap"
 
-#: openforms/forms/constants.py:73
+#: openforms/forms/constants.py:77
 msgid "Before the start page"
 msgstr "Voor de startpagina"
 
-#: openforms/forms/constants.py:74
+#: openforms/forms/constants.py:78
 msgid "After the start page"
 msgstr "Na de startpagina"
 
-#: openforms/forms/constants.py:75
+#: openforms/forms/constants.py:79
 msgid "Never"
 msgstr "Nooit"
 
@@ -7455,10 +7528,6 @@ msgstr "JSON-logic"
 #: openforms/forms/models/logic.py:58
 msgid "JSON logic associated with a step in a form."
 msgstr "JSON-logic gekoppeld aan een stap in een formulier."
-
-#: openforms/forms/models/logic.py:61
-msgid "actions"
-msgstr "acties"
 
 #: openforms/forms/models/logic.py:62
 msgid "Which action(s) to perform if the JSON logic evaluates to true."
