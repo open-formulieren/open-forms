@@ -7,9 +7,11 @@ from django.db import transaction
 from django.utils.text import get_text_list
 from django.utils.translation import gettext, gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema_serializer
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework.reverse import reverse
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models import Theme
@@ -81,6 +83,7 @@ Mapping of rule errors for the collection of rules, keyed by rule index.
 
 @extend_schema_serializer(component_name="FormV3Serializer")
 class FormSerializer(serializers.ModelSerializer):
+    # TODO: authBackends are missing
     product = serializers.SlugRelatedField(
         required=False,
         allow_null=True,
@@ -141,17 +144,6 @@ class FormSerializer(serializers.ModelSerializer):
         source="*", required=False, allow_null=True
     )
 
-    _nested_fields = (
-        "confirmation_email_template",
-        "auth_backends",
-        "formstep_set",
-        "formvariable_set",
-        "formlogic_set",
-        "registration_backends",
-    )
-
-    form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
-
     help_dialog = HelpDialogSerializer(
         source="*",
         required=False,
@@ -163,9 +155,23 @@ class FormSerializer(serializers.ModelSerializer):
         ),
     )
 
+    url = serializers.SerializerMethodField()
+
+    _nested_fields = (
+        "confirmation_email_template",
+        "auth_backends",
+        "formstep_set",
+        "formvariable_set",
+        "formlogic_set",
+        "registration_backends",
+    )
+
+    form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
+
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
         fields = (
+            "url",
             "uuid",
             "name",
             "internal_name",
@@ -216,6 +222,14 @@ class FormSerializer(serializers.ModelSerializer):
             },
             "type": {"validators": [RequireAppointmentsPlugin()]},
         }
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_url(self, obj: Form) -> str:
+        return reverse(
+            "api:form-detail",
+            kwargs={"uuid_or_slug": obj.uuid},
+            request=self.context.get("request"),
+        )
 
     def _validate_actions(self, form: Form, temp_rules: Mapping[FormLogic, int]):
         form_variables = {

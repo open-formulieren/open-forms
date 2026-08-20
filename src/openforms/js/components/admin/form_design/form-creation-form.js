@@ -99,6 +99,7 @@ const initialFormState = {
     deactivateOn: '',
     type: 'regular',
     category: '',
+    theme: null,
     isDeleted: false,
     maintenanceMode: false,
     translationEnabled: false,
@@ -156,10 +157,14 @@ const initialFormState = {
 };
 
 const newStepData = {
-  configuration: {display: 'form'},
-  formDefinition: '',
+  configuration: {display: 'form', components: []},
+  formDefinition: '', // API endpoint URL
   slug: '',
   url: '',
+  isApplicable: true,
+  internalName: '',
+  loginRequired: false,
+  isReusable: false,
   _generatedId: '', // Consumers should generate this if there is no form definition url
   isNew: true,
   validationErrors: [],
@@ -171,8 +176,8 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   internalName: 'form',
   uuid: 'form',
   slug: 'form',
-  showProgressIndicator: 'form',
-  showSummaryProgress: 'form',
+  internalRemarks: 'form',
+  type: 'form',
   active: 'form',
   category: 'form',
   isDeleted: 'form',
@@ -182,6 +187,11 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   translationEnabled: 'form',
   confirmationEmailTemplate: 'submission-confirmation',
   submissionAllowed: 'form',
+  suspensionAllowed: 'form',
+  authBackends: 'form',
+  theme: 'form',
+  showProgressIndicator: 'form',
+  showSummaryProgress: 'form',
   registrationBackends: 'registration',
   submissionLimit: 'submission',
   product: 'product-payment',
@@ -194,6 +204,8 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   brpPersonenRequestOptions: 'advanced-configuration',
   helpCalloutPage: 'form',
   helpDialog: 'form',
+  askPrivacyConsent: 'form',
+  askStatementOfTruth: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -805,12 +817,17 @@ function reducer(draft, action) {
       break;
     }
     case 'SUBMIT_DONE': {
-      // either the submit completed without errors, or there are validation errors.
+      // Either the submit completed without errors, or there are validation errors.
       // Either way, there are usually *some* updates to persisted data with updated
       // backend references - which is reflected in the updated state. Therefore, we
       // take that updated state as base and apply any validation error mutations to
       // the updated state. Eventually we return the replacement state.
       const {updatedState, validationErrors} = action.payload;
+
+      const invalidParams = validationErrors?.errors ?? [];
+      // TODO: if there are variables.$i.serviceFetchConfiguration errors, assign them to
+      // the logicrules context instead of variables
+      // wrap validation errors so the component knows where to display the errors
 
       // updatedState is the result of earlier produce calls, so it's immutable. We
       // create and update a new state here inside the reducer to eventually replace
@@ -821,53 +838,88 @@ function reducer(draft, action) {
         const prefixedErrors = [];
 
         // process the validation errors
-        for (const validationError of validationErrors) {
-          if (validationError.context.step) {
-            const index = validationError.context.step.index;
-            draft.formSteps[index].validationErrors = validationError.errors.map(err => [
-              err.name,
-              err.reason,
-            ]);
-            continue;
+        for (const {name, reason} of invalidParams) {
+          const bits = name.split('.');
+          const fieldName = bits[0];
+
+          // ensure the correct tabs get markers
+          const tabName = FORM_FIELDS_TO_TAB_NAMES[fieldName];
+          if (tabName && !tabsWithErrors.includes(tabName)) {
+            tabsWithErrors.push(tabName);
           }
 
-          // generic form-level validation error processing
-          let {context: fieldPrefix, errors} = validationError;
-          const _prefixedErrors = errors.map(err => {
-            const fieldName = err.name.split('.')[0];
-
-            if (fieldName === 'translations') {
+          // check if we need to add the form. prefix, as this is an extra level in our
+          // state
+          let needsFormPrefix = fieldName in initialFormState.form;
+          switch (fieldName) {
+            case 'translations': {
               // structure is translations[langCode][fieldName]
-              const [, , translationField] = err.name.split('.');
+              const [, , translationField] = bits;
               const tabName = TRANSLATION_FIELD_TO_TAB_NAMES[translationField];
-              tabName && tabsWithErrors.push(tabName);
-            } else if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
-              tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-            } else if (
-              !tabsWithErrors.includes(fieldPrefix) &&
-              FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]
-            ) {
-              tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
+              if (tabName && !tabsWithErrors.includes(tabName)) {
+                tabsWithErrors.push(tabName);
+              }
+              needsFormPrefix = true;
+              break;
             }
+            default: {
+              break;
+            }
+          }
 
-            const key = `${fieldPrefix}.${err.name}`;
-            return [key, err.reason];
-          });
-          prefixedErrors.push(..._prefixedErrors);
+          const prefixedErrorName = needsFormPrefix ? `form.${name}` : name;
+          prefixedErrors.push([prefixedErrorName, reason]);
         }
 
-        // Assign errors to variables
-        const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
-        // variablesValidationErrors is a dict where the keys are the indices of the variables with errors
-        Object.keys(variablesValidationErrors).forEach(index => {
-          if (draft.formVariables[index]) {
-            draft.formVariables[index].errors = variablesValidationErrors[index];
-          }
-        });
+        console.log(prefixedErrors);
+
+        // for (const validationError of validationErrors) {
+        //   if (validationError.context.step) {
+        //     const index = validationError.context.step.index;
+        //     draft.formSteps[index].validationErrors = validationError.errors.map(err => [
+        //       err.name,
+        //       err.reason,
+        //     ]);
+        //     continue;
+        //   }
+
+        //   // generic form-level validation error processing
+        //   let {context: fieldPrefix, errors} = validationError;
+        //   const _prefixedErrors = errors.map(err => {
+        //     const fieldName = err.name.split('.')[0];
+
+        //     if (fieldName === 'translations') {
+        //       // structure is translations[langCode][fieldName]
+        //       const [, , translationField] = err.name.split('.');
+        //       const tabName = TRANSLATION_FIELD_TO_TAB_NAMES[translationField];
+        //       tabName && tabsWithErrors.push(tabName);
+        //     } else if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
+        //       tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
+        //     } else if (
+        //       !tabsWithErrors.includes(fieldPrefix) &&
+        //       FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]
+        //     ) {
+        //       tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
+        //     }
+
+        //     const key = `${fieldPrefix}.${err.name}`;
+        //     return [key, err.reason];
+        //   });
+        //   prefixedErrors.push(..._prefixedErrors);
+        // }
+
+        // // Assign errors to variables
+        // const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
+        // // variablesValidationErrors is a dict where the keys are the indices of the variables with errors
+        // Object.keys(variablesValidationErrors).forEach(index => {
+        //   if (draft.formVariables[index]) {
+        //     draft.formVariables[index].errors = variablesValidationErrors[index];
+        //   }
+        // });
 
         // update state depending on the validation errors. If there are errors, we set
         // submitting to false so they can correct the validation errors.
-        if (validationErrors.length) {
+        if (validationErrors) {
           draft.submitting = false;
         }
         draft.validationErrors.push(...prefixedErrors);
@@ -1126,7 +1178,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
       },
     });
     // if there are any validation errors -> abort the success message
-    if (validationErrors.length) return;
+    if (validationErrors !== undefined) return;
 
     const {
       form: {url: formUrl},
