@@ -4,9 +4,11 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
+from unittest_parametrize import ParametrizedTestCase, param, parametrize
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -17,11 +19,14 @@ from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...api.viewsets import SubmissionStepViewSet
+from ...models import Submission
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
 
-class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
+class CheckLogicEndpointTests(
+    FormioMixin, SubmissionsMixin, ParametrizedTestCase, APITestCase
+):
     maxDiff = None
 
     def test_update_not_applicable_steps(self):
@@ -1220,3 +1225,116 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         )
         # Logic rule should be triggered
         self.assertEqual(step_data["canSubmit"], False)
+
+    @parametrize(
+        "as_admin",
+        [param(True, id="admin_true"), param(False, id="admin_false")],
+    )
+    @tag("gh-6468")
+    def test_logic_evaluation_as_admin_same_as_not_logged_in(self, as_admin: bool):
+        # it's important that this happens on the second (or later) step, as the
+        # permission check will never evaluate form logic if you're on the first step
+        superuser = SuperUserFactory.create()
+        if as_admin:
+            self.client.force_authenticate(user=superuser)
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "dummy",
+                        "label": "Dummy textfield",
+                    },
+                ]
+            },
+        )
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "radio",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield with radio value: {{ radio }}",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        # make the textfield hidden if there's no value picked in the radio
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": ["radio", ""]},
+                    [None, "", "None"],
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"type": "bool", "value": "hidden"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                },
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        assert isinstance(submission, Submission)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form.formstep_set.all()[0],
+            data={"dummy": ""},
+        )
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+
+        with self.subTest("without radio choice"):
+            response = self.client.post(
+                logic_check_endpoint,
+                {"data": {"radio": ""}},
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            configuration = response.json()["step"]["formStep"]["configuration"]
+            self.assertFormioComponent(
+                configuration,
+                "textfield",
+                {
+                    "label": "Textfield with radio value: ",
+                    "hidden": True,
+                },
+            )
+
+        with self.subTest("with radio choice"):
+            response = self.client.post(
+                logic_check_endpoint,
+                {"data": {"radio": "b"}},
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            configuration = response.json()["step"]["formStep"]["configuration"]
+            self.assertFormioComponent(
+                configuration,
+                "textfield",
+                {
+                    "label": "Textfield with radio value: b",
+                    "hidden": False,
+                },
+            )
