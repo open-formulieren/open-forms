@@ -11,7 +11,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.33.0
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
@@ -24,7 +24,7 @@ interactions:
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Origin:
-      - '*'
+      - ''
       Api-Version:
       - 2.0.0
       Connection:
@@ -39,13 +39,15 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Mon, 15 Sep 2025 14:55:37 GMT
+      - Thu, 20 Aug 2026 14:09:44 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
       - no-referrer
       Server:
       - Unspecified
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Vary:
       - Origin
       X-Content-Type-Options:
@@ -71,7 +73,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.33.0
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
@@ -87,7 +89,7 @@ interactions:
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Origin:
-      - '*'
+      - ''
       Api-Version:
       - 2.0.0
       Connection:
@@ -100,13 +102,15 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Mon, 15 Sep 2025 14:55:37 GMT
+      - Thu, 20 Aug 2026 14:09:46 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
       - no-referrer
       Server:
       - Unspecified
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Vary:
       - Origin
       X-Content-Type-Options:
