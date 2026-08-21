@@ -90,7 +90,6 @@ assignees: sergei-maertens
   - [ ] SDK
   - [ ] Backend
   - [ ] Frontend
-  - [ ] Formio
 - [ ] Bump API version number
   - [ ] Version bump
   - [ ] Regenerate API spec (`./bin/generate_oas.sh`)
