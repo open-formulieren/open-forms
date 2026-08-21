@@ -3545,6 +3545,12 @@
       "value": "Hidden"
     }
   ],
+  "JrrqSP": [
+    {
+      "type": 0,
+      "value": "You must select an attribute."
+    }
+  ],
   "K+ha3D": [
     {
       "type": 0,
@@ -5181,6 +5187,12 @@
     {
       "type": 0,
       "value": "Children roltype"
+    }
+  ],
+  "Uag3X5": [
+    {
+      "type": 0,
+      "value": "You must select a plugin."
     }
   ],
   "UlVtQd": [

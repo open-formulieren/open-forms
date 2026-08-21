@@ -3526,6 +3526,12 @@
       "value": "Verborgen"
     }
   ],
+  "JrrqSP": [
+    {
+      "type": 0,
+      "value": "Je moet een attribuut selecteren."
+    }
+  ],
   "K+ha3D": [
     {
       "type": 0,
@@ -5094,6 +5100,12 @@
     {
       "type": 0,
       "value": "Kinderen-roltype"
+    }
+  ],
+  "Uag3X5": [
+    {
+      "type": 0,
+      "value": "Je moet een plugin selecteren."
     }
   ],
   "UlVtQd": [
