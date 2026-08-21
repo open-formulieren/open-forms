@@ -23,7 +23,7 @@ from openforms.variables.models import _convert_to_string
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
 
-from ...logic.service_fetching import fetch_from_service
+from ...logic.service_fetching import perform_service_fetch
 from ..factories import SubmissionFactory
 
 DEFAULT_REQUEST_HEADERS = {
@@ -59,7 +59,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = fetch_from_service(var, FormioData())
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value["url"], "https://httpbin.org/get")
@@ -77,7 +77,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
-            fetch_from_service(var, context)
+            perform_service_fetch(var, context)
             request = m.last_request
 
         self.assertEqual(request.url, "https://httpbin.org/delay/6")
@@ -95,7 +95,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
-            fetch_from_service(var, context)
+            perform_service_fetch(var, context)
             request = m.last_request
 
         self.assertEqual(request.url, "https://httpbin.org/delay/6.5")
@@ -105,7 +105,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
-            fetch_from_service(var, context)
+            perform_service_fetch(var, context)
             request = m.last_request
 
         self.assertEqual(request.url, "https://httpbin.org/delay/6.%7B%7Bseconds%7D%7D")
@@ -129,7 +129,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
-            _ = fetch_from_service(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         expected_stem_length = len("https://httpbin.org/delay/")
@@ -166,7 +166,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         )
 
         with self.assertRaises(SuspiciousOperation):
-            fetch_from_service(var, context)
+            perform_service_fetch(var, context)
 
     # TODO
     @tag("gh-2745")
@@ -204,7 +204,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
                 .url,
                 json={},
             )
-            _ = fetch_from_service(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         # it shouldn't change other parts of the request
@@ -238,7 +238,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
                 .url,
                 json={},
             )
-            _ = fetch_from_service(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         # it shouldn't change other parts of the request
@@ -276,7 +276,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        _ = fetch_from_service(var, FormioData())
+        _ = perform_service_fetch(var, FormioData())
         request_headers = m.last_request.headers
 
         self.assertIn(("X-Brony-Identity", "Jumper"), request_headers.items())
@@ -295,7 +295,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         )
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache", json={})
-            _ = fetch_from_service(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         self.assertIn(("If-None-Match", "x"), request.headers.items())
@@ -318,7 +318,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             m.get("https://httpbin.org/cache", json={})
             try:
                 # when we bind
-                _ = fetch_from_service(var, context)
+                _ = perform_service_fetch(var, context)
             except Exception:  # XXX unclear what exception to expect
                 # either raise an exception
                 return
@@ -352,7 +352,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        _ = fetch_from_service(var, FormioData())
+        _ = perform_service_fetch(var, FormioData())
         request = m.last_request
 
         self.assertIn(("Content-Type", "application/json"), request.headers.items())
@@ -371,7 +371,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = fetch_from_service(var, FormioData())
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -389,7 +389,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = fetch_from_service(var, FormioData())
+        result = perform_service_fetch(var, FormioData())
 
         self.assertIsNone(result)
 
@@ -406,7 +406,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = fetch_from_service(var, FormioData())
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -426,7 +426,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = fetch_from_service(var, FormioData())
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -435,7 +435,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         var = FormVariableFactory.build()
 
         with self.assertRaises(ValueError):
-            fetch_from_service(var, FormioData())
+            perform_service_fetch(var, FormioData())
 
 
 class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
@@ -456,7 +456,9 @@ class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
             def __call__(self, *args, **kwargs):
                 cls.mock(*args, **kwargs)
 
-    def test_pre_request_hooks_called(self):
+    @requests_mock.Mocker()
+    def test_pre_request_hooks_called(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
         self.mock.reset_mock()
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
@@ -480,7 +482,7 @@ class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
         with patch(
             "openforms.pre_requests.clients.registry", new=self.pre_req_register
         ):
-            fetch_from_service(var, FormioData(), submission)
+            perform_service_fetch(var, FormioData(), submission)
 
         self.assertEqual(self.mock.call_count, 1)
 
@@ -489,7 +491,10 @@ class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
         context = self.mock.call_args.kwargs["context"]
         self.assertEqual(context, {"submission": submission})
 
-    def test_pre_request_hooks_not_called(self):
+    @requests_mock.Mocker()
+    def test_pre_request_hooks_not_called(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+
         self.mock.reset_mock()
 
         var = FormVariableFactory.build(
@@ -502,7 +507,7 @@ class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
         with patch(
             "openforms.pre_requests.clients.registry", new=self.pre_req_register
         ):
-            fetch_from_service(var, FormioData())
+            perform_service_fetch(var, FormioData())
 
         self.assertEqual(self.mock.call_count, 1)
 
