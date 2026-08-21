@@ -2,11 +2,11 @@ interactions:
 - request:
     body: "{\n    \"cardPaymentMethodSpecificInput\": {\n        \"authorizationMode\":
       \"SALE\"\n    },\n    \"hostedCheckoutSpecificInput\": {\n        \"returnUrl\":
-      \"http://testserver/payment/d776d12d-56d2-4372-b00f-097fc4248f0e/return\"\n
+      \"http://testserver/payment/d71850cc-3038-4b4a-b6c4-448e1af03292/return\"\n
       \   },\n    \"order\": {\n        \"amountOfMoney\": {\n            \"amount\":
       1135,\n            \"currencyCode\": \"EUR\"\n        },\n        \"references\":
       {\n            \"descriptor\": \"Inzending: OF-LUT3Y4\",\n            \"merchantReference\":
-      \"2026/OF-LUT3Y4/7\"\n        }\n    }\n}"
+      \"2026/OF-LUT3Y4/25\"\n        }\n    }\n}"
     headers:
       Accept:
       - '*/*'
@@ -15,25 +15,25 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '480'
+      - '481'
       Content-Type:
       - application/json
       Date:
-      - Thu, 26 Mar 2026 08:00:55 GMT
+      - Fri, 21 Aug 2026 10:16:11 GMT
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE3LjAtMTAxMS1vZW0vIzExLVVidW50dSBTTVAgUFJFRU1QVF9EWU5BTUlDIEZyaSBKYW4gMjMgMDY6MTg6NDMgVVRDIDIwMjYgUHl0aG9uLzMuMTIuMyAoQ1B5dGhvbjsgR0NDIDEzLjMuMCkiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y3LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA3LjAuMTQtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMjcgSnVuIDIwMjYgMTY6MTU6MTAgKzAwMDAgUHl0aG9uLzMuMTIuMTQgKENQeXRob247IEdDQyAxNi4yLjEgMjAyNjA4MTApIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92Ny4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: POST
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts
   response:
     body:
-      string: '{"RETURNMAC":"47eb68ae-d7fc-442d-81b1-0ab74cc98f33","hostedCheckoutId":"4481371886","merchantReference":"2026/OF-LUT3Y4/7","redirectUrl":"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/84f97e429a634812a938312a49bd1da5","partialRedirectUrl":"preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/84f97e429a634812a938312a49bd1da5"}'
+      string: '{"RETURNMAC":"0257630b-ef24-4b1e-a3fe-d924de13ccbc","hostedCheckoutId":"10083971645","merchantReference":"2026/OF-LUT3Y4/25","redirectUrl":"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/46447b89ca114db4a2b0bc9ed682ea53","partialRedirectUrl":"preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/46447b89ca114db4a2b0bc9ed682ea53"}'
     headers:
       api_auth:
       - 'true'
       content-length:
-      - '378'
+      - '380'
       content-security-policy:
       - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -70,7 +70,7 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-L38gqBKg9Kk=''  ;
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-+E+CHI1QA7M=''  ;
         style-src-attr ''unsafe-inline''; style-src-elem ''unsafe-inline'' ''self''
         https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -95,15 +95,27 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-L38gqBKg9Kk='';
-        object-src ''none''; report-to reporting-endpoint;'
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-+E+CHI1QA7M='';
+        object-src ''none''; frame-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js *.unitedthreeds.preprod.gi.worldline-solutions.com
+        v2-sim.preprod.psp-solutions.com; report-to reporting-endpoint;'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - 4dfc076e-13b5-41c1-aa82-cca71c97a89e
-      - 4dfc076e-13b5-41c1-aa82-cca71c97a89e
+      - fa2b7030-50f9-4f8f-807b-fa24ba1a56fe
+      - fa2b7030-50f9-4f8f-807b-fa24ba1a56fe
       date:
-      - Thu, 26 Mar 2026 08:00:54 GMT
+      - Fri, 21 Aug 2026 10:16:10 GMT
       reporting-endpoints:
       - reporting-endpoint="https://payment.preprod.direct.worldline-solutions.com/csp/report-to"
       strict-transport-security:
@@ -121,9 +133,9 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
-    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/84f97e429a634812a938312a49bd1da5
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/46447b89ca114db4a2b0bc9ed682ea53
   response:
     body:
       string: ''
@@ -166,7 +178,7 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-N7c8uFo7ODM=''  ;
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-ifu6HFmvzxM=''  ;
         style-src-attr ''unsafe-inline''; style-src-elem ''unsafe-inline'' ''self''
         https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -191,15 +203,27 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-N7c8uFo7ODM='';
-        object-src ''none''; report-to reporting-endpoint;'
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-ifu6HFmvzxM='';
+        object-src ''none''; frame-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js *.unitedthreeds.preprod.gi.worldline-solutions.com
+        v2-sim.preprod.psp-solutions.com; report-to reporting-endpoint;'
       correlation-id:
-      - 402a4588-177f-4b55-8113-c584c507545b
-      - 402a4588-177f-4b55-8113-c584c507545b
+      - 361b4690-8aa5-413a-b8d3-2ab4e2cc0b50
+      - 361b4690-8aa5-413a-b8d3-2ab4e2cc0b50
       date:
-      - Thu, 26 Mar 2026 08:00:55 GMT
+      - Fri, 21 Aug 2026 10:16:12 GMT
       location:
-      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fpayment.preprod.direct.worldline-solutions.com%2fhostedcheckout%2fRedirect%2fReturn%2f30c281160daf4dd5b0683d582a64c459
+      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fpayment.preprod.direct.worldline-solutions.com%2fhostedcheckout%2fRedirect%2fReturn%2fe3928246ff46442bb022b3b628fe0efe
       reporting-endpoints:
       - reporting-endpoint="https://payment.preprod.direct.worldline-solutions.com/csp/report-to"
       strict-transport-security:
@@ -217,9 +241,9 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
-    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fpayment.preprod.direct.worldline-solutions.com%2Fhostedcheckout%2FRedirect%2FReturn%2F30c281160daf4dd5b0683d582a64c459
+    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fpayment.preprod.direct.worldline-solutions.com%2Fhostedcheckout%2FRedirect%2FReturn%2Fe3928246ff46442bb022b3b628fe0efe
   response:
     body:
       string: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"utf-8\"
@@ -227,7 +251,7 @@ interactions:
         \   <title>iDEAL | Wero Simulator</title>\n    <link href=\"https://simulator.test.v-psp.com/web-simulator/Content/default.css\"
         rel=\"stylesheet\" type=\"text/css\" />\n</head>\n<body>\n\n    <div id=\"header\">\n
         \       <h1>iDEAL | Wero</h1>\n        <p>This page simulates iDEAL | Wero
-        payments</p>\n    </div>\n\n    <div id=\"main\">\n        \n<form action=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/30c281160daf4dd5b0683d582a64c459\"
+        payments</p>\n    </div>\n\n    <div id=\"main\">\n        \n<form action=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/e3928246ff46442bb022b3b628fe0efe\"
         method=\"GET\" name=\"redirectForm\" id=\"redirectForm\">\n        <input
         type=\"hidden\" name=\"ec\" />\n        <input type=\"hidden\" name=\"trxid\"
         value=\"0\" />\n\n    <div class=\"section first\">\n        <h2>Redirection</h2>\n
@@ -245,10 +269,10 @@ interactions:
       content-type:
       - text/html; charset=utf-8
       correlation-id:
-      - 22faa6eb-0f98-4535-bec4-0aa57b8d71cd
-      - 22faa6eb-0f98-4535-bec4-0aa57b8d71cd
+      - 42d34940-d69a-4a37-881b-5a8d38de0e65
+      - 42d34940-d69a-4a37-881b-5a8d38de0e65
       date:
-      - Thu, 26 Mar 2026 08:00:55 GMT
+      - Fri, 21 Aug 2026 10:16:13 GMT
       pragma:
       - no-cache
       strict-transport-security:
@@ -274,119 +298,233 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
-    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/30c281160daf4dd5b0683d582a64c459?ec=&trxid=0
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/e3928246ff46442bb022b3b628fe0efe?ec=&trxid=0
   response:
     body:
-      string: "<!DOCTYPE html>\n<html lang=\"NL\">\n<head>\n    <meta charset=\"utf-8\">\n
-        \   <title>\n        DIRECT E-COMMERCE - Uw betaling is geaccepteerd\n    </title>\n
+      string: "<!DOCTYPE html>\n<html lang=\"EN\">\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <title>\n        DIRECT E-COMMERCE - Your payment is accepted\n    </title>\n
         \   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n
-        \   <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/1690ac7af613c4b92173/templates/hostedcheckout/wlop_direct/styles.css\"
-        crossorigin=\"anonymous\" integrity=\"sha384-vtO67D6WEAaIUcwD0LUlB8LhMkZBtDGeyEZO3ZpPAmF9c9gNRZx6VlNpy0GzJ13f\">\n
-        \   <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/1690ac7af613c4b92173/templates/hostedcheckout/wlop_direct/worldline_favicon.ico\">\n
-        \   \n</head>\n\n<body class=\"paysecurely-switch\">\n    <div class=\"container\">\n
-        \       <div class=\"row banner\">\n            <div class=\"banner-content\">\n
-        \               <h1 class=\"banner__merchant-name\">\n                    \n
-        \                   Maykin Media B.V.\n                </h1>\n            </div>\n
-        \       </div>\n\n        <div class=\"row main-content\">\n\n            \n\n
-        \           \n\n            <form class=\"payment-statuspage\" name=\"payment-statuspage\"
-        id=\"payment-statuspage\" method=\"get\" action=\"http://testserver/payment/d776d12d-56d2-4372-b00f-097fc4248f0e/return\"
-        payment-js-autosubmit=\"3000\"><input type=\"hidden\" name=\"RETURNMAC\" value=\"47eb68ae-d7fc-442d-81b1-0ab74cc98f33\"><input
-        type=\"hidden\" name=\"hostedCheckoutId\" value=\"4481371886\">\n                <div
-        class=\"navigation\">\n                    <div class=\"progress-bar\">\n
-        \                       <div aria-describedby=\"progress-bar-label-text\">\n
-        \                           <span id=\"progress-bar-label-text\">Betalingsvoortgang</span>\n
-        \                           <ol>\n                                <li class=\"progress-bar__step
-        progress-bar__step--success\">\n                                    Winkelwagentje\n
-        \                                   <span class=\"payment-status-icon-information-description\">&nbsp;Status:
-        Aanvaard</span>\n                                </li>\n                                \n
-        \                               <li class=\"progress-bar__step progress-bar__step--success\">\n
-        \                                   Details betaling\n                                    <span
-        class=\"payment-status-icon-information-description\">&nbsp;Status: Aanvaard</span>\n
-        \                               </li>\n                                <li
+        \   <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/61cb63fb8c85c7fc420d/templates/hostedcheckout/wlop_direct/styles.css\"
+        crossorigin=\"anonymous\" integrity=\"sha384-AQBfg/QwWRH5CVC28ACY4SQoXVJblUoztRbv9jslwbLgy2&#x2B;J0pndP4V6M07Zbs/v\">\n
+        \   <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/61cb63fb8c85c7fc420d/templates/hostedcheckout/wlop_direct/worldline_favicon.ico\">\n
+        \   \n</head>\n\n<body class=\"paysecurely-switch\">\n    <main role=\"main\">\n
+        \       <div class=\"container\">\n            <div class=\"row banner\">\n
+        \               <div class=\"banner-content\">\n                    <h1 class=\"banner__merchant-name\">\n
+        \                       \n                        Maykin Media B.V.\n                    </h1>\n
+        \               </div>\n            </div>\n\n            <div class=\"row
+        main-content\">\n\n                \n\n                \n\n                <form
+        class=\"payment-statuspage\" name=\"payment-statuspage\" id=\"payment-statuspage\"
+        method=\"get\" action=\"http://testserver/payment/d71850cc-3038-4b4a-b6c4-448e1af03292/return\"
+        payment-js-autosubmit=\"6000\"><input type=\"hidden\" name=\"RETURNMAC\" value=\"0257630b-ef24-4b1e-a3fe-d924de13ccbc\"><input
+        type=\"hidden\" name=\"hostedCheckoutId\" value=\"10083971645\">\n                    <div
+        class=\"navigation\">\n                        <div class=\"progress-bar\">\n
+        \                           <div aria-describedby=\"progress-bar-label-text\">\n
+        \                               <span id=\"progress-bar-label-text\">Payment
+        progress</span>\n                                <ol>\n                                    <li
+        class=\"progress-bar__step progress-bar__step--success\">\n                                        Shopping
+        cart\n                                        <span class=\"payment-status-icon-information-description\">&nbsp;Status:
+        Successful</span>\n                                    </li>\n                                    \n
+        \                                   <li class=\"progress-bar__step progress-bar__step--success\">\n
+        \                                       Payment details\n                                        <span
+        class=\"payment-status-icon-information-description\">&nbsp;Status: Successful</span>\n
+        \                                   </li>\n                                    <li
         id=\"li-span-status-indicator\" class=\"progress-bar__step progress-bar__step--success\"
-        aria-current=\"step\" aria-labelledby=\"span-status-indicator\">\n                                    De
-        betaling is voltooid\n                                    <span class=\"payment-status-icon-information-description\">&nbsp;Status:
-        Aanvaard</span>\n                                </li>\n                            </ol>\n
-        \                       </div>\n                    </div>\n                </div>\n
-        \               <div class=\"paymentpart\">\n                    <div class=\"row\">\n
-        \                       <h2>\n                            <span class=\"payment-status-icon--success\"></span>\n
-        \                           Uw betaling is geaccepteerd\n                        </h2>\n
-        \                   </div>\n                    <div class=\"row\">\n                        <p>\n
-        \                           U wordt nu doorgestuurd naar de website van de
-        handelaar. Mogelijk wordt een waarschuwingsbericht weergegeven omdat u de
-        beveiligde omgeving gaat verlaten.\n                        </p>\n                        <p>\n
-        \                           \n                        </p>\n                        <p
-        id=\"payment-cardnumber-error\">\n                            \n                        </p>\n
-        \                   </div>\n                    <div id=\"redirect-button-query\"
-        class=\"row\">\n                        <input type=\"submit\" id=\"payment-ContinueToMerchantWebsite\"
+        aria-current=\"step\" aria-labelledby=\"span-status-indicator\">\n                                        Payment
+        complete\n                                        <span class=\"payment-status-icon-information-description\">&nbsp;Status:
+        Successful</span>\n                                    </li>\n                                </ol>\n
+        \                           </div>\n                        </div>\n                    </div>\n
+        \                   <div class=\"paymentpart\">\n                        <div
+        class=\"row\">\n                            <h2>\n                                <span
+        class=\"payment-status-icon--success\"></span>\n                                Your
+        payment is accepted\n                            </h2>\n                        </div>\n
+        \                       <div class=\"row\">\n                            <p>\n
+        \                               You will now be redirected to the merchant&#x27;s
+        website. A warning message might be displayed, as you are about to leave the
+        secure environment.\n                            </p>\n                            <p>\n
+        \                               \n                            </p>\n                            <p
+        id=\"payment-cardnumber-error\">\n                                \n                            </p>\n
+        \                       </div>\n                        <div id=\"redirect-button-query\"
+        class=\"row\">\n                            <input type=\"submit\" id=\"payment-ContinueToMerchantWebsite\"
         class=\"payment-button button button--raised button--secure\" name=\"ContinueToMerchantWebsite\"
-        value=\"Ga verder\">\n                    </div>\n                </div>\n\n
-        \               <div class=\"clear\"></div>\n            </form>\n\n            \n
-        \       </div>\n        <div class=\"order-summary orderpart-mobile\" id=\"paymentmethod-selection-order-summary-mobile\">\n
-        \           <label id=\"order-summary-accordion-toggle-label\"\n                   for=\"order-summary-accordion\"\n
-        \                  aria-expanded=\"false\"\n                   aria-controls=\"order-summary-accordion-content\"\n
-        \                  tabindex=\"0\"\n                   role=\"button\"\n                   class=\"order-summary__label
-        accordion__label\">\n                <span class=\"bolder\">Totale kostprijs</span>\n
-        \               <span class=\"bold price total-amount\">EUR&nbsp;11.35</span>\n
-        \           </label>\n            <input type=\"checkbox\"\n                   tabindex=\"-1\"\n
-        \                  class=\"css-hidden accordion__input\"\n                   id=\"order-summary-accordion\"\n
-        \                  aria-hidden=\"true\" />\n            <div class=\"accordion
-        order-summary__content\" id=\"order-summary-accordion-content\">\n                <div
-        class=\"row\">\n                    <h2 class=\"order__summary-title\">Overzicht
-        van de bestelling</h2>\n                </div>\n                <div class=\"row
-        order-total\">\n                    <span>Totale kostprijs:&nbsp;</span>\n
-        \                   <span class=\"total-amount\">EUR&nbsp;11.35</span>\n                </div>\n\n
-        \               \n\n                <div class=\"row order-ref order__reference\">\n
-        \                   Referentie van de bestelling: 2026/OF-LUT3Y4/7\n                </div>\n\n
-        \               \n\n                \n\n                \n\n                \n
-        \           </div>\n        </div>\n        <div id=\"buttons-part-mobile\">\n
-        \           <div class=\"payment-proceed-to-payment\"><span class=\"payment-error
-        proceed-to-payment-label-error-id\" role=\"alert\" style=\"display: none;\">Selecteer
-        een betaalmethode</span></span><button class=\"button button--raised proceed-to-payment-button-id\"
-        role=\"button\" type=\"button\" tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga
-        verder naar betalingsgegevens</span></button></div>\n            \n        </div>\n
-        \       <div class=\"order-summary orderpart\">\n            <input type=\"checkbox\"\n
-        \                  class=\"css-hidden accordion__input\"\n                   id=\"order-summary-accordion\"\n
-        \                  aria-hidden=\"true\" checked/>\n            <div class=\"accordion
-        order-summary__content\">\n                <div class=\"row\">\n                    <h2
-        class=\"order__summary-title\">Overzicht van de bestelling</h2>\n                </div>\n
-        \               <div class=\"row order-total\">\n                    <span>Totale
-        kostprijs:&nbsp;</span>\n                    <span class=\"total-amount\">EUR&nbsp;11.35</span>\n
-        \               </div>\n\n                \n\n                <div class=\"row
-        order-ref order__reference\">\n                    Referentie van de bestelling:
-        2026/OF-LUT3Y4/7\n                </div>\n\n                \n\n                \n\n
-        \               \n\n                \n\n\t\t\t\t<div id=\"payment-submit-switch\"
-        payment-submit-all-valid-message=\"!\" payment-submit-all-invalid-message=\"!\"><div
-        class=\"button button--raised button--secure\" role=\"button\" id=\"submit-all\"
-        tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga verder</span></div></div>\n\t\t\t\t<div
-        class=\"payment-proceed-to-payment\"><span class=\"payment-error proceed-to-payment-label-error-id\"
-        role=\"alert\" style=\"display: none;\">Selecteer een betaalmethode</span></span><button
-        class=\"button button--raised proceed-to-payment-button-id\" role=\"button\"
-        type=\"button\" tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga verder
-        naar betalingsgegevens</span></button></div>\n\t\t\t\t\n            </div>\n
-        \           <label for=\"order-summary-accordion\"\n                   class=\"order-summary__label
-        accordion__label\">\n                <span class=\"bolder\">Totale kostprijs</span>\n
-        \               <span class=\"bold price total-amount\">EUR&nbsp;11.35</span>\n
-        \           </label>\n        </div>\n    </div>\n\n    <div class=\"u-full-width
-        center footer\">\n        <div class=\"content\">\n            <div class=\"row\">\n
-        \               <span class=\"footer__processed-legend\">\n                    De
-        betaling is verwerkt door\n                </span>\n                <img src=\"https://assets.test.cdn.v-psp.com/otp/1690ac7af613c4b92173/images/branding/worldline_logo_2.png\"
-        id=\"payment-Betaling verwerkt door Worldline-image\" alt=\"Betaling verwerkt
-        door Worldline\">\n            </div>\n            <div class=\"row\">\n                <a
-        href=\"https://worldline.com/?lang=3&amp;branding=WLOP_Direct\" target=\"_blank\">Over
-        Worldline</a><a href=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/SecurityContent/Get/84f97e429a634812a938312a49bd1da5\"
-        target=\"_blank\">Veiligheid</a><a href=\"https://worldline.com/en/home/main-navigation/git/office-locations.html?lang=3&amp;branding=WLOP_Direct\"
-        target=\"_blank\">Wettelijke informatie</a>\n            </div>\n            <div
-        class=\"clear\"></div>\n        </div>\n    </div>\n    <script src=\"https://assets.test.cdn.v-psp.com/otp/1690ac7af613c4b92173/templates/hostedcheckout/wlop_direct/script.js\"
-        crossorigin=\"anonymous\" integrity=\"sha384-Vw/2zPraPSyTHDRELouU3eQSNy43REEePg8ayMDqmvfk7Aw7kcf3Y/psPOto0y3k\"></script>\n<script
-        type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/9b5f5873d175202f9445/js/cdn/ingenico-direct.min.js\"
-        crossorigin=\"anonymous\" integrity=\"sha384-9avr0MagL5UAd0RDTQhTVC7sFn4zfjaFtWFM5xGp9EZzOoCJsfWhhJKhBf8HSv99\"
-        nonce=\"kHs/V&#x2B;PZwyM=\"></script>\r\n</body>\n</html>\n"
+        value=\"Continue\">\n                        </div>\n                    </div>\n\n
+        \                   <div class=\"clear\"></div>\n                </form>\n\n
+        \               \n            </div>\n            \n                <div class=\"order-summary
+        orderpart-mobile\" id=\"paymentmethod-selection-order-summary-mobile\">\n
+        \                   <label id=\"order-summary-accordion-toggle-label\"\n                           for=\"order-summary-accordion\"\n
+        \                          aria-expanded=\"false\"\n                           aria-controls=\"order-summary-accordion-content\"\n
+        \                          tabindex=\"0\"\n                           role=\"button\"\n
+        \                          class=\"order-summary__label accordion__label\">\n
+        \                       <span class=\"bolder\">Total charge</span>\n                        <span
+        class=\"bold price total-amount\">EUR&nbsp;11.35</span>\n                    </label>\n
+        \                   <input type=\"checkbox\"\n                           tabindex=\"-1\"\n
+        \                          class=\"css-hidden accordion__input\"\n                           id=\"order-summary-accordion\"\n
+        \                          aria-hidden=\"true\" />\n                    <div
+        class=\"accordion order-summary__content\" id=\"order-summary-accordion-content\">\n
+        \                       <div class=\"row\">\n                            <h2
+        class=\"order__summary-title\">Order overview</h2>\n                        </div>\n
+        \                       <div class=\"row order-total\">\n                            <p>Total
+        charge:&nbsp;</p>\n                            <p class=\"total-amount\">EUR&nbsp;11.35</p>\n
+        \                       </div>\n\n                        \n\n                        <div
+        class=\"row order-ref order__reference\">\n                            <p>Order
+        reference: 2026/OF-LUT3Y4/25</p>\n                        </div>\n\n                        \n\n
+        \                       \n                            <div id=\"dcc-surcharge-spinner\"
+        class=\"dcc-surcharge-loading\">\n                                <div class=\"spinner\">\n
+        \                                   <!--show spinner segments-->\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                </div>\n
+        \                           </div>\n                        \n\n                        \n
+        \                           \n                                <table class=\"order-summary
+        dcc-input-table\">\n                                    <tbody>\n                                        <tr
+        class=\"dcc-row\">\n                                            <td class=\"dcc-select-currency-cell\">\n
+        \                                               <label id=\"payment-dcc-select-currency-label\">Select
+        Currency</label>\n                                            </td>\n                                        </tr>\n
+        \                                       <tr>\n                                            <td
+        class=\"error-cell\" colspan=\"2\">\n                                                <div
+        class=\"error\">\n                                                    <span
+        id=\"payment-dccAcceptedByUser-error\"></span>\n                                                </div>\n
+        \                                           </td>\n                                        </tr>\n\n
+        \                                       \n                                            <tr
+        class=\"dcc-row\">\n                                                <td class=\"dcc-cell\">\n
+        \                                                   <input type=\"radio\"
+        id=\"payment-dcc-base-currency-radio\"\n                                                           name=\"payment-dcc-currency-selection\"
+        />\n                                                    <label for=\"payment-dcc-base-currency-radio\">\n
+        \                                                       Pay\n                                                        <label
+        id=\"payment-dcc-base-currency-input-label\"\n                                                               for=\"payment-dcc-base-currency-radio\"></label>\n
+        \                                                   </label>\n                                                </td>\n
+        \                                           </tr>\n                                        \n
+        \                                           <tr class=\"dcc-row\">\n                                                <td
+        class=\"dcc-cell\">\n                                                    <input
+        type=\"radio\" id=\"payment-dcc-target-currency-radio\"\n                                                           name=\"payment-dcc-currency-selection\"
+        />\n                                                    <label for=\"payment-dcc-target-currency-radio\">\n
+        \                                                       Pay\n                                                        <label
+        id=\"payment-dcc-target-currency-input-label\"\n                                                               for=\"payment-dcc-target-currency-radio\"></label>\n
+        \                                                   </label>\n                                                </td>\n
+        \                                           </tr>\n                                        \n\n
+        \                                       <tr class=\"dcc-row\">\n                                            <td
+        colspan=\"2\" class=\"dcc-exchange-rate-cell\">\n                                                <label
+        id=\"payment-dcc-exchange-rate-caption\">Exchange Rate</label>\n                                                <label
+        id=\"payment-dcc-exchange-rate-label\"></label><br />\n                                                <label
+        id=\"payment-dcc-markup-rate-caption\">Inclusive of Mark-up =</label>\n                                                <label
+        id=\"payment-dcc-markup-rate-label\"></label><br />\n                                                <label
+        id=\"payment-dcc-confirm-statement-label\"> By choosing to pay in your local
+        currency, you accept the following terms and conditions: <br>1. The exchange
+        rate and the amount in the selected local currency. <br>2. You have been offered
+        a choice of payment options, including the merchant&#x27;s currency. <br>3.
+        The currency conversion service is provided by Worldline.</label>\n                                            </td>\n
+        \                                       </tr>\n                                    </tbody>\n
+        \                               </table>\n                            \n\n
+        \                           \n                        \n\n                        \n
+        \                   </div>\n                </div>\n                <div id=\"buttons-part-mobile\">\n
+        \                   <div class=\"payment-proceed-to-payment\"><span class=\"payment-error
+        proceed-to-payment-label-error-id\" role=\"alert\" style=\"display: none;\">Please
+        select a payment method</span></span><button class=\"button button--raised
+        proceed-to-payment-button-id\" role=\"button\" type=\"button\" tabindex=\"0\"><span
+        class=\"next-step-dynamic-text\">Proceed to Payment Details</span></button></div>\n
+        \                   \n                </div>\n                <div class=\"order-summary
+        orderpart\">\n                    <input type=\"checkbox\"\n                           class=\"css-hidden
+        accordion__input\"\n                           id=\"order-summary-accordion\"\n
+        \                          aria-hidden=\"true\" checked />\n                    <div
+        class=\"accordion order-summary__content\">\n                        <div
+        class=\"row\">\n                            <h2 class=\"order__summary-title\">Order
+        overview</h2>\n                        </div>\n                        <div
+        class=\"row order-total\">\n                            <p>Total charge:&nbsp;</p>\n
+        \                           <p class=\"total-amount\">EUR&nbsp;11.35</p>\n
+        \                       </div>\n\n                        \n\n                        <div
+        class=\"row order-ref order__reference\">\n                            <p>Order
+        reference: 2026/OF-LUT3Y4/25</p>\n                        </div>\n\n                        \n\n
+        \                       \n                            <div id=\"dcc-surcharge-spinner\"
+        class=\"dcc-surcharge-loading\">\n                                <div class=\"spinner\">\n
+        \                                   <!--show spinner segments-->\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                    <div></div>\n
+        \                                   <div></div>\n                                </div>\n
+        \                           </div>\n                        \n\n                        \n
+        \                           \n                                <table class=\"order-summary
+        dcc-input-table\">\n                                    <tbody>\n                                        <tr
+        class=\"dcc-row\">\n                                            <td class=\"dcc-select-currency-cell\">\n
+        \                                               <label id=\"payment-dcc-select-currency-label\">Select
+        Currency</label>\n                                            </td>\n                                        </tr>\n
+        \                                       <tr>\n                                            <td
+        class=\"error-cell\" colspan=\"2\">\n                                                <div
+        class=\"error\">\n                                                    <span
+        id=\"payment-dccAcceptedByUser-error\"></span>\n                                                </div>\n
+        \                                           </td>\n                                        </tr>\n\n
+        \                                       \n                                            <tr
+        class=\"dcc-row\">\n                                                <td class=\"dcc-cell\">\n
+        \                                                   <input type=\"radio\"
+        id=\"payment-dcc-base-currency-radio\"\n                                                           name=\"payment-dcc-currency-selection\"
+        />\n                                                    <label for=\"payment-dcc-base-currency-radio\">\n
+        \                                                       Pay\n                                                        <label
+        id=\"payment-dcc-base-currency-input-label\"\n                                                               for=\"payment-dcc-base-currency-radio\"></label>\n
+        \                                                   </label>\n                                                </td>\n
+        \                                           </tr>\n                                        \n
+        \                                           <tr class=\"dcc-row\">\n                                                <td
+        class=\"dcc-cell\">\n                                                    <input
+        type=\"radio\" id=\"payment-dcc-target-currency-radio\"\n                                                           name=\"payment-dcc-currency-selection\"
+        />\n                                                    <label for=\"payment-dcc-target-currency-radio\">\n
+        \                                                       Pay\n                                                        <label
+        id=\"payment-dcc-target-currency-input-label\"\n                                                               for=\"payment-dcc-target-currency-radio\"></label>\n
+        \                                                   </label>\n                                                </td>\n
+        \                                           </tr>\n                                        \n\n
+        \                                       <tr class=\"dcc-row\">\n                                            <td
+        colspan=\"2\" class=\"dcc-exchange-rate-cell\">\n                                                <label
+        id=\"payment-dcc-exchange-rate-caption\">Exchange Rate</label>\n                                                <label
+        id=\"payment-dcc-exchange-rate-label\"></label><br />\n                                                <label
+        id=\"payment-dcc-markup-rate-caption\">Inclusive of Mark-up =</label>\n                                                <label
+        id=\"payment-dcc-markup-rate-label\"></label><br />\n                                                <label
+        id=\"payment-dcc-confirm-statement-label\"> By choosing to pay in your local
+        currency, you accept the following terms and conditions: <br>1. The exchange
+        rate and the amount in the selected local currency. <br>2. You have been offered
+        a choice of payment options, including the merchant&#x27;s currency. <br>3.
+        The currency conversion service is provided by Worldline.</label>\n                                            </td>\n
+        \                                       </tr>\n                                    </tbody>\n
+        \                               </table>\n                            \n\n
+        \                           \n                        \n\n                        \n\n
+        \                       <div id=\"payment-submit-switch\" payment-submit-all-valid-message=\"Submit
+        button is available\" payment-submit-all-invalid-message=\"Submit button is
+        not available due to the form errors\"><div class=\"button button--raised
+        button--secure\" role=\"button\" id=\"submit-all\" tabindex=\"0\"><span class=\"next-step-dynamic-text\">Continue</span></div></div>\n
+        \                       <div class=\"payment-proceed-to-payment\"><span class=\"payment-error
+        proceed-to-payment-label-error-id\" role=\"alert\" style=\"display: none;\">Please
+        select a payment method</span></span><button class=\"button button--raised
+        proceed-to-payment-button-id\" role=\"button\" type=\"button\" tabindex=\"0\"><span
+        class=\"next-step-dynamic-text\">Proceed to Payment Details</span></button></div>\n
+        \                       \n                    </div>\n                    <label
+        for=\"order-summary-accordion\"\n                           class=\"order-summary__label
+        accordion__label\">\n                        <span class=\"bolder\">Total
+        charge</span>\n                        <span class=\"bold price total-amount\">EUR&nbsp;11.35</span>\n
+        \                   </label>\n                </div>\n            \n        </div>\n
+        \       <footer role=\"contentinfo\">\n            <div class=\"u-full-width
+        center footer\">\n                <div class=\"content\">\n                    <div
+        class=\"row\">\n                        <p class=\"footer__processed-legend\">\n
+        \                           Payment processed by\n                        </p>\n
+        \                       <img src=\"https://assets.test.cdn.v-psp.com/otp/61cb63fb8c85c7fc420d/images/branding/worldline_logo_2.png\"
+        id=\"payment-Payment processed by  Worldline-image\" alt=\"Payment processed
+        by  Worldline\">\n                    </div>\n                    <div class=\"row\">\n
+        \                       <a href=\"https://worldline.com/?lang=1&amp;branding=WLOP_Direct\"
+        target=\"_blank\">About Worldline</a><a href=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/SecurityContent/Get/46447b89ca114db4a2b0bc9ed682ea53\"
+        target=\"_blank\">Security</a><a href=\"https://worldline.com/en/home/main-navigation/git/office-locations.html?lang=1&amp;branding=WLOP_Direct\"
+        target=\"_blank\">Legal info</a>\n                    </div>\n                    <div
+        class=\"clear\"></div>\n                </div>\n            </div>\n            <script
+        src=\"https://assets.test.cdn.v-psp.com/otp/61cb63fb8c85c7fc420d/templates/hostedcheckout/wlop_direct/script.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-tYQT47KHBQO7CaTYVRtICAXAWunDVeS86cxqt1A26A3KLTzT0S2aoLJiBOg1MwU6\"></script>\n
+        \       </footer>\n        </main>\n<script type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/4810d31bb289619fc908/js/required/status/statuspage.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-uWFvWhPO0fGi5m86F/ec5IZrvbuK6AXuRDfVOSJ4dfT9sQvpp7qMvyocOfpSTfOc\"
+        nonce=\"HiMqSJFYDVI=\"></script>\r\n<script type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/4810d31bb289619fc908/js/cdn/ingenico-direct.min.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-hClZlgYe6hilsrdc1g1BvEeDG2RpyTuJDElRt/5CPt1hk/34E/yr7EtiMcYRkd1Y\"
+        nonce=\"HiMqSJFYDVI=\"></script>\r\n</body>\n</html>\n"
     headers:
       content-length:
-      - '9416'
+      - '20784'
       content-security-policy:
       - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -423,7 +561,7 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-kHs/V+PZwyM=''  ;
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-HiMqSJFYDVI=''  ;
         style-src-attr ''unsafe-inline''; style-src-elem ''unsafe-inline'' ''self''
         https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -448,15 +586,27 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-kHs/V+PZwyM='';
-        object-src ''none''; report-to reporting-endpoint;'
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-HiMqSJFYDVI='';
+        object-src ''none''; frame-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js *.unitedthreeds.preprod.gi.worldline-solutions.com
+        v2-sim.preprod.psp-solutions.com; report-to reporting-endpoint;'
       content-type:
       - text/html; charset=utf-8
       correlation-id:
-      - e111ac7b-de59-4687-a3ae-f1474b556edb
-      - e111ac7b-de59-4687-a3ae-f1474b556edb
+      - e7659bf5-3fd5-47cc-83ff-dfb0462227d9
+      - e7659bf5-3fd5-47cc-83ff-dfb0462227d9
       date:
-      - Thu, 26 Mar 2026 08:01:00 GMT
+      - Fri, 21 Aug 2026 10:16:17 GMT
       reporting-endpoints:
       - reporting-endpoint="https://payment.preprod.direct.worldline-solutions.com/csp/report-to"
       strict-transport-security:
