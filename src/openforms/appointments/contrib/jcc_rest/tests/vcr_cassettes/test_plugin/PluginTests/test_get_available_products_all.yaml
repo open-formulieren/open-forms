@@ -13,7 +13,7 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
   response:
@@ -27,14 +27,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:22 GMT
+      - Fri, 21 Aug 2026 10:31:02 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
@@ -56,7 +56,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       language:
       - en
     method: GET
@@ -72,12 +72,27 @@ interactions:
         \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n  },\r\n  {\r\n    \"id\": \"8c91b619-8bd4-4ba3-a40f-d5feed643952\",\r\n
         \   \"number\": 9,\r\n    \"description\": \"Naturalisatie\",\r\n    \"appointmentDuration\":
         3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"3efeeae6-4d96-4e28-a1db-2d7011fd0439\",\r\n    \"number\":
+        45,\r\n    \"description\": \"Intake Nieuwkomer (Noord)\",\r\n    \"appointmentDuration\":
+        5400,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"ff0fb4ba-b188-4724-9509-78cdac570f5b\",\r\n    \"number\":
+        47,\r\n    \"description\": \"Intake Nieuwkomer (Zuid)\",\r\n    \"appointmentDuration\":
+        5400,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"ab0ab5e4-1bd6-461b-b92c-c89916f8f736\",\r\n    \"number\":
+        46,\r\n    \"description\": \"Intake Nieuwkomer (Midden)\",\r\n    \"appointmentDuration\":
+        5400,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
         \ },\r\n  {\r\n    \"id\": \"ee302bc8-46ef-425d-8b4e-fa93246c3bc0\",\r\n    \"number\":
         25,\r\n    \"description\": \"Parkeervergunning aanvraag\",\r\n    \"appointmentDuration\":
         900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n
         \ },\r\n  {\r\n    \"id\": \"da902580-303b-4ec3-ae06-fc25acee4b6a\",\r\n    \"number\":
         41,\r\n    \"description\": \"Woonloket\",\r\n    \"appointmentDuration\":
         900,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"8657ec59-c2c5-4ce2-b5f4-b5407f37320f\",\r\n    \"number\":
+        49,\r\n    \"description\": \"Intake Regulier (Midden)\",\r\n    \"appointmentDuration\":
+        5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"3b4bb747-7256-4ea3-a5a6-6605cf8e821e\",\r\n    \"number\":
+        42,\r\n    \"description\": \"Intake Dak- en Thuisloze\",\r\n    \"appointmentDuration\":
+        5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
         \ },\r\n  {\r\n    \"id\": \"637474a7-ea52-43f8-9e8a-30f3e0c13cf4\",\r\n    \"number\":
         40,\r\n    \"description\": \"Partnerschap met toespraak - eigen BABS\",\r\n
         \   \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\":
@@ -115,13 +130,16 @@ interactions:
         \ },\r\n  {\r\n    \"id\": \"3b659fb1-99e2-492f-9d90-610747ce7b0d\",\r\n    \"number\":
         28,\r\n    \"description\": \"Schuldhulpverlening - Digitaal gesprek\",\r\n
         \   \"appointmentDuration\": 1800,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\":
-        \"19b85e5b-dd57-4979-bc50-75f088557cc3\"\r\n  },\r\n  {\r\n    \"id\": \"53410a47-6ede-4225-81e0-4ebffaae0ef3\",\r\n
+        \"19b85e5b-dd57-4979-bc50-75f088557cc3\"\r\n  },\r\n  {\r\n    \"id\": \"cbe5888b-04fd-451b-9bdc-0191e68c3e97\",\r\n
+        \   \"number\": 50,\r\n    \"description\": \"Intake Regulier (Zuid)\",\r\n
+        \   \"appointmentDuration\": 5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\":
+        \"7500d645-c467-417b-b548-23e007d830b2\"\r\n  },\r\n  {\r\n    \"id\": \"53410a47-6ede-4225-81e0-4ebffaae0ef3\",\r\n
         \   \"number\": 7,\r\n    \"description\": \"Geboorteaangifte\",\r\n    \"appointmentDuration\":
         900,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"dafb7ce5-8ba1-4fee-ac44-edfb333a9404\",\r\n
         \   \"synonyms\": [\r\n      \"Geboorte inschrijving\"\r\n    ]\r\n  },\r\n
         \ {\r\n    \"id\": \"d726a90f-0c00-4395-9ed2-501e6d0ae63d\",\r\n    \"number\":
         8,\r\n    \"description\": \"Overlijdensaangifte\",\r\n    \"appointmentDuration\":
-        1200,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"dafb7ce5-8ba1-4fee-ac44-edfb333a9404\"\r\n
+        1200,\r\n    \"maxCountForEvent\": 3,\r\n    \"activityGroupId\": \"dafb7ce5-8ba1-4fee-ac44-edfb333a9404\"\r\n
         \ },\r\n  {\r\n    \"id\": \"2040d2d6-8862-4f68-a60e-1db50ee66be8\",\r\n    \"number\":
         6,\r\n    \"description\": \"Rijbewijs afhalen\",\r\n    \"appointmentDuration\":
         300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
@@ -153,23 +171,32 @@ interactions:
         \ },\r\n  {\r\n    \"id\": \"14a83e4c-d722-4f5f-9766-c15e428c06fb\",\r\n    \"number\":
         4,\r\n    \"description\": \"Paspoort afhalen\",\r\n    \"appointmentDuration\":
         300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"6e8bc364-7078-4712-94d3-76933e4a3994\",\r\n    \"number\":
+        48,\r\n    \"description\": \"Intake Regulier (Noord)\",\r\n    \"appointmentDuration\":
+        5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"6226bbf8-d087-4d47-bc28-dc45aac79ea4\",\r\n    \"number\":
+        43,\r\n    \"description\": \"Intake Jongere (Noord)\",\r\n    \"appointmentDuration\":
+        5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"c8068ba3-0143-42b3-8957-fb40651b17bc\",\r\n    \"number\":
+        44,\r\n    \"description\": \"Intake Jongere (Zuid)\",\r\n    \"appointmentDuration\":
+        5100,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
         \ }\r\n]"
     headers:
       content-length:
-      - '7464'
+      - '9745'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:22 GMT
+      - Fri, 21 Aug 2026 10:31:03 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
