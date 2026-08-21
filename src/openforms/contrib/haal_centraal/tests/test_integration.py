@@ -1,8 +1,8 @@
+import shutil
+import tempfile
 from unittest.mock import MagicMock, patch
 
-from django.test import TransactionTestCase
-
-from privates.test import temp_private_root
+from django.test import TransactionTestCase, override_settings
 
 from openforms.authentication.service import AuthAttribute
 from openforms.authentication.utils import store_auth_details, store_registrator_details
@@ -40,7 +40,6 @@ COMPONENTS = [
 ]
 
 
-@temp_private_root()
 class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
     """Run full integration tests against a real API instance.
 
@@ -49,8 +48,21 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
     making use of the BRP API could have been used.
     """
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        # set up temp_private_root manually, as the files must exist on disk for
+        # requests to use the mTLS bundles
+        cls.temp_private_root = tempfile.mkdtemp()
+        cls.addClassCleanup(lambda: shutil.rmtree(cls.temp_private_root))
+
     def setUp(self) -> None:
         super().setUp()
+
+        cm = override_settings(PRIVATE_MEDIA_ROOT=self.temp_private_root)
+        cm.__enter__()
+        self.addCleanup(lambda: cm.__exit__(None, None, None))
 
         global_config = GlobalConfiguration(organization_oin="00000003273229750000")
 

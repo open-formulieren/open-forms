@@ -14,7 +14,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       x-doelbinding:
       - BRPACT-AanschrijvenZakelijkGerechtigde
       x-gebruiker:
@@ -44,14 +44,18 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 25 Mar 2026 16:16:02 GMT
+      - Fri, 21 Aug 2026 10:02:47 GMT
+      Server:
+      - nginx/1.31.3
       Set-Cookie:
-      - TS01f825fe=013467672c134f63145c21208d303ec1e30d9b528ba938ad92958acbf63669b353a72cb680e8126ec8127d93f556f01ef76807ee9f0f1087f1c56d8992d3d4d28d938813ed;
+      - TS016e9432=01a03e650b37b11296407c9931de75c78b634be1bfb9efdc091655a491b6e2b2d84dc5b84c29d58c28d2ab8070a40d9ee2d377724daa7b981e94935786858f1a71cd66e892;
         Path=/; Domain=.apigw.npr.idm.diginetwerk.net
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:
       - chunked
+      traceparent:
+      - 00-bdec4858ec4a61fa597c1bbd8e28322f-4ce4620afc9ddccc-01
     status:
       code: 200
       message: ''

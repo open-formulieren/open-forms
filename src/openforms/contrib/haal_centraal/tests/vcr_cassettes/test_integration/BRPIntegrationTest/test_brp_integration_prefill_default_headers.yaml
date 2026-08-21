@@ -44,14 +44,18 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 11 May 2026 10:21:49 GMT
+      - Fri, 21 Aug 2026 10:02:34 GMT
+      Server:
+      - nginx/1.31.3
       Set-Cookie:
-      - TS016e9432=013467672c8b6c5490ee3d978a75232d170cd85f1780dc29836e0d018cd416dd290edbbf022438a55ee5e873f230157ec9deac2fb7802f5bfde77d2c5a40bcedb41fb17635;
+      - TS016e9432=01a03e650bba3da95005f071cb9d05335786b189dfcd136607f278eb839ddbf5e052e75c5b07d56ec3ee251727b691dc4515bde33d2a146b9eb2f6c207ff5cbe88b83ed9b1;
         Path=/; Domain=.apigw.npr.idm.diginetwerk.net
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:
       - chunked
+      traceparent:
+      - 00-b6a437b964b6cbc8e13b75ca202b78cc-39341d8ee0042265-01
     status:
       code: 200
       message: ''
