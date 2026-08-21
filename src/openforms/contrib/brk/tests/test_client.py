@@ -34,9 +34,17 @@ class BRKCadastralClientTests(BRKTestMixin, OFVCRMixin, SimpleTestCase):
             # This request also returns a status code 200, which seems weird. From
             # kadaster.github.io/BRK-bevragen/swagger-ui-2.0#/Kadastraal Onroerende Zaken/GetKadastraalOnroerendeZaken
             # it's not clear what is returned when an address does not exist, though
+            # It seems to be an empty response.
             self.assertEqual(
-                res["title"],
-                "Het product kan momenteel niet geleverd worden, probeer het later nog eens.",
+                res,
+                {
+                    "_links": {
+                        "self": {
+                            "href": "/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1"
+                        }
+                    },
+                    "_embedded": {},
+                },
             )
 
     @requests_mock.Mocker()

@@ -14,8 +14,8 @@ interactions:
     uri: http://localhost:8005/klantinteracties/api/v1/maak-klantcontact
   response:
     body:
-      string: '{"klantcontact":{"uuid":"cd651f3e-700c-4751-8a8f-a58a188e8793","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/cd651f3e-700c-4751-8a8f-a58a188e8793","gingOverOnderwerpobjecten":[{"uuid":"c6b5adb3-19ee-48d5-b619-c4cb00162c75","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/c6b5adb3-19ee-48d5-b619-c4cb00162c75"}],"hadBetrokkenActoren":[],"omvatteBijlagen":[],"hadBetrokkenen":[{"uuid":"34b87bfe-7560-46e6-a1cb-ce5af49eec4d","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/34b87bfe-7560-46e6-a1cb-ce5af49eec4d"}],"leiddeTotInterneTaken":[],"nummer":"0000000008","kanaal":"Webformulier","onderwerp":"With
-        profile","inhoud":"","indicatieContactGelukt":null,"taal":"nld","vertrouwelijk":true,"plaatsgevondenOp":"2026-03-25T15:53:45.029845Z"},"betrokkene":{"uuid":"34b87bfe-7560-46e6-a1cb-ce5af49eec4d","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/34b87bfe-7560-46e6-a1cb-ce5af49eec4d","wasPartij":null,"hadKlantcontact":{"uuid":"cd651f3e-700c-4751-8a8f-a58a188e8793","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/cd651f3e-700c-4751-8a8f-a58a188e8793"},"digitaleAdressen":[],"bezoekadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"correspondentieadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"contactnaam":{"voorletters":"","voornaam":"","voorvoegselAchternaam":"","achternaam":""},"volledigeNaam":"","rol":"klant","organisatienaam":"","initiator":true},"onderwerpobject":{"uuid":"c6b5adb3-19ee-48d5-b619-c4cb00162c75","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/c6b5adb3-19ee-48d5-b619-c4cb00162c75","klantcontact":{"uuid":"cd651f3e-700c-4751-8a8f-a58a188e8793","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/cd651f3e-700c-4751-8a8f-a58a188e8793"},"wasKlantcontact":null,"onderwerpobjectidentificator":{"objectId":"OF-12345","codeObjecttype":"formulierinzending","codeRegister":"Open
+      string: '{"klantcontact":{"uuid":"e9433d3e-cdfb-4207-b659-c16b9f4240bf","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/e9433d3e-cdfb-4207-b659-c16b9f4240bf","gingOverOnderwerpobjecten":[{"uuid":"bdc63f48-807f-4d89-974b-c1e27afac6c9","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/bdc63f48-807f-4d89-974b-c1e27afac6c9"}],"hadBetrokkenActoren":[],"omvatteBijlagen":[],"hadBetrokkenen":[{"uuid":"49463eff-fbb0-4ed5-9a64-1291b5394e40","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/49463eff-fbb0-4ed5-9a64-1291b5394e40"}],"leiddeTotInterneTaken":[],"nummer":"0000000008","kanaal":"Webformulier","onderwerp":"With
+        profile","inhoud":"","indicatieContactGelukt":null,"taal":"nld","vertrouwelijk":true,"plaatsgevondenOp":"2026-08-20T07:47:31.562104Z"},"betrokkene":{"uuid":"49463eff-fbb0-4ed5-9a64-1291b5394e40","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/49463eff-fbb0-4ed5-9a64-1291b5394e40","wasPartij":null,"hadKlantcontact":{"uuid":"e9433d3e-cdfb-4207-b659-c16b9f4240bf","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/e9433d3e-cdfb-4207-b659-c16b9f4240bf"},"digitaleAdressen":[],"bezoekadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"correspondentieadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"contactnaam":{"voorletters":"","voornaam":"","voorvoegselAchternaam":"","achternaam":""},"volledigeNaam":"","rol":"klant","organisatienaam":"","initiator":true},"onderwerpobject":{"uuid":"bdc63f48-807f-4d89-974b-c1e27afac6c9","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/bdc63f48-807f-4d89-974b-c1e27afac6c9","klantcontact":{"uuid":"e9433d3e-cdfb-4207-b659-c16b9f4240bf","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/e9433d3e-cdfb-4207-b659-c16b9f4240bf"},"wasKlantcontact":null,"onderwerpobjectidentificator":{"objectId":"OF-12345","codeObjecttype":"formulierinzending","codeRegister":"Open
         Formulieren","codeSoortObjectId":"public_registration_reference"}}}'
     headers:
       API-version:
@@ -25,10 +25,11 @@ interactions:
       Content-Length:
       - '2259'
       Content-Security-Policy:
-      - 'frame-src ''self''; font-src ''self'' fonts.gstatic.com; worker-src ''self''
-        blob:; object-src ''none''; form-action ''self''; default-src ''self''; base-uri
-        ''self''; img-src ''self'' data: cdn.redoc.ly; script-src ''self'' ''unsafe-inline'';
-        frame-ancestors ''none''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      - 'frame-ancestors ''none''; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; base-uri ''self'';
+        frame-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; worker-src ''self'' blob:; form-action
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -46,7 +47,7 @@ interactions:
       message: Created
 - request:
     body: '{"adres": "some@email.com", "soortDigitaalAdres": "email", "isStandaardAdres":
-      false, "verstrektDoorBetrokkene": {"uuid": "34b87bfe-7560-46e6-a1cb-ce5af49eec4d"},
+      false, "verstrektDoorBetrokkene": {"uuid": "49463eff-fbb0-4ed5-9a64-1291b5394e40"},
       "verstrektDoorPartij": null, "omschrijving": ""}'
     headers:
       Content-Length:
@@ -57,7 +58,7 @@ interactions:
     uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen
   response:
     body:
-      string: '{"uuid":"6691f323-be7e-4d55-a8d7-b9332ccfd664","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6691f323-be7e-4d55-a8d7-b9332ccfd664","verstrektDoorBetrokkene":{"uuid":"34b87bfe-7560-46e6-a1cb-ce5af49eec4d","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/34b87bfe-7560-46e6-a1cb-ce5af49eec4d"},"verstrektDoorPartij":null,"adres":"some@email.com","soortDigitaalAdres":"email","isStandaardAdres":false,"omschrijving":"","referentie":"","verificatieDatum":null}'
+      string: '{"uuid":"6783600a-16cf-40d7-a604-2515ec672d3b","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6783600a-16cf-40d7-a604-2515ec672d3b","verstrektDoorBetrokkene":{"uuid":"49463eff-fbb0-4ed5-9a64-1291b5394e40","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/49463eff-fbb0-4ed5-9a64-1291b5394e40"},"verstrektDoorPartij":null,"adres":"some@email.com","soortDigitaalAdres":"email","isStandaardAdres":false,"omschrijving":"","referentie":"","verificatieDatum":null}'
     headers:
       API-version:
       - 0.4.1
@@ -66,16 +67,17 @@ interactions:
       Content-Length:
       - '496'
       Content-Security-Policy:
-      - 'frame-src ''self''; font-src ''self'' fonts.gstatic.com; worker-src ''self''
-        blob:; object-src ''none''; form-action ''self''; default-src ''self''; base-uri
-        ''self''; img-src ''self'' data: cdn.redoc.ly; script-src ''self'' ''unsafe-inline'';
-        frame-ancestors ''none''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      - 'frame-ancestors ''none''; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; base-uri ''self'';
+        frame-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; worker-src ''self'' blob:; form-action
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6691f323-be7e-4d55-a8d7-b9332ccfd664
+      - http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6783600a-16cf-40d7-a604-2515ec672d3b
       Referrer-Policy:
       - same-origin
       Vary:
@@ -89,7 +91,7 @@ interactions:
       message: Created
 - request:
     body: '{"adres": "0612345678", "soortDigitaalAdres": "telefoonnummer", "isStandaardAdres":
-      false, "verstrektDoorBetrokkene": {"uuid": "34b87bfe-7560-46e6-a1cb-ce5af49eec4d"},
+      false, "verstrektDoorBetrokkene": {"uuid": "49463eff-fbb0-4ed5-9a64-1291b5394e40"},
       "verstrektDoorPartij": null, "omschrijving": ""}'
     headers:
       Content-Length:
@@ -100,7 +102,7 @@ interactions:
     uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen
   response:
     body:
-      string: '{"uuid":"73e3d7b5-b4f8-49d7-a57f-0ddb5dc5c51f","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/73e3d7b5-b4f8-49d7-a57f-0ddb5dc5c51f","verstrektDoorBetrokkene":{"uuid":"34b87bfe-7560-46e6-a1cb-ce5af49eec4d","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/34b87bfe-7560-46e6-a1cb-ce5af49eec4d"},"verstrektDoorPartij":null,"adres":"0612345678","soortDigitaalAdres":"telefoonnummer","isStandaardAdres":false,"omschrijving":"","referentie":"","verificatieDatum":null}'
+      string: '{"uuid":"e4e9fa43-2641-47f5-84b7-050d9fed211d","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/e4e9fa43-2641-47f5-84b7-050d9fed211d","verstrektDoorBetrokkene":{"uuid":"49463eff-fbb0-4ed5-9a64-1291b5394e40","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/49463eff-fbb0-4ed5-9a64-1291b5394e40"},"verstrektDoorPartij":null,"adres":"0612345678","soortDigitaalAdres":"telefoonnummer","isStandaardAdres":false,"omschrijving":"","referentie":"","verificatieDatum":null}'
     headers:
       API-version:
       - 0.4.1
@@ -109,16 +111,17 @@ interactions:
       Content-Length:
       - '501'
       Content-Security-Policy:
-      - 'frame-src ''self''; font-src ''self'' fonts.gstatic.com; worker-src ''self''
-        blob:; object-src ''none''; form-action ''self''; default-src ''self''; base-uri
-        ''self''; img-src ''self'' data: cdn.redoc.ly; script-src ''self'' ''unsafe-inline'';
-        frame-ancestors ''none''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      - 'frame-ancestors ''none''; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; base-uri ''self'';
+        frame-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; worker-src ''self'' blob:; form-action
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8005/klantinteracties/api/v1/digitaleadressen/73e3d7b5-b4f8-49d7-a57f-0ddb5dc5c51f
+      - http://localhost:8005/klantinteracties/api/v1/digitaleadressen/e4e9fa43-2641-47f5-84b7-050d9fed211d
       Referrer-Policy:
       - same-origin
       Vary:

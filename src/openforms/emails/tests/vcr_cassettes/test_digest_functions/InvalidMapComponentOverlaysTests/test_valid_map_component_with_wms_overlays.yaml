@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS
   response:
@@ -239,7 +239,7 @@ interactions:
       Content-Type:
       - text/xml; charset=UTF-8
       Date:
-      - Wed, 25 Mar 2026 18:43:55 GMT
+      - Thu, 20 Aug 2026 10:44:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -259,7 +259,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml
   response:
@@ -439,7 +439,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Wed, 25 Mar 2026 18:43:56 GMT
+      - Thu, 20 Aug 2026 10:44:48 GMT
       ETag:
       - '"337a-6324eaafa178e-gzip"'
       Keep-Alive:

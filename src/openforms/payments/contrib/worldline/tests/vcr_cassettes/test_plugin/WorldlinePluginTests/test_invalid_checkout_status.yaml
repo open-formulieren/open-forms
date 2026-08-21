@@ -9,16 +9,16 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 26 Mar 2026 08:00:54 GMT
+      - Fri, 21 Aug 2026 10:16:05 GMT
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE3LjAtMTAxMS1vZW0vIzExLVVidW50dSBTTVAgUFJFRU1QVF9EWU5BTUlDIEZyaSBKYW4gMjMgMDY6MTg6NDMgVVRDIDIwMjYgUHl0aG9uLzMuMTIuMyAoQ1B5dGhvbjsgR0NDIDEzLjMuMCkiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y3LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA3LjAuMTQtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMjcgSnVuIDIwMjYgMTY6MTU6MTAgKzAwMDAgUHl0aG9uLzMuMTIuMTQgKENQeXRob247IEdDQyAxNi4yLjEgMjAyNjA4MTApIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92Ny4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/foobar
   response:
     body:
-      string: '{"errorId":"a5c588e6-9986-4201-ab94-8303aaf65cea","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
+      string: '{"errorId":"5594f324-37f6-4141-9659-d7c33bb336ef","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
     headers:
       content-length:
       - '235'
@@ -58,7 +58,7 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-90hrT6DqfRU=''  ;
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-9O/BGxivHrY=''  ;
         style-src-attr ''unsafe-inline''; style-src-elem ''unsafe-inline'' ''self''
         https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -83,15 +83,27 @@ interactions:
         https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
         https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
-        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-90hrT6DqfRU='';
-        object-src ''none''; report-to reporting-endpoint;'
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-9O/BGxivHrY='';
+        object-src ''none''; frame-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js *.unitedthreeds.preprod.gi.worldline-solutions.com
+        v2-sim.preprod.psp-solutions.com; report-to reporting-endpoint;'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - a5c588e6-9986-4201-ab94-8303aaf65cea
-      - a5c588e6-9986-4201-ab94-8303aaf65cea
+      - 5594f324-37f6-4141-9659-d7c33bb336ef
+      - 5594f324-37f6-4141-9659-d7c33bb336ef
       date:
-      - Thu, 26 Mar 2026 08:00:54 GMT
+      - Fri, 21 Aug 2026 10:16:10 GMT
       reporting-endpoints:
       - reporting-endpoint="https://payment.preprod.direct.worldline-solutions.com/csp/report-to"
       strict-transport-security:

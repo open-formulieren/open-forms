@@ -56,7 +56,6 @@ assignees: sergei-maertens
 
   - Forms
 
-    - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
     - [ ] `openforms.forms.tests.test_import_export`
     - [ ] `openforms.forms.tests.test_json_schema.GenerateJsonSchemaReferenceListsTests`
 

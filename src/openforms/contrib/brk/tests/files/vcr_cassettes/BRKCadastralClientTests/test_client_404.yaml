@@ -11,19 +11,17 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.33.0
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1
   response:
     body:
-      string: '{"type":"https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?#System_Net_HttpStatusCode_OK","title":"Het
-        product kan momenteel niet geleverd worden, probeer het later nog eens.","status":200,"detail":"No
-        Content","instance":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1","code":"noContent"}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1"}},"_embedded":{}}'
     headers:
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Origin:
-      - '*'
+      - ''
       Api-Version:
       - 2.0.0
       Connection:
@@ -34,15 +32,17 @@ interactions:
         media-src ''self'' data: https://*.kadaster.nl; frame-src ''self''; frame-ancestors
         ''none''; upgrade-insecure-requests;'
       Content-Type:
-      - application/problem+json
+      - application/hal+json
       Date:
-      - Mon, 15 Sep 2025 14:55:38 GMT
+      - Thu, 20 Aug 2026 14:22:05 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
       - no-referrer
       Server:
       - Unspecified
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Vary:
       - Origin
       X-Content-Type-Options:
@@ -52,7 +52,7 @@ interactions:
       X-Xss-Protection:
       - 1; mode=block
       content-length:
-      - '319'
+      - '101'
     status:
       code: 200
       message: ''
