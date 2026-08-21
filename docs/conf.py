@@ -142,6 +142,10 @@ linkcheck_anchors_ignore_for_url = [
 extlinks = {
     "backend": ("https://github.com/open-formulieren/open-forms/issues/%s", "#%s"),
     "sdk": ("https://github.com/open-formulieren/open-forms-sdk/issues/%s", "#%s"),
+    "formio-builder": (
+        "https://github.com/open-formulieren/formio-builder/issues/%s",
+        "#%s",
+    ),
     "ghsa": (
         "https://github.com/open-formulieren/open-forms/security/advisories/%s",
         "%s",
