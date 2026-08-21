@@ -13,7 +13,7 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
   response:
@@ -27,14 +27,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:22 GMT
+      - Fri, 21 Aug 2026 10:31:02 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
@@ -56,7 +56,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       language:
       - en
     method: GET
@@ -97,23 +97,28 @@ interactions:
         \"NL\",\r\n        \"name\": \"Nederland\"\r\n      },\r\n      \"auditId\":
         \"a7376ade-66ee-45b0-ac6e-a916f54a067c\",\r\n      \"id\": \"5a5e4cab-0dd2-42ea-9a45-5efaf5159c70\"\r\n
         \   },\r\n    \"isActive\": true,\r\n    \"auditId\": \"f91dbc90-994d-4281-b7dc-0f2a8c778472\",\r\n
-        \   \"id\": \"1c17f0da-999b-4ec2-85cc-cfda9220ca7e\"\r\n  }\r\n]"
+        \   \"id\": \"1c17f0da-999b-4ec2-85cc-cfda9220ca7e\"\r\n  },\r\n  {\r\n    \"locationNumber\":
+        6,\r\n    \"phoneNumberList\": [],\r\n    \"description\": \"Afoort\",\r\n
+        \   \"address\": {\r\n      \"auditId\": \"783c6246-9b9a-43a2-a5ab-1f3c4b553e12\",\r\n
+        \     \"id\": \"8da62a06-3fc3-4626-af38-767b8c76d423\"\r\n    },\r\n    \"isActive\":
+        true,\r\n    \"auditId\": \"e0d3406a-e47d-4cc8-a232-091e80c15cda\",\r\n    \"id\":
+        \"bd3d341b-9b33-4530-ba48-5c011f25ada9\"\r\n  }\r\n]"
     headers:
       content-length:
-      - '2537'
+      - '2897'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:22 GMT
+      - Fri, 21 Aug 2026 10:31:02 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:

@@ -13,7 +13,7 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
   response:
@@ -27,14 +27,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:12 GMT
+      - Fri, 21 Aug 2026 10:30:59 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
@@ -56,7 +56,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       language:
       - en
     method: GET
@@ -72,14 +72,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:12 GMT
+      - Fri, 21 Aug 2026 10:30:59 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:

@@ -13,7 +13,7 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
   response:
@@ -27,14 +27,14 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:28 GMT
+      - Fri, 21 Aug 2026 10:36:18 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
@@ -56,33 +56,34 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       language:
       - en
     method: GET
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/customer/customerfields/required?selectedActivityId=c956d136-57a0-4c53-9673-378f41044631&selectedActivityId=53410a47-6ede-4225-81e0-4ebffaae0ef3
   response:
     body:
-      string: "{\r\n  \"initials\": 1,\r\n  \"socialSecurityNumber\": 2,\r\n  \"nationality\":
-        1,\r\n  \"language\": 1,\r\n  \"mainPhoneNumber\": 1,\r\n  \"mobilePhoneNumber\":
-        1,\r\n  \"streetName\": 1,\r\n  \"houseNumber\": 1,\r\n  \"houseNumberSuffix\":
-        1,\r\n  \"postalCode\": 1,\r\n  \"city\": 1,\r\n  \"country\": 1\r\n}"
+      string: "{\r\n  \"initials\": 1,\r\n  \"socialSecurityNumber\": 1,\r\n  \"nationality\":
+        1,\r\n  \"language\": 1,\r\n  \"emailAddress\": 2,\r\n  \"mainPhoneNumber\":
+        1,\r\n  \"mobilePhoneNumber\": 2,\r\n  \"streetName\": 1,\r\n  \"houseNumber\":
+        1,\r\n  \"houseNumberSuffix\": 1,\r\n  \"postalCode\": 1,\r\n  \"city\": 1,\r\n
+        \ \"country\": 1\r\n}"
     headers:
       content-length:
-      - '261'
+      - '283'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 26 Mar 2026 08:35:31 GMT
+      - Fri, 21 Aug 2026 10:36:19 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
       referrer-policy:
       - same-origin
       strict-transport-security:
-      - max-age=31536000
+      - max-age=63072000;
       x-content-type-options:
       - nosniff
       x-frame-options:
