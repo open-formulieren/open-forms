@@ -6,7 +6,7 @@ Open Forms
     :height: 100px
     :alt: Open Forms
 
-:Version: 4.0.0-alpha.2
+:Version: 4.0.0-beta.0
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
 
