@@ -5,6 +5,7 @@ from django.db import models
 from django.http import HttpResponse
 from django.utils.timezone import make_naive
 
+import structlog
 import tablib
 from lxml import etree
 from tablib.formats._json import serialize_objects_handler
@@ -13,6 +14,8 @@ from .models import Submission
 from .rendering.base import Node
 from .rendering.constants import RenderModes
 from .rendering.renderer import Renderer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclasses.dataclass
@@ -49,6 +52,7 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
     if not queryset:
         return tablib.Dataset()
 
+    logger.info("submission_export_started")
     first_submission = queryset[0]
     headers = ["Formuliernaam", "Inzendingdatum"]
     if first_submission.form.translation_enabled:
@@ -76,6 +80,7 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
             data_node.value for data_node in iter_submission_data_nodes(submission)
         ]
         data.append(submission_data)
+    logger.info("submission_export_done", num_rows=len(data))
     return data
 
 
