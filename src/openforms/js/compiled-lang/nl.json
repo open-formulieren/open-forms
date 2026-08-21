@@ -866,7 +866,7 @@
   "44s7K8": [
     {
       "type": 0,
-      "value": "After start page"
+      "value": "Na de startpagina"
     }
   ],
   "45IQhq": [
@@ -1348,7 +1348,7 @@
   "7KWWLM": [
     {
       "type": 0,
-      "value": "Help callout page display"
+      "value": "Weergave van de hulp-uitlegpagina"
     }
   ],
   "7Ldfn+": [
@@ -2298,7 +2298,7 @@
   "Cbf8oT": [
     {
       "type": 0,
-      "value": "Help/contact options"
+      "value": "Help-instellingen"
     }
   ],
   "Cf5zSF": [
@@ -2811,7 +2811,7 @@
   "F4qw6B": [
     {
       "type": 0,
-      "value": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined."
+      "value": "Je kan een (kleine) afbeelding uploaden voor onder de helpdialoogvensterinhoud. Je kan PNG-, JPG- en WEBP-afbeeldingen gebruiken. Vermijd grote afbeeldingen, voor gebruikers met beperkte bandbreedte of langzame internetverbindingen. De afbeelding wordt enkel getoond als de helpdialoogvensterinhoud is opgegeven."
     }
   ],
   "F9ew4C": [
@@ -3039,7 +3039,7 @@
   "GemVSH": [
     {
       "type": 0,
-      "value": "Help dialog image"
+      "value": "Helpdialoogvensterafbeelding"
     }
   ],
   "GfH2yX": [
@@ -3999,7 +3999,7 @@
   "NOyTcy": [
     {
       "type": 0,
-      "value": "Content"
+      "value": "Inhoud"
     }
   ],
   "NY6h3i": [
@@ -4467,7 +4467,7 @@
   "QCLq4W": [
     {
       "type": 0,
-      "value": "Content for the help function. Only simple text markup is allowed."
+      "value": "Inhoud voor het helpdialoogvenster. Enkel eenvoudige tekstopmaak is toegestaan."
     }
   ],
   "QDBI2H": [
@@ -5824,7 +5824,7 @@
   "ZYdsY+": [
     {
       "type": 0,
-      "value": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
+      "value": "Je kan een tekst opgeven voor het hulpdialoogvenster. Wanneer er een tekst ingesteld is, dan wordt in de formulierstappen een \"Hulp\"-knop weergegeven. Als je op deze knop klinkt, wordt de inhoud in een dialoogverster getoond. Als er ook een afbeelding toegevoegd is, dan wordt die onder de tekst in het dialoogvenster getoond."
     }
   ],
   "Za0/8c": [
@@ -5980,7 +5980,7 @@
   "alnzx+": [
     {
       "type": 0,
-      "value": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
+      "value": "Wanneer de hulp-uitlegpagina getoond moet worden. Dit is niet instelbaar als er geen inhoud voor de hulp-uitlegpagina is opgegeven in de algemene configuratie."
     }
   ],
   "ampZcZ": [
@@ -8160,7 +8160,7 @@
   "nVCVzl": [
     {
       "type": 0,
-      "value": "Are you sure that you want to clear the image?"
+      "value": "Ben je zeker dat je de afbeelding wil verwijderen?"
     }
   ],
   "nXKEYN": [
@@ -8830,7 +8830,7 @@
   "s0+59V": [
     {
       "type": 0,
-      "value": "Never"
+      "value": "Nooit"
     }
   ],
   "s8ercf": [
@@ -9802,7 +9802,7 @@
   "yWuVOE": [
     {
       "type": 0,
-      "value": "Clear image"
+      "value": "Verwijder afbeelding"
     }
   ],
   "yaI9aD": [
@@ -9826,7 +9826,7 @@
   "ygR4yU": [
     {
       "type": 0,
-      "value": "Before start page"
+      "value": "Voor de startpagina"
     }
   ],
   "yjCrXX": [

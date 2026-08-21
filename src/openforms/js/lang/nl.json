@@ -256,7 +256,7 @@
     "originalDefault": "Plugin configuration: demo"
   },
   "44s7K8": {
-    "defaultMessage": "After start page",
+    "defaultMessage": "Na de startpagina",
     "description": "After start page option label",
     "originalDefault": "After start page"
   },
@@ -415,7 +415,7 @@
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
   },
   "7KWWLM": {
-    "defaultMessage": "Help callout page display",
+    "defaultMessage": "Weergave van de hulp-uitlegpagina",
     "description": "Help callout page display setting",
     "originalDefault": "Help callout page display"
   },
@@ -763,7 +763,7 @@
     "originalDefault": "value"
   },
   "Cbf8oT": {
-    "defaultMessage": "Help/contact options",
+    "defaultMessage": "Help-instellingen",
     "description": "Help/contact options fieldset title",
     "originalDefault": "Help/contact options"
   },
@@ -961,7 +961,7 @@
     "originalDefault": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
   },
   "F4qw6B": {
-    "defaultMessage": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined.",
+    "defaultMessage": "Je kan een (kleine) afbeelding uploaden voor onder de helpdialoogvensterinhoud. Je kan PNG-, JPG- en WEBP-afbeeldingen gebruiken. Vermijd grote afbeeldingen, voor gebruikers met beperkte bandbreedte of langzame internetverbindingen. De afbeelding wordt enkel getoond als de helpdialoogvensterinhoud is opgegeven.",
     "description": "Help dialog image help text",
     "originalDefault": "You can upload a (small) image to display below the help function content. PNG, JPG and WEBP files are accepted. Avoid uploading large images for users with limited bandwidth or slow connections. Note that this is ignored if no content is defined."
   },
@@ -1071,7 +1071,7 @@
     "originalDefault": "How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
   "GemVSH": {
-    "defaultMessage": "Help dialog image",
+    "defaultMessage": "Helpdialoogvensterafbeelding",
     "description": "Help dialog image label",
     "originalDefault": "Help dialog image"
   },
@@ -1502,7 +1502,7 @@
     "originalDefault": "Your session has expired."
   },
   "NOyTcy": {
-    "defaultMessage": "Content",
+    "defaultMessage": "Inhoud",
     "description": "form.helpDialogContent label",
     "originalDefault": "Content"
   },
@@ -1666,7 +1666,7 @@
     "originalDefault": "Single step can be enabled only when there is exactly one form step configured."
   },
   "QCLq4W": {
-    "defaultMessage": "Content for the help function. Only simple text markup is allowed.",
+    "defaultMessage": "Inhoud voor het helpdialoogvenster. Enkel eenvoudige tekstopmaak is toegestaan.",
     "description": "form.helpDialogContent help text",
     "originalDefault": "Content for the help function. Only simple text markup is allowed."
   },
@@ -2125,7 +2125,7 @@
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
   "ZYdsY+": {
-    "defaultMessage": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content.",
+    "defaultMessage": "Je kan een tekst opgeven voor het hulpdialoogvenster. Wanneer er een tekst ingesteld is, dan wordt in de formulierstappen een \"Hulp\"-knop weergegeven. Als je op deze knop klinkt, wordt de inhoud in een dialoogverster getoond. Als er ook een afbeelding toegevoegd is, dan wordt die onder de tekst in het dialoogvenster getoond.",
     "description": "Help dialog description",
     "originalDefault": "You can (optionally) configure content for the help function. When content is provided, an icon will be visible on every form step. Clicking the icon will open a dialog-like element to display the content configured here. You can optionally upload an image to display below the content."
   },
@@ -2210,7 +2210,7 @@
     "originalDefault": "There are errors in the DMN configuration."
   },
   "alnzx+": {
-    "defaultMessage": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified.",
+    "defaultMessage": "Wanneer de hulp-uitlegpagina getoond moet worden. Dit is niet instelbaar als er geen inhoud voor de hulp-uitlegpagina is opgegeven in de algemene configuratie.",
     "description": "Help callout page display setting help text",
     "originalDefault": "When to display the help callout page. Note that this field is disabled when the help callout page content in the global configuration is not specified."
   },
@@ -2983,7 +2983,7 @@
     "originalDefault": "Email content template HTML"
   },
   "nVCVzl": {
-    "defaultMessage": "Are you sure that you want to clear the image?",
+    "defaultMessage": "Ben je zeker dat je de afbeelding wil verwijderen?",
     "description": "Clearing help dialog image confirmation message",
     "originalDefault": "Are you sure that you want to clear the image?"
   },
@@ -3254,7 +3254,7 @@
     "originalDefault": "(not configured yet)"
   },
   "s0+59V": {
-    "defaultMessage": "Never",
+    "defaultMessage": "Nooit",
     "description": "Never option label",
     "originalDefault": "Never"
   },
@@ -3633,7 +3633,7 @@
     "originalDefault": "(unset)"
   },
   "yWuVOE": {
-    "defaultMessage": "Clear image",
+    "defaultMessage": "Verwijder afbeelding",
     "description": "Clear image link label",
     "originalDefault": "Clear image"
   },
@@ -3643,7 +3643,7 @@
     "originalDefault": "Children description"
   },
   "ygR4yU": {
-    "defaultMessage": "Before start page",
+    "defaultMessage": "Voor de startpagina",
     "description": "Before start page option label",
     "originalDefault": "Before start page"
   },

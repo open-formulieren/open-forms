@@ -81,7 +81,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "The slug of the form step that will be affected by the action. This field "
             "is required for action types {action_types} - otherwise it's optional. We "
             "deliberately use the slug instead of the uuid because the uuid is not fixed, "
-            "as we create from scratch the form steps dusring form update."
+            "as we create the form steps from scratch during form update."
         ).format(
             action_types=_join_action_types(LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG)
         ),
