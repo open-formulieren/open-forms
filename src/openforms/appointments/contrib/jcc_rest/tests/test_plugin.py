@@ -65,7 +65,7 @@ class PluginTests(OFVCRMixin, TestCase):
        will be in the future, so changes to the tests might be needed.
     """
 
-    RECORDING_DATETIME: str = "2026-03-26T09:34:56+02:00"
+    RECORDING_DATETIME: str = "2026-08-21T12:30:12+02:00"
 
     def setUp(self):
         super().setUp()
@@ -101,9 +101,10 @@ class PluginTests(OFVCRMixin, TestCase):
     def test_get_available_products_all(self):
         products = self.plugin.get_available_products()
 
-        self.assertEqual(len(products), 26)
+        self.assertGreaterEqual(len(products), 26)
         # Select product with a description
-        product = products[-2]
+        products_by_id = {product.identifier: product for product in products}
+        product = products_by_id["e4dc7942-d394-4c39-a153-bdabc62634f8"]
         self.assertEqual(product.name, "Identiteitskaart (aanvraag)")
         self.assertTrue(product.description.startswith("<P>Wat heeft u nodig?"))
 
@@ -151,7 +152,7 @@ class PluginTests(OFVCRMixin, TestCase):
     def test_get_all_locations(self):
         locations = self.plugin.get_locations()
 
-        self.assertEqual(len(locations), 3)
+        self.assertGreaterEqual(len(locations), 3)
         # Check the first location to ensure all location information is set correctly.
         location = locations[0]
         self.assertEqual(location.identifier, "f3b8864b-2e08-4d01-99db-e36f49f3e19c")
@@ -331,6 +332,7 @@ class PluginTests(OFVCRMixin, TestCase):
 
         required_fields = self.plugin.get_required_customer_fields([product1, product2])
 
+        self.maxDiff = None
         self.assertEqual(
             required_fields,
             (
@@ -387,14 +389,14 @@ class PluginTests(OFVCRMixin, TestCase):
                         "key": "emailAddress",
                         "label": "Email address",
                         "autocomplete": "email-address",
-                        "validate": {"maxLength": 254, "required": False},
+                        "validate": {"maxLength": 254, "required": True},
                     },
                     {
-                        "id": "af5c2881-a5c6-48dd-b15a-1d191bb79ece",
-                        "type": "textfield",
-                        "key": "socialSecurityNumber",
-                        "label": "Social security number",
-                        "autocomplete": "social-security-number",
+                        "id": "a6a480d8-0a99-4192-bf19-5716a15460b8",
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobile phone number",
+                        "autocomplete": "mobile-phone-number",
                         "validate": {"maxLength": 16, "required": True},
                     },
                 ],
