@@ -21,6 +21,8 @@ def validate_formio_js_schema(value: dict):
 
     So far, we haven't been able to find a formal description of the schema, so we're
     sticking to what the form builder outputs.
+
+    TODO: convert to msgspec based validator :-)
     """
     # very bare-bones checks
     if not isinstance(value, dict):

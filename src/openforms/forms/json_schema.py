@@ -4,8 +4,10 @@ import uuid
 from collections import UserDict
 from collections.abc import Collection, Iterator, Sequence
 
+from formio_types import EditGrid
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    FormioConfig,
+    dump_to_legacy,
     rewrite_formio_components,
 )
 from openforms.registrations.service import process_variable_schema
@@ -69,11 +71,13 @@ def generate_json_schema(
     # Update the total configuration to add options to components that (possibly) use
     # another variable as a data source (radio, select, and selectboxes).
     state = submission.variables_state
-    new_configuration = rewrite_formio_components(
-        submission.total_configuration_wrapper,
+    formio_config = rewrite_formio_components(
+        submission.formio_config,
         submission,
         state.get_data(include_unsaved=True, include_static_variables=True),
     )
+    # XXX is this still necessary?
+    _new_configuration = {"components": dump_to_legacy(formio_config.components)}
 
     requested_variables_schema = NestedDict()
     for variable in _iter_form_variables(form, additional_variables):
@@ -81,13 +85,15 @@ def generate_json_schema(
             continue
 
         # Add the new total configuration to the form definition of the variable. Note
-        # that we are muting the instance without persisting to the database.
+        # that we are mutating the instance without persisting to the database.
+        # FIXME: this also includes component definitions from *other* steps
         if variable.source == FormVariableSources.component:
-            variable.form_definition.configuration = new_configuration.configuration
+            variable.form_definition.configuration = _new_configuration
 
+        formio_config = submission.formio_config
         schema = generate_variable_schema(
             variable,
-            submission.total_configuration_wrapper,
+            formio_config,
             backend_id,
             backend_options,
         )
@@ -96,7 +102,7 @@ def generate_json_schema(
             variable.key,
             schema,
             requested_variables_schema,
-            submission.total_configuration_wrapper,
+            formio_config,
         )
 
     # Result
@@ -113,7 +119,7 @@ def generate_json_schema(
 
 def generate_variable_schema(
     variable: FormVariable,
-    configuration_wrapper: FormioConfigurationWrapper,
+    formio_config: FormioConfig,
     backend_id: str = "",
     backend_options: dict | None = None,
 ) -> JSONObject:
@@ -123,8 +129,8 @@ def generate_variable_schema(
     registration backends, we need to perform some processing.
 
     :param variable: The form variable.
-    :param configuration_wrapper: Updated total configuration wrapper. This is used to
-      get the component from.
+    :param formio_config: Updated FormioConfig helper. This is used to get the component
+      from.
     :param backend_id: The registration backend identifier. If an empty string is
       passed, no processing of the schema is performed, meaning it will represent the
       formio submission data.
@@ -139,13 +145,12 @@ def generate_variable_schema(
     if variable.source != FormVariableSources.component:
         return schema
 
-    component = configuration_wrapper[variable.key]
-    assert component is not None
+    component = formio_config[variable.key]
 
     if backend_id:
         assert backend_options is not None
         process_variable_schema(
-            component, schema, backend_id, backend_options, configuration_wrapper
+            component, schema, backend_id, backend_options, formio_config
         )
 
     return schema
@@ -155,7 +160,7 @@ def process_variable_schema_and_add_to_complete_schema(
     key: str,
     variable_schema: JSONObject,
     total_schema: NestedDict,
-    configuration_wrapper: FormioConfigurationWrapper,
+    formio_config: FormioConfig,
 ) -> None:
     """Process the variable schema and add it to the total schema.
 
@@ -169,14 +174,11 @@ def process_variable_schema_and_add_to_complete_schema(
     :param variable_schema: The variable schema.
     :param total_schema: The total schema. We use a NestedDict instance for easy nested
       data access through the use of keys with periods.
-    :param configuration_wrapper: Updated total configuration wrapper. This is used to
-      determine the component type.
+    :param formio_config: Updated total formio configuration. This is used to determine
+      the component type.
     """
 
-    if (
-        key in configuration_wrapper
-        and configuration_wrapper[key]["type"] == "editgrid"
-    ):
+    if key in formio_config and isinstance(formio_config[key], EditGrid):
         assert isinstance(variable_schema["items"], dict)
         assert isinstance(variable_schema["items"]["properties"], dict)
 
@@ -187,7 +189,7 @@ def process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
                 edit_grid_schema,
-                configuration_wrapper,
+                formio_config,
             )
         variable_schema["items"]["properties"] = edit_grid_schema.data
         variable_schema["items"]["required"] = list(edit_grid_schema)

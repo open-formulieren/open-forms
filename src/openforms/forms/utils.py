@@ -16,6 +16,7 @@ import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from formio_types import File
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
@@ -470,33 +471,28 @@ def move_file_registration_options(
     # collect all file components, including the ones inside edit grids
     file_component_options: dict[str, FileComponentOptions] = {}
     for fd in form_definitions:
-        for component in fd.configuration_wrapper:
-            if component["type"] != "file":
+        for component in fd.formio_config:
+            if not isinstance(component, File):
                 continue
-            if not (registration := component.get("registration")):
+            if not (registration := component.registration):
                 continue
-            opts: FileComponentOptions = {"key": component["key"]}
+            opts: FileComponentOptions = {"key": component.key}
 
             # NOTE: we ignore the catalogue information - the backend-level catalogue
-            # option is used and this is validate at the serializer level
-            document_type_description = (registration.get("documentType") or {}).get(
-                "description"
-            )
-            organization_rsin = registration.get("bronorganisatie")
-            confidentiality_level = registration.get("docVertrouwelijkheidaanduiding")
-            title = registration.get("titel")
-
-            if document_type_description:
-                opts["document_type_description"] = document_type_description
-            if organization_rsin:
+            # option is used and this is validated at the serializer level
+            if (doc_type := registration.document_type) and (
+                desc := doc_type.description
+            ):
+                opts["document_type_description"] = desc
+            if organization_rsin := registration.bronorganisatie:
                 opts["organization_rsin"] = organization_rsin
-            if confidentiality_level:
+            if confidentiality_level := registration.doc_vertrouwelijkheidaanduiding:
                 opts["confidentiality_level"] = confidentiality_level
-            if title:
+            if title := registration.titel:
                 opts["title"] = title
 
             if len(opts.keys()) != 1:
-                file_component_options[component["key"]] = opts
+                file_component_options[component.key] = opts
 
     if not file_component_options:
         return

@@ -9,7 +9,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONValue
 from openforms.validations.registry import Registry
 
-from ...service import build_serializer
+from ...service import FormioConfig, build_serializer
 from ...typing import Component
 
 
@@ -19,11 +19,9 @@ def validate_formio_data(
     """
     Dynamically build the serializer, validate it and return the status.
     """
-    context = {
-        "submission": submission or SubmissionFactory.build(),
-        "configuration": {"components": [component]},
-    }
-    serializer = build_serializer(components=[component], data=data, context=context)
+    context = {"submission": submission or SubmissionFactory.build()}
+    formio_config = FormioConfig(name="<test>", components=[component])
+    serializer = build_serializer(formio_config, data=data, context=context)
     is_valid = serializer.is_valid(raise_exception=False)
     return is_valid, serializer.errors
 

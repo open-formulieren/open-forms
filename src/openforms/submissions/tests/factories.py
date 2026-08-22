@@ -14,7 +14,7 @@ from sqids import Sqids
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.constants import DEFAULT_ALPHABET
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioData, _dump_to_legacy_component
 from openforms.formio.typing import Component
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -326,9 +326,8 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
 
             configuration = {}
             if variable.source == FormVariableSources.component:
-                configuration = variable.form_definition.configuration_wrapper[
-                    variable.key
-                ]
+                component = variable.form_definition.formio_config[variable.key]
+                configuration = _dump_to_legacy_component(component)
 
             SubmissionValueVariableFactory.create(
                 submission=submission_step.submission,

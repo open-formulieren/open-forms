@@ -2,6 +2,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from formio_types import CustomerProfile
 from openforms.api.fields import SlugRelatedAsChoicesField
 from openforms.contrib.customer_interactions.models import (
     CustomerInteractionsAPIGroupConfig,
@@ -30,27 +31,23 @@ class CommunicationPreferencesSerializer(
     )
 
     def validate(self, attrs):
-        profile_form_variable = attrs["profile_form_variable"]
+        variable_key = attrs["profile_form_variable"]
         form = self.context.get("form")
 
         if form:
             try:
-                form_variable = FormVariable.objects.get(
-                    form=form, key=profile_form_variable
-                )
+                form_variable = FormVariable.objects.get(form=form, key=variable_key)
             except FormVariable.DoesNotExist:
                 raise serializers.ValidationError(
                     {
                         "profile_form_variable": _(
                             "No form variable with key '{key}' exists in the form."
-                        ).format(key=profile_form_variable),
+                        ).format(key=variable_key),
                     }
                 )
 
-            component = form_variable.form_definition.configuration_wrapper[
-                profile_form_variable
-            ]
-            if component["type"] != "customerProfile":
+            component = form_variable.form_definition.formio_config[variable_key]
+            if not isinstance(component, CustomerProfile):
                 raise serializers.ValidationError(
                     {
                         "profile_form_variable": _(

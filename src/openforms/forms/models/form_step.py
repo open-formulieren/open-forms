@@ -7,9 +7,22 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from ordered_model.models import OrderedModel
 
+from formio_types import Date, DateTime, Radio, Select, Selectboxes
+from formio_types.date import (
+    DateExtensions,
+    RelativeDateConstraint as DateRelativeDateConstraint,
+)
+from formio_types.datetime import (
+    DateTimeExtensions,
+    RelativeDateConstraint as DateTimeRelativeDateConstraint,
+)
+from formio_types.radio import RadioExtensions
+from formio_types.select import SelectExtensions
+from formio_types.selectboxes import SelectboxesExtensions
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.variables import extract_variables_from_template_properties
 
+from .form_definition import FormDefinition
 from .utils import literal_getter
 
 
@@ -26,7 +39,7 @@ class FormStep(OrderedModel):
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
-    form_definition = models.ForeignKey(
+    form_definition = models.ForeignKey[FormDefinition](
         "forms.FormDefinition", on_delete=models.PROTECT
     )
     slug = AutoSlugField(
@@ -134,25 +147,38 @@ class FormStep(OrderedModel):
         """
 
         # This is quicker than using `iter_components`
-        for component in self.form_definition.configuration_wrapper:
-            # 1. another variable as data source (only relevant for select, selectboxes,
-            # and radio components)
-            if component.get("openForms", {}).get("dataSrc") == DataSrcOptions.variable:
-                return True
+        for component in self.form_definition.formio_config:
+            match component:
+                # 1. another variable as data source (only relevant for select, selectboxes,
+                # and radio components)
+                case (
+                    Radio(open_forms=RadioExtensions(data_src=data_src))
+                    | Select(open_forms=SelectExtensions(data_src=data_src))
+                    | Selectboxes(open_forms=SelectboxesExtensions(data_src=data_src))
+                ) if data_src == DataSrcOptions.variable:
+                    return True
 
-            # 2. Date validation uses other variables (only relevant for date and
-            # datetime components)
-            if (
-                component.get("openForms", {}).get("minDate", {}).get("mode")
-                == "relativeToVariable"
-                or component.get("openForms", {}).get("maxDate", {}).get("mode")
-                == "relativeToVariable"
-            ):
-                return True
+                # 2. Date validation uses other variables (only relevant for date and
+                # datetime components)
+                case (
+                    Date(
+                        open_forms=DateExtensions(min_date=DateRelativeDateConstraint())
+                        | DateExtensions(max_date=DateRelativeDateConstraint())
+                    )
+                    | DateTime(
+                        open_forms=DateTimeExtensions(
+                            min_date=DateTimeRelativeDateConstraint()
+                        )
+                        | DateTimeExtensions(max_date=DateTimeRelativeDateConstraint())
+                    )
+                ):
+                    return True
 
-            # 3. Template expressions
-            if extract_variables_from_template_properties(component):
-                return True
+                # 3. Template expressions
+                case _ if extract_variables_from_template_properties(component):
+                    return True
+                case _:
+                    continue
 
         return False
 
@@ -161,9 +187,6 @@ class FormStep(OrderedModel):
 
         if self.form_definition.pk is not None and not self.form_definition.is_reusable:
             self.form_definition.delete()
-
-    def iter_components(self, recursive=True, **kwargs):
-        yield from self.form_definition.iter_components(recursive=recursive, **kwargs)
 
     def clean(self) -> None:
         if not self.is_applicable and self.order == 0:

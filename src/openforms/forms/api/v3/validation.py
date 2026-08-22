@@ -10,8 +10,8 @@ from json_logic.typing import Primitive
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
+from formio_types import AnyComponent
 from openforms.formio.service import holds_submission_data
-from openforms.formio.typing import Component
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...constants import (
@@ -35,7 +35,7 @@ def parse_and_validate_logic_actions(
     actions: Sequence[FormLogicActionData],
     *,
     form_type: FormTypeChoices,
-    find_component: Callable[[str], Component | None],
+    find_component: Callable[[str], AnyComponent | None],
     form_variables: Mapping[str, FormVariable],
     step_slug_uuid_mapping: Mapping[str, UUID],
 ) -> ActionsErrors:

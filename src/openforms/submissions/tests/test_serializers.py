@@ -1,5 +1,6 @@
 from django.test import TestCase, tag
 
+from openforms.formio.service import dump_to_legacy
 from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormStepFactory,
@@ -8,10 +9,13 @@ from openforms.forms.tests.factories import (
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..api.serializers import SubmissionStepSerializer
+from .constants import NUMBER_FIELD_DEFAULTS, TEXT_FIELD_DEFAULTS
 from .factories import SubmissionFactory
 
 
 class SubmissionStepSerializerTests(TestCase):
+    maxDiff = None
+
     @tag("gh-6068")
     def test_formio_validation_does_not_use_outdated_configuration_and_or_values(self):
         step = FormStepFactory.create(
@@ -84,11 +88,23 @@ class SubmissionStepSerializerTests(TestCase):
             {"textfield": "foo", "number": 42, "user_defined": "Initial value"},
             data.data,
         )
+        updated_config = {
+            "components": dump_to_legacy(
+                submission_step.form_step.form_definition.formio_config.components
+            )
+        }
         self.assertEqual(
+            updated_config,
             {
                 "components": [
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
                     {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
+                    {
+                        **NUMBER_FIELD_DEFAULTS,
                         "type": "number",
                         "key": "number",
                         "label": "number",
@@ -97,5 +113,4 @@ class SubmissionStepSerializerTests(TestCase):
                     },
                 ]
             },
-            submission_step.form_step.form_definition.configuration,
         )

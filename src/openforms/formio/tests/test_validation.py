@@ -5,16 +5,14 @@ from rest_framework.serializers import ValidationError
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
 
-from ..service import build_serializer
+from ..service import FormioConfig, build_serializer
 from ..typing import Component, RadioComponent, TextFieldComponent
 
 
 def validate_formio_data(components: list[Component], data: JSONValue) -> None:
-    context = {
-        "submission": SubmissionFactory.build(),
-        "configuration": {"components": components},
-    }
-    serializer = build_serializer(components=components, data=data, context=context)
+    context = {"submission": SubmissionFactory.build()}
+    formio_config = FormioConfig(name="<test>", components=components)
+    serializer = build_serializer(formio_config, data=data, context=context)
     serializer.is_valid(raise_exception=True)
 
 

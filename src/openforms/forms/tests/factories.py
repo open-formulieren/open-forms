@@ -325,10 +325,9 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
         else:
             candidates = FormDefinition.objects.filter(formstep__form=obj.form)
             for candidate in candidates:
-                for component in candidate.iter_components(recursive=True):
-                    if component["key"] == obj.key:
-                        obj.form_definition = candidate
-                        break
+                if obj.key in candidate.formio_config:
+                    obj.form_definition = candidate
+                    break
             else:
                 raise ValueError(
                     "Bad test data setup - no form definition definition found "

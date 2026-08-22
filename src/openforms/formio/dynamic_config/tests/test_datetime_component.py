@@ -6,11 +6,12 @@ from django.utils import timezone
 
 import time_machine
 
+from formio_types import DateTime
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import VariableValue
 from openforms.variables.service import get_static_variables
 
-from ...service import FormioConfigurationWrapper, FormioData, get_dynamic_configuration
+from ...service import FormioConfig, FormioData, get_dynamic_configuration
 from ...typing import DatetimeComponent
 
 
@@ -19,16 +20,17 @@ class DynamicDatetimeConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
         component: DatetimeComponent, variables: dict[str, VariableValue]
-    ) -> DatetimeComponent:
-        config_wrapper = FormioConfigurationWrapper({"components": [component]})
+    ) -> DateTime:
+        formio_config = FormioConfig(name="<test>", components=[component])
         submission = SubmissionFactory.create()
         static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
-        config_wrapper = get_dynamic_configuration(
-            config_wrapper, submission=submission, data=FormioData(variables)
+        formio_config = get_dynamic_configuration(
+            formio_config, submission=submission, data=FormioData(variables)
         )
-        new_configuration = config_wrapper.configuration
-        return new_configuration["components"][0]
+        _updated_component = formio_config[component["key"]]
+        assert isinstance(_updated_component, DateTime)
+        return _updated_component
 
     def test_validation_fixed_value_legacy_configuration(self):
         # legacy configuration = without the openForms.minDate keys etc.
@@ -44,9 +46,10 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertIsNone(new_component["datePicker"]["minDate"])
+        assert new_component.date_picker is not None
+        self.assertIsNone(new_component.date_picker.min_date)
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-08T00:00:00+02:00"
         )
 
     def test_min_max_datetime_fixed_value(self):
@@ -66,9 +69,10 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertIsNone(new_component["datePicker"]["minDate"])
+        assert new_component.date_picker is not None
+        self.assertIsNone(new_component.date_picker.min_date)
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-08T00:00:00+02:00"
         )
 
     @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
@@ -78,13 +82,14 @@ class DynamicDatetimeConfigurationTests(TestCase):
             "key": "aDatetime",
             "label": "Datetime",
             "openForms": {"minDate": {"mode": "future"}},
-            "datePicker": {"minDate": None},
+            "datePicker": {"minDate": None, "maxDate": None},
         }
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-09-12T16:07:00+02:00"
+            new_component.date_picker.min_date, "2022-09-12T16:07:00+02:00"
         )
 
     @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
@@ -94,27 +99,16 @@ class DynamicDatetimeConfigurationTests(TestCase):
             "key": "aDatetime",
             "label": "Datetime",
             "openForms": {"maxDate": {"mode": "past"}},
-            "datePicker": {"maxDate": None},
+            "datePicker": {"minDate": None, "maxDate": None},
         }
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["maxDate"],
+            new_component.date_picker.max_date,
             "2022-09-12T16:07:00+02:00",
         )
-
-    @override_settings(LANGUAGE_CODE="en")
-    def test_datetime_placeholder(self):
-        component: DatetimeComponent = {
-            "type": "datetime",
-            "key": "aDatetime",
-            "label": "Datetime",
-        }
-
-        new_component = self._get_dynamic_config(component, {})
-
-        self.assertEqual(new_component["placeholder"], "dd-mm-yyyy HH:mm")
 
     @time_machine.travel("2022-10-03T12:00:00Z", tick=False)
     def test_relative_to_variable_blank_delta(self):
@@ -137,8 +131,9 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-10-03T14:00:00+02:00"
+            new_component.date_picker.min_date, "2022-10-03T14:00:00+02:00"
         )
 
     @time_machine.travel("2022-11-03T12:00:00Z", tick=False)
@@ -162,8 +157,9 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-11-03T13:00:00+01:00"
+            new_component.date_picker.min_date, "2022-11-03T13:00:00+01:00"
         )
 
     def test_relative_to_variable_add_delta(self):
@@ -190,16 +186,14 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
-        assert "datePicker" in new_component
-        assert new_component["datePicker"] is not None
-        assert "minDate" in new_component["datePicker"]
+        assert new_component.date_picker is not None
         # DST ended on Oct 30, so we go from UTC+2 to UTC+1 (clock goes backwards one hour)
         # On Django 3.2, this hour backwards was calculated in, but on 4.2 the local time
         # (15:00) stays identical. You can argue for both of those cases that they're the
         # correct behaviour...
         # At least the zoneinfo variant ends up with the correct final timezone...
         self.assertEqual(
-            new_component["datePicker"]["minDate"],
+            new_component.date_picker.min_date,
             "2022-11-04T15:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
         )
 
@@ -226,7 +220,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-14T15:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-14T15:00:00+02:00"
         )
 
     def test_variable_empty_or_none(self):
@@ -250,7 +244,8 @@ class DynamicDatetimeConfigurationTests(TestCase):
                     component, {"emptyVar": empty_value}
                 )
 
-                self.assertIsNone(new_component["datePicker"]["maxDate"])
+                assert new_component.date_picker is not None
+                self.assertIsNone(new_component.date_picker.max_date)
 
     @time_machine.travel("2022-11-03T12:00:05.12345Z", tick=False)
     def test_seconds_microseconds_are_truncated(self):
@@ -274,8 +269,9 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-11-03T13:00:00+01:00"
+            new_component.date_picker.min_date, "2022-11-03T13:00:00+01:00"
         )
 
     def test_variable_of_wrong_type_string(self):

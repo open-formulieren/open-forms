@@ -25,12 +25,12 @@ interactions:
       Content-Length:
       - '802'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
-        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
-        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
-        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
+      - 'base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
+        cdn.jsdelivr.net; frame-src ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; font-src ''self'' fonts.gstatic.com;
+        form-action ''self''; default-src ''self''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; worker-src ''self''
+        blob:; object-src ''none''; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -72,12 +72,12 @@ interactions:
       Content-Length:
       - '856'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
-        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
-        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
-        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
+      - 'base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
+        cdn.jsdelivr.net; frame-src ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; font-src ''self'' fonts.gstatic.com;
+        form-action ''self''; default-src ''self''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; worker-src ''self''
+        blob:; object-src ''none''; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -95,7 +95,7 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-      "bronorganisatie": "000000000", "creatiedatum": "2026-09-16", "titel": "Form
+      "bronorganisatie": "000000000", "creatiedatum": "2026-09-22", "titel": "Form
       073", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
       "", "status": "definitief", "bestandsnaam": "open-forms-Form 073.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
@@ -117,9 +117,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/376e55a9-cae1-4ef0-ad45-56b916f1f2c2","identificatie":"DOCUMENT-2026-0000000226","bronorganisatie":"000000000","creatiedatum":"2026-09-16","titel":"Form
-        073","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-09-16T18:51:50.343985Z","bestandsnaam":"open-forms-Form
-        073.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/376e55a9-cae1-4ef0-ad45-56b916f1f2c2/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1698f7a0-c94f-4214-9efe-ebb1612c0234","identificatie":"DOCUMENT-2026-0000000240","bronorganisatie":"000000000","creatiedatum":"2026-09-22","titel":"Form
+        073","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-09-22T17:05:43.952485Z","bestandsnaam":"open-forms-Form
+        073.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1698f7a0-c94f-4214-9efe-ebb1612c0234/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":null,"integriteit":null,"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -129,18 +129,18 @@ interactions:
       Content-Length:
       - '984'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
-        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
-        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
-        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
+      - 'base-uri ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com
+        cdn.jsdelivr.net; frame-src ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; font-src ''self'' fonts.gstatic.com;
+        form-action ''self''; default-src ''self''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; worker-src ''self''
+        blob:; object-src ''none''; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/376e55a9-cae1-4ef0-ad45-56b916f1f2c2
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1698f7a0-c94f-4214-9efe-ebb1612c0234
       Referrer-Policy:
       - same-origin
       Vary:

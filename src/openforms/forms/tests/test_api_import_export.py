@@ -13,6 +13,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
+from openforms.submissions.tests.constants import TEXT_FIELD_DEFAULTS
 from openforms.variables.constants import FormVariableSources
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
@@ -28,6 +29,8 @@ from .factories import (
 
 
 class ImportExportAPITests(APITestCase):
+    maxDiff = None
+
     def setUp(self):
         self.user = UserFactory.create()
         self.token = TokenFactory(user=self.user)
@@ -81,7 +84,18 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
         self.assertEqual(
             form_definitions[0]["configuration"],
-            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": form_definition.configuration["components"][0]["key"],
+                        "label": form_definition.configuration["components"][0][
+                            "label"
+                        ],
+                    }
+                ],
+            },
         )
 
         form_steps = json.loads(zf.read("formSteps.json"))
@@ -183,6 +197,7 @@ class ImportExportAPITests(APITestCase):
         form_uuid = response.json()["uuid"]
         location = response.headers["Location"]
         imported_form = Form.objects.last()
+        assert imported_form is not None
         imported_form_step = imported_form.formstep_set.first()
         imported_form_definition = imported_form_step.form_definition
 
@@ -217,7 +232,16 @@ class ImportExportAPITests(APITestCase):
         self.assertNotEqual(imported_form_definition.pk, form_definition1.pk)
         self.assertNotEqual(imported_form_definition.uuid, str(form_definition1.uuid))
         self.assertEqual(
-            imported_form_definition.configuration, form_definition1.configuration
+            imported_form_definition.configuration,
+            {
+                "components": [
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        **form_definition1.configuration["components"][0],
+                        "errors": {},
+                    }
+                ],
+            },
         )
         self.assertEqual(
             imported_form_definition.login_required, form_definition1.login_required

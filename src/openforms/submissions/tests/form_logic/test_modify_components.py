@@ -3,6 +3,7 @@ import unittest
 from django.test import TestCase, tag
 
 from openforms.formio.service import FormioData
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -12,10 +13,13 @@ from openforms.forms.tests.factories import (
 )
 
 from ...form_logic import evaluate_form_logic
+from ..constants import POSTCODE_FIELD_DEFAULTS, TEXT_FIELD_DEFAULTS
 from ..factories import SubmissionFactory, SubmissionStepFactory
 
 
-class ComponentModificationTests(TestCase):
+class ComponentModificationTests(FormioMixin, TestCase):
+    maxDiff = None
+
     def test_change_component_to_hidden(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -84,6 +88,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step2_textfield1",
                     "label": "step2_textfield1",
@@ -186,6 +191,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "component1",
                     "label": "component1",
@@ -193,6 +199,7 @@ class ComponentModificationTests(TestCase):
                     "clearOnHide": True,
                 },
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "component2",
                     "label": "component2",
@@ -255,9 +262,9 @@ class ComponentModificationTests(TestCase):
                         "type": "property",
                         "property": {
                             "type": "object",
-                            "value": "validate",
+                            "value": "validate.required",
                         },
-                        "state": {"required": True},
+                        "state": True,
                     },
                 }
             ],
@@ -280,10 +287,16 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "surname",
                     "label": "surname",
-                    "validate": {"required": True},
+                    "validate": {
+                        "required": True,
+                        "maxLength": None,
+                        "pattern": "",
+                        "plugins": [],
+                    },
                 }
             ]
         }
@@ -357,6 +370,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -434,6 +448,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -511,6 +526,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -588,6 +604,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -656,6 +673,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step2_textfield1",
                     "label": "step2_textfield1",
@@ -716,9 +734,9 @@ class ComponentModificationTests(TestCase):
                         "type": "property",
                         "property": {
                             "type": "json",
-                            "value": "validate",
+                            "value": "validate.required",
                         },
-                        "state": {"required": True},
+                        "state": True,
                     },
                 }
             ],
@@ -742,10 +760,16 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "surname",
-                    "validate": {"required": False},
                     "label": "surname",
+                    "validate": {
+                        "maxLength": None,
+                        "pattern": "",
+                        "plugins": [],
+                        "required": False,
+                    },
                 }
             ]
         }
@@ -894,6 +918,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step1_textfield",
                     "label": "step1_textfield",
@@ -1157,17 +1182,9 @@ class ComponentModificationTests(TestCase):
                         "key": "nicePostcode",
                         "label": "nicePostcode",
                         "validate": {
-                            "custom": "",
-                            "unique": False,
                             "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                             "plugins": [],
-                            "multiple": False,
                             "required": True,
-                            "maxLength": "",
-                            "minLength": "",
-                            "customMessage": "Invalid Postcode",
-                            "customPrivate": False,
-                            "strictDateValidation": False,
                         },
                     }
                 ]
@@ -1205,26 +1222,18 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **POSTCODE_FIELD_DEFAULTS,
                     "type": "postcode",
                     "key": "nicePostcode",
                     "label": "nicePostcode",
                     "validate": {
-                        "custom": "",
-                        "unique": False,
                         "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                         "plugins": [],
-                        "multiple": False,
                         "required": False,  # Changed
-                        "maxLength": "",
-                        "minLength": "",
-                        "customMessage": "Invalid Postcode",
-                        "customPrivate": False,
-                        "strictDateValidation": False,
                     },
                 }
             ]
         }
-
         self.assertEqual(configuration, expected)
 
     @tag("gh-6014")
@@ -1585,30 +1594,29 @@ class ComponentModificationTests(TestCase):
 
         configuration = evaluate_form_logic(submission, submission_step, data)
 
-        expected = {
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "textField",
-                    "label": "TextField",
-                    "hidden": True,
-                    "clearOnHide": True,
-                },
-                {"type": "checkbox", "key": "checkbox", "label": "Checkbox"},
-                {
-                    "type": "textfield",
-                    "key": "textField1",
-                    "label": "TextField 1",
-                    "hidden": False,
-                    "clearOnHide": False,
-                },
-            ]
-        }
+        expected = [
+            {
+                "type": "textfield",
+                "key": "textField",
+                "label": "TextField",
+                "hidden": True,
+                "clearOnHide": True,
+            },
+            {"type": "checkbox", "key": "checkbox", "label": "Checkbox"},
+            {
+                "type": "textfield",
+                "key": "textField1",
+                "label": "TextField 1",
+                "hidden": False,
+                "clearOnHide": False,
+            },
+        ]
 
         state = submission.variables_state
         data = state.get_data(include_unsaved=True)
 
-        self.assertEqual(configuration, expected)
+        for component in expected:
+            self.assertFormioComponent(configuration, component["key"], component)
         # test and textField1 have their initial values
         # the textField (with clearOnHide) is set to undefined and therefore is None
         # the checkbox has been checked by the user so it's set to True

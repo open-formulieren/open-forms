@@ -3,6 +3,7 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING
 
+from formio_types import Date, DateTime, Time
 from openforms.formio.service import FormioData
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.rendering.nodes import SubmissionStepNode
@@ -44,6 +45,7 @@ def reshape_submission_data_for_json_summary(
         if isinstance(node, EditGridGroupNode):
             node_path = f"{current_step_slug}.{node.json_renderer_path}"
             editgrid_array = data[node_path]
+            assert isinstance(editgrid_array, list)
             editgrid_array.append({})
             continue
 
@@ -60,7 +62,7 @@ def reshape_submission_data_for_json_summary(
 
             # backwards compatibility shim...
             if (
-                node.component["type"] in ("date", "datetime", "time")
+                isinstance(node.component, Date | DateTime | Time)
                 and use_legacy_mode_for_datelike
             ):
                 warnings.warn(

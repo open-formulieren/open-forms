@@ -4,8 +4,9 @@ from django.test import TestCase
 
 from zgw_consumers.test.factories import ServiceFactory
 
+from formio_types import TextField
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.formio.service import FormioConfigurationWrapper
+from openforms.formio.service import FormioConfig
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -19,33 +20,25 @@ from ..service import InvalidBackendIdError, process_variable_schema
 
 class ProcessVariableSchemaTests(TestCase):
     def test_non_existing_backend(self):
-        component = {
-            "type": "textfield",
-            "key": "textfield",
-            "label": "textfield",
-        }
+        component = TextField(key="textfield", label="textfield")
         with self.assertRaises(InvalidBackendIdError):
             process_variable_schema(
                 component,
                 {},
                 "non_existing_backend",
                 {},
-                FormioConfigurationWrapper({"components": []}),
+                FormioConfig(name="<test>", components=[]),
             )
 
     def test_backend_that_should_not_allow_schema_generation(self):
-        component = {
-            "type": "textfield",
-            "key": "textfield",
-            "label": "textfield",
-        }
+        component = TextField(key="textfield", label="textfield")
         with self.assertRaises(InvalidBackendIdError):
             process_variable_schema(
                 component,
                 {},
                 "email",
                 {"to_emails": ["foo@example.com"]},
-                FormioConfigurationWrapper({"components": []}),
+                FormioConfig(name="<test>", components=[]),
             )
 
 
@@ -61,6 +54,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             "objects_api_group": cls.objects_api_group,
             "objecttype": UUID("ef7fae29-cb2b-4458-827a-8d5bf9aaa356"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
             "update_existing_object": False,
             "auth_attribute_path": [],
             "iot_submission_report": "",
@@ -69,6 +63,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             "version": 2,
             "variables_mapping": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
     def test_file(self):
@@ -92,7 +87,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["file"]
+        component = form_def.formio_config["file"]
         var = form.formvariable_set.get(key="file")
         schema = var.as_json_schema()
 
@@ -100,8 +95,8 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             component,
             schema,
             "objects_api",
-            self.options,
-            form_def.configuration_wrapper,
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -133,7 +128,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["file_multiple"]
+        component = form_def.formio_config["file_multiple"]
         var = form.formvariable_set.get(key="file_multiple")
         schema = var.as_json_schema()
 
@@ -141,8 +136,8 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             component,
             schema,
             "objects_api",
-            self.options,
-            form_def.configuration_wrapper,
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -173,7 +168,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["selectboxes"]
+        component = form_def.formio_config["selectboxes"]
         var = form.formvariable_set.get(key="selectboxes")
         schema = var.as_json_schema()
 
@@ -181,8 +176,8 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             component,
             schema,
             "objects_api",
-            self.options,
-            form_def.configuration_wrapper,
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -222,6 +217,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             "objects_api_group": self.objects_api_group,
             "objecttype": UUID("ef7fae29-cb2b-4458-827a-8d5bf9aaa356"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
             "update_existing_object": False,
             "auth_attribute_path": [],
             "iot_submission_report": "",
@@ -230,14 +226,19 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             "version": 2,
             "variables_mapping": [],
             "transform_to_list": ["selectboxes_as_list"],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
-        component = form_def.configuration_wrapper["selectboxes_as_list"]
+        component = form_def.formio_config["selectboxes_as_list"]
         var = form.formvariable_set.get(key="selectboxes_as_list")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "objects_api", options, form_def.configuration_wrapper
+            component,
+            schema,
+            "objects_api",
+            dict(options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -316,7 +317,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["editgrid"]
+        component = form_def.formio_config["editgrid"]
         var = form.formvariable_set.get(key="editgrid")
         schema = var.as_json_schema()
 
@@ -324,8 +325,8 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
             component,
             schema,
             "objects_api",
-            self.options,
-            form_def.configuration_wrapper,
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -383,6 +384,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
     def test_file(self):
@@ -406,12 +408,16 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["file"]
+        component = form_def.formio_config["file"]
         var = form.formvariable_set.get(key="file")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+            component,
+            schema,
+            "json_dump",
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -448,12 +454,16 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["file_multiple"]
+        component = form_def.formio_config["file_multiple"]
         var = form.formvariable_set.get(key="file_multiple")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+            component,
+            schema,
+            "json_dump",
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -492,12 +502,16 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["selectboxes"]
+        component = form_def.formio_config["selectboxes"]
         var = form.formvariable_set.get(key="selectboxes")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+            component,
+            schema,
+            "json_dump",
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -540,14 +554,19 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": ["selectboxes_as_list"],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
-        component = form_def.configuration_wrapper["selectboxes_as_list"]
+        component = form_def.formio_config["selectboxes_as_list"]
         var = form.formvariable_set.get(key="selectboxes_as_list")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "json_dump", options, form_def.configuration_wrapper
+            component,
+            schema,
+            "json_dump",
+            dict(options),
+            form_def.formio_config,
         )
 
         expected_schema = {
@@ -626,12 +645,16 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         )
         FormStepFactory.create(form=form, form_definition=form_def)
 
-        component = form_def.configuration_wrapper["editgrid"]
+        component = form_def.formio_config["editgrid"]
         var = form.formvariable_set.get(key="editgrid")
         schema = var.as_json_schema()
 
         process_variable_schema(
-            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+            component,
+            schema,
+            "json_dump",
+            dict(self.options),
+            form_def.formio_config,
         )
 
         expected_schema = {

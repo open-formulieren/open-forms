@@ -8,7 +8,20 @@ from typing import TYPE_CHECKING
 
 from rest_framework.request import Request
 
-from ..datastructures import FormioConfigurationWrapper, FormioData
+from formio_types import (
+    AddressNL,
+    Children,
+    Columns,
+    Content,
+    CosignV1,
+    EditGrid,
+    Fieldset,
+    Partners,
+    SoftRequiredErrors,
+)
+from formio_types._base import SupportedLanguage
+
+from ..datastructures import FormioConfig, FormioData
 from ..registry import register
 
 if TYPE_CHECKING:
@@ -19,14 +32,14 @@ __all__ = ["rewrite_formio_components"]
 
 
 def rewrite_formio_components(
-    configuration_wrapper: FormioConfigurationWrapper,
+    config: FormioConfig,
     submission: Submission,
     data: FormioData | None = None,
-) -> FormioConfigurationWrapper:
+) -> FormioConfig:
     """
     Loop over the formio configuration and mutate components in place.
 
-    :param configuration_wrapper: Container object holding the Formio form configuration
+    :param config: Container object holding the Formio form configuration
       to be updated (if applicable). The rewriting loops over all components one-by-one
       and applies the changes.
     :param submission: The submission instance for which we are rewriting the
@@ -36,73 +49,91 @@ def rewrite_formio_components(
       context is available, the variables of the submission are included here.
     """
     data = data or FormioData()  # normalize
-    for component in configuration_wrapper:
-        register.update_config(component, submission=submission, data=data)
-    return configuration_wrapper
+    for component in config:
+        replacement = register.update_config(
+            component, submission=submission, data=data
+        )
+        if replacement is not None:
+            config.replace_component_with(original=component, replacement=replacement)
+    return config
 
 
 def rewrite_formio_components_for_request(
-    configuration_wrapper: FormioConfigurationWrapper, request: Request
-) -> FormioConfigurationWrapper:
+    config: FormioConfig, request: Request
+) -> FormioConfig:
     """
     Loop over the formio configuration and inject request-specific configuration.
     """
-    for component in configuration_wrapper:
+    for component in config:
         register.update_config_for_request(component, request=request)
-    return configuration_wrapper
+    return config
 
 
 def get_translated_custom_error_messages(
-    config_wrapper: FormioConfigurationWrapper, language_code: str
-) -> FormioConfigurationWrapper:
-    for component in config_wrapper:
-        # generic mechanism
+    config: FormioConfig, language_code: str
+) -> FormioConfig:
+    # TODO: defer this to the component registry?
+    for component in config:
+        # the generic mechanism looks up errors in the ``translated_errors`` attribute,
+        # but shouldn't do any additional work if ``errors`` is already assigned/resolved
         match component:
-            # if there are already errors in the component definition, do not overwrite
-            case {"errors": dict()}:
+            # these component types don't support the ``errors``/``translated_errors``
+            # mechanism
+            case (
+                EditGrid()
+                | Fieldset()
+                | Columns()
+                | Content()
+                | SoftRequiredErrors()
+                | Partners()
+                | Children()
+                | CosignV1()
+            ):
                 pass
-
+            # skip if errors are already assigned/derived
+            case _ if (errors := component.errors) or errors is not None:
+                pass
             # grab the language-specific error messages if they're available and store
             # them in the resolved errors property
-            case {"translatedErrors": dict(errors_by_language_code)} if (
-                custom_error_messages := errors_by_language_code.get(language_code)
-            ):
-                component["errors"] = custom_error_messages
+            case _ if errors_by_language_code := component.translated_errors:
+                # FIXME: narrow type?
+                custom_error_messages = errors_by_language_code.get(language_code)
+                if custom_error_messages is not None:
+                    # FIXME: doesn't infer the discriminated union -> use registry
+                    # instead
+                    component.errors = custom_error_messages
 
-        # TODO: the msgspec branch is probably the right opportunity to rectify the
-        # component-specific processing. For this hook, there's no matching registry/
-        # plugin hook.
+        # TODO: move this into component-specific registry
 
         match component:
-            case {
-                "type": "addressNL",
-                "openForms": {"components": dict(addressnl_components)},
-            } if addressnl_components:
-                for key in ("postcode", "city"):
-                    if not (component_config := addressnl_components.get(key)):
+            case AddressNL() if component.open_forms and (
+                addressnl_components := component.open_forms.components
+            ):
+                for component_config in (
+                    addressnl_components.postcode,
+                    addressnl_components.city,
+                ):
+                    if not component_config:
                         continue
-                    if component_config.get("errors"):
-                        continue
-                    if not (
-                        errors_by_language_code := component_config.get(
-                            "translatedErrors"
-                        )
+                    if (
+                        component_config.errors
+                        or not component_config.translated_errors
                     ):
                         continue
-                    if not (
-                        custom_error_messages := errors_by_language_code.get(
-                            language_code
-                        )
-                    ):
+                    # FIXME: narrow type?
+                    custom_error_messages = component_config.translated_errors.get(
+                        language_code
+                    )
+                    if not custom_error_messages:
                         continue
-                    component_config["errors"] = custom_error_messages
+                    component_config.errors = custom_error_messages
 
-    return config_wrapper
+    return config
 
 
 def localize_components(
-    configuration_wrapper: FormioConfigurationWrapper,
-    language_code: str,
+    config: FormioConfig,
+    language_code: SupportedLanguage,
     enabled: bool = True,
 ) -> None:
     """
@@ -110,7 +141,7 @@ def localize_components(
 
     .. note:: this function mutates the configuration.
     """
-    for component in configuration_wrapper:
+    for component in config:
         register.localize_component(
             component, language_code=language_code, enabled=enabled
         )
