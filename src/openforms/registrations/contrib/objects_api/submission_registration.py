@@ -11,6 +11,7 @@ from typing import (
 
 import structlog
 
+from formio_types import AnyComponent
 from openforms.contrib.objects_api.clients import (
     DocumentenClient,
     get_catalogi_client,
@@ -27,7 +28,6 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.formio.service import FormioData
-from openforms.formio.typing import Component
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import FieldConf, apply_data_mapping
@@ -406,11 +406,10 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         )
 
 
-def _lookup_component(variable: SubmissionValueVariable) -> Component:
+def _lookup_component(variable: SubmissionValueVariable) -> AnyComponent:
     assert variable.form_variable is not None
-    config_wrapper = variable.form_variable.form_definition.configuration_wrapper
-    component = config_wrapper.component_map[variable.key]
-    return component
+    formio_config = variable.form_variable.form_definition.formio_config
+    return formio_config[variable.key]
 
 
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
@@ -473,7 +472,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
             # Look up if the key points to a form component that provides additional
             # context for how to process the value.
-            component: Component | None = None
+            component: AnyComponent | None = None
             if (
                 variable
                 and variable.form_variable is not None

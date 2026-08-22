@@ -7,6 +7,7 @@ from .nodes import ComponentNode
 type TComponentNode = type[ComponentNode]
 
 
+# TODO: merge this into formio.registry?
 class Registry(BaseRegistry):
     module = "formio"
 

@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..models import FormDefinition, FormStep, FormVersion
@@ -21,7 +22,7 @@ from .factories import (
 from .utils import EXPORT_BLOB
 
 
-class RestoreVersionTest(TestCase):
+class RestoreVersionTest(FormioMixin, TestCase):
     def test_restoring_version(self):
         form_definition = FormDefinitionFactory.create(
             name="Test Definition 2",
@@ -312,15 +313,15 @@ class RestoreVersionTest(TestCase):
 
         self.assertTrue(form_steps[0].form_definition.is_reusable)
         self.assertEqual(
+            len(form_steps[0].form_definition.configuration["components"]), 1
+        )
+        self.assertFormioComponent(
             form_steps[0].form_definition.configuration,
+            "reusable1",
             {
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "reusable1",
-                        "label": "reusable1",
-                    }
-                ]
+                "type": "textfield",
+                "key": "reusable1",
+                "label": "reusable1",
             },
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)

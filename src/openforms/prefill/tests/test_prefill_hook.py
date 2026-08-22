@@ -9,7 +9,8 @@ from django.utils.translation import gettext as _
 
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.datastructures import FormioConfig
+from openforms.formio.service import dump_to_legacy
 from openforms.formio.typing import Component, FormioConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
@@ -75,8 +76,9 @@ def apply_prefill(
     configuration = deepcopy(configuration)
     _submission = Submission.objects.get(pk=submission.pk)
     prefill_variables(_submission, register=register)
-    inject_prefill(FormioConfigurationWrapper(configuration), _submission)
-    return configuration
+    config = FormioConfig(name="<test>", components=configuration["components"])
+    inject_prefill(config, _submission)
+    return {"components": dump_to_legacy(config.components)}
 
 
 class PrefillHookTests(TransactionTestCase):

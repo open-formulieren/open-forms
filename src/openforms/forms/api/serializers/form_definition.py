@@ -6,7 +6,10 @@ from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
-from openforms.formio.service import rewrite_formio_components_for_request
+from openforms.formio.service import (
+    dump_to_legacy,
+    rewrite_formio_components_for_request,
+)
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import Form, FormDefinition
@@ -70,8 +73,8 @@ class FormDefinitionSerializer(
         help_text=_("The form definition as Form.io JSON schema"),
         validators=[
             FormIOComponentsValidator(),
-            validate_template_expressions,
             validate_no_duplicate_keys,
+            validate_template_expressions,
         ],
     )
 
@@ -110,7 +113,7 @@ class FormDefinitionSerializer(
             },
         }
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: FormDefinition):
         representation = super().to_representation(instance=instance)
         # if "configuration" in self.fields:
         # Finalize formio component configuration with dynamic parts that depend on the
@@ -121,14 +124,17 @@ class FormDefinitionSerializer(
         #    'standalone' use/introspection.
         is_export = self.context.get("is_export", False)
 
+        # XXX this should not be necessary when in a logic evaluation context (serializer)
         if not is_export:
             rewrite_formio_components_for_request(
-                instance.configuration_wrapper,
+                instance.formio_config,
                 request=self.context["request"],
             )
 
-        representation["configuration"] = instance.configuration_wrapper.configuration
-
+        # XXX avoid all these dump_to_legacy roundtrips
+        representation["configuration"] = {
+            "components": dump_to_legacy(instance.formio_config.components),
+        }
         return representation
 
     def validate(self, attrs):

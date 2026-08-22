@@ -1,18 +1,9 @@
 from unittest import TestCase
 
-from openforms.formio.typing import (
-    ColumnsComponent,
-    Component,
-    EditGridComponent,
-    FieldsetComponent,
-)
+from formio_types import EditGrid, Fieldset, TextField
+from openforms.formio.typing import Component, EditGridComponent, FieldsetComponent
 
-from ..datastructures import (
-    DuplicateKeyError,
-    FormioConfiguration,
-    FormioConfigurationWrapper,
-    FormioData,
-)
+from ..datastructures import FormioConfig, FormioData
 
 
 class FormioDataTests(TestCase):
@@ -256,7 +247,7 @@ class FormioDataTests(TestCase):
             self.assertEqual(data["simply"], "lovely")
 
 
-class FormioConfigurationWrapperTests(TestCase):
+class FormioConfigTests(TestCase):
     def test_editgrid_lookups_by_key(self):
         outer_textfield: Component = {
             "type": "textfield",
@@ -272,19 +263,54 @@ class FormioConfigurationWrapperTests(TestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Repeating group",
+            "groupLabel": "Item",
             "components": [inner_textfield],
         }
 
-        config: FormioConfiguration = {"components": [outer_textfield, editgrid]}
-        config_wrapper = FormioConfigurationWrapper(config)
+        formio_config = FormioConfig(
+            name="test", components=[outer_textfield, editgrid]
+        )
 
-        with self.subTest("simple lookups"):
-            self.assertIs(config_wrapper["editgrid"], editgrid)
-            self.assertIs(config_wrapper["outerTextfield"], outer_textfield)
-            self.assertIs(config_wrapper["innerTextfield"], inner_textfield)
+        with self.subTest("top level lookups"):
+            top_level_editgrid = formio_config["editgrid"]
+
+            self.assertIsInstance(top_level_editgrid, EditGrid)
+            self.assertEqual(top_level_editgrid.key, "editgrid")
+
+            self.assertIn("outerTextfield", formio_config)
+            self.assertNotIn("innerTextfield", formio_config)
 
         with self.subTest("nested editgrid lookup"):
-            self.assertIs(config_wrapper["editgrid.innerTextfield"], inner_textfield)
+            self.assertIn("editgrid.innerTextfield", formio_config)
+
+            nested_textfield = formio_config["editgrid.innerTextfield"]
+            self.assertIsInstance(nested_textfield, TextField)
+
+    def test_editgrid_with_layout_components_inside_used_namespaced_key_lookup(self):
+        inner_textfield: Component = {
+            "type": "textfield",
+            "key": "innerTextfield",
+            "label": "inner text field",
+        }
+        fieldset: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "Fieldset",
+            "components": [inner_textfield],
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Repeating group",
+            "groupLabel": "Item",
+            "components": [fieldset],
+        }
+        formio_config = FormioConfig(name="test", components=[editgrid])
+
+        nested_fieldset = formio_config["editgrid.fieldset"]
+        self.assertIsInstance(nested_fieldset, Fieldset)
+        nested_textfield = formio_config["editgrid.innerTextfield"]
+        self.assertIsInstance(nested_textfield, TextField)
 
     def test_nested_editgrids(self):
         inner_textfield: Component = {
@@ -294,250 +320,33 @@ class FormioConfigurationWrapperTests(TestCase):
         }
         inner_editgrid: EditGridComponent = {
             "type": "editgrid",
-            "key": "innerEditgrid",
+            "key": "child",
             "label": "Repeating group",
+            "groupLabel": "Item",
             "components": [inner_textfield],
+        }
+        outer_textfield: Component = {
+            "type": "textfield",
+            "key": "outerTextfield",
+            "label": "outer text field",
         }
         outer_editgrid: EditGridComponent = {
             "type": "editgrid",
-            "key": "outerEditgrid",
+            "key": "parent",
             "label": "Repeating group",
-            "components": [inner_editgrid],
-        }
-
-        config: FormioConfiguration = {"components": [outer_editgrid]}
-        config_wrapper = FormioConfigurationWrapper(config)
-
-        self.assertIs(
-            config_wrapper["outerEditgrid.innerEditgrid.innerTextfield"],
-            inner_textfield,
-        )
-
-    def test_raises_when_duplicate_keys_are_encountered(self):
-        duplicate: Component = {
-            "type": "textfield",
-            "key": "duplicated.key",
-            "label": "Duplicated key component",
-        }
-        config: FormioConfiguration = {"components": [duplicate, duplicate]}
-        config_wrapper = FormioConfigurationWrapper(config, validate_unique_keys=True)
-
-        with self.assertRaises(DuplicateKeyError):
-            config_wrapper["duplicated.key"]
-
-    def test_parent_child_relation_tracking(self):
-        root_textfield: Component = {
-            "type": "textfield",
-            "key": "textfield",
-            "label": "textfield",
-        }
-        fieldset: FieldsetComponent = {
-            "type": "fieldset",
-            "key": "fieldset",
-            "label": "fieldset",
-            "components": [
-                {
-                    "type": "email",
-                    "key": "email",
-                    "label": "email",
-                }
-            ],
-        }
-        columns: ColumnsComponent = {
-            "type": "columns",
-            "key": "columns",
-            "label": "columns",
-            "columns": [
-                {
-                    "size": 12,
-                    "sizeMobile": 4,
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "textfieldInColumn",
-                            "label": "textfield in column",
-                        }
-                    ],
-                }
-            ],
-        }
-        editgrid: EditGridComponent = {
-            "type": "editgrid",
-            "key": "editgrid",
-            "label": "editgrid",
             "groupLabel": "Item",
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "textfieldInEditgrid",
-                    "label": "textfield in editgrid",
-                }
-            ],
-        }
-        config_wrapper = FormioConfigurationWrapper(
-            {"components": [root_textfield, fieldset, columns, editgrid]}
-        )
-
-        with self.subTest("raises for keys that don't exist"):
-            with self.assertRaises(ValueError):
-                config_wrapper.get_parent("bad-key-reference")
-
-        with self.subTest("root textfield has no parent"):
-            textfield_parent = config_wrapper.get_parent("textfield")
-
-            self.assertIsNone(textfield_parent)
-
-        with self.subTest("email parent is fieldset"):
-            email_parent = config_wrapper.get_parent("email")
-
-            assert email_parent is not None
-            self.assertEqual(email_parent["key"], "fieldset")
-
-        with self.subTest("textfieldInColumn parent is columns"):
-            textfield_columns = config_wrapper.get_parent("textfieldInColumn")
-
-            assert textfield_columns is not None
-            self.assertEqual(textfield_columns["key"], "columns")
-
-        with self.subTest("textfieldInEditgrid parent is editgrid"):
-            textfield_editgrid = config_wrapper.get_parent("textfieldInEditgrid")
-
-            assert textfield_editgrid is not None
-            self.assertEqual(textfield_editgrid["key"], "editgrid")
-
-        with self.subTest("merged configuration wrapper instances"):
-            other_fieldset: FieldsetComponent = {
-                "type": "fieldset",
-                "key": "otherFieldset",
-                "label": "fieldset",
-                "components": [
-                    {
-                        "type": "email",
-                        "key": "otherEmail",
-                        "label": "email",
-                    }
-                ],
-            }
-            other_config_wrapper = FormioConfigurationWrapper(
-                {"components": [other_fieldset]}
-            )
-            assert other_config_wrapper["otherEmail"]
-            other_config_wrapper += config_wrapper
-
-            other_email_parent = other_config_wrapper.get_parent("otherEmail")
-            assert other_email_parent is not None
-            self.assertEqual(other_email_parent["key"], "otherFieldset")
-
-            original_email_parent = other_config_wrapper.get_parent("email")
-            assert original_email_parent is not None
-            self.assertEqual(original_email_parent["key"], "fieldset")
-
-    def test_duplicate_detection(self):
-        textfield1: Component = {
-            "type": "textfield",
-            "key": "duplicate",
-            "label": "Duplicate",
-        }
-        textfield2: Component = {
-            "type": "textfield",
-            "key": "anotherDuplicate",
-            "label": "Another Duplicate",
-        }
-        textfield3: Component = {
-            "type": "textfield",
-            "key": "anotherDuplicate",
-            "label": "Accidental Duplicate",
-        }
-        editgrid: EditGridComponent = {
-            "type": "editgrid",
-            "key": "repeatingGroup",
-            "label": "Repeating Group",
-            "groupLabel": "Item",
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "duplicate",
-                    "label": "Duplicate",
-                },
-                {
-                    "type": "textfield",
-                    "key": "notDuplicate",
-                    "label": "Not Duplicate",
-                },
-            ],
-        }
-        fieldset_in_columns: FieldsetComponent = {
-            "type": "fieldset",
-            "key": "duplicatedFieldsetKey",
-            "label": "Duplicated fieldset",
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "textfieldInDuplicatedFieldset1",
-                    "label": "Text field in duplicated fieldset 1",
-                }
-            ],
-        }
-        columns: ColumnsComponent = {
-            "type": "columns",
-            "key": "columns",
-            "label": "Columns",
-            "columns": [
-                {
-                    "size": 6,
-                    "sizeMobile": 4,
-                    "components": [fieldset_in_columns],
-                },
-                {
-                    "size": 6,
-                    "sizeMobile": 4,
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "textfieldSecondColumn",
-                            "label": "Textfield second column",
-                        }
-                    ],
-                },
-            ],
-        }
-        duplicated_fieldset: FieldsetComponent = {
-            "type": "fieldset",
-            "key": "duplicatedFieldsetKey",
-            "label": "Duplicated fieldset 2",
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "textfieldInDuplicatedFieldset2",
-                    "label": "Text field in duplicated fieldset 2",
-                }
-            ],
-        }
-        configuration: FormioConfiguration = {
-            "components": [
-                textfield1,
-                editgrid,
-                textfield2,
-                textfield3,
-                columns,
-                duplicated_fieldset,
-            ],
+            "components": [outer_textfield, inner_editgrid],
         }
 
-        duplicates = FormioConfigurationWrapper.get_duplicates(configuration)
+        formio_config = FormioConfig(name="test", components=[outer_editgrid])
 
-        expected = {
-            "duplicate": [
-                [textfield1],
-                [editgrid, editgrid["components"][0]],
-            ],
-            "anotherDuplicate": [
-                [textfield2],
-                [textfield3],
-            ],
-            "duplicatedFieldsetKey": [
-                [columns, fieldset_in_columns],
-                [duplicated_fieldset],
-            ],
-        }
-        self.assertEqual(duplicates, expected)
+        editgrid = formio_config["parent"]
+        self.assertIsInstance(editgrid, EditGrid)
+        text_in_parent_editgrid = formio_config["parent.outerTextfield"]
+        self.assertIsInstance(text_in_parent_editgrid, TextField)
+        child_editgrid = formio_config["parent.child"]
+        self.assertIsInstance(child_editgrid, EditGrid)
+        self.assertEqual(child_editgrid.key, "child")
+        text_in_child_editgrid = formio_config["parent.child.innerTextfield"]
+        self.assertIsInstance(text_in_child_editgrid, TextField)
+        self.assertEqual(text_in_child_editgrid.key, "innerTextfield")

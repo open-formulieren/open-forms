@@ -1,11 +1,13 @@
 from django.test import SimpleTestCase
 from django.utils import timezone
 
+from formio_types import DateTime
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 
-from ...datastructures import FormioConfigurationWrapper, FormioData
+from ...datastructures import FormioConfig, FormioData
 from ...dynamic_config import rewrite_formio_components
+from ...service import dump_to_legacy
 from ...typing import DatetimeComponent
 from .helpers import extract_error, validate_formio_data
 
@@ -91,29 +93,27 @@ class DatetimeFieldValidationTests(SimpleTestCase):
             },
         }
         submission = Submission()  # this test is not supposed to hit the DB
-        config_wraper = FormioConfigurationWrapper(
-            configuration={"components": [component]}
-        )
         now = timezone.now()
-        config_wraper = rewrite_formio_components(
-            config_wraper,
+        config = rewrite_formio_components(
+            FormioConfig(name="<test>", components=[component]),
             submission=submission,
             data=FormioData({"now": now}),
         )
 
-        updated_component = config_wraper["foo"]
+        updated_component = config["foo"]
+        assert isinstance(updated_component, DateTime)
         # check that rewrite_formio_components behaved as expected
-        assert "datePicker" in updated_component
-        assert "minDate" in updated_component["datePicker"]
+        assert updated_component.date_picker and updated_component.date_picker.min_date
 
+        _component = dump_to_legacy(updated_component)
         with self.subTest("valid value"):
-            is_valid, _ = validate_formio_data(component, {"foo": now.isoformat()})
+            is_valid, _ = validate_formio_data(_component, {"foo": now.isoformat()})
 
             self.assertTrue(is_valid)
 
         with self.subTest("invalid value"):
             is_valid, _ = validate_formio_data(
-                component, {"foo": "2020-01-01T12:00:00+01:00"}
+                _component, {"foo": "2020-01-01T12:00:00+01:00"}
             )
 
             self.assertFalse(is_valid)

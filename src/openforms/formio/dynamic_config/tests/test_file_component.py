@@ -4,16 +4,18 @@ from django.test import TestCase, override_settings
 
 from rest_framework.test import APIRequestFactory
 
+from formio_types import File
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.typing import FileComponent
 
-from ...datastructures import FormioConfigurationWrapper
+from ...datastructures import FormioConfig
 from ...service import rewrite_formio_components_for_request
 
 request_factory = APIRequestFactory()
 
 
-def _get_dynamic_config(component: dict) -> FormioConfigurationWrapper:
-    wrapper = FormioConfigurationWrapper({"components": [component]})
+def _get_dynamic_config(component: FileComponent) -> FormioConfig:
+    wrapper = FormioConfig(name="<test>", components=[component])
     request = request_factory.get("/irrelevant")
     return rewrite_formio_components_for_request(wrapper, request)
 
@@ -26,24 +28,23 @@ class FileComponentTests(TestCase):
         ),
     )
     def test_use_global_config_filetypes(self, m_get_solo):
-        component = {
+        component: FileComponent = {
             "type": "file",
             "key": "fileTest",
             "label": "fileTest",
+            "storage": "url",
             "url": "",
             "useConfigFiletypes": True,
             "filePattern": "*",
-            "file": {"type": []},
+            "file": {"type": [], "allowedTypesLabels": []},
         }
 
-        wrapper = _get_dynamic_config(component)
+        config = _get_dynamic_config(component)
 
-        updated_component = wrapper["fileTest"]
-        self.assertEqual(updated_component["filePattern"], "image/png,application/pdf")
-        self.assertNotEqual(updated_component["url"], "")
-        self.assertEqual(
-            updated_component["file"]["allowedTypesLabels"], [".png", ".pdf"]
-        )
+        updated_component = config["fileTest"]
+        assert isinstance(updated_component, File)
+        self.assertEqual(updated_component.file_pattern, "image/png,application/pdf")
+        self.assertEqual(updated_component.file.allowed_types_labels, [".png", ".pdf"])
 
     @patch(
         "openforms.formio.components.vanilla.GlobalConfiguration.get_solo",
@@ -51,20 +52,20 @@ class FileComponentTests(TestCase):
     )
     @override_settings(LANGUAGE_CODE="en")
     def test_use_global_config_filetypes_all_allowed(self, m_get_solo):
-        component = {
+        component: FileComponent = {
             "type": "file",
             "key": "fileTest",
             "label": "fileTest",
+            "storage": "url",
             "url": "",
             "useConfigFiletypes": True,
             "filePattern": "*",
-            "file": {"type": []},
+            "file": {"type": [], "allowedTypesLabels": []},
         }
 
-        wrapper = _get_dynamic_config(component)
+        config = _get_dynamic_config(component)
 
-        updated_component = wrapper["fileTest"]
-        self.assertEqual(updated_component["filePattern"], "*")
-        self.assertEqual(
-            updated_component["file"]["allowedTypesLabels"], ["any filetype"]
-        )
+        updated_component = config["fileTest"]
+        assert isinstance(updated_component, File)
+        self.assertEqual(updated_component.file_pattern, "*")
+        self.assertEqual(updated_component.file.allowed_types_labels, ["any filetype"])

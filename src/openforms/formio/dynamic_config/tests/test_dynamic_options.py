@@ -4,10 +4,8 @@ from django.urls import reverse
 from pyquery import PyQuery as pq
 from rest_framework.test import APITestCase
 
+from formio_types import Option, Radio, Select, Selectboxes
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.formio.constants import DataSrcOptions
-from openforms.formio.datastructures import FormioConfigurationWrapper, FormioData
-from openforms.formio.dynamic_config import rewrite_formio_components
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -17,478 +15,450 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
+from ...constants import DataSrcOptions
+from ...datastructures import FormioConfig, FormioData
+from ...dynamic_config import rewrite_formio_components
+from ...typing import (
+    Component,
+    ContentComponent,
+    EditGridComponent,
+    RadioComponent,
+    SelectBoxesComponent,
+    SelectComponent,
+)
+
 
 @override_settings(LANGUAGE_CODE="en")
 class TestDynamicConfigAddingOptions(TestCase):
     def test_manual_options_not_updated(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+        components: list[RadioComponent | SelectBoxesComponent | SelectComponent] = [
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "A", "value": "a"},
+                    {"label": "B", "value": "b"},
+                ],
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "A", "value": "a"},
                         {"label": "B", "value": "b"},
                     ],
-                    "dataSrc": DataSrcOptions.manual,
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "A", "value": "a"},
-                            {"label": "B", "value": "b"},
-                        ],
-                        "dataSrc": DataSrcOptions.manual,
-                        "json": "",
-                        "url": "",
-                        "resource": "",
-                        "custom": "",
-                    },
-                    "type": "select",
-                },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "A", "value": "a"},
-                        {"label": "B", "value": "b"},
-                    ],
-                    "dataSrc": DataSrcOptions.manual,
-                },
-            ]
-        }
-
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "A", "value": "a"},
+                    {"label": "B", "value": "b"},
+                ],
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
-        rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
-            submission,
-            FormioData({"some": "data"}),
-        )
+        rewrite_formio_components(config, submission, FormioData({"some": "data"}))
 
-        self.assertEqual(
-            configuration["components"][0]["values"],
-            [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
-            ],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][1]["data"]["values"],
-            [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
-            ],
-        )
-        self.assertEqual(
-            configuration["components"][2]["values"],
-            [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
-            ],
-        )
+        expected_options = [Option(value="a", label="A"), Option(value="b", label="B")]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
     def test_variable_options_repeating_group(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "repeatingGroup",
-                    "key": "repeatingGroup",
-                    "type": "editgrid",
-                    "groupLabel": "Item",
-                    "components": [
-                        {"type": "textfield", "key": "name", "label": "name"}
-                    ],
+        components: list[
+            RadioComponent | SelectBoxesComponent | SelectComponent | EditGridComponent
+        ] = [
+            {
+                "label": "repeatingGroup",
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "groupLabel": "Item",
+                "components": [{"type": "textfield", "key": "name", "label": "name"}],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                    },
                 },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
+                },
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                     },
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "", "value": ""},
-                        ],
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                     },
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
-                    },
-                    "type": "select",
+                    "dataSrc": DataSrcOptions.variable,
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
-                        "dataSrc": DataSrcOptions.variable,
-                    },
-                },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
-        )
-        self.assertEqual(
-            configuration["components"][3]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
-        )
+        expected_options = [
+            Option(value="Test1", label="Test1"),
+            Option(value="Test2", label="Test2"),
+        ]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
     def test_variable_options_repeating_group_empty_data(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "repeatingGroup",
-                    "key": "repeatingGroup",
-                    "type": "editgrid",
-                    "groupLabel": "Item",
-                    "components": [
-                        {"type": "textfield", "key": "name", "label": "name"}
-                    ],
+        components: list[
+            RadioComponent | SelectBoxesComponent | SelectComponent | EditGridComponent
+        ] = [
+            {
+                "label": "repeatingGroup",
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "groupLabel": "Item",
+                "components": [{"type": "textfield", "key": "name", "label": "name"}],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "dataSrc": DataSrcOptions.variable,
+                "data": {
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                    },
                 },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "", "value": ""},
                     ],
                     "dataSrc": DataSrcOptions.variable,
-                    "data": {
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                     },
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "", "value": ""},
-                        ],
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
-                    },
-                    "type": "select",
-                },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "dataSrc": DataSrcOptions.variable,
-                    "data": {
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "dataSrc": DataSrcOptions.variable,
+                "data": {
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                     },
                 },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"repeatingGroup": []}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
-        )
-        self.assertEqual(
-            configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
-        )
+        expected_options = [Option(value="", label="")]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
     def test_variable_options_multiple_component(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "textField",
-                    "key": "textField",
-                    "type": "textfield",
-                    "multiple": True,
-                    "defaultValue": [],
+        components: list[
+            RadioComponent | SelectBoxesComponent | SelectComponent | Component
+        ] = [
+            {
+                "label": "textField",
+                "key": "textField",
+                "type": "textfield",
+                "multiple": True,
+                "defaultValue": [],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "", "value": ""},
-                        ],
-                    },
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
-                    "type": "select",
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"textField": ["Test1", "Test2"]}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
-        )
-        self.assertEqual(
-            configuration["components"][3]["values"],
-            [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
-            ],
-        )
+        expected_options = [
+            Option(value="Test1", label="Test1"),
+            Option(value="Test2", label="Test2"),
+        ]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
     def test_variable_options_multiple_empty_data(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "textField",
-                    "key": "textField",
-                    "type": "textfield",
-                    "multiple": True,
-                    "defaultValue": [],
+        components: list[
+            RadioComponent | SelectBoxesComponent | SelectComponent | Component
+        ] = [
+            {
+                "label": "textField",
+                "key": "textField",
+                "type": "textfield",
+                "multiple": True,
+                "defaultValue": [],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "dataSrc": DataSrcOptions.variable,
+                "data": {
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "", "value": ""},
                     ],
                     "dataSrc": DataSrcOptions.variable,
-                    "data": {
-                        "itemsExpression": {"var": "textField"},
-                    },
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "", "value": ""},
-                        ],
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
-                    "type": "select",
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "dataSrc": DataSrcOptions.variable,
+                "data": {
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "dataSrc": DataSrcOptions.variable,
-                    "data": {
-                        "itemsExpression": {"var": "textField"},
-                    },
-                },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"textField": []}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
-        )
-        self.assertEqual(
-            configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
-        )
+        expected_options = [Option(value="", label="")]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
     def test_variable_options_repeating_group_missing_map(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "repeatingGroup",
-                    "key": "repeatingGroup",
-                    "type": "editgrid",
-                    "groupLabel": "Item",
-                    "components": [
-                        {"type": "textfield", "key": "name", "label": "name"}
-                    ],
+        components: list[
+            RadioComponent | SelectBoxesComponent | SelectComponent | EditGridComponent
+        ] = [
+            {
+                "label": "repeatingGroup",
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "groupLabel": "Item",
+                "components": [{"type": "textfield", "key": "name", "label": "name"}],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "var": "repeatingGroup"
+                    },  # No map operation to transform dict into str
                 },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+            },
+            {
+                "label": "Select",
+                "key": "select",
+                "data": {
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "var": "repeatingGroup"
-                        },  # No map operation to transform dict into str
-                    },
                 },
-                {
-                    "label": "Select",
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "", "value": ""},
-                        ],
-                    },
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "var": "repeatingGroup"
-                        },  # No map operation to transform dict into str
-                    },
-                    "type": "select",
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "var": "repeatingGroup"
+                    },  # No map operation to transform dict into str
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "itemsExpression": {
-                            "var": "repeatingGroup"
-                        },  # No map operation to transform dict into str
-                        "dataSrc": DataSrcOptions.variable,
-                    },
+                "type": "select",
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "var": "repeatingGroup"
+                    },  # No map operation to transform dict into str
+                    "dataSrc": DataSrcOptions.variable,
                 },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+        selectboxes, select, radio = (
+            config["selectBoxes"],
+            config["select"],
+            config["radio"],
         )
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
-        )
-        self.assertEqual(
-            configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
-        )
+        expected_options = [Option(value="", label="")]
+        assert isinstance(selectboxes, Selectboxes)
+        self.assertEqual(selectboxes.values, expected_options)
+        assert isinstance(select, Select)
+        self.assertEqual(select.data.values, expected_options)
+        assert isinstance(radio, Radio)
+        self.assertEqual(radio.values, expected_options)
 
         logs = TimelineLogProxy.objects.filter(
             object_id=submission.form.id,
@@ -510,84 +480,80 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
 
     def test_escaped_html(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "textField",
-                    "key": "textField",
-                    "type": "textfield",
-                    "multiple": True,
-                    "defaultValue": [],
+        components: list[RadioComponent | Component] = [
+            {
+                "label": "textField",
+                "key": "textField",
+                "type": "textfield",
+                "multiple": True,
+                "defaultValue": [],
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
-                },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"textField": ['Some data <IMG src="/test" />']}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [
-                {
-                    "label": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
-                    "value": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
-                }
-            ],
-        )
+        radio = config["radio"]
+        assert isinstance(radio, Radio)
+        expected_options = [
+            Option(
+                value="Some data &lt;IMG src=&quot;/test&quot; /&gt;",
+                label="Some data &lt;IMG src=&quot;/test&quot; /&gt;",
+            )
+        ]
+        self.assertEqual(radio.values, expected_options)
 
     def test_wrong_type_variable(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "textField",
-                    "key": "textField",
-                    "type": "textfield",
-                    "multiple": False,  # Not an array!
+        components: list[RadioComponent | Component] = [
+            {
+                "label": "textField",
+                "key": "textField",
+                "type": "textfield",
+                "multiple": False,  # Not an array!
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
-                },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"textField": "Some test data!"}),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
-        )
+        radio = config["radio"]
+        assert isinstance(radio, Radio)
+        expected_options = [Option(value="", label="")]
+        self.assertEqual(radio.values, expected_options)
 
         logs = TimelineLogProxy.objects.filter(
             object_id=submission.form.id,
@@ -600,109 +566,102 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
 
     def test_duplicate_options_with_multiple_field(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "textField",
-                    "key": "textField",
-                    "type": "textfield",
-                    "multiple": True,
-                    "defaultValue": [],
+        components: list[RadioComponent | Component] = [
+            {
+                "label": "textField",
+                "key": "textField",
+                "type": "textfield",
+                "multiple": True,
+                "defaultValue": [],
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {"var": "textField"},  # pyright: ignore[reportAssignmentType]
                 },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {"var": "textField"},
-                    },
-                },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData({"textField": ["duplicate", "duplicate", "duplicate"]}),
         )
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "duplicate", "value": "duplicate"}],
-        )
+
+        radio = config["radio"]
+        assert isinstance(radio, Radio)
+        expected_options = [Option(value="duplicate", label="duplicate")]
+        self.assertEqual(radio.values, expected_options)
 
     def test_duplicate_options_with_repeating_group(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "repeatingGroup",
-                    "key": "repeatingGroup",
-                    "type": "editgrid",
-                    "groupLabel": "Item",
-                    "components": [
-                        {"type": "textfield", "key": "name", "label": "name"}
-                    ],
-                },
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
-                        },
+        components: list[RadioComponent | EditGridComponent] = [
+            {
+                "label": "repeatingGroup",
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "groupLabel": "Item",
+                "components": [{"type": "textfield", "key": "name", "label": "name"}],
+            },
+            {
+                "label": "Radio",
+                "key": "radio",
+                "type": "radio",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                     },
                 },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData(
                 {"repeatingGroup": [{"name": "duplicate"}, {"name": "duplicate"}]}
             ),
         )
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [{"label": "duplicate", "value": "duplicate"}],
-        )
+
+        radio = config["radio"]
+        assert isinstance(radio, Radio)
+        expected_options = [Option(value="duplicate", label="duplicate")]
+        self.assertEqual(radio.values, expected_options)
 
     def test_badly_formatted_items(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "Radio",
-                    "key": "radio",
-                    "type": "radio",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [{"var": "externalData"}, {"var": "id"}]
-                        },
-                    },
+        component: RadioComponent = {
+            "label": "Radio",
+            "key": "radio",
+            "type": "radio",
+            "values": [
+                {"label": "", "value": ""},
+            ],
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable,
+                "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                    "map": [{"var": "externalData"}, {"var": "id"}]
                 },
-            ]
+            },
         }
+        config = FormioConfig(name="<test>", components=[component])
 
         submission = SubmissionFactory.create()
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             # Only the first object has the property "id"
             FormioData(
@@ -719,10 +678,14 @@ class TestDynamicConfigAddingOptions(TestCase):
                 }
             ),
         )
-        self.assertEqual(
-            configuration["components"][0]["values"],
-            [{"label": "111", "value": "111"}, {"label": "label", "value": "key"}],
-        )
+
+        radio = config["radio"]
+        assert isinstance(radio, Radio)
+        expected_options = [
+            Option(value="111", label="111"),
+            Option(value="key", label="label"),
+        ]
+        self.assertEqual(radio.values, expected_options)
 
         logs = TimelineLogProxy.objects.filter(
             object_id=submission.form.id,
@@ -736,42 +699,40 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
 
     def test_different_label_key_options(self):
-        configuration = {
-            "components": [
-                {
-                    "label": "repeatingGroup",
-                    "key": "repeatingGroup",
-                    "type": "editgrid",
-                    "groupLabel": "Item",
-                    "components": [
-                        {"type": "textfield", "key": "name"},
-                        {"type": "textfield", "key": "bsn"},
-                    ],
-                },
-                {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
-                    "values": [
-                        {"label": "", "value": ""},
-                    ],
-                    "openForms": {
-                        "dataSrc": DataSrcOptions.variable,
-                        "itemsExpression": {
-                            "map": [
-                                {"var": "repeatingGroup"},
-                                [{"var": "bsn"}, {"var": "name"}],
-                            ]
-                        },
+        components: list[EditGridComponent | SelectBoxesComponent] = [
+            {
+                "label": "repeatingGroup",
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "groupLabel": "Item",
+                "components": [
+                    {"type": "textfield", "key": "name", "label": "name"},
+                    {"type": "textfield", "key": "bsn", "label": "bsn"},
+                ],
+            },
+            {
+                "label": "Select Boxes",
+                "key": "selectBoxes",
+                "type": "selectboxes",
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+                "openForms": {
+                    "dataSrc": DataSrcOptions.variable,
+                    "itemsExpression": {  # pyright: ignore[reportAssignmentType]
+                        "map": [
+                            {"var": "repeatingGroup"},
+                            [{"var": "bsn"}, {"var": "name"}],
+                        ]
                     },
                 },
-            ]
-        }
-
+            },
+        ]
         submission = SubmissionFactory.create()
+        config = FormioConfig(name="<test>", components=components)
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration),
+            config,
             submission,
             FormioData(
                 {
@@ -783,13 +744,13 @@ class TestDynamicConfigAddingOptions(TestCase):
             ),
         )
 
-        self.assertEqual(
-            configuration["components"][1]["values"],
-            [
-                {"label": "Test1", "value": "123456789"},
-                {"label": "Test2", "value": "987654321"},
-            ],
-        )
+        selectboxes = config["selectBoxes"]
+        assert isinstance(selectboxes, Selectboxes)
+        expected_options = [
+            Option(value="123456789", label="Test1"),
+            Option(value="987654321", label="Test2"),
+        ]
+        self.assertEqual(selectboxes.values, expected_options)
 
 
 class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
@@ -803,38 +764,40 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
             - HTML without style tag or attribute is not changed
             - Empty HTML does not cause error and remains unchanged
         """
-        configuration = {
-            "components": [
-                {
-                    "key": "content1",
-                    "type": "content",
-                    "html": '<p><span style="color:#e64c4c;">Test nonce</span></p>',
-                },
-                {
-                    "key": "content2",
-                    "type": "content",
-                    "html": """
+        components: list[ContentComponent] = [
+            {
+                "type": "content",
+                "key": "content1",
+                "label": "content1",
+                "html": '<p><span style="color:#e64c4c;">Test nonce</span></p>',
+            },
+            {
+                "type": "content",
+                "key": "content2",
+                "label": "content2",
+                "html": """
                     <div>
                         <style nonce="my-malicious-and-bad-nonce"></style>
                         <script>alert('xss')</script>
                     </div>
                     """,
-                },
-                {
-                    "key": "content3",
-                    "type": "content",
-                    "html": "<p><span>Test nonce</span></p>",
-                },
-                {
-                    "key": "content4",
-                    "type": "content",
-                    "html": "",
-                },
-            ]
-        }
+            },
+            {
+                "type": "content",
+                "key": "content3",
+                "label": "content3",
+                "html": "<p><span>Test nonce</span></p>",
+            },
+            {
+                "type": "content",
+                "key": "content4",
+                "label": "content4",
+                "html": "",
+            },
+        ]
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
-            configuration=configuration, login_required=False
+            configuration={"components": components}, login_required=False
         )
         step1 = FormStepFactory.create(form=form, form_definition=form_definition)
         submission = SubmissionFactory.create(form=form)
@@ -857,6 +820,7 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
             component1 = next(
                 (item for item in formio_components if item["key"] == "content1"), None
             )
+            assert component1 is not None
             doc = pq(component1["html"])
             style = doc.find("style")
             id = doc.find("span").attr("id")
@@ -869,6 +833,7 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
             component2 = next(
                 (item for item in formio_components if item["key"] == "content2"), None
             )
+            assert component2 is not None
             doc = pq(component2["html"])
             scripts = doc.find("script")
 
@@ -878,10 +843,12 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
             component3 = next(
                 (item for item in formio_components if item["key"] == "content3"), None
             )
+            assert component3 is not None
             self.assertEqual(component3["html"], "<p><span>Test nonce</span></p>\n")
 
         with self.subTest("Empty HTML"):
             component4 = next(
                 (item for item in formio_components if item["key"] == "content4"), None
             )
+            assert component4 is not None
             self.assertEqual(component4["html"], "")

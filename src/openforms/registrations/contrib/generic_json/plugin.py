@@ -2,20 +2,14 @@ import base64
 from collections import defaultdict
 from collections.abc import Mapping
 from functools import partial
-from typing import cast  # noqa: TID251
 
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.service import (
-    FormioConfigurationWrapper,
-)
-from openforms.formio.typing import (
-    Component,
-    FileComponent,
-)
+from formio_types import AnyComponent, EditGrid, File, Selectboxes
+from openforms.formio.service import FormioConfig
 from openforms.forms.json_schema import NestedDict
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
@@ -113,10 +107,10 @@ class GenericJSONRegistration(BasePlugin):
 
     def process_variable_schema(
         self,
-        component: Component,
+        component: AnyComponent,
         schema: JSONObject,
         options: GenericJSONOptions,
-        configuration_wrapper: FormioConfigurationWrapper,
+        formio_config: FormioConfig,
     ):
         """
         Process a variable schema for the Generic JSON format.
@@ -137,7 +131,7 @@ class GenericJSONRegistration(BasePlugin):
         transform_to_list = options["transform_to_list"]
 
         match component:
-            case {"type": "file", "multiple": True}:
+            case File(multiple=True):
                 # If multiple is true, the value will be an empty list if no attachments are
                 # uploaded, or a list of objects with file name and content as properties
                 # when one or more attachments are uploaded
@@ -151,7 +145,7 @@ class GenericJSONRegistration(BasePlugin):
                     "additionalProperties": False,
                 }
 
-            case {"type": "file"}:
+            case File():
                 # If multiple is false, the value will be None if no attachment is uploaded,
                 # or an object with file name and content as properties when one attachment
                 # is uploaded
@@ -167,7 +161,7 @@ class GenericJSONRegistration(BasePlugin):
                 }
                 schema.update(new_schema)
 
-            case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            case Selectboxes(key=str(key)) if key in transform_to_list:
                 assert isinstance(schema["properties"], dict)
 
                 # If the component is transformed to a list, we need to adjust the schema
@@ -178,19 +172,28 @@ class GenericJSONRegistration(BasePlugin):
                 for prop in ("properties", "required", "additionalProperties"):
                     schema.pop(prop)
 
-            case {"type": "editgrid"}:
+            case EditGrid():
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)
 
+                editgrid_parent_keys: list[str] = [
+                    parent.key
+                    for parent in formio_config.get_parents(
+                        component.key, add_self=True
+                    )
+                    if isinstance(parent, EditGrid)
+                ]
+
                 for child_key, child_schema in _properties.items():
-                    child_component = configuration_wrapper[child_key]
+                    namespaced_key = ".".join([*editgrid_parent_keys, child_key])
+                    child_component = formio_config[namespaced_key]
                     assert isinstance(child_schema, dict)
                     self.process_variable_schema(
                         child_component,
                         child_schema,
                         options,
-                        configuration_wrapper,
+                        formio_config,
                     )
 
             case _:
@@ -225,7 +228,7 @@ def build_post_process_component_hook(
 
 
 def process_component(
-    component: Component,
+    component: AnyComponent,
     value: VariableValue,
     schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
@@ -256,19 +259,15 @@ def process_component(
     if transform_to_list is None:
         transform_to_list = []
 
-    key = component["key"]
+    key = component.key
     schema_key = f"properties.{key.replace('.', '.properties.')}"
 
     match component:
-        case {"type": "file", "multiple": True}:
-            _component = cast(FileComponent, component)
-            return get_attachments(_component, attachments, current_data_path)
+        case File(multiple=True):
+            return get_attachments(component, attachments, current_data_path)
 
-        case {"type": "file"}:  # multiple is False or missing
-            _component = cast(FileComponent, component)
-            attachment_list = get_attachments(
-                _component, attachments, current_data_path
-            )
+        case File():  # multiple is False or missing
+            attachment_list = get_attachments(component, attachments, current_data_path)
 
             variable_schema = schema[schema_key]
             assert isinstance(variable_schema, dict)
@@ -284,7 +283,7 @@ def process_component(
                 variable_schema["type"] = "object"
                 return attachment_list[0]
 
-        case {"type": "selectboxes"} if key in transform_to_list:
+        case Selectboxes() if key in transform_to_list:
             assert isinstance(value, Mapping)
             return [option for option, is_selected in value.items() if is_selected]
 
@@ -293,7 +292,7 @@ def process_component(
 
 
 def get_attachments(
-    component: FileComponent,
+    component: File,
     attachments: dict[str, list[SubmissionFileAttachment]],
     key_prefix: str = "",
 ) -> list[JSONObject]:
@@ -308,7 +307,7 @@ def get_attachments(
 
     :return encoded_attachments: List of encoded attachments for this file component.
     """
-    key = f"{key_prefix}.{component['key']}" if key_prefix else component["key"]
+    key = f"{key_prefix}.{component.key}" if key_prefix else component.key
 
     return [
         {

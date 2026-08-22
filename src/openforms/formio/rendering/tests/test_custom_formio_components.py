@@ -2,6 +2,7 @@ from uuid import UUID
 
 from django.test import TestCase, override_settings
 
+from openforms.submissions.models import Submission
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -12,18 +13,22 @@ from ..nodes import ComponentNode
 
 
 @override_settings(LANGUAGE_CODE="en")
-class CustomFormNodeTests(TestCase):
+class CustomComponentNodeTests(TestCase):
     def test_partners_component(self):
-        component = {
-            "type": "partners",
-            "key": "partners",
-            "label": "Partners",
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "partners",
+                        "key": "partners",
+                        "label": "Partners",
+                    }
+                ]
+            },
         )
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -57,7 +62,9 @@ class CustomFormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.summary, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step_data, component=component, renderer=renderer
+            step_data=step_data,
+            component=submission.formio_config["partners"],
+            renderer=renderer,
         )
 
         nodelist = list(component_node)
@@ -83,17 +90,21 @@ class CustomFormNodeTests(TestCase):
         self.assertEqual("Date of birth: April 1, 1969", nodelist[12].render())
 
     def test_children_component(self):
-        component = {
-            "type": "children",
-            "key": "children",
-            "label": "Children",
-            "enableSelection": True,
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": True,
+                    }
+                ]
+            },
         )
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -138,7 +149,9 @@ class CustomFormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.summary, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step_data, component=component, renderer=renderer
+            step_data=step_data,
+            component=submission.formio_config["children"],
+            renderer=renderer,
         )
 
         nodelist = list(component_node)

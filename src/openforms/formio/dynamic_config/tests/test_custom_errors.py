@@ -1,39 +1,38 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
 
-from glom import glom
 from unittest_parametrize import ParametrizedTestCase, parametrize
 
+from formio_types import AddressNL, TextField
 from openforms.formio.typing import AddressNLComponent
-from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...datastructures import FormioConfigurationWrapper
+from ...datastructures import FormioConfig
 from .. import get_translated_custom_error_messages
 
 
-class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
+class ComponentWithCustomErrorsTests(ParametrizedTestCase, SimpleTestCase):
     def test_no_translated_errors(self):
-        config = {
-            "components": [
+        config = FormioConfig(
+            name="<test>",
+            components=[
                 {"key": "textField", "type": "textfield", "label": "Text Field"}
-            ]
-        }
-
-        submission = SubmissionFactory.create(language_code="en")
-
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission.language_code
+            ],
         )
 
-        self.assertNotIn("errors", config["components"][0])
+        get_translated_custom_error_messages(config, "en")
+
+        component = config["textField"]
+        assert isinstance(component, TextField)
+        self.assertIsNone(component.errors)
 
     def test_custom_errors_in_english(self):
-        config = {
-            "components": [
+        config = FormioConfig(
+            name="<test>",
+            components=[
                 {
                     "key": "textField",
                     "type": "textfield",
                     "label": "Text Field",
-                    "translatedErrors": {
+                    "translatedErrors": {  # pyright: ignore[reportArgumentType]
                         "en": {
                             "pattern": "{{ field }} has the wrong pattern!!!",
                             "required": "{{ field }} is required!!!",
@@ -46,17 +45,16 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
                         },
                     },
                 }
-            ]
-        }
-
-        submission = SubmissionFactory.create(language_code="en")
-
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission.language_code
+            ],
         )
 
+        get_translated_custom_error_messages(config, "en")
+
+        component = config["textField"]
+        assert isinstance(component, TextField)
+        assert component.errors is not None
         self.assertEqual(
-            config["components"][0]["errors"],
+            component.errors,
             {
                 "pattern": "{{ field }} has the wrong pattern!!!",
                 "required": "{{ field }} is required!!!",
@@ -65,13 +63,14 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
         )
 
     def test_existing_errors_not_overwritten(self):
-        config = {
-            "components": [
+        config = FormioConfig(
+            name="<test>",
+            components=[
                 {
                     "key": "textField",
                     "type": "textfield",
                     "label": "Text Field",
-                    "translatedErrors": {
+                    "translatedErrors": {  # pyright: ignore[reportArgumentType]
                         "en": {
                             "pattern": "{{ field }} has the wrong pattern!!!",
                             "required": "{{ field }} is required!!!",
@@ -83,26 +82,20 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
                             "maxLength": "{{ field }} is te lang!!!",
                         },
                     },
-                    "errors": {"test": "test"},
+                    "errors": {"pattern": "test"},  # pyright: ignore[reportArgumentType]
                 }
-            ]
-        }
-
-        submission = SubmissionFactory.create(language_code="en")
-
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission.language_code
+            ],
         )
 
-        self.assertEqual(
-            config["components"][0]["errors"],
-            {
-                "test": "test",
-            },
-        )
+        get_translated_custom_error_messages(config, "en")
+
+        component = config["textField"]
+        assert isinstance(component, TextField)
+        assert component.errors is not None
+        self.assertEqual(component.errors, {"pattern": "test"})
 
     def test_addressnl_custom_error_messages(self):
-        component: AddressNLComponent = {
+        _component: AddressNLComponent = {
             "key": "addressNL",
             "type": "addressNL",
             "label": "Address",
@@ -126,24 +119,31 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
                 },
             },
         }
+        config = FormioConfig(name="<test>", components=[_component])
 
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper({"components": [component]}), "en"
-        )
+        get_translated_custom_error_messages(config, "en")
 
-        assert "errors" in component["openForms"]["components"]["city"]
+        component = config["addressNL"]
+        assert isinstance(component, AddressNL)
+        assert component.open_forms is not None
+        sub_components = component.open_forms.components
+        assert sub_components is not None
+        assert sub_components.city is not None
+        assert sub_components.city.errors is not None
+        assert sub_components.postcode is not None
+        assert sub_components.postcode.errors is not None
+
         self.assertEqual(
-            component["openForms"]["components"]["city"]["errors"],
+            sub_components.city.errors,
             {"pattern": "Custom city error"},
         )
-        assert "errors" in component["openForms"]["components"]["postcode"]
         self.assertEqual(
-            component["openForms"]["components"]["postcode"]["errors"],
+            sub_components.postcode.errors,
             {"pattern": "Custom postcode error"},
         )
 
     def test_addressnl_custom_error_messages_noop(self):
-        component: AddressNLComponent = {
+        _component: AddressNLComponent = {
             "key": "addressNL",
             "type": "addressNL",
             "label": "Address",
@@ -161,19 +161,18 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
                 },
             },
         }
+        config = FormioConfig(name="<test>", components=[_component])
 
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper({"components": [component]}), "en"
-        )
+        get_translated_custom_error_messages(config, "en")
 
-        assert "openForms" in component
-        assert "components" in component["openForms"]
-        assert "city" in component["openForms"]["components"]
-        assert "errors" in component["openForms"]["components"]["city"]
-        self.assertEqual(
-            component["openForms"]["components"]["city"]["errors"],
-            {"pattern": "no touch"},
-        )
+        component = config["addressNL"]
+        assert isinstance(component, AddressNL)
+        assert component.open_forms is not None
+        sub_components = component.open_forms.components
+        assert sub_components is not None
+        assert sub_components.city is not None
+        assert sub_components.city.errors is not None
+        self.assertEqual(sub_components.city.errors, {"pattern": "no touch"})
 
     @parametrize(
         "extensions_config",
@@ -187,18 +186,24 @@ class ComponentWithCustomErrorsTests(ParametrizedTestCase, TestCase):
         ],
     )
     def test_addressnl_custom_error_messages_missing_config(self, extensions_config):
-        component: AddressNLComponent = {
+        _component: AddressNLComponent = {
             "key": "addressNL",
             "type": "addressNL",
             "label": "Address",
             "deriveAddress": True,
             "openForms": extensions_config,
         }
+        config = FormioConfig(name="<test>", components=[_component])
 
-        get_translated_custom_error_messages(
-            FormioConfigurationWrapper({"components": [component]}), "en"
-        )
+        get_translated_custom_error_messages(config, "en")
 
+        component = config["addressNL"]
+        assert isinstance(component, AddressNL)
         # assert that no translation is set
-        sub_component = glom(component, "openForms.components.postcode", default={})
-        self.assertNotIn("errors", sub_component)
+        errors = None
+        try:
+            errors = component.open_forms.components.postcode.errors  # type: ignore
+        except AttributeError:
+            pass
+        if errors is not None:
+            self.fail("errors should not have been set")
