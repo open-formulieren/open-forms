@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, assert_never
@@ -23,8 +22,9 @@ from opentelemetry import trace
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.service import FormioConfigurationWrapper
-from openforms.forms.models import FormRegistrationBackend, FormStep
+from openforms.formio.datastructures import FormioConfig
+from openforms.formio.service import dump_to_legacy
+from openforms.forms.models import Form, FormRegistrationBackend, FormStep
 from openforms.logging import audit_logger
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
@@ -51,7 +51,10 @@ if TYPE_CHECKING:
         SubmissionFileAttachmentQuerySet,
     )
     from .submission_report import SubmissionReport
-    from .submission_value_variable import SubmissionValueVariablesState
+    from .submission_value_variable import (
+        SubmissionValueVariable,
+        SubmissionValueVariablesState,
+    )
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.submissions.models.submission")
@@ -132,7 +135,7 @@ class Submission(models.Model):
     """
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
+    form = models.ForeignKey[Form]("forms.Form", on_delete=models.PROTECT)
 
     # meta information
     form_url = models.URLField(
@@ -342,7 +345,6 @@ class Submission(models.Model):
     ] = SubmissionQuerySet.as_manager()
 
     _form_login_required: bool | None = None  # can be set via annotation
-    _total_configuration_wrapper = None
 
     # type hints for (reverse) related fields
     auth_info: AuthInfo
@@ -352,6 +354,8 @@ class Submission(models.Model):
     """
     May raise ``RelatedObjectDoesNotExist`` if no record exists in the database.
     """
+    submissionstep_set: models.Manager[SubmissionStep]
+    submissionvaluevariable_set: models.Manager[SubmissionValueVariable]
 
     class Meta:
         verbose_name = _("submission")
@@ -450,20 +454,21 @@ class Submission(models.Model):
             fragment=True
         )  # Fragments are present in hash based routing
 
-    @property
-    def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
-        if not self._total_configuration_wrapper:
-            state = self.load_execution_state()
-            form_steps = state.form_steps
-            if len(form_steps) == 0:
-                return FormioConfigurationWrapper(configuration={})
-
-            begin_configuration = deepcopy(form_steps[0].form_definition.configuration)
-            wrapper = FormioConfigurationWrapper(begin_configuration)
-            for form_step in form_steps[1:]:
-                wrapper += form_step.form_definition.configuration_wrapper
-            self._total_configuration_wrapper = wrapper
-        return self._total_configuration_wrapper
+    @cached_property
+    def formio_config(self) -> FormioConfig:
+        state = self.load_execution_state()
+        form_steps = state.form_steps
+        # note that mutations to the step-level formio_config are not reflected in the
+        # submission formio_config, and vice versa!
+        # XXX can we achieve this to make it more intuitive?
+        all_step_components = sum(
+            (
+                form_step.form_definition.configuration.get("components", [])
+                for form_step in form_steps
+            ),
+            [],
+        )
+        return FormioConfig(name=self.form.admin_name, components=all_step_components)
 
     @property
     def form_login_required(self):
@@ -709,6 +714,7 @@ class Submission(models.Model):
             if isinstance(node, SubmissionStepNode):
                 if current_step != {}:
                     summary_data.append(current_step)
+                assert node.step.form_step is not None
                 current_step = {
                     "slug": node.step.form_step.slug,
                     "name": node.render(),
@@ -720,7 +726,7 @@ class Submission(models.Model):
                 current_field = {
                     "name": node.label,
                     "value": node.value,
-                    "component": node.component,
+                    "component": dump_to_legacy(node.component),
                 }
                 current_step["data"].append(current_field)
 

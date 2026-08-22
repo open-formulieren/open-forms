@@ -71,7 +71,7 @@ def report_configurations() -> bool:
     known_conditional_keys = {"when", "show"}
     for form_definition in form_definitions.iterator(chunk_size=10):
         component_keys: set[str] = set()
-        for component in form_definition.configuration_wrapper:
+        for component in form_definition.iter_components():
             if not (conditional := component.get("conditional")):
                 continue
             elif (

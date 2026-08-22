@@ -23,6 +23,7 @@ from openforms.forms.tests.factories import (
 )
 
 from ..models import SubmissionFileAttachment, SubmissionValueVariable
+from .constants import TEXT_FIELD_DEFAULTS
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -85,12 +86,22 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "formStepUuid": str(self.step1.uuid),
                 "configuration": {
                     "components": [
-                        {"type": "textfield", "key": "test-key", "label": "test"}
-                    ]
+                        {
+                            **TEXT_FIELD_DEFAULTS,
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "test",
+                        }
+                    ],
                 },
                 "defaultConfiguration": {
                     "components": [
-                        {"type": "textfield", "key": "test-key", "label": "test"}
+                        {
+                            **TEXT_FIELD_DEFAULTS,
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "test",
+                        }
                     ]
                 },
                 "data": {"test-key": "example data"},
@@ -141,12 +152,22 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "formStepUuid": str(self.step1.uuid),
                 "configuration": {
                     "components": [
-                        {"type": "textfield", "key": "test-key", "label": "test"}
+                        {
+                            **TEXT_FIELD_DEFAULTS,
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "test",
+                        }
                     ]
                 },
                 "defaultConfiguration": {
                     "components": [
-                        {"type": "textfield", "key": "test-key", "label": "test"}
+                        {
+                            **TEXT_FIELD_DEFAULTS,
+                            "key": "test-key",
+                            "type": "textfield",
+                            "label": "test",
+                        }
                     ]
                 },
                 "data": {"test-key": "example data"},
@@ -371,7 +392,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({"nested": {"key": "some data"}}, response.json()["data"])
-
         state = submission.load_submission_value_variables_state()
         data = state.get_data(submission_step=submission_step, include_unsaved=False)
         self.assertEqual({"nested": {"key": "some data"}}, data)

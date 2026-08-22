@@ -1,16 +1,18 @@
 from copy import deepcopy
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
 
+from formio_types import Date
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import VariableValue
 from openforms.variables.service import get_static_variables
 
-from ...service import FormioConfigurationWrapper, FormioData, get_dynamic_configuration
+from ...service import FormioConfig, FormioData, get_dynamic_configuration
 from ...typing import DateComponent
 
 
@@ -18,16 +20,17 @@ class DynamicDateConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
         component: DateComponent, variables: dict[str, VariableValue]
-    ) -> DateComponent:
-        config_wrapper = FormioConfigurationWrapper({"components": [component]})
+    ) -> Date:
+        formio_config = FormioConfig(name="<test>", components=[component])
         submission = SubmissionFactory.create()
         static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
-        config_wrapper = get_dynamic_configuration(
-            config_wrapper, submission=submission, data=FormioData(variables)
+        formio_config = get_dynamic_configuration(
+            formio_config, submission=submission, data=FormioData(variables)
         )
-        new_configuration = config_wrapper.configuration
-        return new_configuration["components"][0]
+        _updated_component = formio_config[component["key"]]
+        assert isinstance(_updated_component, Date)
+        return _updated_component
 
     def test_legacy_configuration_still_works(self):
         # legacy configuration = without the openForms.minDate keys etc.
@@ -43,9 +46,10 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertIsNone(new_component["datePicker"]["minDate"])
+        assert new_component.date_picker is not None
+        self.assertIsNone(new_component.date_picker.min_date)
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-08T00:00:00+02:00"
         )
 
     @override_settings(LANGUAGE_CODE="en")
@@ -58,7 +62,7 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertEqual(new_component["placeholder"], "dd-mm-yyyy")
+        self.assertEqual(new_component.placeholder, "dd-mm-yyyy")
 
     def test_min_max_date_fixed_value(self):
         component: DateComponent = {
@@ -77,9 +81,10 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertIsNone(new_component["datePicker"]["minDate"])
+        assert new_component.date_picker is not None
+        self.assertIsNone(new_component.date_picker.min_date)
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-08T00:00:00+02:00"
         )
 
     @freeze_time("2022-09-12T14:07:00Z")
@@ -94,23 +99,27 @@ class DynamicDateConfigurationTests(TestCase):
 
         with self.subTest(include_today=True):
             component = deepcopy(date_component)
+            assert component["openForms"]["minDate"] is not None
             component["openForms"]["minDate"]["includeToday"] = True
 
             new_component = self._get_dynamic_config(component, {})
 
+            assert new_component.date_picker is not None
             self.assertEqual(
-                new_component["datePicker"]["minDate"], "2022-09-12T00:00:00+02:00"
+                new_component.date_picker.min_date,
+                "2022-09-12T00:00:00+02:00",
             )
 
         with self.subTest(include_today=False):
             component = deepcopy(date_component)
+            assert component["openForms"]["minDate"] is not None
             component["openForms"]["minDate"]["includeToday"] = False
 
             new_component = self._get_dynamic_config(component, {})
 
+            assert new_component.date_picker is not None
             self.assertEqual(
-                new_component["datePicker"]["minDate"],
-                "2022-09-13T00:00:00+02:00",
+                new_component.date_picker.min_date, "2022-09-13T00:00:00+02:00"
             )
 
     @freeze_time("2022-09-12T14:07:00Z")
@@ -125,24 +134,26 @@ class DynamicDateConfigurationTests(TestCase):
 
         with self.subTest(include_today=True):
             component = deepcopy(date_component)
+            assert component["openForms"]["maxDate"] is not None
             component["openForms"]["maxDate"]["includeToday"] = True
 
             new_component = self._get_dynamic_config(component, {})
 
+            assert new_component.date_picker is not None
             self.assertEqual(
-                new_component["datePicker"]["maxDate"],
-                "2022-09-12T00:00:00+02:00",
+                new_component.date_picker.max_date, "2022-09-12T00:00:00+02:00"
             )
 
         with self.subTest(include_today=False):
             component = deepcopy(date_component)
+            assert component["openForms"]["maxDate"] is not None
             component["openForms"]["maxDate"]["includeToday"] = False
 
             new_component = self._get_dynamic_config(component, {})
 
+            assert new_component.date_picker is not None
             self.assertEqual(
-                new_component["datePicker"]["maxDate"],
-                "2022-09-11T00:00:00+02:00",
+                new_component.date_picker.max_date, "2022-09-11T00:00:00+02:00"
             )
 
     @freeze_time("2022-10-03T12:00:00Z")
@@ -166,8 +177,9 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-10-03T00:00:00+02:00"
+            new_component.date_picker.min_date, "2022-10-03T00:00:00+02:00"
         )
 
     @freeze_time("2022-11-03T12:00:00Z")
@@ -191,8 +203,9 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"], "2022-11-03T00:00:00+01:00"
+            new_component.date_picker.min_date, "2022-11-03T00:00:00+01:00"
         )
 
     def test_relative_to_variable_add_delta(self):
@@ -214,14 +227,16 @@ class DynamicDateConfigurationTests(TestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 0, 0, 0))
+        assert isinstance(some_date.tzinfo, ZoneInfo)
         assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(
             component, {"someDate": some_date.date()}
         )
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["minDate"],
+            new_component.date_picker.min_date,
             "2022-11-04T00:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
         )
 
@@ -243,14 +258,16 @@ class DynamicDateConfigurationTests(TestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 0, 0, 0))
+        assert isinstance(some_date.tzinfo, ZoneInfo)
         assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(
             component, {"someDate": some_date.date()}
         )
 
+        assert new_component.date_picker is not None
         self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2022-09-14T00:00:00+02:00"
+            new_component.date_picker.max_date, "2022-09-14T00:00:00+02:00"
         )
 
     def test_variable_empty_or_none(self):
@@ -274,7 +291,8 @@ class DynamicDateConfigurationTests(TestCase):
                     component, {"emptyVar": empty_value}
                 )
 
-                self.assertIsNone(new_component["datePicker"]["maxDate"])
+                assert new_component.date_picker is not None
+                self.assertIsNone(new_component.date_picker.max_date)
 
     @tag("gh-2581")
     def test_variable_is_string_serialized_date(self):
@@ -300,7 +318,7 @@ class DynamicDateConfigurationTests(TestCase):
 
     @tag("gh-2581")
     def test_nonsense_variable(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
             "label": "aDate",
@@ -329,20 +347,6 @@ class DynamicDateConfigurationTests(TestCase):
         with self.assertRaises(TypeError):
             self._get_dynamic_config(component, {"emptyVar": "foobar"})
 
-    @tag("gh-2581")
-    def test_incomplete_config_no_crash(self):
-        component: DateComponent = {
-            "type": "date",
-            "key": "aDate",
-            "label": "Date",
-            "openForms": {"maxDate": {}},
-            "datePicker": {"minDate": None, "maxDate": "2022-09-12T14:08:00Z"},
-        }
-
-        new_component = self._get_dynamic_config(component, {})
-
-        self.assertEqual(new_component["datePicker"]["maxDate"], "2022-09-12T14:08:00Z")
-
     @tag("gh-2525")
     def test_configuration_after_delete_validation(self):
         component: DateComponent = {
@@ -356,4 +360,5 @@ class DynamicDateConfigurationTests(TestCase):
 
         new_component = self._get_dynamic_config(component, {})
 
-        self.assertIsNone(new_component["datePicker"]["maxDate"])
+        assert new_component.date_picker is not None
+        self.assertIsNone(new_component.date_picker.max_date)

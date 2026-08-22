@@ -391,13 +391,10 @@ def resolve_uploads_in_step(submission_step: SubmissionStep) -> Iterator[UploadC
 
     # we're doing the looping manually here because our data structures aren't good
     # enough:
-    # * FormioConfigurationWrapper *does* recurse into editgrids, which we don't want
+    # * FormioConfig *does* recurse into editgrids, which we don't want
     #   at this point
-    # * FormioConfigurationWrapper also does not keep track of the parent
-    #   paths/components, and we want to process editgrids as we encounter them to
-    #   inject the item indices into the data paths to resolve the uploads, but keep
-    #   them out of the metadata when saving this to the DB so that later on we can
-    #   still resolve the component without any guesswork
+    # * FormioConfig can keep track of parents paths etc. so it may be a viable
+    #   refactor/cleanup soon
     for component in iter_components(
         configuration,
         recursive=True,

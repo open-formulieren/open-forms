@@ -103,11 +103,13 @@ class FormVariableManager(models.Manager["FormVariable"]):
         # Build the desired state
         desired_variables: list[FormVariable] = []
         desired_keys: set[str] = set()
-        # XXX: looping over the configuration_wrapper is not (yet) viable because it
+        # XXX: looping over the formio_config is not (yet) viable because it
         # also yields the components nested inside edit grids, which we need to ignore.
         # So, we stick to iter_components. We deliberately do a single pass to process
         # the formio definition and then "copy" the information for each affected form
         # so that we can avoid excessive component tree processing.
+        # XXX: this is probably ready to refactor to formio_config now, since we can
+        # implement a tree visitor that skips editgrid children
         configuration = form_definition.configuration
         for component in iter_components(
             configuration=configuration,
@@ -115,13 +117,20 @@ class FormVariableManager(models.Manager["FormVariable"]):
             # components inside edit grids are not real variables
             recurse_into_editgrid=False,
         ):
+            # prevent msgspec validation errors crashing the copy
+            if (prefill := component.get("prefill")) is not None:
+                if not isinstance(prefill.get("plugin"), str):
+                    prefill["plugin"] = ""
+                if not isinstance(prefill.get("attribute"), str):
+                    prefill["attribute"] = ""
+
             # we need to ignore components that don't actually hold any values - there's
             # no point to create variables for those.
             if not holds_submission_data(component):
                 continue
 
             # extract options from the component
-            prefill = component.get("prefill", {})
+            prefill = component.get("prefill") or {}
             prefill_plugin = prefill.get("plugin") or ""
             prefill_attribute = prefill.get("attribute") or ""
             prefill_identifier_role = (
@@ -251,7 +260,7 @@ class FormVariable(models.Model):
         on_delete=models.CASCADE,
     )
     form_id: int | None
-    form_definition = models.ForeignKey(
+    form_definition = models.ForeignKey[FormDefinition](
         to=FormDefinition,
         verbose_name=_("form definition"),
         help_text=_(
@@ -457,10 +466,9 @@ class FormVariable(models.Model):
             from openforms.formio.service import as_json_schema  # circular import
 
             try:
-                component = self.form_definition.configuration_wrapper.component_map[
-                    self.key
-                ]
-                self.json_schema = as_json_schema(component)
+                component = self.form_definition.formio_config[self.key]
+                schema = as_json_schema(component)
+                self.json_schema = schema
                 assert isinstance(self.json_schema, dict)
             except (AttributeError, KeyError) as exc:  # pragma: no cover
                 logger.error(
@@ -471,8 +479,10 @@ class FormVariable(models.Model):
                 pass
 
         if self.json_schema is None:
-            self.json_schema = deepcopy(DATA_TYPE_TO_JSON_SCHEMA[self.data_type])
-            self.json_schema["title"] = self.name
+            self.json_schema = {
+                **deepcopy(DATA_TYPE_TO_JSON_SCHEMA[self.data_type]),
+                "title": self.name,
+            }
 
         return self.json_schema
 
@@ -483,8 +493,7 @@ class FormVariable(models.Model):
         if self.source != FormVariableSources.component or not self.form_definition:
             return
 
-        config_wrapper = self.form_definition.configuration_wrapper
-        component = config_wrapper.component_map.get(self.key)
+        component = self.form_definition.formio_config[self.key]
 
         if self.initial_value is None:
             self.initial_value = get_component_default_value(component)

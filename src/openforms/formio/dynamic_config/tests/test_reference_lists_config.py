@@ -9,20 +9,21 @@ from rest_framework.test import APITestCase
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from formio_types import Option, Radio, Select, Selectboxes
+from formio_types.radio import RadioExtensions
+from formio_types.select import SelectData, SelectExtensions
+from formio_types.selectboxes import SelectboxesExtensions
 from openforms.api.exceptions import ServiceUnavailable
-from openforms.formio.constants import DataSrcOptions
-from openforms.formio.registry import register
-from openforms.formio.typing import (
-    RadioComponent,
-    SelectBoxesComponent,
-    SelectComponent,
-)
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
+
+from ...constants import DataSrcOptions
+from ...datastructures import FormioData
+from ...registry import register
 
 
 @tag("gh-4993")
@@ -46,72 +47,71 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         cls.submission = SubmissionFactory.create()
 
     def test_success(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
         self.assertEqual(
-            component["data"].get("values"),
+            component.data.values,
             [
-                {"label": "Option 2", "value": "option2"},
-                {"label": "Option 1", "value": "option1"},
+                Option(label="Option 2", value="option2"),
+                Option(label="Option 1", value="option1"),
             ],
         )
 
     def test_table_with_paginated_items(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel-with-many-items",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel-with-many-items",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        component["data"].get("values").reverse()
+        values = reversed(component.data.values)
         self.assertEqual(
-            component["data"].get("values"),
-            [{"label": str(i), "value": str(i)} for i in range(101)],
+            list(values),
+            [Option(label=str(i), value=str(i)) for i in range(101)],
         )
 
     def test_no_service_configured(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": "",
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service="",
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertNotIn("values", component["data"])
+        self.assertEqual(component.data.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -123,24 +123,25 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_no_code_configured(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertNotIn("values", component["data"])
+        self.assertEqual(component.data.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -150,26 +151,27 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_service_does_not_exist(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                code="tabel1",
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                translations={},
+            ),
+        )
 
         self.service.delete()
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertNotIn("values", component["data"])
+        self.assertEqual(component.data.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -181,24 +183,25 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_items_not_found(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "non-existent",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                code="non-existent",
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertNotIn("values", component["data"])
+        self.assertEqual(component.data.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(
@@ -210,58 +213,55 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_items_expired(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "item-not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                code="item-not-geldig-anymore",
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component["data"].get("values"), [])
+        self.assertEqual(component.data.values, [])
 
     def test_table_expired_item_valid(self):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                code="not-geldig-anymore",
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component["data"].get("values"), [])
+        self.assertEqual(component.data.values, [])
 
     @requests_mock.Mocker()
     def test_request_exception(self, m):
-        component: SelectComponent = {
-            "key": "select",
-            "type": "select",
-            "label": "Select",
-            "data": {},
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Select(
+            key="select",
+            label="Select",
+            data=SelectData(),
+            data_type="string",
+            open_forms=SelectExtensions(
+                code="tabel1",
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                translations={},
+            ),
+        )
 
         m.get(
             f"{self.service.api_root}tabellen?code=tabel1",
@@ -269,9 +269,11 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertNotIn("values", component["data"])
+        self.assertEqual(component.data.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(
@@ -306,49 +308,47 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         cls.submission = SubmissionFactory.create()
 
     def test_success(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
         self.assertEqual(
-            component["values"],
+            component.values,
             [
-                {"label": "Option 2", "value": "option2"},
-                {"label": "Option 1", "value": "option1"},
+                Option(label="Option 2", value="option2"),
+                Option(label="Option 1", value="option1"),
             ],
         )
 
     def test_no_service_configured(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": "",
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service="",
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
@@ -361,24 +361,24 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_no_code_configured(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
@@ -389,26 +389,26 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_service_does_not_exist(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         self.service.delete()
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
@@ -421,24 +421,24 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_items_not_found(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "non-existent",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="non-existent",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
@@ -451,58 +451,52 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_table_expired_item_valid(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="not-geldig-anymore",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
     def test_items_expired(self):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "item-not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="item-not-geldig-anymore",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component.get("values"), [])
+        self.assertEqual(component.values, [])
 
     @requests_mock.Mocker()
     def test_request_exception(self, m):
-        component: SelectBoxesComponent = {
-            "key": "selectboxes",
-            "type": "selectboxes",
-            "label": "Selectboxes",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Selectboxes(
+            key="selectboxes",
+            label="Selectboxes",
+            values=[],
+            open_forms=SelectboxesExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         m.get(
             f"{self.service.api_root}tabellen?code=tabel1",
@@ -510,9 +504,11 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
 
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
@@ -548,49 +544,47 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         cls.submission = SubmissionFactory.create()
 
     def test_success(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
         self.assertEqual(
-            component["values"],
+            component.values,
             [
-                {"label": "Option 2", "value": "option2"},
-                {"label": "Option 1", "value": "option1"},
+                Option(label="Option 2", value="option2"),
+                Option(label="Option 1", value="option1"),
             ],
         )
 
     def test_no_service_configured(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": "",
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service="",
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -602,24 +596,24 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_no_code_configured(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -629,26 +623,26 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_service_does_not_exist(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         self.service.delete()
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(log.template, "logging/events/form_configuration_error.txt")
@@ -660,24 +654,24 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_items_not_found(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "non-existent",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="non-existent",
+                translations={},
+            ),
+        )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(
@@ -689,58 +683,52 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
     def test_items_expired(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "item-not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="item-not-geldig-anymore",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component.get("values"), [])
+        self.assertEqual(component.values, [])
 
     def test_table_expired_item_valid(self):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "not-geldig-anymore",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="not-geldig-anymore",
+                translations={},
+            ),
+        )
 
-        register.update_config(component, submission=self.submission, data={})
+        register.update_config(component, submission=self.submission, data=FormioData())
 
-        self.assertEqual(component.get("values"), [])
+        self.assertEqual(component.values, [])
 
     @requests_mock.Mocker()
     def test_request_exception(self, m):
-        component: RadioComponent = {
-            "key": "radio",
-            "type": "radio",
-            "label": "Radio",
-            "values": [],
-            "dataType": "string",
-            "openForms": {
-                "code": "tabel1",
-                "dataSrc": DataSrcOptions.reference_lists,
-                "service": self.service.slug,
-                "translations": {},
-            },
-        }
+        component = Radio(
+            key="radio",
+            label="Radio",
+            values=[],
+            open_forms=RadioExtensions(
+                data_src=DataSrcOptions.reference_lists.value,
+                service=self.service.slug,
+                code="tabel1",
+                translations={},
+            ),
+        )
 
         m.get(
             f"{self.service.api_root}tabellen?code=tabel1",
@@ -748,9 +736,11 @@ class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
         )
 
         with self.assertRaises(ServiceUnavailable):
-            register.update_config(component, submission=self.submission, data={})
+            register.update_config(
+                component, submission=self.submission, data=FormioData()
+            )
 
-        self.assertEqual(component["values"], [])
+        self.assertEqual(component.values, [])
         log = TimelineLogProxy.objects.for_object(self.submission.form).get()
         assert log.extra_data
         self.assertEqual(
@@ -778,11 +768,10 @@ class SubmissionStepDetailTest(SubmissionsMixin, APITestCase):
                         "type": "selectboxes",
                         "label": "Selectboxes",
                         "values": [{"label": "", "value": ""}],
-                        "dataType": "string",
                         "openForms": {
-                            "code": "tabel1",
                             "dataSrc": DataSrcOptions.reference_lists,
                             "service": "non-existent",
+                            "code": "tabel1",
                             "translations": {},
                         },
                         "id": "ew0bwv7",

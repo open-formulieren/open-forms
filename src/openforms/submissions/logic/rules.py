@@ -5,7 +5,7 @@ from json_logic import jsonLogic
 from opentelemetry import trace
 
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    FormioConfig,
     FormioData,
     process_visibility,
 )
@@ -98,7 +98,7 @@ def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data: FormioData,
     data_for_visible_state: FormioData,
-    configuration: FormioConfigurationWrapper,
+    config: FormioConfig,
     submission: Submission,
 ) -> Iterator[ActionOperation]:
     """
@@ -116,7 +116,6 @@ def iter_evaluate_rules(
       structure is updated after every mutation.
     :param data_for_visible_state: The data used to restore values when flipping
       visibility states.
-    :param configuration: Formio configuration wrapper of a step.
     :param submission: Submission instance.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
@@ -151,7 +150,7 @@ def iter_evaluate_rules(
                 _handle_clear_on_hide_for_untriggered_rule(
                     rule,
                     data,
-                    configuration,
+                    config,
                     data_for_visible_state=data_for_visible_state,
                 )
                 continue
@@ -159,7 +158,7 @@ def iter_evaluate_rules(
             for operation in rule.action_operations:
                 if mutations := operation.eval(
                     data,
-                    configuration,
+                    config,
                     submission,
                     data_for_visible_state=data_for_visible_state,
                 ):
@@ -179,7 +178,7 @@ def iter_evaluate_rules(
 def _handle_clear_on_hide_for_untriggered_rule(
     rule: FormLogic,
     data: FormioData,
-    configuration: FormioConfigurationWrapper,
+    config: FormioConfig,
     *,
     data_for_visible_state: FormioData,
 ):
@@ -194,20 +193,20 @@ def _handle_clear_on_hide_for_untriggered_rule(
         # different step than we are currently evaluating. We don't have to do anything
         # in this case, because the clear-on-hide behaviour of that component will be
         # handled once the user has reached that step.
-        if operation.component not in configuration:
+        if operation.component not in config:
             continue
 
-        component = configuration[operation.component]
+        component = config[operation.component]
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
-        # configuration.
+        # config.
         # When a component flips back to visible after being hidden and having its value
         # cleared before, we need to restore the original input data, so we must always
         # call this (see #6005).
         process_visibility(
-            {"components": [component]},
+            [component],
             data,
-            configuration,
+            config,
             data_for_visible_state=data_for_visible_state,
-            parent_hidden=configuration.is_hidden(component["key"], data),
+            parent_hidden=config.is_hidden(component.key, data),
         )

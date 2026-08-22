@@ -1,102 +1,156 @@
 import operator
-from datetime import datetime, time
-from typing import TypedDict, cast  # noqa: TID251
+from datetime import date, datetime, time
+from typing import assert_never
 
 from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
-from glom import assign, glom
+
+from formio_types import Date, DateTime
+from formio_types.date import (
+    DateConstraintDelta,
+    DatePickerConfig,
+    FixedValueDateConstraint,
+    FutureDateConstraint,
+    NoDateConstraint,
+    PastDateConstraint,
+    RelativeDateConstraint,
+)
+from formio_types.datetime import (
+    DateConstraintDelta as DateTimeConstraintDelta,
+    DateTimePickerConfig,
+    FixedValueDateConstraint as FixedValueDateTimeConstraint,
+    FutureDateTimeConstraint,
+    NoDateConstraint as NoDateTimeConstraint,
+    PastDateTimeConstraint,
+    RelativeDateConstraint as RelativeDateTimeConstraint,
+)
 
 from ..datastructures import FormioData
-from ..typing import DateComponent, DatetimeComponent
-from ..typing.dates import DateConstraintConfiguration, DateConstraintDelta
 
 NOW_VARIABLE = "now"
 
 
-class DatePickerConfig(TypedDict):
-    minDate: str | None
-    maxDate: str | None
+def mutate(component: Date | DateTime, data: FormioData) -> None:
+    if not (of_config := component.open_forms):
+        return
 
+    fields = ("min_date", "max_date")
+    min_date_constraint = of_config.min_date
+    max_date_constraint = of_config.max_date
 
-def mutate(component: DateComponent | DatetimeComponent, data: FormioData) -> None:
-    for key in ("minDate", "maxDate"):
-        config = cast(
-            DateConstraintConfiguration,
-            glom(component, f"openForms.{key}", default=None),
-        )
-        if config is None:
-            continue
+    # looks odd, but not using `getattr` makes it possible for the type checker to infer
+    # the right types :)
+    for field, _constraint in zip(
+        fields, (min_date_constraint, max_date_constraint), strict=True
+    ):
+        match _constraint:
+            case (
+                None
+                | NoDateConstraint()
+                | NoDateTimeConstraint()
+                # for fixed values, the constraint is already set in the date_picker
+                # property
+                | FixedValueDateConstraint()
+                | FixedValueDateTimeConstraint()
+            ):
+                continue
+            # normalize to an equivalent relative delta expression
+            case FutureDateConstraint() | PastDateConstraint():
+                constraint = convert_date_constraint_to_relative_delta(_constraint)
+            # normalize to an equivalent relative delta expression
+            case FutureDateTimeConstraint() | PastDateTimeConstraint():
+                constraint = convert_datetime_constraint_to_relative_delta(_constraint)
+            # already in the right shape for further processing
+            case RelativeDateConstraint() | RelativeDateTimeConstraint():
+                constraint = _constraint
+            case _:  # pragma: no cover
+                assert_never(_constraint)
 
-        if (mode := config.get("mode")) in [None, ""]:
-            continue
+        value = calculate_delta(component, constraint, data)
 
-        # formio has set the datePicker.{key} value
-        if mode == "fixedValue":
-            continue
-
-        config = normalize_config(component, config)
-        value = calculate_delta(component, config, data)
         if value and isinstance(value, datetime):
             value = value.isoformat()
-        assign(component, f"datePicker.{key}", value, missing=dict)
+
+        if component.date_picker is None:
+            match component:
+                case Date():
+                    component.date_picker = DatePickerConfig()
+                case DateTime():
+                    component.date_picker = DateTimePickerConfig()
+                case _:  # pragma: no cover
+                    assert_never(field)
+
+        match field:
+            case "min_date":
+                component.date_picker.min_date = value
+            case "max_date":
+                component.date_picker.max_date = value
+            case _:  # pragma: no cover
+                assert_never(field)
 
 
-def normalize_config(
-    component: DateComponent | DatetimeComponent,
-    config: DateConstraintConfiguration,
-) -> DateConstraintConfiguration:
-    assert "type" in component
-    mode = config["mode"]
-    assert mode in ("future", "past", "relativeToVariable")
-    if mode == "relativeToVariable":
-        return config
+def convert_date_constraint_to_relative_delta(
+    constraint: FutureDateConstraint | PastDateConstraint,
+) -> RelativeDateConstraint:
+    match constraint:
+        case FutureDateConstraint():
+            operator = "add"
+        case PastDateConstraint():
+            operator = "subtract"
+        case _:  # pragma: no cover
+            assert_never(constraint)
 
-    # mode is now future or past -> convert that to a relative delta config
-    config["mode"] = "relativeToVariable"
-    config["variable"] = NOW_VARIABLE
-    # With datetimes, it doesn't make sense to 'include today' or not when validating for future/past
-    include_today = (
-        True
-        if component["type"] == "datetime"
-        else cast(bool, glom(config, "includeToday", default=False))
+    delta = DateConstraintDelta(
+        years=0,
+        months=0,
+        days=0 if constraint.include_today else 1,
     )
-    config["operator"] = "add" if mode == "future" else "subtract"
-
-    delta = cast(
-        DateConstraintDelta,
-        {
-            "years": 0,
-            "months": 0,
-            "days": 0 if include_today else 1,
-        },
+    return RelativeDateConstraint(
+        variable=NOW_VARIABLE,
+        delta=delta,
+        operator=operator,
     )
-    config["delta"] = delta
-    return config
+
+
+def convert_datetime_constraint_to_relative_delta(
+    constraint: FutureDateTimeConstraint | PastDateTimeConstraint,
+) -> RelativeDateTimeConstraint:
+    match constraint:
+        case FutureDateTimeConstraint():
+            operator = "add"
+        case PastDateTimeConstraint():
+            operator = "subtract"
+        case _:  # pragma: no cover
+            assert_never(constraint)
+
+    delta = DateTimeConstraintDelta(years=0, months=0, days=0)
+    return RelativeDateTimeConstraint(
+        variable=NOW_VARIABLE,
+        delta=delta,
+        operator=operator,
+    )
 
 
 def calculate_delta(
-    component: DateComponent | DatetimeComponent,
-    config: DateConstraintConfiguration,
+    component: Date | DateTime,
+    constraint: RelativeDateConstraint | RelativeDateTimeConstraint,
     data: FormioData,
 ) -> datetime | None:
-    assert config["mode"] == "relativeToVariable"
-
-    base_value = data.get(config["variable"], None)
-    if not base_value:
+    if not (base_value := data.get(constraint.variable, None)):
         return None
-
     delta = relativedelta(
-        years=cast(int, glom(config, "delta.years", default=None) or 0),
-        months=cast(int, glom(config, "delta.months", default=None) or 0),
-        days=cast(int, glom(config, "delta.days", default=None) or 0),
+        years=constraint.delta.years or 0,
+        months=constraint.delta.months or 0,
+        days=constraint.delta.days or 0,
     )
 
-    add_or_subtract = glom(config, "operator", default="add")
-    func = operator.add if add_or_subtract == "add" else operator.sub
+    func = operator.add if constraint.operator == "add" else operator.sub
     value = func(base_value, delta)
+    assert isinstance(value, date | datetime)
 
-    if component["type"] == "datetime":
+    if isinstance(component, DateTime):
+        assert isinstance(value, datetime)
         # Truncate seconds/microseconds, because they can be problematic when comparing with variables like "now" which can have
         # seconds > 0 while the flatpickr editor always sets the seconds to 0. This means that if the datetime entered
         # by the user needs to be >= 2022-11-03T12:00:05Z and the user enters 2022-11-03 12:00, this will be outside

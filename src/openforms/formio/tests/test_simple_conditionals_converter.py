@@ -15,6 +15,7 @@ class RegressionTests(SimpleTestCase):
                     "type": "editgrid",
                     "key": "ingeschrevenOnderneming",
                     "label": "Gegevens onderneming",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "radio",
@@ -71,6 +72,7 @@ class RegressionTests(SimpleTestCase):
             "type": "editgrid",
             "key": "medebewonerHGroep",
             "label": "Broken editgrid",
+            "groupLabel": "Item",
             "components": [
                 {
                     "type": "textfield",

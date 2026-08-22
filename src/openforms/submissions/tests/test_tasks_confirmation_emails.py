@@ -346,7 +346,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -373,7 +375,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -402,7 +406,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -433,7 +439,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -468,7 +476,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -500,7 +510,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -524,7 +536,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],
@@ -714,7 +728,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "email",
                     "key": "email",
+                    "label": "Email",
                     "confirmationRecipient": True,
                 },
             ],

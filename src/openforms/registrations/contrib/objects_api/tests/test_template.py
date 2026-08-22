@@ -405,7 +405,7 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
                     "hidden": True,
                     "validate": {"required": True},
                     "conditional": {"eq": "1", "show": True, "when": "radio"},
-                    "defaultValue": None,
+                    "defaultValue": "",
                     "clearOnHide": True,
                 },
                 {
@@ -483,7 +483,7 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
                     "hidden": True,
                     "validate": {"required": True},
                     "conditional": {"eq": "1", "show": True, "when": "radio"},
-                    "defaultValue": None,
+                    "defaultValue": "",
                     "clearOnHide": True,
                 },
                 {
