@@ -71,6 +71,7 @@ class SubmissionStepNode(Node):
     def render(self) -> str:
         if self.mode == RenderModes.export:
             return ""
+        assert self.step.form_step is not None
         form_definition = self.step.form_step.form_definition
         return form_definition.name
 

@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Literal
 
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +5,35 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import JSONField
 
+from formio_types import (
+    AddressNL,
+    Checkbox,
+    Children,
+    Columns,
+    Content,
+    CosignV1,
+    CosignV2,
+    Currency,
+    CustomerProfile,
+    EditGrid,
+    Email,
+    Fieldset,
+    File,
+    Iban,
+    LicensePlate,
+    Map,
+    NpFamilyMembers,
+    Number,
+    Partners,
+    PhoneNumber,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    SoftRequiredErrors,
+    Textarea,
+    Time,
+)
 from openforms.formio.service import FormioData
 from openforms.forms.models import Form
 from openforms.submissions.form_logic import evaluate_form_logic
@@ -20,7 +48,10 @@ class ValidatePrefillData:
     requires_context = True
 
     def __call__(self, data: FormioData, field: JSONField):
-        instance: SubmissionStep = field.parent.instance
+        assert field.parent.instance
+        instance = field.parent.instance
+        assert isinstance(instance, SubmissionStep)
+        assert instance.form_step is not None
 
         # ensure that backend logic is evaluated, which may alter the formio component
         # validation rules. The formio configuration and state are mutated as a side
@@ -35,28 +66,61 @@ class ValidatePrefillData:
         # readonly, which beats the point of performing this check.
         state = instance.submission.variables_state
         original_data = state.get_data(include_unsaved=True)
-        original_configuration = deepcopy(
-            instance.form_step.form_definition.configuration
-        )
         evaluate_form_logic(instance.submission, step=instance, unsaved_data=None)
 
         prefilled_data = state.get_prefilled_data()
 
         errors = {}
-        for component in instance.form_step.iter_components():
-            if "prefill" not in component or component["prefill"]["plugin"] == "":
-                continue
-
-            if not component["disabled"]:
-                continue
-
-            # match on key
-            if not (component_key := component.get("key")):
-                continue
+        assert instance.form_step is not None
+        for component in instance.form_step.form_definition.formio_config:
+            # only process components that have prefill configured *and* are not
+            # editable (disabled/read-only set to True)
+            match component:
+                # skip components that don't support prefill
+                case (
+                    AddressNL()
+                    | Checkbox()
+                    | Children()
+                    | Columns()
+                    | Content()
+                    | CosignV1()
+                    | CosignV2()
+                    | Currency()
+                    | CustomerProfile()
+                    | EditGrid()
+                    | Email()
+                    | Fieldset()
+                    | File()
+                    | Iban()
+                    | LicensePlate()
+                    | Map()
+                    | NpFamilyMembers()
+                    | Number()
+                    | Partners()
+                    | PhoneNumber()
+                    | Radio()
+                    | Select()
+                    | Selectboxes()
+                    | Signature()
+                    | SoftRequiredErrors()
+                    | Textarea()
+                    | Time()
+                ):
+                    if hasattr(component, "prefill"):  # pragma: no cover
+                        raise TypeError(
+                            f"Component {component} prefill support unexpectedly ignored!"
+                        )
+                    continue
+                # only consider components that have prefill configured
+                case _ if component.prefill is None or not component.prefill.plugin:
+                    continue
+                # and finally, skip components that are not read-only
+                case _ if not component.disabled:
+                    continue
 
             # in case the component or its parent component is hidden the key will not be
             # part of the data.
-            if component_key not in data:
+            if not (component_key := component.key) or component_key not in data:
                 continue
 
             prefill_value = prefilled_data.get(component_key)
@@ -81,9 +145,8 @@ class ValidatePrefillData:
 
         # Reset the configuration and data to the state from before validating prefill.
         state.set_values(original_data)
-        instance.form_step.form_definition.configuration = original_configuration
         instance._form_logic_evaluated = False
-        del instance.form_step.form_definition.configuration_wrapper
+        del instance.form_step.form_definition.formio_config
 
 
 class FormMaintenanceModeValidator:

@@ -551,7 +551,15 @@ class FormEndpointTests(APITestCase):
             name="Form definition",
             slug="form-definition",
             is_reusable=True,
-            configuration={"components": [{"key": "textfield", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
         )
 
         url = reverse(
@@ -1630,6 +1638,7 @@ class FormEndpointTests(APITestCase):
         )
         self.assertEqual(errors[0]["reason"], expected_error_message)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_update_unique_form_definition_keys_one_step(self):
         form = FormFactory.create()
         form_definition_uuid = uuid4()
@@ -1691,17 +1700,20 @@ class FormEndpointTests(APITestCase):
         response_data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        assert "invalidParams" in response_data and response_data["invalidParams"]
         errors = response_data["invalidParams"]
         self.assertEqual(len(errors), 1)
         self.assertEqual(errors[0]["code"], "invalid")
-        self.assertEqual(errors[0]["name"], "steps")
-        assert "reason" in errors[0]
-        expected_error_message = _(
-            "Duplicate component key detected in form definition {form_definition}."
-        ).format(form_definition=form_definition_uuid)
+        self.assertEqual(
+            errors[0]["name"],
+            "steps.0.formDefinition.configuration.nonFieldErrors",
+        )
+        expected_error_message = (
+            'Detected duplicate keys in configuration: "component1" (in component1, '
+            "component1)"
+        )
         self.assertEqual(errors[0]["reason"], expected_error_message)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_update_unique_form_definition_keys_one_step_editgrid(self):
         form = FormFactory.create()
         form_definition_uuid = uuid4()
@@ -1764,16 +1776,18 @@ class FormEndpointTests(APITestCase):
         response_data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        assert "invalidParams" in response_data and response_data["invalidParams"]
         errors = response_data["invalidParams"]
         self.assertEqual(len(errors), 1)
         self.assertEqual(errors[0]["code"], "invalid")
-        self.assertEqual(errors[0]["name"], "steps")
-        assert "reason" in errors[0]
-        expected_error_message = _(
-            "Duplicate component key detected in form definition {form_definition}."
-        ).format(form_definition=form_definition_uuid)
-
+        self.assertEqual(
+            errors[0]["name"],
+            "steps.0.formDefinition.configuration.nonFieldErrors",
+        )
+        expected_error_message = (
+            'Detected duplicate keys in configuration: "fileInRepeatingGroup1" (in '
+            "repeatingGroup > fileInRepeatingGroup1, repeatingGroup > "
+            "fileInRepeatingGroup1)"
+        )
         self.assertEqual(errors[0]["reason"], expected_error_message)
 
     def test_update_form_incorrect_request(self):
@@ -3132,7 +3146,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "textfield",
-                                    "name": "Text field",
+                                    "label": "Text field",
                                 },
                             ],
                         },
@@ -3897,6 +3911,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -3963,6 +3978,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4027,6 +4043,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4221,6 +4238,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4348,6 +4366,8 @@ def close_db_connections(future: Future) -> None:
 
 
 class FormEndpointConcurrentTests(APITransactionTestCase):
+    maxDiff = None
+
     def test_create_form_with_definitions_with_update(self):
         """
         Test that updating the same form definition, by creating two forms
@@ -4467,9 +4487,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
         response_data = success_responses[0].json()
-        expected_form_definition = response_data["steps"][0]["formDefinition"][
+        successfull_form_definition = response_data["steps"][0]["formDefinition"][
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         form = Form.objects.get()
 
@@ -4482,7 +4503,12 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         step_form_definition = form_step.form_definition
         self.assertEqual(step_form_definition.uuid, form_definition.uuid)
         self.assertTrue(step_form_definition.login_required)
-        self.assertEqual(step_form_definition.configuration, expected_form_definition)
+
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
 
     def test_update_form_definitions(self):
         """
@@ -4490,17 +4516,23 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         concurrently, is not possible.
         """
         form_definition = FormDefinitionFactory(
-            configuration={"components": [{"key": "textfield", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
             is_reusable=True,
             uuid=uuid4(),
         )
-        form_1 = FormFactory(formstep__form_definition=form_definition)
-        form_2 = FormFactory(formstep__form_definition=form_definition)
-        user_1 = UserFactory.create(
-            is_staff=True, user_permissions=("forms.change_form",)
+        form_1, form_2 = FormFactory.create_batch(
+            2, formstep__form_definition=form_definition
         )
-        user_2 = UserFactory.create(
-            is_staff=True, user_permissions=("forms.change_form",)
+        user_1, user_2 = UserFactory.create_batch(
+            2, is_staff=True, user_permissions=("forms.change_form",)
         )
 
         test_data = (
@@ -4608,19 +4640,14 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
         response_data = success_responses[0].json()
-        expected_form_definition = response_data["steps"][0]["formDefinition"][
+        successfull_form_definition = response_data["steps"][0]["formDefinition"][
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         self.assertEqual(Form.objects.count(), 2)
-        updated_form = next(
-            (
-                form
-                for form in (form_1, form_2)
-                if response_data["uuid"] == str(form.uuid)
-            ),
-            None,
-        )
+        forms_by_uuid = {str(form.uuid): form for form in (form_1, form_2)}
+        updated_form = forms_by_uuid.get(response_data["uuid"])
         assert updated_form, "Unknown form was updated"
         updated_form.refresh_from_db()
 
@@ -4631,7 +4658,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
 
         # step form definition
         self.assertEqual(form_step.form_definition, form_definition)
-        self.assertEqual(
-            form_step.form_definition.configuration, expected_form_definition
-        )
+        step_form_definition = form_step.form_definition
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
         self.assertEqual(FormDefinition.objects.count(), 1)

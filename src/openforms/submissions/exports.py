@@ -45,6 +45,9 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
 
     .. note:: the queryset of submissions must all be of the same form!
     """
+    from openforms.formio.rendering.nodes import ComponentNode
+    from openforms.variables.rendering.nodes import SubmissionValueVariableNode
+
     # queryset *could* be empty
     if not queryset:
         return tablib.Dataset()
@@ -55,10 +58,11 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
         headers.append("Taalcode")
 
     for data_node in iter_submission_data_nodes(first_submission):
-        if hasattr(data_node, "component"):
-            headers.append(data_node.component["key"])
-        elif hasattr(data_node, "variable"):
-            headers.append(data_node.variable.key)
+        match data_node:
+            case ComponentNode():
+                headers.append(data_node.component.key)
+            case SubmissionValueVariableNode():
+                headers.append(data_node.variable.key)
 
     data = tablib.Dataset(headers=headers)
 

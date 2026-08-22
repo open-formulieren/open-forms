@@ -2,11 +2,12 @@ from unittest.mock import patch
 
 from django.test import TestCase, tag
 
+from formio_types import AnyComponent, Fieldset, TextField
 from openforms.formio.constants import DataSrcOptions
+from openforms.formio.datastructures import FormioConfig
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
 from ..structured import reshape_submission_data_for_json_summary
@@ -39,9 +40,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input3",
                     "label": "Input 3",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf.value: True,
-                    RenderConfigurationOptions.show_in_summary.value: True,
-                    RenderConfigurationOptions.show_in_confirmation_email.value: True,
+                    "showInPDF": True,
+                    "showInSummary": True,
+                    "showInEmail": True,
                 },
                 # hidden in PDF, summary and confirmation email component, leaf node
                 {
@@ -49,9 +50,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input4",
                     "label": "Input 4",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf.value: False,
-                    RenderConfigurationOptions.show_in_summary.value: False,
-                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
+                    "showInPDF": False,
+                    "showInSummary": False,
+                    "showInEmail": False,
                 },
                 # visible in PDF and summary and hidden in confirmation email component, leaf node
                 {
@@ -59,9 +60,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input5",
                     "label": "Input 5",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf.value: True,
-                    RenderConfigurationOptions.show_in_summary.value: True,
-                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
+                    "showInPDF": True,
+                    "showInSummary": True,
+                    "showInEmail": False,
                 },
                 # hidden in PDF and confirmation email component, visible in summary, leaf node
                 {
@@ -69,9 +70,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input5_1",
                     "label": "Input 5.1",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf.value: False,
-                    RenderConfigurationOptions.show_in_summary.value: True,
-                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
+                    "showInPDF": False,
+                    "showInSummary": True,
+                    "showInEmail": False,
                 },
                 # hidden in PDF and summary and visible in confirmation email component, leaf node
                 {
@@ -79,9 +80,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input6",
                     "label": "Input 6",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf.value: False,
-                    RenderConfigurationOptions.show_in_summary.value: False,
-                    RenderConfigurationOptions.show_in_confirmation_email.value: True,
+                    "showInPDF": False,
+                    "showInSummary": False,
+                    "showInEmail": True,
                 },
                 # container: visible fieldset without visible children
                 {
@@ -268,6 +269,14 @@ class ComponentNodeTests(TestCase):
         state = submission.load_submission_value_variables_state()
         cls.step_data = state.get_data(submission_step=cls.step)
 
+    def _get_component[T: AnyComponent](self, key: str, expected_type: type[T]) -> T:
+        assert self.step.form_step is not None
+        formio_config = self.step.form_step.form_definition.formio_config
+        assert isinstance(formio_config, FormioConfig)
+        component = formio_config[key]
+        assert isinstance(component, expected_type)
+        return component
+
     def test_generic_node_builder(self):
         """
         Assert that ComponentNode.build_node produces node instances.
@@ -275,8 +284,7 @@ class ComponentNodeTests(TestCase):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
         # take a simple component
-        component = self.step.form_step.form_definition.configuration["components"][0]
-        assert component["key"] == "input1"
+        component = self._get_component("input1", expected_type=TextField)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -298,14 +306,13 @@ class ComponentNodeTests(TestCase):
         register = Registry()
 
         @register("textfield")
-        class TextFieldNode(ComponentNode):
+        class TextFieldNode(ComponentNode[TextField]):
             pass
 
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
         # take a simple component
-        component = self.step.form_step.form_definition.configuration["components"][0]
-        assert component["key"] == "input1"
+        component = self._get_component("input1", expected_type=TextField)
 
         with patch("openforms.formio.rendering.registry.register", new=register):
             component_node = ComponentNode.build_node(
@@ -319,11 +326,8 @@ class ComponentNodeTests(TestCase):
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
 
         with self.subTest("Simple hidden leaf component"):
-            component = self.step.form_step.form_definition.configuration["components"][
-                1
-            ]
-            assert component["key"] == "input2"
-            assert component["hidden"]
+            component = self._get_component("input2", expected_type=TextField)
+            assert component.hidden
 
             component_node = ComponentNode.build_node(
                 step_data=self.step_data, component=component, renderer=renderer
@@ -334,10 +338,10 @@ class ComponentNodeTests(TestCase):
             self.assertEqual(nodelist, [])
 
         with self.subTest("Nested hidden component"):
-            fieldset = self.step.form_step.form_definition.configuration["components"][
-                7
-            ]
-            assert not fieldset["hidden"]
+            fieldset = self._get_component(
+                "fieldsetNoVisibleChildren", expected_type=Fieldset
+            )
+            assert not fieldset.hidden
 
             # set up mock registry and component class for test
             register = Registry()
@@ -359,11 +363,8 @@ class ComponentNodeTests(TestCase):
         )
 
         with self.subTest("Simple hidden leaf component"):
-            component = self.step.form_step.form_definition.configuration["components"][
-                1
-            ]
-            assert component["key"] == "input2"
-            assert component["hidden"]
+            component = self._get_component("input2", expected_type=TextField)
+            assert component.hidden
 
             component_node = ComponentNode.build_node(
                 step_data=self.step_data, component=component, renderer=renderer
@@ -374,10 +375,10 @@ class ComponentNodeTests(TestCase):
             self.assertEqual(len(nodelist), 1)
 
         with self.subTest("Nested hidden component"):
-            fieldset = self.step.form_step.form_definition.configuration["components"][
-                7
-            ]
-            assert not fieldset["hidden"]
+            fieldset = self._get_component(
+                "fieldsetNoVisibleChildren", expected_type=Fieldset
+            )
+            assert not fieldset.hidden
 
             # set up mock registry and component class for test
             register = Registry()
@@ -415,10 +416,12 @@ class ComponentNodeTests(TestCase):
 
         rendered = reshape_submission_data_for_json_summary(submission)
 
+        step = submission.steps[0]
+        assert step.form_step is not None
         self.assertEqual(
             rendered,
             {
-                submission.steps[0].form_step.slug: {
+                step.form_step.slug: {
                     "fieldset": {
                         "textfield": "",
                     },
@@ -430,10 +433,13 @@ class ComponentNodeTests(TestCase):
         renderer = Renderer(self.submission, mode=RenderModes.export, as_html=False)
 
         nodelist = []
-        for component in self.step.form_step.form_definition.configuration[
-            "components"
-        ]:
-            component_node = ComponentNode.build_node(
+        assert self.step.form_step is not None
+        formio_config = self.step.form_step.form_definition.formio_config
+        assert isinstance(formio_config, FormioConfig)
+        # loop over top-level components without recursion
+        for _node in formio_config.tree.children:
+            component = _node.data
+            component_node = ComponentNode[AnyComponent].build_node(
                 step_data=self.step_data, component=component, renderer=renderer
             )
             nodelist += list(component_node)
@@ -471,10 +477,13 @@ class ComponentNodeTests(TestCase):
 
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
-            for component in self.step.form_step.form_definition.configuration[
-                "components"
-            ]:
-                component_node = ComponentNode.build_node(
+            assert self.step.form_step is not None
+            formio_config = self.step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            # loop over top-level components without recursion
+            for _node in formio_config.tree.children:
+                component = _node.data
+                component_node = ComponentNode[AnyComponent].build_node(
                     step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
@@ -494,7 +503,7 @@ class ComponentNodeTests(TestCase):
             "Input 14",
             "Soft required errors",  # not actually rendered in full render mode
             "Fieldset",
-            "Columns",
+            "columns",
         ]
         self.assertEqual(labels, expected_labels)
 
@@ -506,10 +515,13 @@ class ComponentNodeTests(TestCase):
 
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
-            for component in self.step.form_step.form_definition.configuration[
-                "components"
-            ]:
-                component_node = ComponentNode.build_node(
+            assert self.step.form_step is not None
+            formio_config = self.step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            # loop over top-level components without recursion
+            for _node in formio_config.tree.children:
+                component = _node.data
+                component_node = ComponentNode[AnyComponent].build_node(
                     step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
@@ -530,7 +542,7 @@ class ComponentNodeTests(TestCase):
             "Input 14",
             "Soft required errors",  # not actually rendered in full render mode
             "Fieldset",
-            "Columns",
+            "columns",
         ]
         self.assertEqual(labels, expected_labels)
 
@@ -543,10 +555,13 @@ class ComponentNodeTests(TestCase):
 
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
-            for component in self.step.form_step.form_definition.configuration[
-                "components"
-            ]:
-                component_node = ComponentNode.build_node(
+            assert self.step.form_step is not None
+            formio_config = self.step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            # loop over top-level components without recursion
+            for _node in formio_config.tree.children:
+                component = _node.data
+                component_node = ComponentNode[AnyComponent].build_node(
                     step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
@@ -747,8 +762,13 @@ class ComponentNodeTests(TestCase):
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
-            for component in step.form_step.form_definition.configuration["components"]:
-                component_node = ComponentNode.build_node(
+            assert step.form_step is not None
+            formio_config = step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            # loop over top-level components without recursion
+            for _node in formio_config.tree.children:
+                component = _node.data
+                component_node = ComponentNode[AnyComponent].build_node(
                     step_data=step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
@@ -972,8 +992,13 @@ class ComponentNodeTests(TestCase):
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
             renderer = Renderer(submission, mode=RenderModes.summary, as_html=False)
-            for component in step.form_step.form_definition.configuration["components"]:
-                component_node = ComponentNode.build_node(
+            assert step.form_step is not None
+            formio_config = step.form_step.form_definition.formio_config
+            assert isinstance(formio_config, FormioConfig)
+            # loop over top-level components without recursion
+            for _node in formio_config.tree.children:
+                component = _node.data
+                component_node = ComponentNode[AnyComponent].build_node(
                     step_data=step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)

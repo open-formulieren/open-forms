@@ -223,6 +223,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         """
         Test that non-applicable form steps are not processed during validation of
         submission completion.
+
+        FIXME: this test violates the invariant that forms must have unique component
+        IDs...
         """
         form = FormFactory.create()
         step_1 = FormStepFactory.create(

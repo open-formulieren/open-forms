@@ -8,8 +8,8 @@ from django.utils.translation import gettext as _
 from json_logic.typing import Primitive
 from rest_framework.exceptions import ErrorDetail
 
+from formio_types import AnyComponent
 from openforms.formio.service import holds_submission_data
-from openforms.formio.typing import Component
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...constants import LogicActionTypes
@@ -28,7 +28,7 @@ that field. The field names are the keys of a logic action struct (polymorphic).
 def validate_logic_actions(
     actions: Sequence[FormLogicActionData],
     *,
-    find_component: Callable[[str], Component | None],
+    find_component: Callable[[str], AnyComponent | None],
     form_variables: Mapping[str, FormVariable],
     form_step_slugs: Collection[str],
 ) -> ActionsErrors:

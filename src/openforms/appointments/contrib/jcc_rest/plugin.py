@@ -10,7 +10,8 @@ from django.utils.translation import get_language, gettext_lazy as _
 import structlog
 
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    FormioConfig,
+    dump_to_legacy,
     get_translated_custom_error_messages,
     localize_components,
 )
@@ -408,10 +409,15 @@ class JccRestPlugin(BasePlugin):
 
         # Make sure the components are localized
         current_language = get_language()
-        config_wrapper = FormioConfigurationWrapper({"components": components})
-        get_translated_custom_error_messages(config_wrapper, current_language)
-        localize_components(config_wrapper, current_language)
 
+        formio_config = FormioConfig(
+            name="<appointmnet contact details>",
+            components=components,
+        )
+        get_translated_custom_error_messages(formio_config, current_language)
+        localize_components(formio_config, current_language)  # pyright: ignore[reportArgumentType]
+
+        components = dump_to_legacy(formio_config.components)
         return (components, required_group_fields)
 
     def create_appointment(

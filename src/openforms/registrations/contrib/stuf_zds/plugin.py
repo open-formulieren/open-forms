@@ -754,9 +754,9 @@ class LangInjection:
     and isn't shadowed by a form field with the same key"""
 
     def __init__(self, submission: Submission, extra_data: dict[str, Primitive]):
-        self.submission = submission
+        self.language_code: str = submission.language_code
         self.extra_data = extra_data
 
     def items(self):
-        yield ("language_code", self.submission.language_code)
+        yield ("language_code", self.language_code)
         yield from self.extra_data.items()

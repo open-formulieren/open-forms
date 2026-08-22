@@ -8,14 +8,12 @@ from rest_framework import serializers
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from formio_types import Date, Postcode
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.formio.service import (
-    FormioConfigurationWrapper,
-    get_dynamic_configuration,
-)
+from openforms.formio.service import get_dynamic_configuration
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -186,31 +184,19 @@ class PrefillVariablesTests(TestCase):
         prefill_variables(submission=submission)
 
         assert submission_step1.form_step is not None
-        config_wrapper1 = FormioConfigurationWrapper(
-            submission_step1.form_step.form_definition.configuration
-        )
-        dynamic_config1 = get_dynamic_configuration(
-            config_wrapper1,
-            submission=submission,
-        )
+        config1 = submission_step1.form_step.form_definition.formio_config
+        dynamic_config1 = get_dynamic_configuration(config1, submission=submission)
         assert submission_step2.form_step is not None
-        config_wrapper2 = FormioConfigurationWrapper(
-            submission_step2.form_step.form_definition.configuration
-        )
-        dynamic_config2 = get_dynamic_configuration(
-            config_wrapper2,
-            submission=submission,
-        )
+        config2 = submission_step2.form_step.form_definition.formio_config
+        dynamic_config2 = get_dynamic_configuration(config2, submission=submission)
 
-        component_postcode = dynamic_config1.configuration["components"][0]
-        self.assertEqual(component_postcode["type"], "postcode")
-        assert "defaultValue" in component_postcode
-        self.assertEqual(component_postcode["defaultValue"], "1015 CJ")
+        component_postcode = dynamic_config1["postcode"]
+        assert isinstance(component_postcode, Postcode)
+        self.assertEqual(component_postcode.default_value, "1015 CJ")
 
-        component_date = dynamic_config2.configuration["components"][0]
-        self.assertEqual(component_date["type"], "date")
-        assert "defaultValue" in component_date
-        self.assertEqual(component_date["defaultValue"], "1999-06-15")
+        component_date = dynamic_config2["birthDate"]
+        assert isinstance(component_date, Date)
+        self.assertEqual(component_date.default_value, "1999-06-15")
 
         state = submission.variables_state
         self.assertEqual(
@@ -683,7 +669,7 @@ class PrefillVariablesTransactionTests(OFVCRMixin, TransactionTestCase):
 
         prefill_variables(submission=submission_step.submission)
 
-        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.pk)
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")

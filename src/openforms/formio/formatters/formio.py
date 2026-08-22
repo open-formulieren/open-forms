@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import time
 from typing import Any
 
@@ -8,19 +9,30 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import structlog
 
-from ..typing import (
-    Component,
-    OptionDict,
-    RadioComponent,
-    SelectBoxesComponent,
-    SelectComponent,
+from formio_types import (
+    AnyComponent,
+    Checkbox,
+    Currency,
+    Email,
+    File,
+    Number,
+    Option,
+    PhoneNumber,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    Textarea,
+    TextField,
+    Time,
 )
+
 from .base import FormatterBase
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
-def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
+def get_value_label(possible_values: Sequence[Option], value: int | str) -> str:
     # From #1466 it's clear that Formio does not force the values to be strings, e.g.
     # if you use numeric values for the options. They are stored as string in the form
     # configuration, but the submitted value is a number.
@@ -29,6 +41,7 @@ def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
     # https://github.com/formio/formio.js/blob/4.12.x/src/components/select/Select.js#L1227
     _original = value
     # cast to string to compare against the values
+    # TODO: check logs if this is still necessary
     if not isinstance(value, str):
         value = str(value)
         logger.info(
@@ -38,47 +51,47 @@ def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
         )
 
     for possible_value in possible_values:
-        if possible_value["value"] == value:
-            return possible_value["label"]
+        if possible_value.value == value:
+            return possible_value.label
 
     return value
 
 
-class DefaultFormatter(FormatterBase):
-    def format(self, component: Component, value: Any) -> str:
+class DefaultFormatter(FormatterBase[AnyComponent]):
+    def format(self, component: AnyComponent, value: Any) -> str:
         return str(value)
 
 
-class TextFieldFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class TextFieldFormatter(FormatterBase[TextField]):
+    def format(self, component: TextField, value: str) -> str:
         return str(value)
 
 
-class EmailFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class EmailFormatter(FormatterBase[Email]):
+    def format(self, component: Email, value: str) -> str:
         return str(value)
 
 
-class TimeFormatter(FormatterBase):
-    def format(self, component: Component, value: time | None) -> str:
+class TimeFormatter(FormatterBase[Time]):
+    def format(self, component: Time, value: time | None) -> str:
         return fmt_time(value)
 
 
-class PhoneNumberFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class PhoneNumberFormatter(FormatterBase[PhoneNumber]):
+    def format(self, component: PhoneNumber, value: str) -> str:
         # TODO custom formatting?
         return str(value)
 
 
-class FileFormatter(FormatterBase):
-    def normalise_value_to_list(self, component: Component, value: Any):
+class FileFormatter(FormatterBase[File]):
+    def normalise_value_to_list(self, component: File, value: Any):
         if value is None:
             return []
         else:
             # file component is always a list
             return value
 
-    def process_result(self, component: Component, formatted: str) -> str:
+    def process_result(self, component: File, formatted: str) -> str:
         if not formatted:
             return ""
 
@@ -88,32 +101,32 @@ class FileFormatter(FormatterBase):
         else:
             return _("attachment: %s") % formatted
 
-    def format(self, component: Component, value: dict) -> str:
+    def format(self, component: File, value: dict) -> str:
         # this is only valid for display to the user (because filename component option, dedupe etc)
         return value["originalName"]
 
 
-class TextAreaFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class TextAreaFormatter(FormatterBase[Textarea]):
+    def format(self, component: Textarea, value: str) -> str:
         # TODO custom formatting?
         return str(value)
 
 
-class NumberFormatter(FormatterBase):
-    def format(self, component: Component, value: int | float) -> str:
+class NumberFormatter(FormatterBase[Number]):
+    def format(self, component: Number, value: int | float) -> str:
         # localized and forced to decimalLimit
-        return number_format(value, decimal_pos=component.get("decimalLimit"))
+        return number_format(value, decimal_pos=component.decimal_limit)
 
 
-class CheckboxFormatter(FormatterBase):
-    def format(self, component: Component, value: bool) -> str:
+class CheckboxFormatter(FormatterBase[Checkbox]):
+    def format(self, component: Checkbox, value: bool) -> str:
         return str(yesno(value))
 
 
-class SelectBoxesFormatter(FormatterBase):
-    def format(self, component: SelectBoxesComponent, value: dict[str, bool]) -> str:
+class SelectBoxesFormatter(FormatterBase[Selectboxes]):
+    def format(self, component: Selectboxes, value: dict[str, bool]) -> str:
         selected_labels = [
-            entry["label"] for entry in component["values"] if value.get(entry["value"])
+            entry.label for entry in component.values if value.get(entry.value)
         ]
         if self.as_html:
             # For the html output, wrap the values in li tags and put it inside an ul tag.
@@ -132,27 +145,27 @@ class SelectBoxesFormatter(FormatterBase):
         return self.multiple_separator.join(selected_labels)
 
 
-class SelectFormatter(FormatterBase):
-    def format(self, component: SelectComponent, value: str) -> str:
-        values = component["data"].get("values") or []
+class SelectFormatter(FormatterBase[Select]):
+    def format(self, component: Select, value: str) -> str:
+        values = component.data.values
         assert isinstance(value, str)
         return get_value_label(values, value)
 
 
-class CurrencyFormatter(FormatterBase):
-    def format(self, component: Component, value: float) -> str:
+class CurrencyFormatter(FormatterBase[Currency]):
+    def format(self, component: Currency, value: float) -> str:
         # localized and forced to decimalLimit
         # note we mirror formio and default to 2 decimals
-        return number_format(value, decimal_pos=component.get("decimalLimit", 2))
+        return number_format(value, decimal_pos=component.decimal_limit or 2)
 
 
-class RadioFormatter(FormatterBase):
-    def format(self, component: RadioComponent, value: str | int) -> str:
-        return get_value_label(component["values"], value)
+class RadioFormatter(FormatterBase[Radio]):
+    def format(self, component: Radio, value: str | int) -> str:
+        return get_value_label(component.values, value)
 
 
-class SignatureFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class SignatureFormatter(FormatterBase[Signature]):
+    def format(self, component: Signature, value: str) -> str:
         text = gettext("signature added")
         if not self.as_html:
             return text

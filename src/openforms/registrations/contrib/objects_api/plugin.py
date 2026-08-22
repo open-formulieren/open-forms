@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
+from formio_types import AddressNL, AnyComponent, EditGrid, File, Selectboxes
 from openforms.config.data import Action
 from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import (
@@ -15,8 +16,7 @@ from openforms.contrib.objects_api.clients import (
     get_objecttypes_client,
 )
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
-from openforms.formio.service import FormioConfigurationWrapper
-from openforms.formio.typing import Component
+from openforms.formio.service import FormioConfig
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.typing import JSONObject
 from openforms.variables.service import get_static_variables
@@ -213,10 +213,10 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
 
     def process_variable_schema(
         self,
-        component: Component,
+        component: AnyComponent,
         schema: JSONObject,
         options: RegistrationOptions,
-        configuration_wrapper: FormioConfigurationWrapper,
+        formio_config: FormioConfig,
     ):
         """
         Process a variable schema for the Objects API format.
@@ -238,7 +238,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         transform_to_list = options["transform_to_list"]
 
         match component:
-            case {"type": "addressNL"}:
+            case AddressNL():
                 # In the Objects API there exists an option to map the individual fields
                 # of the addressNL component. Unlike the transform-to-list option for
                 # selectboxes components, this is not a checkbox, but rather a mapping from
@@ -250,19 +250,19 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
                 # the schema of a complete addressNL object.
                 pass
 
-            case {"type": "file", "multiple": True}:
+            case File(multiple=True):
                 # If multiple is true, the value will be an empty list if no attachments are
                 # uploaded, or a list of urls when one or more attachments are uploaded.
                 schema["items"] = {"type": "string", "format": "uri"}
 
-            case {"type": "file"}:  # multiple is False or missing
+            case File():  # multiple is False or missing
                 # If multiple is false, the value will be an empty string if no attachment
                 # is uploaded, or a single url if one attachment is uploaded.
                 schema["type"] = "string"
                 schema["oneOf"] = [{"format": "uri"}, {"pattern": "^$"}]
                 schema.pop("items")
 
-            case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            case Selectboxes(key=str(key)) if key in transform_to_list:
                 assert isinstance(schema["properties"], dict)
 
                 # If the component is transformed to a list, we need to adjust the schema
@@ -273,19 +273,28 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
                 for prop in ("properties", "required", "additionalProperties"):
                     schema.pop(prop)
 
-            case {"type": "editgrid"}:
+            case EditGrid():
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)
 
+                editgrid_parent_keys: list[str] = [
+                    parent.key
+                    for parent in formio_config.get_parents(
+                        component.key, add_self=True
+                    )
+                    if isinstance(parent, EditGrid)
+                ]
+
                 for child_key, child_schema in _properties.items():
-                    child_component = configuration_wrapper[child_key]
+                    namespaced_key = ".".join([*editgrid_parent_keys, child_key])
+                    child_component = formio_config[namespaced_key]
                     assert isinstance(child_schema, dict)
                     self.process_variable_schema(
                         child_component,
                         child_schema,
                         options,
-                        configuration_wrapper,
+                        formio_config,
                     )
             case _:
                 pass
