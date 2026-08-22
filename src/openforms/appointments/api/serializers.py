@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.timezone import localdate
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +8,11 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from openforms.formio.service import build_serializer, get_component_empty_value
+from openforms.formio.service import (
+    FormioConfig,
+    build_serializer,
+    get_component_empty_value,
+)
 from openforms.forms.constants import FormTypeChoices
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
@@ -330,14 +335,27 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
                     component.setdefault("validate", {})["required"] = True
                     specific_errors[key] = group["error_message"]
 
+        for component in contact_details_meta:
+            component["label"] = force_str(component["label"])
+
+            match component:
+                case {"values": list() as values}:
+                    component["values"] = [
+                        {**opt, "label": force_str(opt["label"])} for opt in values
+                    ]
+                case {"data": {"values": list() as values}}:
+                    component["data"]["values"] = [
+                        {**opt, "label": force_str(opt["label"])} for opt in values
+                    ]
+
+        formio_config = FormioConfig(
+            name="<appointment contact details>",
+            components=contact_details_meta,
+        )
         contact_details_serializer = build_serializer(
-            contact_details_meta,
+            formio_config,
             data=attrs["contact_details"],
-            context={
-                **self.context,
-                "submission": attrs["submission"],
-                "configuration": {"components": contact_details_meta},
-            },
+            context={**self.context, "submission": attrs["submission"]},
         )
         if not contact_details_serializer.is_valid():
             errors = contact_details_serializer.errors

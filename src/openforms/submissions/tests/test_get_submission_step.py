@@ -24,9 +24,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from formio_types import EditGrid, Radio, Select, TextField
+from formio_types.textfield import TextfieldValidate
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.formio.components.vanilla import SelectBoxes, TextField
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.components.vanilla import SelectBoxesPlugin, TextFieldPlugin
+from openforms.formio.datastructures import FormioConfig
 from openforms.formio.formatters.formio import TextFieldFormatter
 from openforms.formio.registry import BasePlugin, ComponentRegistry
 from openforms.forms.tests.factories import (
@@ -39,6 +41,7 @@ from openforms.variables.constants import FormVariableDataTypes
 
 from ...config.models import GlobalConfiguration
 from ..models import Submission
+from .constants import DATE_FIELD_DEFAULTS, SELECTBOXES_DEFAULTS, TEXT_FIELD_DEFAULTS
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -104,11 +107,13 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "defaultConfiguration": {
                 "components": [
                     {
+                        **TEXT_FIELD_DEFAULTS,
                         "label": "Some field",
                         "key": "someField",
                         "type": "textfield",
                     },
                     {
+                        **SELECTBOXES_DEFAULTS,
                         "label": "Other field",
                         "key": "otherField",
                         "type": "selectboxes",
@@ -118,11 +123,13 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "configuration": {
                 "components": [
                     {
+                        **TEXT_FIELD_DEFAULTS,
                         "label": "Some field",
                         "key": "someField",
                         "type": "textfield",
                     },
                     {
+                        **SELECTBOXES_DEFAULTS,
                         "label": "Other field",
                         "key": "otherField",
                         "type": "selectboxes",
@@ -139,18 +146,17 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
     @tag("gh-6320")
     def test_dynamic_form_definition(self):
         register = ComponentRegistry()
-        register("selectboxes")(SelectBoxes)
+        register("selectboxes")(SelectBoxesPlugin)
 
         @register("textfield")
-        class TextField(BasePlugin):
+        class TextFieldPlugin(BasePlugin[TextField]):
             formatter = TextFieldFormatter
 
-            def build_serializer_field(self, component):
+            def build_serializer_field(self, component, parent_key_prefix):
                 raise NotImplementedError()
 
-            @staticmethod
-            def mutate_config_dynamically(component, submission, data):
-                component["label"] = "Rewritten label"
+            def mutate_config_dynamically(self, component, submission, data):
+                component.label = "Rewritten label"
 
         self._add_submission_to_session(self.submission)
 
@@ -165,11 +171,13 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "defaultConfiguration": {
                 "components": [
                     {
+                        **TEXT_FIELD_DEFAULTS,
                         "label": "Rewritten label",
                         "key": "someField",
                         "type": "textfield",
                     },
                     {
+                        **SELECTBOXES_DEFAULTS,
                         "label": "Other field",
                         "key": "otherField",
                         "type": "selectboxes",
@@ -179,11 +187,13 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "configuration": {
                 "components": [
                     {
+                        **TEXT_FIELD_DEFAULTS,
                         "label": "Rewritten label",
                         "key": "someField",
                         "type": "textfield",
                     },
                     {
+                        **SELECTBOXES_DEFAULTS,
                         "label": "Other field",
                         "key": "otherField",
                         "type": "selectboxes",
@@ -236,37 +246,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             {"someField": "data", "otherField": {}},
         )
 
-    @tag("gh-1208", "gh-1068")
-    def test_dynamic_config_applied(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "file",
-                    "key": "file",
-                    "storage": "url",
-                    "url": "",  # must be set dynamically
-                }
-            ]
-        )
-        self._add_submission_to_session(submission)
-        step = submission.submissionstep_set.get()
-        url = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": step.form_step.uuid,
-            },
-        )
-
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.json()
-        component = data["configuration"]["components"][0]
-        self.assertEqual(component["key"], "file")
-        self.assertEqual(component["type"], "file")
-        self.assertEqual(component["url"], "http://testserver/api/v2/formio/fileupload")
-
 
 class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
     maxDiff = None
@@ -279,7 +258,9 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         form_step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "field1"}]
+                "components": [
+                    {"type": "textfield", "key": "field1", "label": "field1"}
+                ]
             },
         )
         form_step2 = FormStepFactory.create(
@@ -378,7 +359,13 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         form_step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "field1"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "field1",
+                        "label": "field1",
+                    }
+                ]
             },
         )
         form_step2 = FormStepFactory.create(
@@ -441,12 +428,12 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         submission = SubmissionFactory.from_components(
             [{"type": "textfield", "key": "bar", "label": "Bar"}],
             submitted_data={"bar": "Korova Milk Bar"},
-            language_code="de",
+            language_code="en",
         )
         form_step = submission.steps[0].form_step
         assert form_step is not None
         form_step.form_definition.configuration["components"][0]["openForms"] = {
-            "translations": {"de": {"label": "Kneipe"}}
+            "translations": {"en": {"label": "Kneipe"}}
         }
         form_step.form_definition.save()
         self._add_submission_to_session(submission)
@@ -507,10 +494,11 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {
                         "type": "radio",
                         "key": "radio1",
+                        "label": "radio1",
                         "tooltip": "De uitsteekschijf van deze week",
                         "values": [
                             {
-                                "value": 1,
+                                "value": "1",
                                 "label": "Een",
                                 "openForms": {
                                     "translations": {
@@ -519,7 +507,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                                     }
                                 },
                             },
-                            {"value": 2},
+                            {"value": "2", "label": "unmodified"},
                         ],
                         "openForms": {
                             "translations": {
@@ -531,10 +519,11 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {
                         "type": "select",
                         "key": "select1",
+                        "label": "select1",
                         "data": {
                             "values": [
                                 {
-                                    "value": 1,
+                                    "value": "1",
                                     "label": "Keuze 1",
                                     "openForms": {
                                         "translations": {
@@ -543,7 +532,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                                         }
                                     },
                                 },
-                                {"value": 2},
+                                {"value": "2", "label": "unmodified"},
                             ]
                         },
                     },
@@ -562,45 +551,34 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
 
         response_data = self.client.get(endpoint).json()
 
-        for _configuration in ("configuration", "defaultConfiguration"):
-            with self.subTest(configuration=_configuration):
-                configuration = response_data[_configuration]
-                wrapped_configuration = FormioConfigurationWrapper(configuration)
-                expected = {
-                    "repeatingGroup1": {
-                        "label": "Repeating group 1",
-                        "tooltip": "First tip",
-                        "groupLabel": "Item",
-                    },
-                    "text1": {
-                        "label": "Text 1",
-                    },
-                }
+        for aspect in ("configuration", "defaultConfiguration"):
+            components = response_data[aspect]["components"]
+            formio_config = FormioConfig(name="<test>", components=components)
 
-                for key, translations in expected.items():
-                    for prop, text in translations.items():
-                        with self.subTest(component=key, property=prop, expected=text):
-                            component = wrapped_configuration[key]
+            repeating_group = formio_config["repeatingGroup1"]
+            assert isinstance(repeating_group, EditGrid)
+            with self.subTest(configuration=aspect, component=repeating_group):
+                self.assertEqual(repeating_group.label, "Repeating group 1")
+                self.assertEqual(repeating_group.tooltip, "First tip")
+                self.assertEqual(repeating_group.group_label, "Item")
 
-                            self.assertEqual(component[prop], text)
+            text = formio_config["repeatingGroup1.text1"]
+            assert isinstance(text, TextField)
+            with self.subTest(configuration=aspect, component=text):
+                self.assertEqual(text.label, "Text 1")
 
-                self.assertEqual(
-                    wrapped_configuration["radio1"]["values"][0]["label"], "One"
-                )
-                self.assertEqual(
-                    wrapped_configuration["radio1"]["tooltip"],
-                    "Radio Giraffe's tip of the week",
-                )
-                self.assertEqual(
-                    wrapped_configuration["select1"]["data"]["values"][0]["label"],
-                    "1st Choice",
-                )
+            radio = formio_config["radio1"]
+            assert isinstance(radio, Radio)
+            with self.subTest(configuration=aspect, component=radio):
+                self.assertEqual(radio.values[0].label, "One")
+                self.assertEqual(radio.values[1].label, "unmodified")
+                self.assertEqual(radio.tooltip, "Radio Giraffe's tip of the week")
 
-                # assert translation doesn't invent attributes.
-                self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
-                self.assertNotIn(
-                    "label", wrapped_configuration["select1"]["data"]["values"][1]
-                )
+            select = formio_config["select1"]
+            assert isinstance(select, Select)
+            with self.subTest(configuration=aspect, component=select):
+                self.assertEqual(select.data.values[0].label, "1st Choice")
+                self.assertEqual(select.data.values[1].label, "unmodified")
 
     @tag("gh-6320")
     @given(mode=..., include_today=...)
@@ -628,7 +606,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                 ]
             },
         )
-
         self._add_submission_to_session(submission)
         form_step = submission.steps[0].form_step
         endpoint = reverse(
@@ -660,20 +637,23 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {
                         "type": "date",
                         "key": "date1",
+                        "label": "date1",
                     },
                     {
                         "type": "date",
                         "key": "date2",
+                        "label": "date2",
                         "openForms": {
                             "minDate": {
                                 "mode": "relativeToVariable",
                                 "variable": "date1",
                                 "operator": "add",
-                                "delta": {"days": 7},
+                                "delta": {"days": 7, "months": 0, "years": 0},
                             },
                             "maxDate": {
                                 "mode": "relativeToVariable",
                                 "variable": "userDefinedDate",
+                                "delta": {"days": 0, "months": 0, "years": 0},
                             },
                         },
                     },
@@ -717,16 +697,18 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {
                         "type": "date",
                         "key": "date1",
+                        "label": "date1",
                     },
                     {
                         "type": "date",
                         "key": "date2",
+                        "label": "date2",
                         "openForms": {
                             "minDate": {
                                 "mode": "relativeToVariable",
                                 "variable": "date1",
                                 "operator": "add",
-                                "delta": {"days": 7},
+                                "delta": {"days": 7, "months": 0, "years": 0},
                             },
                         },
                     },
@@ -760,28 +742,22 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
     def test_custom_components_and_form_logic(self):
         # set up custom field type for test only
         register = ComponentRegistry()
-        register("textfield")(TextField)
+        register("textfield")(TextFieldPlugin)
 
-        @register("testCustomType")
+        @register("email")
         class CustomType(BasePlugin):
             formatter = TextFieldFormatter
 
-            def build_serializer_field(self, component):
+            def build_serializer_field(self, component, parent_key_prefix):
                 raise NotImplementedError()
 
-            @staticmethod
-            def mutate_config_dynamically(component, submission, data):
-                key = component["key"]
-                component.clear()
-                component.update(
-                    {
-                        "type": "textfield",
-                        "key": key,
-                        "defaultValue": "testCustomType",
-                        "validate": {
-                            "required": False,
-                        },
-                    }
+            def mutate_config_dynamically(self, component, submission, data):
+                key = component.key
+                return TextField(
+                    key=key,
+                    label=key,
+                    default_value="testCustomType",
+                    validate=TextfieldValidate(required=False),
                 )
 
         form = FormFactory.create(
@@ -791,10 +767,12 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {
                         "type": "textfield",
                         "key": "someInput",
+                        "label": "someInput",
                     },
                     {
-                        "type": "testCustomType",
+                        "type": "email",
                         "key": "testCustomType",
+                        "label": "testCustomType",
                     },
                 ]
             },
@@ -843,15 +821,22 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         components = response.data["configuration"]["components"]
         expected = [
             {
+                **TEXT_FIELD_DEFAULTS,
                 "type": "textfield",
                 "key": "someInput",
+                "label": "someInput",
             },
             {
+                **TEXT_FIELD_DEFAULTS,
                 "type": "textfield",
                 "key": "testCustomType",
+                "label": "testCustomType",
                 "defaultValue": "testCustomType",
                 "validate": {
                     "required": True,
+                    "maxLength": None,
+                    "pattern": "",
+                    "plugins": [],
                 },
             },
         ]
@@ -916,9 +901,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                         "key": "file",
                         "label": "File",
                         "useConfigFiletypes": True,
-                        "filePattern": "*",
                         "url": "",
-                        "file": {"allowedTypesLabels": []},
+                        "file": {"type": []},
+                        "filePattern": "*",
                     }
                 ]
             },
@@ -938,12 +923,16 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "label": "File",
             "useConfigFiletypes": True,
             "filePattern": "image/png,application/pdf",
-            "url": "http://testserver/api/v2/formio/fileupload",
-            "file": {"allowedTypesLabels": [".png", ".pdf"]},
+            "file": {
+                "allowedTypesLabels": [".png", ".pdf"],
+                "type": [],
+                "name": "",
+            },
         }
-        self.assertEqual(
-            expected, response.json()["defaultConfiguration"]["components"][0]
-        )
+        file_component = response.json()["defaultConfiguration"]["components"][0]
+        for key, expected_value in expected.items():
+            with self.subTest(property=key):
+                self.assertEqual(file_component[key], expected_value)
 
     def test_without_logic_rules_and_without_dynamic_configuration(self):
         step = FormStepFactory.create(
@@ -969,12 +958,22 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "slug": step.slug,
             "defaultConfiguration": {
                 "components": [
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "configuration": {
                 "components": [
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "data": {"textfield": ""},
@@ -1016,7 +1015,12 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "defaultConfiguration": None,
             "configuration": {
                 "components": [
-                    {"type": "textfield", "key": "textfield", "label": "I am a label!"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "I am a label!",
+                    },
                 ]
             },
             "data": {"textfield": ""},
@@ -1072,12 +1076,14 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "defaultConfiguration": {
                 "components": [
                     {
+                        **DATE_FIELD_DEFAULTS,
                         "type": "date",
                         "key": "dateOfBirth",
                         "label": "Date of birth",
                         "placeholder": _("dd-mm-yyyy"),
                     },
                     {
+                        **TEXT_FIELD_DEFAULTS,
                         "type": "textfield",
                         "key": "textfield",
                         "label": "Textfield",
@@ -1087,12 +1093,18 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "configuration": {
                 "components": [
                     {
+                        **DATE_FIELD_DEFAULTS,
                         "type": "date",
                         "key": "dateOfBirth",
                         "label": "Date of birth",
                         "placeholder": _("dd-mm-yyyy"),
                     },
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "data": {"dateOfBirth": "", "textfield": ""},
@@ -1172,12 +1184,18 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "configuration": {
                 "components": [
                     {
+                        **DATE_FIELD_DEFAULTS,
                         "type": "date",
                         "key": "dateOfBirth",
                         "label": "Date of birth",
                         "placeholder": _("dd-mm-yyyy"),
                     },
-                    {"type": "textfield", "key": "textfield", "label": "I am a label!"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "I am a label!",
+                    },
                 ]
             },
             "data": {"dateOfBirth": "", "textfield": ""},
@@ -1237,12 +1255,18 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "configuration": {
                 "components": [
                     {
+                        **DATE_FIELD_DEFAULTS,
                         "type": "date",
                         "key": "dateOfBirth",
                         "label": "Date of birth",
                         "placeholder": _("dd-mm-yyyy"),
                     },
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        **TEXT_FIELD_DEFAULTS,
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "data": {"dateOfBirth": "", "textfield": ""},

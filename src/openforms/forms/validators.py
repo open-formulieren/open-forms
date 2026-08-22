@@ -8,11 +8,16 @@ from django.core.exceptions import ValidationError
 from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
+import msgspec
+
+from formio_types import AnyComponent
+from openforms.formio.datastructures import InvalidFormioTree
 from openforms.formio.service import (
-    FormioConfigurationWrapper,
+    _fixup_component_properties,
     get_branch_representation,
 )
-from openforms.formio.typing import Component, FormioConfiguration
+from openforms.formio.tree import get_duplicates
+from openforms.formio.typing import FormioConfiguration
 from openforms.formio.variables import get_configuration_template_syntax_errors
 
 if TYPE_CHECKING:
@@ -55,7 +60,12 @@ def validate_template_expressions(configuration: FormioConfiguration) -> None:
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errors = get_configuration_template_syntax_errors(configuration)
+    try:
+        errors = get_configuration_template_syntax_errors(configuration["components"])
+    # tree structure needs to be valid before we can do anything meaningful
+    except InvalidFormioTree:
+        return
+
     if not errors:
         return
 
@@ -86,7 +96,12 @@ def validate_template_expressions(configuration: FormioConfiguration) -> None:
 
 
 def validate_no_duplicate_keys(configuration: FormioConfiguration) -> None:
-    duplicates = FormioConfigurationWrapper.get_duplicates(configuration)
+    components = msgspec.convert(
+        configuration["components"],
+        type=Sequence[AnyComponent],
+        dec_hook=_fixup_component_properties,
+    )
+    duplicates = get_duplicates(components)
     errors = [
         _('"{duplicate_key}" (in {paths})').format(
             duplicate_key=duplicate_key,
@@ -118,7 +133,9 @@ def validate_no_duplicate_keys_across_steps(
         str,  # possibly duplicated component key
         list[
             tuple[
-                Sequence[Component],  # tree branch from root to (duplicated) component
+                Sequence[
+                    AnyComponent
+                ],  # tree branch from root to (duplicated) component
                 FormDefinition,  # form definition the component is in
             ]
         ],
@@ -128,10 +145,12 @@ def validate_no_duplicate_keys_across_steps(
     for form_definition in [current_form_definition, *other_form_definitions]:
         # when validating accross multiple form definitions, each individual
         # configuration should already have been validated not to contain any duplicates
-        config_wrapper = FormioConfigurationWrapper(form_definition.configuration)
-        for component in config_wrapper:
-            key = component["key"]
-            branch = config_wrapper.get_branch(key)
+        formio_config = form_definition.formio_config
+        for component in formio_config:
+            key = component.key
+            branch = formio_config.get_parents(
+                key, ignore_editgrid_prefix=True, add_self=True
+            )
             component_parents[key].append((branch, form_definition))
             if key not in duplicate_keys and len(component_parents[key]) > 1:
                 duplicate_keys.append(key)
@@ -144,10 +163,8 @@ def validate_no_duplicate_keys_across_steps(
     for duplicate_key in duplicate_keys:
         # If the duplicates are all in other steps, don't raise it here from this step
         if all(
-            [
-                form_definition != current_form_definition
-                for _, form_definition in component_parents[duplicate_key]
-            ]
+            form_definition != current_form_definition
+            for _, form_definition in component_parents[duplicate_key]
         ):
             continue
 

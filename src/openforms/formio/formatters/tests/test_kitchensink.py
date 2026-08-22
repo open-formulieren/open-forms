@@ -50,8 +50,11 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
 
     def run_kitchensink_test(self, name_data, name_printable):
         configuration = load_json("kitchensink_components.json")
+        assert isinstance(configuration, dict)
         data = load_json(f"{name_data}.json")
+        assert isinstance(data, dict)
         text_printed = load_json(f"{name_printable}.json")
+        assert isinstance(text_printed, dict)
 
         # for sanity
         self.assertFlatConfiguration(configuration)
@@ -71,12 +74,12 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         assert "Signature" in text_printed
         text_printed["Signature"] = _("signature added")
 
-        expected_labels = set(
+        expected_labels = {
             c["label"] for c in filter_printable(iter_components(configuration))
-        )
-        expected_keys = set(
+        }
+        expected_keys = {
             c["key"] for c in filter_printable(iter_components(configuration))
-        )
+        }
 
         expected_keys.remove("numberEmpty")
         expected_keys.remove("currencyEmpty")
@@ -85,9 +88,11 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         # self.assertEqual(set(data.keys()), expected_keys)
 
         submission = SubmissionFactory.from_components(
-            configuration["components"], submitted_data=data, completed=True
+            configuration["components"],  # pyright: ignore[reportArgumentType]
+            submitted_data=data,
+            completed=True,
         )
-        submission_step = submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        submission_step = submission.submissionstep_set.get()
 
         # these must match the components
         self.assertComponentKeyExists(configuration, "file")
@@ -114,7 +119,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         printable_data = _get_printable_data(submission)
 
         # check if we have something for all components
-        self.assertEqual(set(d[0] for d in printable_data), expected_labels)
+        self.assertEqual({d[0] for d in printable_data}, expected_labels)
 
         text_values = dict(printable_data)
 

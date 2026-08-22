@@ -9,7 +9,9 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
+from formio_types import AnyComponent, Columns, Fieldset
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.submissions.models import Submission
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -19,13 +21,13 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.variables.constants import FormVariableDataTypes
 
-from ...typing import EditGridComponent
+from ...datastructures import FormioConfig
 from ..nodes import ComponentNode
 
 
 @temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
-class FormNodeTests(TestCase):
+class VanillaComponentNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -209,11 +211,18 @@ class FormNodeTests(TestCase):
         state = submission.load_submission_value_variables_state()
         cls.step_data = state.get_data(submission_step=step)
 
+    def _get_component[T: AnyComponent](self, key: str, expected_type: type[T]) -> T:
+        assert self.step.form_step is not None
+        formio_config = self.step.form_step.form_definition.formio_config
+        assert isinstance(formio_config, FormioConfig)
+        component = formio_config[key]
+        assert isinstance(component, expected_type)
+        return component
+
     def test_fieldsets_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][0]
-        assert component["type"] == "fieldset"
+        component = self._get_component("fieldset1", expected_type=Fieldset)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -225,8 +234,7 @@ class FormNodeTests(TestCase):
     def test_fieldsets_visible_if_any_child_visible(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][1]
-        assert component["type"] == "fieldset"
+        component = self._get_component("fieldset2", expected_type=Fieldset)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -241,8 +249,7 @@ class FormNodeTests(TestCase):
     def test_fieldset_hidden_if_marked_as_such_and_visible_children(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][2]
-        assert component["type"] == "fieldset"
+        component = self._get_component("fieldset3", expected_type=Fieldset)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -254,13 +261,13 @@ class FormNodeTests(TestCase):
     def test_fieldset_with_hidden_label(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = {
-            "type": "fieldset",
-            "key": "fieldset",
-            "label": "A hidden label",
-            "hidden": False,
-            "hideHeader": True,
-        }
+        component = Fieldset(
+            key="fieldset",
+            label="A hidden label",
+            hidden=False,
+            hide_header=True,
+            components=[],
+        )
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -271,8 +278,7 @@ class FormNodeTests(TestCase):
     def test_columns_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][3]
-        assert component["type"] == "columns"
+        component = self._get_component("columns1", expected_type=Columns)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -284,8 +290,7 @@ class FormNodeTests(TestCase):
     def test_columns_visible_if_any_child_visible(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][4]
-        assert component["type"] == "columns"
+        component = self._get_component("columns2", expected_type=Columns)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -294,14 +299,13 @@ class FormNodeTests(TestCase):
         self.assertTrue(component_node.is_visible)
         nodelist = list(component_node)
         self.assertEqual(len(nodelist), 2)
-        self.assertEqual(nodelist[0].component["label"], "Columns 2")
+        self.assertEqual(nodelist[0].component.key, "columns2")
         self.assertEqual(nodelist[1].label, "Input 7")
 
     def test_column_hidden_if_marked_as_such_and_visible_children(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        component = self.step.form_step.form_definition.configuration["components"][5]
-        assert component["type"] == "columns"
+        component = self._get_component("columns3", expected_type=Columns)
 
         component_node = ComponentNode.build_node(
             step_data=self.step_data, component=component, renderer=renderer
@@ -311,10 +315,9 @@ class FormNodeTests(TestCase):
         self.assertEqual(list(component_node), [])
 
     def test_columns_never_output_label(self):
-        component = self.step.form_step.form_definition.configuration["components"][5]
-        assert component["type"] == "columns"
+        component = self._get_component("columns3", expected_type=Columns)
 
-        for render_mode in RenderModes.values:
+        for render_mode in RenderModes:
             with self.subTest(render_mode=render_mode):
                 renderer = Renderer(self.submission, mode=render_mode, as_html=False)
 
@@ -329,24 +332,29 @@ class FormNodeTests(TestCase):
         """
         WYSIWYG is displayed in confirmation PDF, CLI rendering, and summary
         """
-        component = {
-            "type": "content",
-            "key": "content",
-            "html": "<p>WYSIWYG with <strong>markup</strong></p>",
-            "input": False,
-            "label": "Content",
-            "hidden": False,
-            "showInSummary": True,
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "html": "<p>WYSIWYG with <strong>markup</strong></p>",
+                        "input": False,
+                        "label": "Content",
+                        "hidden": False,
+                        "showInSummary": True,
+                    }
+                ]
+            },
         )
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(form__name="public name"),
         )
+        component = submission.formio_config["content"]
 
         # Get submission data from the state
         state = submission.load_submission_value_variables_state()
@@ -390,24 +398,29 @@ class FormNodeTests(TestCase):
         """
         WYSIWYG is displayed in confirmation PDF and CLI rendering
         """
-        component = {
-            "type": "content",
-            "key": "content",
-            "html": "<p>WYSIWYG with <strong>markup</strong></p>",
-            "input": False,
-            "label": "Content",
-            "hidden": False,
-            "showInSummary": False,
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "html": "<p>WYSIWYG with <strong>markup</strong></p>",
+                        "input": False,
+                        "label": "Content",
+                        "hidden": False,
+                        "showInSummary": False,
+                    }
+                ]
+            },
         )
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(form__name="public name"),
         )
+        component = submission.formio_config["content"]
 
         # Get submission data from the state
         state = submission.load_submission_value_variables_state()
@@ -449,20 +462,23 @@ class FormNodeTests(TestCase):
 
     @override_settings(BASE_URL="http://localhost:8000")
     def test_file_component_email_registration(self):
-        component = {
-            "type": "file",
-            "key": "file",
-            "label": "My File",
-            "hidden": False,
-            "file": {"type": []},
-            "filePattern": "",
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "file",
+                        "label": "My File",
+                        "hidden": False,
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ]
+            },
         )
-
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -495,6 +511,7 @@ class FormNodeTests(TestCase):
             file_name="blank-renamed.doc",
             original_name="blank.doc",
         )
+        component = submission.formio_config["file"]
 
         # Get submission data from the state
         state = submission.load_submission_value_variables_state()
@@ -531,42 +548,43 @@ class FormNodeTests(TestCase):
 
     @override_settings(BASE_URL="http://localhost:8000")
     def test_nested_files(self):
-        components = [
-            {
-                "key": "repeatingGroup",
-                "type": "editgrid",
-                "label": "Files",
-                "groupLabel": "File",
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
                 "components": [
                     {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Files",
+                        "groupLabel": "File",
+                        "components": [
+                            {
+                                "type": "file",
+                                "label": "File in repeating group",
+                                "key": "fileInRepeatingGroup",
+                                "registration": {
+                                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                                },
+                                "file": {"type": []},
+                                "filePattern": "",
+                            }
+                        ],
+                    },
+                    {
+                        "key": "nested.file",
+                        "label": "Nested file",
                         "type": "file",
-                        "label": "File in repeating group",
-                        "key": "fileInRepeatingGroup",
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
                         "file": {"type": []},
                         "filePattern": "",
-                    }
-                ],
+                    },
+                ]
             },
-            {
-                "key": "nested.file",
-                "label": "Nested file",
-                "type": "file",
-                "registration": {
-                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                },
-                "file": {"type": []},
-                "filePattern": "",
-            },
-        ]
-        submission = SubmissionFactory.create(
-            form__name="public name",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": components},
         )
-
+        assert isinstance(submission, Submission)
         upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
             TemporaryFileUploadFactory.create_batch(3, submission=submission)
         )
@@ -680,7 +698,7 @@ class FormNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
                 step_data=step_data,
-                component=components[0],
+                component=submission.formio_config["repeatingGroup"],
                 renderer=renderer,
             )
 
@@ -718,7 +736,7 @@ class FormNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             nested_file_node = ComponentNode.build_node(
                 step_data=step_data,
-                component=components[1],
+                component=submission.formio_config["nested.file"],
                 renderer=renderer,
             )
 
@@ -736,36 +754,37 @@ class FormNodeTests(TestCase):
 
     @override_settings(BASE_URL="http://localhost:8000")
     def test_nested_files_with_duplicate_keys(self):
-        components = [
-            {
-                "key": "repeatingGroup",
-                "type": "editgrid",
-                "label": "Files",
-                "groupLabel": "File",
-                "components": [
-                    {
-                        "type": "file",
-                        "label": "File in repeating group",
-                        "key": "attachment",
-                        "file": {"type": []},
-                        "filePattern": "",
-                    }
-                ],
-            },
-            {
-                "key": "attachment",
-                "label": "attachment",
-                "type": "file",
-                "file": {"type": []},
-                "filePattern": "",
-            },
-        ]
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": components},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Files",
+                        "groupLabel": "File",
+                        "components": [
+                            {
+                                "type": "file",
+                                "label": "File in repeating group",
+                                "key": "attachment",
+                                "file": {"type": []},
+                                "filePattern": "",
+                            }
+                        ],
+                    },
+                    {
+                        "key": "attachment",
+                        "label": "attachment",
+                        "type": "file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
+                ]
+            },
         )
-
+        assert isinstance(submission, Submission)
         upload_1, upload_2 = TemporaryFileUploadFactory.create_batch(
             2, submission=submission
         )
@@ -840,7 +859,7 @@ class FormNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
                 step_data=step_data,
-                component=components[0],
+                component=submission.formio_config["repeatingGroup"],
                 renderer=renderer,
             )
 
@@ -864,7 +883,7 @@ class FormNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             outside_file_node = ComponentNode.build_node(
                 step_data=step_data,
-                component=components[1],
+                component=submission.formio_config["attachment"],
                 renderer=renderer,
             )
 
@@ -882,42 +901,43 @@ class FormNodeTests(TestCase):
 
     @override_settings(BASE_URL="http://localhost:8000")
     def test_two_different_files_in_repeating_group(self):
-        components = [
-            {
-                "key": "repeatingGroup",
-                "type": "editgrid",
-                "label": "Files",
-                "groupLabel": "Group file",
-                "components": [
-                    {
-                        "type": "file",
-                        "label": "File 1 in repeating group",
-                        "key": "fileInRepeatingGroup1",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                        },
-                        "file": {"type": []},
-                        "filePattern": "",
-                    },
-                    {
-                        "type": "file",
-                        "label": "File 2 in repeating group",
-                        "key": "fileInRepeatingGroup2",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
-                        },
-                        "file": {"type": []},
-                        "filePattern": "",
-                    },
-                ],
-            },
-        ]
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": components},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Files",
+                        "groupLabel": "Group file",
+                        "components": [
+                            {
+                                "type": "file",
+                                "label": "File 1 in repeating group",
+                                "key": "fileInRepeatingGroup1",
+                                "registration": {
+                                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                                },
+                                "file": {"type": []},
+                                "filePattern": "",
+                            },
+                            {
+                                "type": "file",
+                                "label": "File 2 in repeating group",
+                                "key": "fileInRepeatingGroup2",
+                                "registration": {
+                                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                                },
+                                "file": {"type": []},
+                                "filePattern": "",
+                            },
+                        ],
+                    },
+                ]
+            },
         )
-
+        assert isinstance(submission, Submission)
         upload_in_repeating_group_1, upload_in_repeating_group_2 = (
             TemporaryFileUploadFactory.create_batch(2, submission=submission)
         )
@@ -999,7 +1019,7 @@ class FormNodeTests(TestCase):
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         repeating_group_node = ComponentNode.build_node(
             step_data=step_data,
-            component=components[0],
+            component=submission.formio_config["repeatingGroup"],
             renderer=renderer,
         )
 
@@ -1029,19 +1049,23 @@ class FormNodeTests(TestCase):
 
     def test_file_component_email_registration_no_file(self):
         # via GH issue #1594
-        component = {
-            "type": "file",
-            "key": "file",
-            "label": "My File",
-            "hidden": False,
-            "file": {"type": []},
-            "filePattern": "",
-        }
         submission = SubmissionFactory.create(
             form__name="public name",
             form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={"components": [component]},
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "file",
+                        "label": "My File",
+                        "hidden": False,
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ]
+            },
         )
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -1054,30 +1078,35 @@ class FormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step_data, component=component, renderer=renderer
+            step_data=step_data,
+            component=submission.formio_config["file"],
+            renderer=renderer,
         )
         link = component_node.render()
         self.assertEqual(link, "My File: ")
 
     def test_simple_editgrid(self):
-        component = {
-            "type": "editgrid",
-            "key": "children",
-            "label": "Children",
-            "groupLabel": "Child",
-            "hidden": False,
-            "components": [
-                {"key": "name", "type": "textfield", "label": "Name"},
-                {"key": "surname", "type": "textfield", "label": "Surname"},
-            ],
-        }
         form = FormFactory.create()
         form_step = FormStepFactory.create(
-            form=form, form_definition__configuration={"components": [component]}
-        )
-        submission = SubmissionFactory.create(
             form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "children",
+                        "label": "Children",
+                        "groupLabel": "Child",
+                        "hidden": False,
+                        "components": [
+                            {"key": "name", "type": "textfield", "label": "Name"},
+                            {"key": "surname", "type": "textfield", "label": "Surname"},
+                        ],
+                    }
+                ]
+            },
         )
+        submission = SubmissionFactory.create(form=form)
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
@@ -1096,7 +1125,9 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step_data, component=component, renderer=renderer
+                step_data=step_data,
+                component=submission.formio_config["children"],
+                renderer=renderer,
             )
             nodelist = list(component_node)
 
@@ -1112,24 +1143,27 @@ class FormNodeTests(TestCase):
             self.assertEqual("Surname: Doe", nodelist[6].render())
 
     def test_simple_editgrid_no_group_label(self):
-        component = {
-            "type": "editgrid",
-            "key": "children",
-            "label": "Children",
-            "hidden": False,
-            "groupLabel": "Item",
-            "components": [
-                {"key": "name", "type": "textfield", "label": "Name"},
-                {"key": "surname", "type": "textfield", "label": "Surname"},
-            ],
-        }
         form = FormFactory.create()
         form_step = FormStepFactory.create(
-            form=form, form_definition__configuration={"components": [component]}
-        )
-        submission = SubmissionFactory.create(
             form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "children",
+                        "label": "Children",
+                        "hidden": False,
+                        "groupLabel": "Item",
+                        "components": [
+                            {"key": "name", "type": "textfield", "label": "Name"},
+                            {"key": "surname", "type": "textfield", "label": "Surname"},
+                        ],
+                    }
+                ]
+            },
         )
+        submission = SubmissionFactory.create(form=form)
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
@@ -1148,7 +1182,9 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step_data, component=component, renderer=renderer
+                step_data=step_data,
+                component=submission.formio_config["children"],
+                renderer=renderer,
             )
             nodelist = list(component_node)
 
@@ -1159,60 +1195,70 @@ class FormNodeTests(TestCase):
             self.assertEqual("Item 2", nodelist[4].render())
 
     def test_editgrid_with_nested_fields(self):
-        component = {
-            "type": "editgrid",
-            "key": "children",
-            "label": "Children",
-            "groupLabel": "Child",
-            "hidden": False,
-            "components": [
-                {
-                    "key": "personalDetails",
-                    "type": "fieldset",
-                    "label": "Personal Details",
-                    "components": [
-                        {"key": "name", "type": "textfield", "label": "Name"},
-                        {"key": "surname", "type": "textfield", "label": "Surname"},
-                    ],
-                },
-                {
-                    "type": "columns",
-                    "key": "columnsA",
-                    "label": "Columns A",
-                    "hidden": False,
-                    "columns": [
-                        {
-                            "size": 6,
-                            "components": [
-                                {
-                                    "type": "textfield",
-                                    "key": "inputA",
-                                    "label": "Input A",
-                                    "hidden": False,
-                                }
-                            ],
-                        },
-                        {
-                            "size": 6,
-                            "components": [
-                                {
-                                    "type": "textfield",
-                                    "key": "inputB",
-                                    "label": "Input B",
-                                    "hidden": False,
-                                }
-                            ],
-                        },
-                    ],
-                },
-            ],
-        }
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": [component]}
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "children",
+                        "label": "Children",
+                        "groupLabel": "Child",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "key": "personalDetails",
+                                "type": "fieldset",
+                                "label": "Personal Details",
+                                "components": [
+                                    {
+                                        "key": "name",
+                                        "type": "textfield",
+                                        "label": "Name",
+                                    },
+                                    {
+                                        "key": "surname",
+                                        "type": "textfield",
+                                        "label": "Surname",
+                                    },
+                                ],
+                            },
+                            {
+                                "type": "columns",
+                                "key": "columnsA",
+                                "label": "Columns A",
+                                "hidden": False,
+                                "columns": [
+                                    {
+                                        "size": 6,
+                                        "components": [
+                                            {
+                                                "type": "textfield",
+                                                "key": "inputA",
+                                                "label": "Input A",
+                                                "hidden": False,
+                                            }
+                                        ],
+                                    },
+                                    {
+                                        "size": 6,
+                                        "components": [
+                                            {
+                                                "type": "textfield",
+                                                "key": "inputB",
+                                                "label": "Input B",
+                                                "hidden": False,
+                                            }
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    }
+                ]
+            }
         )
-        submission = SubmissionFactory.create(
-            form=form_step.form,
-        )
+        submission = SubmissionFactory.create(form=form_step.form)
+        assert isinstance(submission, Submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
@@ -1231,7 +1277,9 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step_data, component=component, renderer=renderer
+                step_data=step_data,
+                component=submission.formio_config["children"],
+                renderer=renderer,
             )
             nodelist = list(component_node)
 
@@ -1244,7 +1292,7 @@ class FormNodeTests(TestCase):
             self.assertEqual("Personal Details", nodelist[2].render())
             self.assertEqual("Name: John", nodelist[3].render())
             self.assertEqual("Surname: Doe", nodelist[4].render())
-            self.assertEqual("Columns A", nodelist[5].component["label"])
+            self.assertEqual("columnsA", nodelist[5].component.key)
             self.assertEqual("Input A: A1", nodelist[6].render())
             self.assertEqual("Input B: B1", nodelist[7].render())
 
@@ -1252,40 +1300,41 @@ class FormNodeTests(TestCase):
             self.assertEqual("Personal Details", nodelist[9].render())
             self.assertEqual("Name: Jane", nodelist[10].render())
             self.assertEqual("Surname: Doe", nodelist[11].render())
-            self.assertEqual("Columns A", nodelist[12].component["label"])
+            self.assertEqual("columnsA", nodelist[12].component.key)
             self.assertEqual("Input A: A2", nodelist[13].render())
             self.assertEqual("Input B: B2", nodelist[14].render())
 
     def test_nested_editgrid_with_date_and_time_components(self):
-        component: EditGridComponent = {
-            "type": "editgrid",
-            "key": "editgrid",
-            "label": "Editgrid",
-            "groupLabel": "Child",
-            "hidden": False,
-            "components": [
-                {"key": "date", "type": "date", "label": "Date"},
-                {"key": "time", "type": "time", "label": "Time"},
-                {"key": "datetime", "type": "datetime", "label": "Datetime"},
-                {
-                    "key": "nestedEditgrid",
-                    "type": "editgrid",
-                    "label": "Nested editgrid",
-                    "groupLabel": "Nested child",
-                    "components": [
-                        {
-                            "key": "nestedDate",
-                            "type": "date",
-                            "label": "Nested date",
-                            "multiple": True,
-                            "defaultValue": [],
-                        }
-                    ],
-                },
-            ],
-        }
         submission = SubmissionFactory.from_components(
-            components_list=[component],
+            components_list=[
+                {
+                    "type": "editgrid",
+                    "key": "editgrid",
+                    "label": "Editgrid",
+                    "groupLabel": "Child",
+                    "hidden": False,
+                    "components": [
+                        {"key": "date", "type": "date", "label": "Date"},
+                        {"key": "time", "type": "time", "label": "Time"},
+                        {"key": "datetime", "type": "datetime", "label": "Datetime"},
+                        {
+                            "key": "nestedEditgrid",
+                            "type": "editgrid",
+                            "label": "Nested editgrid",
+                            "groupLabel": "Nested child",
+                            "components": [
+                                {
+                                    "key": "nestedDate",
+                                    "type": "date",
+                                    "label": "Nested date",
+                                    "multiple": True,
+                                    "defaultValue": [],
+                                }
+                            ],
+                        },
+                    ],
+                }
+            ],
             submitted_data={
                 "editgrid": [
                     {
@@ -1304,7 +1353,9 @@ class FormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=data, component=component, renderer=renderer
+            step_data=data,
+            component=submission.formio_config["editgrid"],
+            renderer=renderer,
         )
         nodelist = list(component_node)
 

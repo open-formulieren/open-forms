@@ -20,6 +20,9 @@ from openforms.config.tests.factories import ThemeFactory
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.formio.datastructures import FormioConfig
+from openforms.formio.service import dump_to_legacy
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
@@ -106,7 +109,9 @@ class TempdirMixin:
         )
 
 
-class ImportExportTests(TempdirMixin, TestCase):
+class ImportExportTests(FormioMixin, TempdirMixin, TestCase):
+    maxDiff = None
+
     @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
         form, _ = FormFactory.create_batch(2, authentication_backend="demo")
@@ -170,10 +175,10 @@ class ImportExportTests(TempdirMixin, TestCase):
                 form_definitions[0]["internal_name"], form_definition.internal_name
             )
             self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
-            self.assertEqual(
-                form_definitions[0]["configuration"],
-                form_definition.configuration,
-            )
+            expected_fd_config = {
+                "components": dump_to_legacy(form_definition.formio_config.components)
+            }
+            self.assertEqual(form_definitions[0]["configuration"], expected_fd_config)
 
             form_steps = json.loads(f.read("formSteps.json"))
             self.assertEqual(len(form_steps), 1)
@@ -239,9 +244,13 @@ class ImportExportTests(TempdirMixin, TestCase):
                 form_definitions[0]["internal_name"], form_definition.internal_name
             )
             self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
+
+            expected_fd_config = {
+                "components": dump_to_legacy(form_definition.formio_config.components)
+            }
             self.assertEqual(
                 form_definitions[0]["configuration"],
-                form_definition.configuration,
+                expected_fd_config,
             )
 
     def test_import(self):
@@ -268,6 +277,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "type": "textfield",
                         "key": "test-key",
                         "label": "test-key",
+                        "errors": {},
                     }
                 ]
             }
@@ -377,7 +387,10 @@ class ImportExportTests(TempdirMixin, TestCase):
         fd2 = form_definitions[1]
         self.assertNotEqual(fd2.pk, form_definition_pk)
         self.assertNotEqual(fd2.uuid, form_definition.uuid)
-        self.assertEqual(fd2.configuration, form_definition.configuration)
+        expected_fd_config = {
+            "components": dump_to_legacy(form_definition.formio_config.components)
+        }
+        self.assertEqual(fd2.configuration, expected_fd_config)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.slug, old_form_definition_slug)
@@ -474,6 +487,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "type": "textfield",
                         "key": "test-key",
                         "label": "test-key",
+                        "errors": {},
                     }
                 ]
             },
@@ -530,7 +544,10 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(form_definitions.count(), 1)
         self.assertEqual(fd2.pk, form_definition_pk)
         self.assertEqual(fd2.uuid, form_definition.uuid)
-        self.assertEqual(fd2.configuration, form_definition.configuration)
+        expected_fd_config = {
+            "components": dump_to_legacy(form_definition.formio_config.components)
+        }
+        self.assertEqual(fd2.configuration, expected_fd_config)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
@@ -561,6 +578,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "type": "textfield",
                         "key": "test-key",
                         "label": "test-key",
+                        "errors": {},
                     }
                 ]
             },
@@ -620,7 +638,14 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(form_definitions.count(), 2)
         self.assertNotEqual(fd2.pk, form_definition_pk)
         self.assertNotEqual(fd2.uuid, form_definition.uuid)
-        self.assertEqual(fd2.configuration, old_fd_config)
+        old_formio_config = FormioConfig(
+            name="<test>", components=old_fd_config["components"]
+        )
+        expected_fd_config = {
+            "components": dump_to_legacy(old_formio_config.components)
+        }
+        self.assertEqual(fd2.configuration, expected_fd_config)
+
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
@@ -653,6 +678,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "label": "test-key",
                         "file": {"type": []},
                         "filePattern": "",
+                        "errors": {},
+                        "defaultValue": [],
                     }
                 ]
             },
@@ -669,7 +696,10 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(form_definitions.count(), 1)
         self.assertEqual(fd2.pk, form_definition.pk)
         self.assertEqual(fd2.uuid, form_definition.uuid)
-        self.assertEqual(fd2.configuration, form_definition.configuration)
+        expected_fd_config = {
+            "components": dump_to_legacy(form_definition.formio_config.components)
+        }
+        self.assertEqual(fd2.configuration, expected_fd_config)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
@@ -701,8 +731,6 @@ class ImportExportTests(TempdirMixin, TestCase):
 
     @freeze_time()  # export metadata contains a timestamp
     def test_roundtrip_a_translated_form(self):
-        self.maxDiff = None
-
         form: Form
         form_definition: FormDefinition
         form_step: FormStep
@@ -1295,7 +1323,9 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertIsInstance(fixed_components[3]["conditional"]["eq"], int)
         self.assertIsInstance(fixed_components[4]["conditional"]["eq"], float)
-        self.assertNotIn("eq", fixed_components[5]["conditional"])
+        self.assertEqual(
+            fixed_components[5]["conditional"], {"show": None, "when": None, "eq": ""}
+        )
         self.assertIsInstance(fixed_components[6]["conditional"]["eq"], float)
         self.assertIsInstance(fixed_components[7]["conditional"]["eq"], float)
         self.assertIsInstance(fixed_components[8]["conditional"]["eq"], str)
@@ -1335,32 +1365,35 @@ class ImportExportTests(TempdirMixin, TestCase):
         imported_form = Form.objects.exclude(pk=form.pk).get()
         fd = imported_form.formstep_set.get().form_definition
 
-        self.assertEqual(
-            fd.configuration["components"],
-            [
-                {
-                    "key": "mapWithoutInteractions",
-                    "type": "map",
-                    "label": "Map",
-                    "useConfigDefaultMapSettings": True,
-                    "interactions": {
-                        "marker": True,
-                        "polygon": False,
-                        "polyline": False,
-                    },
+        self.assertFormioComponent(
+            fd.configuration,
+            "mapWithoutInteractions",
+            {
+                "key": "mapWithoutInteractions",
+                "type": "map",
+                "label": "Map",
+                "useConfigDefaultMapSettings": True,
+                "interactions": {
+                    "marker": True,
+                    "polygon": False,
+                    "polyline": False,
                 },
-                {
-                    "key": "mapWithInteractions",
-                    "type": "map",
-                    "label": "Map",
-                    "useConfigDefaultMapSettings": True,
-                    "interactions": {
-                        "marker": False,
-                        "polygon": True,
-                        "polyline": True,
-                    },
+            },
+        )
+        self.assertFormioComponent(
+            fd.configuration,
+            "mapWithInteractions",
+            {
+                "key": "mapWithInteractions",
+                "type": "map",
+                "label": "Map",
+                "useConfigDefaultMapSettings": True,
+                "interactions": {
+                    "marker": False,
+                    "polygon": True,
+                    "polyline": True,
                 },
-            ],
+            },
         )
 
     def test_import_form_with_old_authentication_backends(

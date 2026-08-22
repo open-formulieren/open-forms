@@ -12,7 +12,6 @@ from rest_framework.request import Request
 from rest_framework.settings import api_settings
 
 from openforms.formio.service import build_serializer, get_dynamic_configuration
-from openforms.forms.models import FormDefinition, FormStep
 
 from ..models import Submission, SubmissionStep
 from .fields import PrivacyPolicyAcceptedField, TruthDeclarationAcceptedField
@@ -88,10 +87,8 @@ class SubmissionCompletionSerializer(serializers.Serializer):
         )
 
         for step in submission.steps:
-            form_step = step.form_step
-            assert isinstance(form_step, FormStep)
-            form_definition = form_step.form_definition
-            assert isinstance(form_definition, FormDefinition)
+            assert step.form_step is not None
+            form_definition = step.form_step.form_definition
             step_name: str = form_definition.name
 
             # Omit validation errors for non-applicable form steps so that the
@@ -124,18 +121,15 @@ class SubmissionCompletionSerializer(serializers.Serializer):
             if step.is_applicable:
                 # evaluate dynamic configuration. We avoid calling `evaluate_form_logic`
                 # on purpose to avoid duplicate logic evaluation
-                configuration = get_dynamic_configuration(
-                    form_definition.configuration_wrapper,
+                formio_config = get_dynamic_configuration(
+                    form_definition.formio_config,
                     submission=submission,
                     data=data,
-                ).configuration
+                )
                 step_data_serializer = build_serializer(
-                    configuration["components"],
+                    formio_config,
                     data=data.data,
-                    context={
-                        "submission": submission,
-                        "configuration": configuration,
-                    },
+                    context={"submission": submission},
                 )
                 if not step_data_serializer.is_valid():
                     step_errors["data"] = (  # pyright: ignore[reportArgumentType]

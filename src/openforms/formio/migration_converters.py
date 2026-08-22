@@ -11,12 +11,19 @@ from typing import Protocol, cast  # noqa: TID251
 import structlog
 from glom import assign, glom
 
+from formio_types import (
+    Checkbox,
+    Columns,
+    CosignV1,
+    Currency,
+    Number,
+    SoftRequiredErrors,
+)
 from openforms.formio.constants import DataSrcOptions
-from openforms.formio.typing import ColumnsComponent, FileComponent
-from openforms.typing import JSONObject
+from openforms.formio.typing import ColumnsComponent, FileComponent, FormioConfiguration
 
-from .datastructures import FormioConfigurationWrapper
-from .service import get_component_empty_value
+from .datastructures import FormioConfig
+from .service import dump_to_legacy, get_component_empty_value
 from .typing import AddressNLComponent, Component, MapComponent
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -138,6 +145,8 @@ def fix_file_default_value(component: Component) -> bool:
         return False
 
     default_value = component["defaultValue"]
+    del component["defaultValue"]
+
     empty_value = get_component_empty_value(component)
 
     match default_value:
@@ -148,6 +157,7 @@ def fix_file_default_value(component: Component) -> bool:
             component["defaultValue"] = empty_value
             return True
         case _:
+            component["defaultValue"] = default_value
             return False
 
 
@@ -244,17 +254,19 @@ def set_datatype_string(component: Component):
     return False
 
 
-def convert_simple_conditionals(configuration: JSONObject) -> bool:
+def convert_simple_conditionals(configuration: FormioConfiguration) -> bool:
+    # TODO: this can probably be handled in _fixup_component_properties!
+    # or it may already be possible to convert to FormioConfig
     config_modified = False
 
-    config = FormioConfigurationWrapper(configuration)
+    config = FormioConfig(name="<converter>", components=configuration["components"])
     for component in config:
-        if not (
-            comparison_component_key := component.get("conditional", {}).get("when", "")
+        if isinstance(component, Columns | SoftRequiredErrors | CosignV1) or not (
+            conditional := component.conditional
         ):
             continue
-
-        assert "conditional" in component
+        if not (comparison_component_key := conditional.when):
+            continue
 
         if comparison_component_key not in config:
             logger.warning(
@@ -265,26 +277,21 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
             continue
 
         comparison_component = config[comparison_component_key]
-        eq = component["conditional"].get("eq")
-        if eq is None:
+        if (eq := conditional.eq) is None:
             continue
 
-        if comparison_component["type"] in ["number", "currency"]:
-            # only strings can be loaded
-            if not isinstance(eq, str):
-                continue
-            component["conditional"]["eq"] = json.loads(eq)
-            config_modified = True
+        match comparison_component:
+            case Number() | Currency() if isinstance(eq, str):
+                conditional.eq = json.loads(eq)
+                config_modified = True
+            case Checkbox() if isinstance(eq, str):
+                boolish_map = {"true": True, "false": False}
+                conditional.eq = boolish_map.get(eq, False)
+                config_modified = True
 
-        if comparison_component["type"] == "checkbox":
-            if isinstance(eq, bool):
-                continue
-
-            component["conditional"]["eq"] = {
-                "true": True,
-                "false": False,
-            }.get(eq, False)
-            config_modified = True
+    # serialize back down
+    if config_modified:
+        configuration["components"] = dump_to_legacy(config.components)
 
     return config_modified
 
@@ -292,10 +299,9 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
 def remove_empty_conditional_values(component: Component) -> bool:
     config_modified = False
 
-    if "conditional" not in component:
+    if (conditional := component.get("conditional")) is None:
         return False
 
-    conditional = component["conditional"]
     known_keys = {"eq", "when", "show"}
     for known_key in known_keys:
         if not (known_key in conditional and conditional[known_key] == ""):
@@ -339,11 +345,11 @@ def ensure_map_has_interactions(component: Component) -> bool:
 
 
 def rename_identifier_role_authorizee(component: Component) -> bool:
-    if "prefill" not in component:
+    if not (prefill := component.get("prefill")):
         return False
-    if component["prefill"].get("identifierRole") != "authorised_person":
+    if prefill.get("identifierRole") != "authorised_person":
         return False
-    component["prefill"]["identifierRole"] = "authorizee"
+    prefill["identifierRole"] = "authorizee"
     return True
 
 
@@ -351,16 +357,20 @@ def fix_empty_default_value(component: Component) -> bool:
     if "defaultValue" not in component:
         return False
 
+    multiple = component.get("multiple", False)
     changed = False
     if component["defaultValue"] is None:
+        del component["defaultValue"]
+        if multiple:
+            component["defaultValue"] = []
+
         component["defaultValue"] = get_component_empty_value(component)
         changed = True
 
-    if component.get("multiple", False):
+    elif multiple:
         if not isinstance(component["defaultValue"], list):
             component["defaultValue"] = []
             changed = True
-
         for index, value in enumerate(component["defaultValue"]):
             if value is None:
                 component["defaultValue"][index] = ""
@@ -372,7 +382,7 @@ def fix_empty_default_value(component: Component) -> bool:
 def replace_empty_datepicker_properties(component: Component) -> bool:
     config_modified = False
 
-    date_picker_config = component.get("datePicker", {})
+    date_picker_config = component.get("datePicker") or {}
     if "minDate" not in date_picker_config and "maxDate" not in date_picker_config:
         return False
 
@@ -436,15 +446,15 @@ def remove_unused_error_keys(component: Component) -> bool:
 
 
 def remove_empty_min_max_validation_spec(component: Component) -> bool:
-    if "openForms" not in component:
+    if not (extensions := component.get("openForms")):
         return False
 
     changed = False
     for key in ("minDate", "maxDate"):
-        if key not in component["openForms"]:
+        if key not in extensions:
             continue
 
-        if "mode" not in component["openForms"][key]:
+        if "mode" not in extensions[key]:
             changed = True
             del component["openForms"][key]
 

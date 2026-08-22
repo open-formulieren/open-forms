@@ -3,10 +3,18 @@ from django.core.exceptions import ValidationError
 
 from hypothesis import strategies as st
 
+from formio_types._base import SupportedLanguage
 from openforms.formio.validators import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
-language_code = st.sampled_from(["nl", "en", "fy"])
+# we deliberately return an unsupported language code to check that our code is robust
+# in handling those, as we may have garbage data in the formio JSON definitions.
+# TODO: this can be removed once we're fully on msgspec parsing of formio definitions,
+# since it'll only populate known properties/keys and reject data that doesn't fit the
+# type definition.
+language_code: st.SearchStrategy[SupportedLanguage] = st.sampled_from(
+    ["nl", "en", "fy"]
+)  # pyright: ignore[reportAssignmentType]
 
 
 def no_null_byte_characters(**kwargs):
