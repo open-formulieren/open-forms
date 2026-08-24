@@ -11,8 +11,8 @@
     data-base-url="{% api_base_url %}"
     data-base-path="{% if base_path %}{{ base_path }}{% else %}{% url 'forms:form-detail' slug=form.slug %}{% endif %}"
     data-csp-nonce="{{ request.csp_nonce }}"
-    {% if sdk_sentry_dsn %}data-sentry-dsn{% endif %}
-    {% if sdk_sentry_env %}data-sentry-env{% endif %}
+    {% if sdk_sentry_dsn %}data-sentry-dsn="{{ sdk_sentry_dsn }}"{% endif %}
+    {% if sdk_sentry_env %}data-sentry-env="{{ sdk_sentry_env }}"{% endif %}
 ></div>
 {# Browsers since 2018 support module, the UMD fallback should not be necessary any longer #}
 <script type="module" src="{% static 'sdk-wrapper.mjs' %}"></script>
