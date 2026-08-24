@@ -147,9 +147,6 @@ def check_component(component: Component) -> Iterator[str]:
             if dp_max_date == "":
                 yield "datePicker.maxDate is empty string instead of null."
 
-            if date_picker["initDate"] != "":
-                yield "datePicker.initDate is not empty string."
-
         case {"type": "datetime"}:
             validate = component.get("validate", {})
             date_picker = component.get("datePicker", {})
@@ -173,9 +170,6 @@ def check_component(component: Component) -> Iterator[str]:
                 yield "datePicker.maxDate is empty string instead of null."
             if dp_max_date and 11 <= len(dp_max_date) <= 16:
                 yield "datePicker.maxDate is not a valid RFC3339 encoded datetime."
-
-            if date_picker["initDate"] != "":
-                yield "datePicker.initDate is not empty string."
 
         case {"type": "time"}:
             validate = component.get("validate", {})
