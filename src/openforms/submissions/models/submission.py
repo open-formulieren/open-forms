@@ -535,6 +535,11 @@ class Submission(models.Model):
     def variables_state(self) -> SubmissionValueVariablesState:
         return self.load_submission_value_variables_state()
 
+    @variables_state.deleter
+    def variables_state(self) -> None:
+        if hasattr(self, "_variables_state"):
+            del self._variables_state
+
     @transaction.atomic()
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
