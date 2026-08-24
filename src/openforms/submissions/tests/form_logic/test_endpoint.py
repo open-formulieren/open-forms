@@ -10,6 +10,7 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.formio.tests.assertions import FormioMixin
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -1340,7 +1341,7 @@ class CheckLogicEndpointTests(
         "as_admin",
         [param(True, id="admin_true"), param(False, id="admin_false")],
     )
-    @tag("gh-6468")
+    @tag("gh-6468", "gh-6507")
     def test_logic_evaluation_as_admin_same_as_not_logged_in(self, as_admin: bool):
         # it's important that this happens on the second (or later) step, as the
         # permission check will never evaluate form logic if you're on the first step
@@ -1379,6 +1380,11 @@ class CheckLogicEndpointTests(
                         "label": "Textfield with radio value: {{ radio }}",
                         "hidden": False,
                     },
+                    {
+                        "type": "textfield",
+                        "key": "valueSetByLogic",
+                        "label": "Value set by logic",
+                    },
                 ]
             },
         )
@@ -1394,12 +1400,27 @@ class CheckLogicEndpointTests(
             actions=[
                 {
                     "action": {
-                        "type": "property",
+                        "type": LogicActionTypes.property,
                         "property": {"type": "bool", "value": "hidden"},
                         "state": True,
                     },
                     "component": "textfield",
                 },
+            ],
+        )
+        # always set the value of the field, this manifests in the ``step.data``
+        # output of API endpoints as it's not yet persisted in the database
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.variable,
+                        "value": "kaas",
+                    },
+                    "variable": "valueSetByLogic",
+                }
             ],
         )
         form.apply_logic_analysis()
@@ -1449,3 +1470,15 @@ class CheckLogicEndpointTests(
                     "hidden": False,
                 },
             )
+
+        with self.subTest("value assignment"):
+            endpoint = reverse(
+                "api:submission-steps-detail",
+                kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+            )
+
+            response = self.client.get(endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            step_data = response.json()["data"]
+            self.assertEqual(step_data, {"valueSetByLogic": "kaas"})

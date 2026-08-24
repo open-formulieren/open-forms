@@ -131,6 +131,7 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
         # check, as we don't take unsaved/dirty data into account here.
         obj.form_step.form_definition.configuration = configuration_copy
         del obj.form_step.form_definition.configuration_wrapper
+        del submission.variables_state
 
         if not incomplete_steps:
             return True
