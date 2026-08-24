@@ -1233,7 +1233,7 @@ sqids==0.5.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-sqlparse==0.5.5
+sqlparse==0.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
