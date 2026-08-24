@@ -14,6 +14,45 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.7 (2026-08-24)
+===================
+
+Regular bugfix release.
+
+* Fixed some crashes in check scripts for the 4.0 upgrade.
+* [:backend:`6510`] Fixed the default value for booleans (checkbox, selectboxes) in
+  logic triggers not being saved properly.
+* [:backend:`6297`] Fixed hidden fields with ``multiple`` enabled and ``clearOnHide``
+  disabled triggering validation errors.
+* [:backend:`5879`] Fixed detection of empty conditional values accidentally treating a
+  falsy value for ``eq`` as "empty".
+* [:backend:`6292`] Fixed incomplete variable extraction from user templates in
+  components, which could lead to incorrect logic rule dependency graphs.
+* [:backend:`6468`, :backend:`6507`] Fixed logic evaluation having different outcomes
+  for admin and non-admin users.
+* [:backend:`6142`, :backend:`4004`] Fixed layout components with conditional display
+  logic inside ``editgrid`` components not being shown on the submission summary page
+  and/or summary PDF.
+* [:backend:`6524`] Fixed a crash when an empty ``content`` field is present.
+* [:backend:`6235`] Fixed client-side Sentry error monitoring not being activated any
+  longer.
+* Upgraded dependencies to latest available security releases (Django, tablib, sqlparse).
+
+
+3.4.13 (2026-08-24)
+===================
+
+Final bugfix release - 3.4.x is end of life as 4.0 is being released.
+
+* [:backend:`6297`] Fixed hidden fields with ``multiple`` enabled and ``clearOnHide``
+  disabled triggering validation errors.
+* [:backend:`6468`] Fixed logic evaluation having different outcomes for admin and
+  non-admin users.
+* [:backend:`6142`, :backend:`4004`] Fixed layout components with conditional display
+  logic inside ``editgrid`` components not being shown on the submission summary page
+  and/or summary PDF.
+* [:backend:`6524`] Fixed a crash when an empty ``content`` field is present.
+
 4.0.0-beta.0 (2026-08-21)
 =========================
 
