@@ -14,6 +14,20 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.4.13 (2026-08-24)
+===================
+
+Final bugfix release - 3.4.x is end of life as 4.0 is being released.
+
+* [:backend:`6297`] Fixed hidden fields with ``multiple`` enabled and ``clearOnHide``
+  disabled triggering validation errors.
+* [:backend:`6468`] Fixed logic evaluation having different outcomes for admin and
+  non-admin users.
+* [:backend:`6142`, :backend:`4004`] Fixed layout components with conditional display
+  logic inside ``editgrid`` components not being shown on the submission summary page
+  and/or summary PDF.
+* [:backend:`6524`] Fixed a crash when an empty ``content`` field is present.
+
 3.4.12 (2026-07-27)
 ===================
 
