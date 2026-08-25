@@ -34,7 +34,7 @@ have the following responsibilities (summary):
 * Coordinating security issues and bug report follow-ups
 * Coordinating responses to inquiries
 * In the event of prolonged discussions or disputes, maintainers (among others)
-  may request a decision from the community council.
+  may request a decision from the SC.
 
 The current maintainer of this project is [Maykin](https://www.maykin.nl). For
 more in-depth information about the tasks, activities, responsibilities and 
