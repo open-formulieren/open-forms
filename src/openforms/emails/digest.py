@@ -243,7 +243,7 @@ def collect_failed_registrations(
 ) -> list[FailedRegistration]:
     logs = TimelineLogProxy.objects.filter(
         timestamp__gt=since,
-        extra_data__log_event="registration_failure",
+        extra_data__log_event__in=["pre_registration_failure", "registration_failure"],
     ).order_by("timestamp")
     _logs_with_content_object = (log for log in logs if log.content_object is not None)
 
