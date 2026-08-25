@@ -242,7 +242,7 @@ def collect_failed_registrations(
 ) -> list[FailedRegistration]:
     logs = TimelineLogProxy.objects.filter(
         timestamp__gt=since,
-        extra_data__log_event="registration_failure",
+        extra_data__log_event__in=["pre_registration_failure", "registration_failure"],
     ).order_by("timestamp")
 
     form_sorted_logs = sorted(logs, key=lambda x: x.content_object.form.admin_name)

@@ -159,6 +159,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         """Integration test for all the possible failures
 
         - failed emails
+        - failed pre-registrations
         - failed registrations
         - failed prefill_plugins
         - broken configurations
@@ -203,6 +204,10 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 email_event="registration",
                 new_status=Message.STATUS_FAILED,
                 status_label="Failed",
+            )
+            audit_log.exception(
+                "pre_registration_failure",
+                exc_info=Exception(),
             )
             audit_log.warning(
                 "registration_failure",
@@ -258,7 +263,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 sent_email.body,
             )
 
-        with self.subTest("failed registration"):
+        with self.subTest("failed (pre)registrations"):
             admin_relative_submissions_url = furl(
                 reverse("admin:submissions_submission_changelist")
             )
@@ -274,7 +279,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
             ).url
 
             self.assertIn(
-                f"Form '{form.admin_name}' failed 1 time(s) between 12:30 p.m. and 12:30 p.m..",
+                f"Form '{form.admin_name}' failed 2 time(s) between 12:30 p.m. and 12:30 p.m..",
                 sent_email.body,
             )
             self.assertIn(admin_submissions_url, sent_email.body)
