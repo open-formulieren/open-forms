@@ -218,6 +218,51 @@ class FailedRegistrationsTests(TestCase):
         self.assertEqual(failed_registrations[0].failed_submissions_counter, 2)
         self.assertEqual(failed_registrations[1].failed_submissions_counter, 1)
 
+    def test_failed_pre_registrations_are_collected(self):
+        # 1st form with 2 failures in the pre-registration fase in the past 24 hours
+        form_1 = FormFactory.create()
+        failed_submission_1 = SubmissionFactory.create(
+            form=form_1, registration_status=RegistrationStatuses.failed
+        )
+        failed_submission_2 = SubmissionFactory.create(
+            form=form_1, registration_status=RegistrationStatuses.failed
+        )
+        audit_log = audit_logger.bind(
+            exc_info=Exception("Pre registration failed"),
+        )
+
+        # 1st failure
+        audit_log.warning(
+            "pre_registration_failure",
+            submission_uuid=str(failed_submission_1.uuid),
+        )
+
+        # 2nd failure
+        audit_log.warning(
+            "pre_registration_failure",
+            submission_uuid=str(failed_submission_2.uuid),
+        )
+
+        # 2nd form with 1 failure in the past 24 hours
+        form_2 = FormFactory.create()
+        failed_submission = SubmissionFactory.create(
+            form=form_2, registration_status=RegistrationStatuses.failed
+        )
+
+        # failure
+        audit_log.exception(
+            "pre_registration_failure",
+            submission_uuid=str(failed_submission.uuid),
+        )
+
+        failed_registrations = collect_failed_registrations(
+            since=datetime(2023, 1, 1, 14, 30, 0).replace(tzinfo=utc)
+        )
+
+        self.assertEqual(len(failed_registrations), 2)
+        self.assertEqual(failed_registrations[0].failed_submissions_counter, 2)
+        self.assertEqual(failed_registrations[1].failed_submissions_counter, 1)
+
     def test_timestamp_constraint_returns_no_results(self):
         form = FormFactory.create()
         submission = SubmissionFactory.create(form=form, registration_failed=True)

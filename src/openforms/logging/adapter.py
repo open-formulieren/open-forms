@@ -668,6 +668,19 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
             )
 
         case {
+            "event": "pre_registration_failure" as event,
+            "submission_uuid": str(submission_uuid),
+        }:
+            submission = Submission.objects.get(uuid=submission_uuid)
+            return EventDetails(
+                event=event,
+                instance=submission,
+                plugin=event_dict.get("plugin"),
+                error=event_dict.get("exception", ""),
+                tags=[TimelineLogTags.submission_lifecycle],
+            )
+
+        case {
             "event": "registration_completed",
             "reason": "no_registration_plugin_configured",
             "submission_uuid": str(submission_uuid),

@@ -1,5 +1,4 @@
 import traceback
-from contextlib import contextmanager
 
 from django.db import transaction
 from django.utils import timezone
@@ -30,45 +29,21 @@ from .service import get_registration_plugin
 logger = structlog.stdlib.get_logger(__name__)
 
 
-class ShouldAbort:
-    value = False
-
-    def __bool__(self):
-        return self.value
-
-
-@contextmanager
-def track_error(submission: Submission, event: PostSubmissionEvents):
-    log = logger.bind(submission_uuid=str(submission.uuid), trigger=event)
-    should_abort = ShouldAbort()
-
-    try:
-        yield should_abort
-    except Exception as exc:
-        should_abort.value = True
-
-        if not isinstance(exc, ValidationError):
-            log.exception("registrations.error", exc_info=exc)
-
-        set_submission_reference(submission)
-        submission.save_registration_status(
-            RegistrationStatuses.failed,
-            {"traceback": traceback.format_exc()},
-            record_attempt=True,
-        )
-
-        if event == PostSubmissionEvents.on_retry:
-            raise exc
-
-
 @app.task()
 def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     submission = Submission.objects.get(id=submission_id)
+    form = submission.form
+    structlog.contextvars.bind_contextvars(
+        form=form.admin_name,
+        submission_uuid=str(submission.uuid),
+    )
     log = logger.bind(
         action="registrations.pre_registration",
         submission_uuid=str(submission.uuid),
         trigger=event,
     )
+    audit_log = audit_logger.bind(**structlog.get_context(log))
+
     if not submission.completed_on:
         # This should never happen. Pre-registration shouldn't be attempted for a submission that is not complete.
         log.error("submission_not_completed")
@@ -94,6 +69,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         None if registration_plugin is None else registration_plugin.identifier
     )
     log = log.bind(plugin=plugin_repr)
+    audit_log = audit_log.bind(plugin=registration_plugin)
 
     with transaction.atomic():
         if not registration_plugin:
@@ -112,12 +88,24 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             context={"validate_business_logic": False},
         )
 
-        with track_error(submission, event) as should_abort:
-            log.debug("validate_registration_plugin_options")
+        log.debug("validate_registration_plugin_options")
+        try:
             options_serializer.is_valid(raise_exception=True)
-
-        if should_abort:
+        except ValidationError as exc:
             log.debug("abort")
+            audit_log.warning(
+                "pre_registration_failure", reason="invalid_options", exc_info=exc
+            )
+
+            set_submission_reference(submission)
+            submission.save_registration_status(
+                RegistrationStatuses.failed,
+                {"traceback": traceback.format_exc()},
+                record_attempt=True,
+            )
+
+            if event == PostSubmissionEvents.on_retry:
+                raise exc
             return
 
         # If we are retrying, then an internal registration reference has been set. We keep track of it.
@@ -138,7 +126,8 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             submission.save()
 
     plugin_options = options_serializer.validated_data
-    with track_error(submission, event) as should_abort:
+
+    try:
         # If an `initial_data_reference` was passed, we must verify that the
         # authenticated user is the owner of the referenced object
         has_initial_data_reference = bool(submission.initial_data_reference)
@@ -153,9 +142,18 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             )
 
         result = registration_plugin.pre_register_submission(submission, plugin_options)
-
-    if should_abort:
+    except Exception as exc:
+        log.exception("registrations.error", exc_info=exc)
         log.debug("abort")
+        audit_log.exception("pre_registration_failure", exc_info=exc)
+
+        set_submission_reference(submission)
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+
+        if event == PostSubmissionEvents.on_retry:
+            raise exc
         return
 
     log.debug("assign_registration_reference")
