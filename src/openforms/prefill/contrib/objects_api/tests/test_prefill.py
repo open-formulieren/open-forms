@@ -196,14 +196,15 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         data = state.get_data(include_unsaved=True)
 
         self.assertEqual(TimelineLogProxy.objects.count(), 2)
-        ownership_check_log, prefill_log = TimelineLogProxy.objects.order_by("pk")
 
-        self.assertEqual(
-            ownership_check_log.extra_data["log_event"],
-            "object_ownership_check_success",
+        ownership_check_log = TimelineLogProxy.objects.get(
+            extra_data__log_event="object_ownership_check_success"
         )
+        prefill_log = TimelineLogProxy.objects.get(
+            extra_data__log_event="prefill_retrieve_empty"
+        )
+
         self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
-        self.assertEqual(prefill_log.extra_data["log_event"], "prefill_retrieve_empty")
         self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
         self.assertEqual(data["lastName"], "")
         self.assertEqual(data["age"], "")
