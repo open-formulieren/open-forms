@@ -1,11 +1,13 @@
-from django.test import SimpleTestCase, override_settings
+from django.test import SimpleTestCase, override_settings, tag
 from django.utils.crypto import salted_hmac
 
 from rest_framework import serializers
+from unittest_parametrize import ParametrizedTestCase, parametrize
 
 from openforms.contrib.brk.constants import AddressValue
 from openforms.contrib.brk.validators import ValueSerializer
 from openforms.submissions.models import Submission
+from openforms.typing import JSONObject
 from openforms.validations.base import BasePlugin
 
 from ...components.utils import salt_location_message
@@ -22,7 +24,7 @@ class PostcodeValidator(BasePlugin[AddressValue]):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class AddressNLValidationTests(SimpleTestCase):
+class AddressNLValidationTests(ParametrizedTestCase, SimpleTestCase):
     def test_addressNL_field_required_validation(self):
         component: AddressNLComponent = {
             "key": "addressNl",
@@ -46,7 +48,26 @@ class AddressNLValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_addressNL_field_non_required_validation(self):
+    @parametrize(
+        "value",
+        [
+            {},
+            {
+                "addressNl": {
+                    "autoPopulated": False,
+                    "postcode": "",
+                    "houseNumber": "",
+                    "houseLetter": "",
+                    "houseNumberAddition": "",
+                    "streetName": "",
+                    "city": "",
+                    "secretStreetCity": "",
+                },
+            },
+        ],
+    )
+    @tag("gh-6581")
+    def test_addressNL_field_non_required_validation(self, value: JSONObject):
         component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
@@ -54,7 +75,7 @@ class AddressNLValidationTests(SimpleTestCase):
             "deriveAddress": False,
         }
 
-        is_valid, _ = validate_formio_data(component, {})
+        is_valid, _ = validate_formio_data(component, value)
 
         self.assertTrue(is_valid)
 

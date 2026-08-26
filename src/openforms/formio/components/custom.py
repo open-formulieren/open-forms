@@ -575,6 +575,20 @@ class AddressValueSerializer(serializers.Serializer):
         self.component = kwargs.pop("component", None)
         super().__init__(**kwargs)
 
+    def get_fields(self):
+        fields = super().get_fields()
+
+        # if the field as a whole is not required, postcode & house number become
+        # optional
+        postcode = fields["postcode"]
+        assert isinstance(postcode, serializers.RegexField)
+        postcode.allow_blank = not self.required
+
+        house_number = fields["houseNumber"]
+        assert isinstance(house_number, serializers.RegexField)
+        house_number.allow_blank = not self.required
+        return fields
+
     def validate_city(self, value: str) -> str:
         if city_regex := glom(
             self.component, "openForms.components.city.validate.pattern", default=""
