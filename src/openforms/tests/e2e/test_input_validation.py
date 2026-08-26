@@ -1010,7 +1010,16 @@ class SingleAddressNLTests(ValidationsTestCase):
 
         with self.subTest("backend validation"):
             self._assertBackendValidation(
-                form, component["key"], component["type"], api_value
+                form,
+                f"{component['key']}.postcode",
+                component["type"],
+                api_value,
+            )
+            self._assertBackendValidation(
+                form,
+                f"{component['key']}.houseNumber",
+                component["type"],
+                api_value,
             )
 
     @async_to_sync
