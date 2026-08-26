@@ -58,6 +58,20 @@ def move_time_validators(component: Component) -> bool:
     return True
 
 
+def fix_min_max_time_default_values(component: Component) -> bool:
+    if "validate" not in component:
+        return False
+
+    validate = component["validate"]
+    if validate.get("minTime") == "":
+        component["validate"]["minTime"] = None  # type: ignore
+
+    if validate.get("maxTime") == "":
+        component["validate"]["maxTime"] = None  # type: ignore
+
+    return True
+
+
 def alter_prefill_default_values(component: Component) -> bool:
     """A converter that replaces ``prefill`` dict values from ``None`` to an empty string."""
     if not (prefill := component.get("prefill") or {}):
@@ -480,6 +494,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "move_time_validators": move_time_validators,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "fix_min_max_time_default_values": fix_min_max_time_default_values,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
