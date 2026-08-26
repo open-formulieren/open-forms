@@ -11,7 +11,7 @@ The Steering Committee (SC) is responsible for:
 
 1. The general ambitions and objectives of this project
 2. Guidelines, procedures, and tool selection
-3. Decisions regarding architecture and (development) infrastructure
+3. Decisions regarding information/enterprise architecture
 4. Raising issues relevant to the direction and development of this project
 
 The SC consists of the following members:
@@ -47,7 +47,7 @@ opening a GitHub issue (see the [Contribution Guide](CONTRIBUTING.md)).
 ## Contributors
 
 "Contributors" refers to anyone in the community who contributes code, 
-documentation, or other technical artifacts to the project.
+documentation, or other useful artifacts to the project.
 
 Anyone can become a contributor.
 
