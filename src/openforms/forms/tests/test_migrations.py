@@ -531,3 +531,54 @@ class MoveFileComponentRegistrationOverridesTests(MigratorTestCase):
                     },
                 ],
             )
+
+
+class FixMinMaxTimeDefaultValuesTimeComponentTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0135_form_help_dialog_content_form_help_dialog_content_en_and_more",
+    )
+    migrate_to = ("forms", "0136_fix_min_and_max_time_default_values_in_time_component")
+
+    def prepare(self):
+        apps = self.old_state.apps
+
+        Form = apps.get_model("forms", "Form")
+        Form.objects.create(name="Test")
+
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormDefinition.objects.create(
+            name="Form def",
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "type": "time",
+                        "key": "time",
+                        "label": "Test time",
+                        "validate": {
+                            "minTime": "",
+                            "maxTime": "",
+                        },
+                    },
+                ]
+            },
+        )
+
+    def test_default_values_are_updated_properly(self):
+        FormDefinition = self.new_state.apps.get_model("forms", "FormDefinition")
+        form_definition = FormDefinition.objects.get()
+
+        self.assertEqual(
+            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "key": "time",
+                        "type": "time",
+                        "label": "Test time",
+                        "validate": {"maxTime": None, "minTime": None},
+                    }
+                ]
+            },
+        )
