@@ -27,6 +27,7 @@ const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []
 const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
 const MAP_WMS_LAYERS = jsonScriptToVar('config-MAP_WMS_LAYERS', {default: []});
 const MAP_WFS_LAYERS = [];
+const VALIDATE_REQUIRED_DEFAULT = jsonScriptToVar('config-REQUIRED_DEFAULT', {default: false});
 
 const getMapOverlayTileLayers = async () => {
   const layers = [
@@ -123,6 +124,7 @@ const FormBuilder = ({
         }
       }}
       // Context binding
+      validateRequiredDefault={VALIDATE_REQUIRED_DEFAULT}
       formType={formType}
       uniquifyKey={key => getUniqueKey(toCamelCase(key), usedComponentKeys)}
       supportedLanguageCodes={LANGUAGES}
