@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 4.0.0-beta.0
+  version: 4.0.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -9613,11 +9613,12 @@ components:
           pattern: ^(\w|\w[\w.\-]*\w)$
         formStepSlug:
           type: string
-          description: The slug of the form step that will be affected by the action.
-            This field is required for action types `disable-next`, `step-applicable`,
-            `step-not-applicable` - otherwise it's optional. We deliberately use the
-            slug instead of the uuid because the uuid is not fixed, as we create the
-            form steps from scratch during form update.
+          description: Het URL-deel van de formulierstap waarop de actie van invloed
+            is. Dit veld is verplicht voor actietypen `disable-next`, `step-applicable`,
+            `step-not-applicable` - anders is het optioneel. We gebruiken bewust het
+            URL-deel in plaats van de UUID, aangezien de UUID niet vaststaat. Bij
+            het bijwerken van het formulier worden de formulierstappen namelijk volledig
+            opnieuw aangemaakt.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
