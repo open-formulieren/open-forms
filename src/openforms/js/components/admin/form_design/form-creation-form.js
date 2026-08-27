@@ -62,13 +62,10 @@ import {
 } from './translations';
 import useConfirm from './useConfirm';
 import {
-  checkKeyChange,
   findComponent,
   getFormComponents,
-  getFormStep,
   getPathToComponent,
   getUniqueKey,
-  parseValidationErrors,
   slugify,
   transformInitialValue,
   updateKeyReferencesInLogic,
@@ -862,6 +859,18 @@ function reducer(draft, action) {
               needsFormPrefix = true;
               break;
             }
+            case 'steps': {
+              const [, indexStr, topLevel, ...stepFieldBits] = bits;
+              const index = parseInt(indexStr, 10);
+              // frontend drops the step <-> formDefinition layer and puts everything
+              // together, make sure the validation errors match this shape.
+              if (topLevel !== 'formDefinition') {
+                stepFieldBits.unshift(topLevel);
+              }
+              const formStepErrorName = stepFieldBits.join('.');
+              draft.formSteps[index].validationErrors.push([formStepErrorName, reason]);
+              break;
+            }
             default: {
               break;
             }
@@ -870,52 +879,6 @@ function reducer(draft, action) {
           const prefixedErrorName = needsFormPrefix ? `form.${name}` : name;
           prefixedErrors.push([prefixedErrorName, reason]);
         }
-
-        console.log(prefixedErrors);
-
-        // for (const validationError of validationErrors) {
-        //   if (validationError.context.step) {
-        //     const index = validationError.context.step.index;
-        //     draft.formSteps[index].validationErrors = validationError.errors.map(err => [
-        //       err.name,
-        //       err.reason,
-        //     ]);
-        //     continue;
-        //   }
-
-        //   // generic form-level validation error processing
-        //   let {context: fieldPrefix, errors} = validationError;
-        //   const _prefixedErrors = errors.map(err => {
-        //     const fieldName = err.name.split('.')[0];
-
-        //     if (fieldName === 'translations') {
-        //       // structure is translations[langCode][fieldName]
-        //       const [, , translationField] = err.name.split('.');
-        //       const tabName = TRANSLATION_FIELD_TO_TAB_NAMES[translationField];
-        //       tabName && tabsWithErrors.push(tabName);
-        //     } else if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
-        //       tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-        //     } else if (
-        //       !tabsWithErrors.includes(fieldPrefix) &&
-        //       FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]
-        //     ) {
-        //       tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
-        //     }
-
-        //     const key = `${fieldPrefix}.${err.name}`;
-        //     return [key, err.reason];
-        //   });
-        //   prefixedErrors.push(..._prefixedErrors);
-        // }
-
-        // // Assign errors to variables
-        // const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
-        // // variablesValidationErrors is a dict where the keys are the indices of the variables with errors
-        // Object.keys(variablesValidationErrors).forEach(index => {
-        //   if (draft.formVariables[index]) {
-        //     draft.formVariables[index].errors = variablesValidationErrors[index];
-        //   }
-        // });
 
         // update state depending on the validation errors. If there are errors, we set
         // submitting to false so they can correct the validation errors.
