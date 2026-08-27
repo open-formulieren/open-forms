@@ -114,12 +114,14 @@ const getFormVariables = (formDefinition, configuration) => {
 const updateFormVariables = (
   formDefinition,
   mutationType,
-  {component, originalComponent = null},
+  {component: changedComponent, originalComponent = null},
   formVariables,
   stepConfiguration
 ) => {
   // Not all components are associated with variables
-  if (shouldNotUpdateVariables(component, originalComponent, mutationType, stepConfiguration)) {
+  if (
+    shouldNotUpdateVariables(changedComponent, originalComponent, mutationType, stepConfiguration)
+  ) {
     return formVariables;
   }
 
@@ -127,14 +129,14 @@ const updateFormVariables = (
   if (mutationType === 'created') {
     // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
     // the layout component need to be generated.
-    if (isLayoutComponent(component)) {
-      for (const {component} of iterComponents([component])) {
+    if (isLayoutComponent(changedComponent)) {
+      for (const {component} of iterComponents([changedComponent])) {
         // Layout comopnents don't need variables - they don't hold data/values
         if (isLayoutComponent(component)) continue;
         formVariables.push(makeNewVariableFromComponent(component, formDefinition));
       }
     } else {
-      formVariables.push(makeNewVariableFromComponent(component, formDefinition));
+      formVariables.push(makeNewVariableFromComponent(changedComponent, formDefinition));
     }
   } else if (mutationType === 'updated') {
     let indicesVariablesWithoutIds = [];
@@ -148,7 +150,10 @@ const updateFormVariables = (
       }
 
       if (variable._id === originalComponent.id) {
-        formVariables[variableIndex] = makeNewVariableFromComponent(component, formDefinition);
+        formVariables[variableIndex] = makeNewVariableFromComponent(
+          changedComponent,
+          formDefinition
+        );
         variableUpdated = true;
         break;
       }
@@ -161,19 +166,19 @@ const updateFormVariables = (
         // Case 1: the component key has changed (possibly among other attributes)
         // Case 2: other attributes (not the key) of the component have changed.
         if (variable.key === originalComponent.key) {
-          formVariables[index] = makeNewVariableFromComponent(component, formDefinition);
+          formVariables[index] = makeNewVariableFromComponent(changedComponent, formDefinition);
           break;
         }
       }
     }
   } else if (mutationType === 'deleted') {
     // When a component is removed, originalComponent is null
-    let keysToRemove = [component.key];
+    let keysToRemove = [changedComponent.key];
 
     // Case where a layout component is being removed,
     // so the variables for the nested components have to be removed too
-    if (hasChildren(component)) {
-      for (const {component} of iterComponents([component])) {
+    if (hasChildren(changedComponent)) {
+      for (const {component} of iterComponents([changedComponent])) {
         keysToRemove.push(component.key);
       }
     }
