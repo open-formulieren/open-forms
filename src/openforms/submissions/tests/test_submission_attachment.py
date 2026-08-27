@@ -923,7 +923,7 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
 
         # verify resize
-        attachment_1, attachment_2 = submission_step.attachments.all()
+        attachment_1, attachment_2 = submission_step.attachments.order_by("pk")
         self.assertEqual(attachment_1.component_key, "my_file")
         self.assertEqual(attachment_1.original_name, "my-image-1.png")
         self.assertImageSize(attachment_1.content, 100, 100, "png")
