@@ -1,3 +1,5 @@
+.. _installation_upgrade_400:
+
 ===================================
 Upgrade details to Open Forms 4.0.0
 ===================================
