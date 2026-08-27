@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from json_logic.meta import JSONLogicExpression, Operation
 from rest_framework import serializers
-from rest_framework.exceptions import ErrorDetail
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.utils import get_plugin
@@ -47,7 +47,11 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         )
 
         # ensure that the expression itself is valid
-        super().__call__(expression)
+        try:
+            super().__call__(expression)
+        except ValidationError as exc:
+            # wrap error into appropriate field to prevent nonFieldErrors
+            raise ValidationError({self.trigger_field: exc.detail})
 
         # check if we need to allow a complex expression through because it's advanced logic
         if self._is_advanced_logic(data, serializer):
