@@ -127,7 +127,7 @@ class FillInFormTests(E2ETestCase):
                 await page.get_by_role("button", name="Begin form").click()
 
                 await page.get_by_label("Textfield visible").fill("hide")
-                expect(page.get_by_label("Hidden field")).not_to_be_visible()
+                await expect(page.get_by_label("Hidden field")).not_to_be_visible()
 
                 await page.get_by_role("button", name="Next").click()
                 await page.get_by_role("button", name="Confirm").click()

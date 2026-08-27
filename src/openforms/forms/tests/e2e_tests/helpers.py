@@ -27,8 +27,21 @@ async def drag_and_drop_component(page: Page, component: str, nth: int | None = 
     # all browsers. To reliably issue the second mouse move, repeat your mouse.move() or locator.hover() twice."
     # ... but repeating the hover didn't work. Hence, the extra move.
     # await page.mouse.move(0, 0)
-    await page.get_by_test_id("main-dropzone").hover()
-    await page.get_by_test_id("main-dropzone").hover()
+
+    drag_target = page.get_by_test_id("main-dropzone")
+    await drag_target.scroll_into_view_if_needed()
+    await drag_target.hover()
+    await drag_target.hover()
+
+    # move the pointer a bit to ensure we fire the dragover event - similar to the builder
+    # patch with some requestAnimationFrame shenanigans
+    target_box = await drag_target.bounding_box()
+    assert target_box is not None
+    target_center_x, target_center_y = (
+        target_box["x"] + target_box["width"] / 2,
+        -target_box["y"] + target_box["height"] / 2,
+    )
+    await page.mouse.move(target_center_x - 10, target_center_y - 10, steps=3)
     await page.mouse.up()
 
 
