@@ -103,6 +103,26 @@ const normalizeCategory = draft => {
   }
 };
 
+const normalizeProduct = draft => {
+  const form = draft.form;
+  switch (form.product) {
+    case null: {
+      return;
+    }
+    case '': {
+      form.product = null;
+      break;
+    }
+    // extract UUID from URL - we don't have the available products in the top-level
+    // state, so instead we parse the URL value
+    default: {
+      const [productUUID] = new URL(form.product).pathname.split('/').toReversed();
+      form.product = productUUID || null;
+      break;
+    }
+  }
+};
+
 /**
  * Options for ZGW registration backend can be empty strings but the serializer does not allow them.
  * This is the way the regular forms treat options, they don't send data for the field when empty str.
@@ -143,6 +163,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeForFormType(draft);
     normalizeTheme(draft);
     normalizeCategory(draft);
+    normalizeProduct(draft);
   });
 
   const formName = cleanedState.form.translations[DEFAULT_LANGUAGE].name;
