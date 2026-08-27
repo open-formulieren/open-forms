@@ -72,12 +72,15 @@ def report_configurations() -> bool:
     for form_definition in form_definitions.iterator(chunk_size=10):
         component_keys: set[str] = set()
         for component in form_definition.configuration_wrapper:
-            if not (conditional := component.get("conditional")):
-                continue
-            elif (
-                "eq" in conditional
-            ):  # no changes were made to the conditional property
-                continue
+            match component:
+                # the conditional will not run anyway as it's "not configured"
+                case {"conditional": {"show": None} | {"when": None}}:
+                    continue
+                # no changes were made to the conditional property
+                case {"conditional": {"eq": _}}:
+                    continue
+                case _ if not (conditional := component.get("conditional")):
+                    continue
 
             conditional_values = [
                 conditional.get(key, empty) for key in known_conditional_keys
