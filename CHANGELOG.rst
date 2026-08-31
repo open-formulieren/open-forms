@@ -46,8 +46,45 @@ To upgrade to 4.0, please:
   registration plugins.
 * ⚠️ Ensure your existing forms still work with the updated clear-on-hide behaviour.
 
-Breaking changes
+Major features
+--------------
+
+**💬 Single step forms**
+
+To make it easier for citizens and companies to digitally contact government organisations, you can
+now create "single step" forms. This simpler kind of form never requires users to authenticate and
+allows them to immediately start filling out the form fields without having to start the form
+submission first. Embedding single step forms in your CMS pages can make it even easier to comply
+with the `WMEBV (Wet Modernisering Elektronisch Bestuurlijk Verkeer) <https://vng.nl/wmebv>`_.
+
+**♿️ Updated form field layout**
+
+The layout of form fields has been updated so that field descriptions and validation errors are now
+displayed between field label and field input, rather than after the field input.
+
+This has been a long-standing request for Open Forms, and aligns the UI and UX with NL Design
+System recommendations, as it vastly improves digital accessibility and user experience.
+
+**ℹ️ Help function**
+
+We've added a help function to provide users assistance while they fill out a form.
+
+When configured, a "help" callout page is presented before a form is started, explaining the
+available assistance function. On each form step a "help" button is added, which (when clicked)
+displays the configured help instructions.
+
+**🏗️ Form designer**
+
+We have replaced the Formio form designer with our own implementation. This allowed us to solve a
+couple UI related issues, and remove and update dependencies with known vulnerabilities.
+
+It also means that we now have full control about future features, wishes and improvements without
+needing external changes first.
+
+Detailed changes
 ----------------
+
+**Breaking changes**
 
 See the :ref:`4.0 upgrade notes <installation_upgrade_400>` for details.
 
@@ -85,43 +122,7 @@ See the :ref:`4.0 upgrade notes <installation_upgrade_400>` for details.
   be between the label and input field for improved accessibility. The markup and CSS
   involved have been updated to make this possible, which may affect custom themes.
 
-Major features
---------------
-
-**💬 Single step forms**
-
-To make it easier for citizens and companies to digitally contact government organisations, you can
-now create "single step" forms. This simpler kind of form never requires users to authenticate and
-allows them to immediately start filling out the form fields without having to start the form
-submission first. Embedding single step forms in your CMS pages can make it even easier to comply
-with the `WMEBV (Wet Modernisering Elektronisch Bestuurlijk Verkeer) <https://vng.nl/wmebv>`_.
-
-**♿️ Updated form field layout**
-
-The layout of form fields has been updated so that field descriptions and validation errors are now
-displayed between field label and field input, rather than after the field input.
-
-This has been a long-standing request for Open Forms, and aligns the UI and UX with NL Design
-System recommendations, as it vastly improves digital accessibility and user experience.
-
-**ℹ️ Help function**
-
-We've added a help function to provide users assistance while they fill out a form.
-
-When configured, a "help" callout page is presented before a form is started, explaining the
-available assistance function. On each form step a "help" button is added, which (when clicked)
-displays the configured help instructions.
-
-**🏗️ Form designer**
-
-We have replaced the Formio form designer with our own implementation. This allowed us to solve a
-couple UI related issues, and remove and update dependencies with known vulnerabilities.
-
-It also means that we now have full control about future features, wishes and improvements without
-needing external changes first.
-
-New features
-------------
+**New features**
 
 * [:backend:`5932`] Added 'use email for confirmation email' option to the ``customerProfile``
   component.
@@ -208,8 +209,7 @@ New features
 * [:backend:`6575`] Added data migration for fixing invalid ``time`` component min/max time
   configuration.
 
-Bugfixes
---------
+**Bugfixes**
 
 * [:backend:`6581`] Fixed ``addressNL`` component incorrectly being treated as required.
 * [:backend:`6497`] Fixed pre-registration failures not being reported in the email digest.
@@ -297,8 +297,7 @@ Bugfixes
 * [:backend:`6286`] Fixed template variables not being extracted from the component
   properties.
 
-Project maintenance
--------------------
+**Project maintenance**
 
 * Dropped a bunch of frontend legacy peer dependencies.
 * Dropped microscope-sass frontend dependency.
