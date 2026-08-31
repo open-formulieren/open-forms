@@ -38,7 +38,7 @@ const normalizeForFormType = draft => {
       // lingering configuration if a form is turned into an appointment form
       draft.form.registrationBackends = [];
       draft.form.product = null;
-      draft.form.paymentBackend = '';
+      draft.form.payment = {backend: '', options: {}};
 
       // clear any steps, variables and logic rules
       draft.stepsToDelete = draft.formSteps.map(step => step.url).filter(Boolean);
@@ -55,7 +55,7 @@ const normalizeForFormType = draft => {
       draft.form.authBackends = [];
       draft.form.autoLoginAuthenticationBackend = '';
       draft.form.product = null;
-      draft.form.paymentBackend = '';
+      draft.form.payment = {backend: '', options: {}};
       break;
     }
   }

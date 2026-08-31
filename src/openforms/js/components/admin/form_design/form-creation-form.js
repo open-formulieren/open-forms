@@ -109,8 +109,10 @@ const initialFormState = {
     registrationBackends: [],
     product: null,
     priceVariableKey: '',
-    paymentBackend: '',
-    paymentBackendOptions: {},
+    payment: {
+      backend: '',
+      options: {},
+    },
     submissionsRemovalOptions: {},
     sendConfirmationEmail: true,
     confirmationEmailTemplate: {subject: '', content: '', translations: {}},
@@ -192,8 +194,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   registrationBackends: 'registration',
   submissionLimit: 'submission',
   product: 'product-payment',
-  paymentBackend: 'product-payment',
-  paymentBackendOptions: 'product-payment',
+  payment: 'product-payment',
   submissionsRemovalOptions: 'submission-removal-options',
   logicRules: 'logic-rules',
   variables: 'variables',
@@ -230,7 +231,15 @@ function reducer(draft, action) {
         draft[stateVar] = data;
       }
 
-      if (form) draft.form = form;
+      if (form) {
+        draft.form = form;
+        draft.form.payment = {
+          backend: form.paymentBackend,
+          options: form.paymentBackendOptions,
+        };
+        delete form.paymentBackend;
+        delete form.paymentBackendOptions;
+      }
       if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
       if (variables) draft.formVariables = variables;
       if (logicRules)
@@ -1436,8 +1445,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
               <PaymentFields
                 backends={state.availablePaymentBackends}
-                selectedBackend={state.form.paymentBackend}
-                backendOptions={state.form.paymentBackendOptions}
+                selectedBackend={state.form.payment.backend}
+                backendOptions={state.form.payment.options}
                 onChange={onFieldChange}
               />
               <PriceLogic variableKey={state.form.priceVariableKey} onFieldChange={onFieldChange} />
