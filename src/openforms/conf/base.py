@@ -1070,7 +1070,7 @@ Open Forms fits in the [Common Ground](https://commonground.nl) vision and archi
 and it plays nice with other available components.
 """
 
-API_VERSION = "4.0.0-beta.0"
+API_VERSION = "4.0.0"
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v2",
@@ -1320,8 +1320,8 @@ SETUP_CONFIGURATION_STEPS = [
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
     "4.0.0": UpgradeCheck(
-        # 3.5.4 will provide the necessary migration tooling, update when it's released
-        VersionRange(minimum="3.5.4"),
+        # 3.5.5 provides the necessary migration tooling
+        VersionRange(minimum="3.5.5"),
         code_checks=[
             BinScriptCheck("report_invalid_form_logic"),
             CommandCheck("check_legacy_catalogi_api_urls"),

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 17:36+0200\n"
+"POT-Creation-Date: 2026-08-26 17:42+0200\n"
 "PO-Revision-Date: 2026-08-20 17:36+0200\n"
 "Last-Translator:   <admin@admin.com>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -61,7 +61,7 @@ msgstr "Een gebruiker met deze gebruikersnaam bestaat al."
 msgid "first name"
 msgstr "voornaam"
 
-#: openforms/accounts/models.py:40 openforms/formio/components/custom.py:770
+#: openforms/accounts/models.py:40 openforms/formio/components/custom.py:784
 msgid "last name"
 msgstr "achternaam"
 
@@ -853,7 +853,7 @@ msgid "City"
 msgstr "Stad"
 
 #: openforms/appointments/api/serializers.py:93
-#: openforms/formio/components/custom.py:1210
+#: openforms/formio/components/custom.py:1224
 msgid "address"
 msgstr "adres"
 
@@ -4908,7 +4908,7 @@ msgid "dd-mm-yyyy HH:mm"
 msgstr "dd-mm-jjjj HH:mm"
 
 #: openforms/formio/components/custom.py:386
-#: openforms/formio/components/custom.py:1156
+#: openforms/formio/components/custom.py:1170
 #: openforms/formio/components/vanilla.py:134
 #: openforms/formio/components/vanilla.py:361
 msgid "This value does not match the required pattern."
@@ -4926,120 +4926,120 @@ msgstr "Afgeleide straatnaam"
 msgid "Derived city"
 msgstr "Afgeleide stad"
 
-#: openforms/formio/components/custom.py:611
+#: openforms/formio/components/custom.py:625
 msgid "City does not match the specified pattern."
 msgstr "De stad komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:633
+#: openforms/formio/components/custom.py:647
 msgid "Postcode does not match the specified pattern."
 msgstr "De postcode komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:660
+#: openforms/formio/components/custom.py:674
 msgid "Invalid secret city - street name combination"
 msgstr "Ongeldige waarde voor sleutel voor de stad/straat-combinatie."
 
-#: openforms/formio/components/custom.py:754
-#: openforms/formio/components/custom.py:897
+#: openforms/formio/components/custom.py:768
+#: openforms/formio/components/custom.py:911
 msgid "bsn"
 msgstr "BSN"
 
-#: openforms/formio/components/custom.py:756
+#: openforms/formio/components/custom.py:770
 msgid "The BSN of the partner"
 msgstr "Het BSN van de partner"
 
-#: openforms/formio/components/custom.py:760
+#: openforms/formio/components/custom.py:774
 msgid "initials"
 msgstr "Initialen"
 
-#: openforms/formio/components/custom.py:761
+#: openforms/formio/components/custom.py:775
 msgid "The initials of the partner"
 msgstr "De initialen van de partner"
 
-#: openforms/formio/components/custom.py:765
+#: openforms/formio/components/custom.py:779
 msgid "affixes"
 msgstr "voorvoegsels"
 
-#: openforms/formio/components/custom.py:766
+#: openforms/formio/components/custom.py:780
 msgid "The affixes of the partner"
 msgstr "De voorvoegsels van de partner"
 
-#: openforms/formio/components/custom.py:771
+#: openforms/formio/components/custom.py:785
 msgid "The last name of the partner"
 msgstr "Achternaam van de partner"
 
-#: openforms/formio/components/custom.py:775
-#: openforms/formio/components/custom.py:908
+#: openforms/formio/components/custom.py:789
+#: openforms/formio/components/custom.py:922
 msgid "date of birth"
 msgstr "Geboortedatum"
 
-#: openforms/formio/components/custom.py:776
+#: openforms/formio/components/custom.py:790
 msgid "The date of birth of the partner"
 msgstr "De geboortedatum van de partner"
 
-#: openforms/formio/components/custom.py:839
-#: openforms/formio/components/custom.py:999
+#: openforms/formio/components/custom.py:853
+#: openforms/formio/components/custom.py:1013
 msgid "The family members prefill data may not be altered."
 msgstr "Je mag de familieleden prefill-gegevens niet wijzigen."
 
-#: openforms/formio/components/custom.py:899
+#: openforms/formio/components/custom.py:913
 msgid "The BSN of the child"
 msgstr "Het BSN van het kind"
 
-#: openforms/formio/components/custom.py:903
+#: openforms/formio/components/custom.py:917
 msgid "firstNames"
 msgstr "voornamen"
 
-#: openforms/formio/components/custom.py:904
+#: openforms/formio/components/custom.py:918
 msgid "The first names of the child"
 msgstr "De voornamen  van het kind"
 
-#: openforms/formio/components/custom.py:909
+#: openforms/formio/components/custom.py:923
 msgid "The date of birth of the child"
 msgstr "De geboortedatum van het kind"
 
-#: openforms/formio/components/custom.py:912
+#: openforms/formio/components/custom.py:926
 msgid "selected"
 msgstr "geselecteerd"
 
-#: openforms/formio/components/custom.py:915
+#: openforms/formio/components/custom.py:929
 msgid "Whether the child is selected by the user or not for further processing"
 msgstr ""
 "Ongeacht of het kind is geselecteerd door de gebruiker voor verdere "
 "behandeling"
 
-#: openforms/formio/components/custom.py:988
+#: openforms/formio/components/custom.py:1002
 msgid "Invalid data."
 msgstr "Incorrecte data."
 
-#: openforms/formio/components/custom.py:1199
+#: openforms/formio/components/custom.py:1213
 #, python-brace-format
 msgid "You cannot submit multiple digital addresses for the type '{type}'."
 msgstr "Je kan niet meerdere digitale adressen van het type '{type}' insturen."
 
-#: openforms/formio/components/custom.py:1210
+#: openforms/formio/components/custom.py:1224
 msgid "The digital address value."
 msgstr "De waarde van het digitale adres."
 
-#: openforms/formio/components/custom.py:1213
+#: openforms/formio/components/custom.py:1227
 #: openforms/forms/api/serializers/logic/action_serializers.py:38
 #: openforms/prefill/contrib/family_members/config.py:49
 #: openforms/submissions/admin.py:45
 msgid "type"
 msgstr "type"
 
-#: openforms/formio/components/custom.py:1215
+#: openforms/formio/components/custom.py:1229
 msgid "The type of digital address."
 msgstr "Het type van het digitale adres."
 
-#: openforms/formio/components/custom.py:1218
+#: openforms/formio/components/custom.py:1232
 msgid "preference update"
 msgstr "Voorkeur bijwerken"
 
-#: openforms/formio/components/custom.py:1221
+#: openforms/formio/components/custom.py:1235
 msgid "Indicates if it is a one-off address or not."
 msgstr "Geeft aan of het adres eenmalig gebruikt wordt."
 
-#: openforms/formio/components/custom.py:1260
+#: openforms/formio/components/custom.py:1274
 msgid "Enter a valid phone number."
 msgstr "Voer een geldig telefoonnummer in."
 
@@ -8173,6 +8173,12 @@ msgstr "%(lead)s: PDF generatie gestart."
 #, python-format
 msgid "%(lead)s: PDF generated succesfully."
 msgstr "%(lead)s: PDF succesvol gegenereerd."
+
+#: openforms/logging/templates/logging/events/pre_registration_failure.txt:2
+#, python-format
+msgid ""
+"%(lead)s: Registration plugin %(plugin)s reported: Pre-registration failed."
+msgstr "%(lead)s: Registratieplugin %(plugin)s meldt: Pre-registratie mislukt."
 
 #: openforms/logging/templates/logging/events/prefill_retrieve_empty.txt:2
 #, python-format

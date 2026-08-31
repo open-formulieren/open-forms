@@ -10,6 +10,414 @@ Changelog (NL)
     found :ref:`here <changelog>`.
 
 
+4.0.0 "Jongerius" (2026-08-31)
+==============================
+
+Open Formulieren 4.0.0 is een feature release met brekende wijzigingen.
+
+.. epigraph::
+
+   Jan Jongerius was een Nederlandse ondernemer die garages had in meerdere Nederlandse steden en
+   de grootste Ford-dealer was van Nederland. Villa Jongerius was gebouwd in Utrecht dicht bij de
+   bestaande werkplaatsen - wat uiteindelijk de locatie werd van het eerste Open Formulieren
+   community-evenement. De releasenaam is een knipoog naar de gemeente Utrecht, die één van de
+   bijdragers is van deze release.
+
+Deze release bevat wijzigingen uit de alpha- en beta-versies en opgeloste bugs tot aan de
+stabiele versie. Lees de release-opmerkingen aandachtig vóór het upgraden naar versie
+4.0.0 en volg de onderstaande instructies.
+
+Update-procedure
+----------------
+
+Om naar 4.0 te upgraden, let dan op:
+
+* ⚠️ Zorg dat de huidige versie 3.5.5 of nieuwer is. We raden altijd de meest recente patch release
+  aan, op het moment van schrijven is dit 3.5.7.
+* ⚠️ Bekijk de :ref:`gedetailleerde release notes <installation_upgrade_400>` in de
+  documentatie onder **Installation** > **Upgrade details to Open Forms 4.0.0** en
+  bereid je hierop voor.
+* ⚠️ Zorg dat alle formulieren gebruik maken van de nieuwe logica-evaluatie.
+* ⚠️ Zorg dat (eigen) stijlen zijn bijgewerkt en voorbereid op 4.0.
+* ⚠️ Zorg dat de verouderde ZGW-URLs gemigreerd zijn als je de Objecten-API- of ZGW-API's-
+  registratieplugins gebruikt.
+* ⚠️ Verifieer dat je bestaande formulieren nog werken met de gewijzigde "Wissen als
+  veld verborgen is"-functionaliteit.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**💬 "Enkele-stap"-formulieren**
+
+Om het eenvoudiger te maken voor inwoners en bedrijven om digitaal contact op te nemen met
+overheidsinstanties, kan je nu "enkele stap"-formulieren maken. Deze versimpelde vorm van
+formulieren vraagt nooit om inloggen en kan direct ingevuld worden zonder dat eerst een
+formulierinzending gestart moet worden. Het embedden van éénstapsformulieren kan het
+eenvoudiger maken om te voldoen aan de
+`WMEBV (Wet Modernisering Elektronisch Bestuurlijk Verkeer) <https://vng.nl/wmebv>`_ wetgeving.
+
+**♿️ Verbeterde formulierveldlayout**
+
+De layout van formuliervelden is aangepast zodat beschrijvingen en foutmeldingen nu
+getoond worden tussen het veldlabel en invoerveld, in plaats van onder het invoerveld.
+
+Deze wens was al langere tijd bekend bij Open Formulieren maar was technisch lastig.
+Met deze aanpassing brengen we de UI en UX in lijn met aanbevelingen uit NL Design System.
+Ze biedt significante toegankelijkheids- en gebruikerservaringverbeteringen.
+
+**ℹ️ Hulpfunctie**
+
+De nieuwe hulpfunctie laat je toe om gebruikers ondersteuning te bieden tijdens het
+invullen van formulieren.
+
+Je kan een hulpuitlegpagina tonen voordat het formulier wordt gestart om de
+ondersteuningsfunctie aan te wijzen. Wanneer hulpinstructies ingesteld zijn op het
+formulier, dan wordt op elke formulierstap een hulpknop getoond waar de gebruiker op kan
+klikken om de instructies te zien.
+
+**🏗️ Formulierbouwer**
+
+We hebben de formio.js-gebaseerde formulierbouwer vervangen met onze eigen implementatie.
+Hiermee hebben we enkele UI-gerelateerde problemen kunnen oplossen, en konden
+softwarebibliotheken met bekende veiligheidsproblemen bijgewerkt of verwijderd worden.
+
+Dit betekent ook dat toekomstige functionaliteiten, wensen en verbeteringen gedaan
+kunnen worden zonder externe afhankelijkheden.
+
+Volledig overzicht van wijzigingen
+----------------------------------
+
+**Breaking changes**
+
+Bekijk de :ref:`4.0 release notes <installation_upgrade_400>` voor meer details.
+
+* [:backend:`6164`] Verouderde code is verwijderd (bekijk de instructies in de documentatie onder
+  **Installation** > **Upgrade details to Open Forms 4.0.0** voor alle details):
+
+  - De verouderde Camunda-registratieplugin is verwijderd.
+  - De verouderde OIDC-callback-endpoints voor DigiD-, eHerkenning- en Organisatielogin
+    zijn verwijderd.
+  - De optie om de oude formio.js-gebaseerde renderer te gebruiken is verwijderd.
+  - De JCC SOAP-afsprakenplugin is verwijderd.
+  - Ondersteuning voor Elastic APM is verwijderd.
+  - De standaardinstelling van de publieke referentiegeneratie in de  ZGW-API's is
+    veranderd van zaaknummers naar door Open Formulieren-gegenereerde referenties.
+  - Het ongebruikte ``authentication_success``-signaal is verwijderd.
+  - Het v2 mede-ondertekenen ``cosign_date``-attribuut is nu gemarkeerd als verplicht.
+  - De UMD bundle wordt niet meer ondersteund.
+  - Het Formio-vertalingen-endpoint is verwijderd.
+  - De standaard CSS-variabelen voor ``backtotop-link`` zijn verwijderd.
+  - Haal Centraal BRP Personen bevragen 1.3 is niet meer ondersteund.
+  - De verouderde logica-evaluatie is verwijderd.
+  - [:backend:`6311`] De Ogone Legacy-betaalplugin is verwijderd.
+  - De verouderde detectie- en oplos-scripts zijn verwijderd.
+  - [:backend:`6294`] Bij voorkeur wordt het KvK-vestigingsnummer nu uit de
+    eHerkenning-logingegevens gehaald, in plaats van uit de formuliergegevens (wanneer
+    beide beschikbaar zijn).
+  - [:backend:`4939`] De verouderde ``zaaktype``- en ``documenttype``-URL-gebaseerde
+    configuratieopties voor de Objecten-API- en ZGW-API's-registratieplugins zijn verwijderd.
+  - [:backend:`5769`] De programmeerinterfaces voor extensies zijn nu semi-private
+    interfaces, wat betekent dat er brekende wijzigingen in kunnen gemaakt worden zonder
+    dat dit leidt tot een nieuwe major versie van Open Formulieren.
+  - De ``PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION``-featureflag is verwijderd.
+
+* [:backend:`6275`] De functionaliteit van de "Wissen als veld verborgen is" in de
+  logica-evaluatie is veranderd - waardes die door het verbergen van het component zijn
+  verwijderd, zijn nu volledig afwezig bij de logica-evaluatie. Voorheen werd de
+  standaard- of lege waarde van de componenten gebruikt.
+* [:backend:`6182`] De validatiefoutmeldingen en veldbeschrijving zijn verplaatst tussen het label
+  en formulierinvoerveld voor verbeterde toegankelijkheid. De betreffende opmaak en CSS is
+  bijgewerkt, wat gevolgen kan hebben op eigen stijlen.
+
+**Nieuwe functies**
+
+* [:backend:`5932`] Een 'gebruik email voor bevestigingsmail' optie is toegevoegd aan het
+  ``customerProfile``-formuliercomponent.
+* [:backend:`5764`] 'Enkele stap'-formulieren:
+
+  - Het toevoegen van 'enkele stap'-formulieren, die geen login- of startpagina bevatten.
+    Deze formulieren kunnen direct ingevuld en ingezonden worden.
+  - [:backend:`6098`] Het ``is_appointment``-attribuut is vervangen voor het ``type``-attribuut.
+    Het ``type``-attribuut biedt enkele opties:
+    ``Standaard`` (de standaard waarde), ``Afspraak`` en ``Enkele stap``.
+  - [:backend:`6106`] De formulierdesigner-UI is bijgewerkt voor het nieuwe
+    ``Enkele stap``-formuliertype.
+  - [:backend:`6211`] Je kan formulieren nu filteren op type.
+  - [:backend:`6350`] Een optie is toegevoegd om de formuliertitel te verbergen.
+  - [:backend:`6398`] Er is nu een vaste variabele ``form_url``. Deze bevat metadata
+    over waar een formulierinzending is begonnen.
+  - [:backend:`6399`] 'Enkele stap'-formulieren kunnen variabelewaardes veranderen en
+    DMN-evaluatie uitvoeren in logicaregels.
+
+* Er zijn workarounds toegevoegd in de StUF-ZDS-registratieplugin voor het Onegov-zaaksysteem:
+
+  - [:backend:`6230`] De ``completed_on``-registratievariabele van de inzending is nu beschikbaar.
+  - [:backend:`5951`] Ondersteuning toegevoegd voor ``extraElementen`` mapping-configuratie op het
+    initiator-niveau.
+  - [:backend:`6242`] Optie toegevoegd om ``extraElement`` lijstwaardes als komma-gescheiden
+    waarde aan te bieden.
+
+* [:backend:`5959`] Ondersteuning toegevoegd voor ``variables`` op het nieuwe (v3)
+  formulier-endpoint.
+* Verschillende aanpassingen aan de ZGW-API's-registratieplugin:
+
+  - [:backend:`5676`] Configuratievelden voor ``Omschrijving`` en ``Toelichting`` toegevoegd.
+  - [:backend:`4939`] Een upgrade check is toegvoegd om het gebruik van verouderde
+    ZGW-API's-URL-referenties te detecteren.
+  - [:backend:`6217`] Je kan nu een JSON-document met de inzendingdetails toevoegen aan
+    de zaak en selecteren welke bestandsformaten gewenst zijn (JSON en/of PDF).
+  - [:backend:`5984`] Er is een ``contactpersoonRol``-attribuut toegevoegd voor wanneer
+    rol-objecten via de ZGW-API's-registratieplugin worden aangemaakt.
+  - [:backend:`6343`] Je kan nu 'overige' zaakobjecten toevoegen.
+
+* [:backend:`6274`] Een script is toevoegd om breaking changes te identificeren door de
+  'Wissen als veld verborgen is'-aanpassingen.
+* [:backend:`6391`] Een knop is toegevoegd om een simpele logicaregel om te zetten naar
+  een geavanceerde logicaregel.
+* [:backend:`6351`] De beschikbare formuliercomponenenten in de formulierbouwer zijn nu
+  afhankelijk van het ingestelde formuliertype.
+* [:backend:`6281`] Je kan nu de documentregistratieopties van bestandsuploadcomponenten
+  per registratieplugin in het formulier instellen:
+
+  - Registratieconfiguratie toegevoegd voor Objecten-API- en ZGW-API's-plugins op de
+    bestandsuploadcomponentvariabeleconfiguratie.
+  - De registratietab op de bestandsuploadcomponentconfiguratie is verwijderd.
+  - Een migratie is toegevoegd om automatisch de registratieconfiguratie op de
+    bestandsuploadcomponent te verplaatsen naar de betreffende variabeleregistratieconfiguratie.
+  - Documentatie toegevoegd over het gebruik van de nieuwe
+    bestandsuploadomponentvariabeleregistratieconfiguratie.
+
+* [:backend:`6336`] Wanneer de StUF-ZDS of ZGW-API's-registratieplugins worden gebruikt, is er nu
+  een ``address`` registratieattribuut beschikbaar voor ``addressNL`` componenten.
+* Enkele importeerconversies zijn toegevoegd voor verouderende formulierexports:
+
+  - [:backend:`6281`] Conversie voor bestandsupload component registratieopties.
+  - Een migratie en conversie voor het oplossen van foutieve ``date``- en ``datetime``-
+    component minimum/maximum datum configuraties.
+  - [:backend:`6349`] Conversie voor afspraakformulieren met betrekking tot de
+    formuliertype-aanpassing.
+
+* [:backend:`6380`] Je kan nu de ``substr``-operatie (JsonLogic) gebruiken in formulierlogica.
+* [:backend:`5377`] De meeste "Haal Centraal BRP Personen bevragen"-attributen zijn nu beschikbaar
+  voor prefill.
+* [:formio-builder:`265`, :backend:`5714`] De formio.js-gebaseerde formulierbouwer is
+  vervangen met onze eigen implementatie.
+* [:backend:`6453`] De pre-requests hook (gebruikt in de token exchange extensie) wordt
+  nu aangeroepen in de ``partners``- en ``children``-componenten.
+* [:backend:`5787`] Een hulpfunctie is toegevoegd om gebruikers ondersteuning te kunnen
+  bieden bij het invullen van formulieren:
+
+  - [:backend:`6317`] In de algemene configuratie kan je de inhoud en optionele afbeelding
+    voor de hulpuitlegpagina configureren. Deze wordt aan het begin van een formulier
+    getoond om de hulpfunctie toe te lichten.
+  - [:backend:`6318`] Per formulier kunnen hulpinstructies met een optionele afbeelding
+    ingesteld worden. Daarnaast kan je instellen wanneer de hulpuitlegpagina getoond wordt.
+
+* [:backend:`6315`] Je kan nu "FAQ elementen/aanvullende tooltips" op componenten
+  configureren om meer context te bieden aan gebruikers.
+* [:backend:`6470`] De verwoording van de 'Toegestane e-mail(sub)domeinen' beschrijving is
+  verduidelijkt.
+* [:backend:`5913`] Ondersteuning toegevoegd voor externe cookiebeheerplatformen (Consent
+  Management Platforms) in plaats van de ingebouwde cookiebeheer-functionaliteit.
+* [:backend:`5958`] Ondersteuning toegevoegd voor ``logicRules`` op het nieuwe (v3)
+  formulier-endpoint.
+* Telemetry/logging is toegevoegd voor de formulierinzendingen-exportfunctie.
+* [:backend:`6575`] Een migratie toegevoegd voor het rechtzetten van foutieve
+  ``time``-componentinstellingen (minimum-/maximumtijd).
+
+**Bugfixes**
+
+* [:backend:`6581`] Probleem opgelost waarbij ``addressNL``-componenten incorrect als verplicht
+  werden behandeld.
+* [:backend:`6497`] Probleem opgelost waarbij pre-registratie mislukkingen niet werden
+  gerapporteerd in de digest-email.
+* [:backend:`6235`] Probleem opgelost waarbij de client-side Sentry monitoring niet werd toegepast.
+* [:backend:`6524`] Crash verholpen bij lege ``content``-componenten.
+* [:backend:`6468`, :backend:`6507`] Probleem in de logica-evaluatie opgelost waarbij admin en
+  niet-admin gebruikers verschillende uitkomsten kregen.
+* Problemen opgelost voor componenten met zichtbaarheids-logica in herhalende groepen:
+
+  - [:backend:`4004`, :backend:`6142`] Probleem opgelost waarbij componenten ontbraken op de
+    overzichtspagina.
+  - [:backend:`6447`] Probleem opgelost met zichtbaarheids-berekeningen tijdens invoervalidatie.
+
+* [:backend:`6292`, :backend:`6286`] Probleem opgelost bij het extraheren van variabele uit
+  sjablonen.
+* [:backend:`5834`] Speciale karakters zoals ``&`` worden niet meer onverwacht geëscaped.
+* [Sentry#453857] Crash verholpen in email-digest bij logs zonder ``content_object``.
+* [Sentry#496315] Crash verholpen bij het updaten van ``auto_login_authentication_backend`` op een
+  formulier met een ``PATCH`` verzoek.
+* [:backend:`5879`] Probleem opgelost waarbij ``eq``-attributen incorrect verwijderd
+  werden in formulierlogica.
+* [:backend:`6297`] Twee problemen opgelost voor componenten met ``multiple=true``:
+
+  - Probleem opgelost waarbij lege lijstwaardes incorrect veranderd werden naar een lege tekst.
+  - Probleem opgelost waarbij verborgen verplichte velden voor validatiefouten zorgden.
+
+* [:backend:`6510`] Probleem opgelost waarbij de standaardwaarde voor ``checkbox`` en
+  ``selectboxes`` in de logicaconditie niet werd opgeslagen.
+* Probleem opgelost in het 'Wissen als veld verborgen is'-controlescript.
+* [:backend:`6458`] Probleem opgelost in de nieuwe logica-evaluatie waarbij de
+  ``today``-operator werd gebruikt in client-side logica-evaluatie.
+* Probleem opgelost waarbij formulierconfiguratie in de nieuwe (v3) formulier-endpoint
+  automatisch veranderde van ``camelCase`` naar ``snake_case``.
+* [:backend:`5629`] Probleem opgelost waarbij incorrecte componentprefillconfiguratie
+  leidde tot onduidelijke foutmeldingen.
+* De omgevingsvariabele ``DISABLE_2FA`` is teruggebracht.
+* [:backend:`6254`] Importfoutmeldingen voor pre-3.5 imports met
+  "Uitvoeren vanaf stap"-logicaregels opgelost.
+* [:backend:`6155`] Missende registratie-hooks voor ``customerProfile``-componenten zijn
+  toegevoegd.
+* [:backend:`6113`, :backend:`5730`] Problemen opgelost met de tabelopmaak op de introductie-
+  en/of startpagina.
+* [Sentry#482931] Probleem opgelost voor type-foutmeldingen wanneer sessie-data ``None`` bevatte.
+* [:backend:`6459`] Problemen met het gebruik van sjablonen in ``radio``-, ``select``- en
+  ``selectboxes``-componenten opgelost.
+* Probleem in de frontend opgelost waarbij hooks conditioneel werden uitgevoerd.
+* [:backend:`6346`] Crash in de admin verholpen voor navigatie naar een niet-bestaand object die
+  normaalgesproken beveiligde uploadvelden bevat.
+* [:backend:`6389`] Probleem opgelost waarbij de formulierstijl niet werd toegepast op
+  mede-ondertekenen- en formulieronderbreking-e-mails.
+* [:backend:`6360`] Probleem opgelost waarbij validatiefoutmeldingen voor valide
+  bestandsuploadvelden werden getoond in de nieuwe renderer wanneer soft-hypens werden
+  gebruikt. Soortgelijk aan :backend:`5413`.
+* [:backend:`6259`] Probleem opgelost waarbij geen rekening werd gehouden of een
+  formulierstap van toepassing was bij "mede-ondertekenen verplicht"-validatie.
+* Probleem opgelost met ontbrekende structlog context tussen threads, wat leidde tot
+  prefill-(audit)logs die niet werden opgeslagen in de database.
+* [:backend:`3535`] Probleem opgelost waarbij het pauzeren van een formulier ervoor zorgde dat
+  gebruikers naar een volgende stap konden gaan, zelfs wanneer voortgang geblokeerd was.
+* [:backend:`6125`] Incorrecte lege waardedefinitie voor ``addressNL``-componenten is opgelost.
+* Probleem met ontbrekende informatie in zelf-ingestelde foutmeldingen voor
+  ``addressNL``-componenten opgelost.
+* [:backend:`6111`] Crash van het browserscherm opgelost wanneer de naam van een (nieuwe)
+  formulierstap werd aangepast.
+* [:backend:`6302`] Ontbrekend logo in de bevestigings-PDF is hersteld.
+* [:backend:`6320`] Probleem met ontbrekende componentvertalingen opgelost wanneer het formulier
+  client-side logica-evaluatie gebruikt.
+* [:backend:`6171`] Probleem opgelost met ontbrekende XML-attributen in StUF-ZDS berichten.
+* [:backend:`6148`] Crash opgelost bij het genereren van JSON-schemas wanneer een veldengroep in
+  een herhalende groep wordt gebruikt.
+* [:backend:`6139`] Probleem opgelost voor het gebruik van een incorrect entiteit-type in StUF-ZDS
+  voor mede-ondertekenaardetails.
+* [:backend:`6199`] Crash opgelost in uitgaande verzoeken wanneer uitgaande verzoekenlogging
+  ingeschakeld is voor antwoorden die GZIP-gecomprimeerd zijn en/of chunked transfer encoding
+  gebruiken.
+* [:backend:`6181`] Probleem bij ``conditional.eq``-vergelijkingen bij
+  bestandsuploadcomponenten opgelost.
+* [:backend:`6181`, :backend:`5134`] Probleem met simpele conditionele ('frontend logic')
+  vergelijkingen opgelost waarbij lege bestandsuploadvelden niet correct werden geïnterpreteerd.
+  Dit is een tijdelijke oplosssing voor een meer complexe structurele aanpak.
+* [:backend:`6213`] Crash opgelost wanneer een formulier wordt opgeslagen dat enkel metadata
+  bevat.
+* [:backend:`6057`] Ontbrekende configuratie opgelost wat ervoor zorgde dat
+  ``application/hal+json`` antwoorden niet werden opgeslagen in de uitgaande verzoekenlogs.
+* [:backend:`6091`] Probleem opgelost waarbij de interne naam van een formulier werd gebruikt voor
+  Objecten-API- en ZGW-API's-registratieplugindocumenten, zoals de bevestigings-PDF.
+* [:backend:`4699`] Probleem opgelost waar zelf-ingestelde ``addressNL``-componentfoutmeldingen
+  niet werden gebruikt bij de stad- en postcodevelden.
+* Crash opgelost in de logicaregels wanneer een niet bestaand component wordt gebruikt in de
+  logica-actie.
+* Probleem opgelost waarbij privé-formulierstapvelden publiek leesbaar waren.
+* Probleem opgelost in het formulierlogicacontrolescript.
+* [:backend:`6289`] Crash verholpen bij het extraheren van variabele uit sjablonen in
+  ``else``-blocks in formulierdefinities.
+
+**Projectonderhoud**
+
+* Een aantal frontend legacy ``peerDependencies`` zijn verwijderd.
+* De microscope-sass frontend dependency is verwijderd.
+* Testtooling bijgewerkt:
+
+  - Haal Centraal testtooling, dit verbetert DX.
+  - Objecttypes/objecten-API-testtooling is vervangen met Open Object.
+  - De Open Zaakversie in de testtooling is van 1.13 naar 1.29 bijgewerkt.
+
+* De upgrade check is bijgewerkt om versie 3.5.5 te vereisen voordat een upgrade naar
+  4.0.0 gedaan kan worden.
+* [:backend:`6126`] CI workflows zijn aangescherpt om te verdedigen tegen
+  *supply chain*-aanvallen.
+* Open Formulieren-branding is toegevoegd aan de beheeromgeving.
+* Bescherming is toegevoegd om te voorkomen dat admin-gebruikers hun rechten kunnen
+  aanpassen wanneer ze de rechten van andere admin-gebruikers mogen aanpassen.
+* OAS CI-acties zijn uitgeschakeld in verband met een *supply-chain*-aanval.
+* [:backend:`2713`] De code om inzendingbestandsuploads af te handelen is opgeruimd. De
+  Formio-configuratiepaden zijn uit het project verwijderd.
+* Een standaardwaarde is ingesteld voor het maximum aantal taken dat uitgevoerd mag
+  worden per celery worker child.
+* Storybook is bijgewerkt naar versie 10.
+* "Flakiness" in CI is verminderd door de docs-linkcheck te verplaatsen naar een
+  wekelijkse cronjob.
+* Database-migraties tot Open Formulieren versie 3.5 zijn opgeschoond.
+* Enkele browserconsolemeldingen zijn opgelost.
+* Het ongebruikte inzendingstapvalidatie-API-endpoint is verwijderd.
+* Het kleurgebruik en de logo's van Open Formulieren zijn geüpdatet.
+* "Flakiness" van tests verminderd.
+* Vertalingen zijn bijgewerkt.
+* De tests gebruiken nu striktere componentdefinities.
+* Het "Probleem melden"-GitHubsjabloon is bijwerkt met een nieuwe 'affected renderer' optie.
+* [:backend:`6018`] De code van de componentserializers is opgeruimd en interne logica
+  is versimpeld.
+* NodeJS is bijgewerkt naar versie 24.
+* Backend dependencies bijgewerkt:
+
+  - cryptography
+  - django
+  - django-privates
+  - gitpython
+  - idna
+  - lxml
+  - lxml-html-clean
+  - maykin-json-logic-py
+  - msal
+  - pillow
+  - pyasn1
+  - pydantic-settings
+  - PyJWT
+  - pytz
+  - pyopenssl
+  - requests
+  - soupsieve
+  - sqlparse
+  - tablib
+  - Tornado
+  - urllib3
+  - vcrpy
+  - wcwidth
+  - weasyprint
+  - webob
+  - zeep
+
+* pip is verwijderd uit de productie-Docker-image.
+* Frontend dependencies bijgewerkt:
+
+  - @fortawesome/fontawesome-free naar 6.7.2.
+  - @open-formulieren/design-tokens naar 1.1.0.
+  - @open-formulieren/formio-builder naar 1.4.1.
+  - @open-formulieren/formio-renderer naar 2.0.2.
+  - babel is bijgewerkt naar de laatste versie.
+  - dompurify naar 3.4.13.
+  - esbuild naar 0.28.1.
+  - js-cookie naar 3.0.8.
+  - react-intl naar 7.1.14.
+  - storybook naar 10.5.8.
+  - typescript naar 5.9.3.
+  - microscope-sass/lib/bem is vervangen met @bbt/bem.
+
+* Documentatie bijgewerkt voor:
+
+  - Logica-engine.
+  - Projectinstallatie.
+  - 4.0.0 upgrade-instructies en formulierdocumentatie.
+  - Het "Beslisboom"-formuliervoorbeeld.
+  - [:backend:`6170`] Bekend probleem en workaround voor het gebruik van sjablonen in
+    WYSIWYG url's opgenomen.
+  - Foutmeldingen aangeraden velden.
+  - Het dynamisch instellen van ``selectboxes``-, ``select``- en ``radio``-opties.
+  - Frontend toolchain.
+
+* [:backend:`2705`] CSS code opgeruimd in de admin en publieke UI.
+
 3.5.0 "Kjeld" (2026-04-15)
 ==========================
 
@@ -441,7 +849,7 @@ Bugfixes
 * [:backend:`6068`] Verholpen dat een bijlage mogelijk niet werd geüpload wanneer de
   zichtbaarheid van een component door een logicaregel beïnvloed werd.
 * [:backend:`5701`] De ``selectboxes``-component is gecorrigeerd zodat deze niet crasht
-  bij verwijdering in de admin UI als de Objects API v1 wordt gebruikt.
+  bij verwijdering in de admin UI als de Objecten-API v1 wordt gebruikt.
 * [:backend:`5864`] Waarschuwingen op de formuliergeschiedenispagina worden niet langer
   getoond wanneer de applicatieversie de huidige versie is.
 * [:backend:`6110`] Kapotte asset-cache verholpen door configuratie van de
@@ -520,7 +928,7 @@ Projectonderhoud
 * Documentatie bijgewerkt voor:
 
   - de plugin "Communicatievoorkeuren",
-  - ondersteunde versies van de Objects API.
+  - ondersteunde versies van de Objecten-API.
 
 * [:backend:`6162`] Overgestapt op individuele Utrecht NLDS community CSS-packages.
 
@@ -728,14 +1136,14 @@ Gedetailleerde wijzigingen
 * Verholpen dat de Token Exchange-extensie niet meer werkte door het rework van de OpenID-library.
 * [:backend:`5770`] Crash verholpen bij het registreren van gegevens voor de
   ``partners``-component met StUF-ZDS.
-* [:backend:`5778`] Crashes verholpen tijdens registratie met de Objects API wanneer er
+* [:backend:`5778`] Crashes verholpen tijdens registratie met de Objecten-API wanneer er
   date- of datetime-velden in een herhalende groep zitten.
 * [:backend:`5784`] Probleem opgelost met Worldline-creditcardbetalingen waarbij de
   autorisatiemode niet op ``SALE`` stond.
 * [:backend:`5733`] Verholpen dat uitgaande verzoeken voor de Generieke JSON-registratie
   niet werden gelogd.
 * [:backend:`5803`] Workaround toegepast voor date/time/datetime-objecten in inzendgegevens
-  die automatisch volgens de actieve taal werden geformatteerd in Objects API V1-templates.
+  die automatisch volgens de actieve taal werden geformatteerd in Objecten-API V1-templates.
 * [:backend:`5818`] Ontbrekend ``bsn``-element toegevoegd in StUF-BG XML-verzoek om
   kinderen op te halen.
 * [:backend:`5840`] Verholpen dat ``null``-waarden naar ZGW-API’s werden gestuurd wanneer
@@ -961,7 +1369,7 @@ Gedetaileerde wijzigingen
   zal bij het voltooien van een inzending de gebruiker uitgelogd worden bij de identity provider.
 * [:backend:`5133`] Optie toegevoegd om de nieuwe *experimentele* renderer in te schakelen.
 * [:backend:`5268`] "Partners Roltype" en "Partners omschrijving" registratie-instellingen
-  toegevoegd voor de ZGW APIs en StUF-ZDS registratieplugins.
+  toegevoegd voor de ZGW-API's en StUF-ZDS registratieplugins.
 * [:backend:`5060`] Redis Sentinel wordt nu ondersteund als high availability strategy voor de background
   jobs message broker.
 * [:backend:`2324`] Een deel van de logica-engine is op de schop genomen ter voorbereiding van toekomstige
@@ -1182,7 +1590,7 @@ Gedetaileerde wijzigingen
 * [:backend:`4877`] Ondersteuning toegevoegd voor het bijvoegen van een kopie van de
   bevestigingse-mail(s) verstuurd naar de initiator in een aangemaakte zaak
   in de ZGW API's and StUF-ZDS registraties.
-* [:backend:`5193`] `exp` claim toegevoeggd aan JWT in ZGW APIs.
+* [:backend:`5193`] ``exp`` claim toegevoeggd aan JWT in ZGW-API's.
 * [:backend:`5283`] De getoonde kolommen in de admin-formulierenlijst zijn opgeschoond
   om de UX te verbeteren.
 

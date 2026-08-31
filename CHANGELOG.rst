@@ -14,6 +14,383 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.0 "Jongerius" (2026-08-31)
+==============================
+
+Open Forms 4.0.0 is a feature release with breaking changes.
+
+.. epigraph::
+
+   Jan Jongerius was a Dutch entrepreneur, who had garages in multiple Dutch cities and became the
+   largest Ford dealer in the Netherlands. Villa Jongerius was constructed in Utrecht close to the
+   factory buildings - which eventually became the location for the very first Open Formulieren
+   community event. The release name is a nod to the municipality of Utrecht, who is one of the
+   contributors to this particular release.
+
+This contains the changes from the alpha and beta releases and fixes applied until the stable
+version. BEFORE upgrading to 4.0.0, please read the release notes carefully and review the
+following instructions.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 4.0, please:
+
+* ⚠️ Ensure you are currently on Open Forms 3.5.5 or newer.
+* ⚠️ Review the :ref:`detailed release notes <installation_upgrade_400>` in the
+  documentation under **Installation** > **Upgrade details to Open Forms 4.0.0** and
+  prepare accordingly.
+* ⚠️ Ensure all forms are converted to use the new logic evaluation.
+* ⚠️ Ensure (custom) themes have been updated/prepared for 4.0.
+* ⚠️ Ensure legacy ZGW URLs have been migrated if you use the Objects API or ZGW APIs
+  registration plugins.
+* ⚠️ Ensure your existing forms still work with the updated clear-on-hide behaviour.
+
+Breaking changes
+----------------
+
+See the :ref:`4.0 upgrade notes <installation_upgrade_400>` for details.
+
+* [:backend:`6164`] Removed deprecated code (please review the instructions in the documentation
+  under **Installation** > **Upgrade details to Open Forms 4.0.0** for all the necessary details):
+
+  - Removed deprecated Camunda registration backend.
+  - Removed legacy OIDC callback endpoints for DigiD, eHerkenning and Organization login.
+  - Removed the option to use the old formio.js-based form renderer.
+  - Removed JCC SOAP appointment plugin.
+  - Removed Elastic APM support.
+  - Changed default ZGW APIs public reference generation from case numbers to Open Forms-generated
+    references.
+  - Removed unused ``authentication_success`` signal.
+  - Marked the v2 cosign ``cosign_date`` property as required.
+  - Removed UMD bundle support.
+  - Removed Formio translations endpoint.
+  - Removed fallback css variables for ``backtotop-link`` component.
+  - Dropped support for Haal Centraal BRP Personen bevragen 1.3.
+  - Removed the legacy logic evaluation.
+  - [:backend:`6311`] Removed Ogone-legacy payment plugin.
+  - Removed legacy detection and fix scripts.
+  - [:backend:`6294`] The branch number from an eHerkenning login is now favored over the data from
+    a form field when both are available.
+  - [:backend:`4939`] Removed legacy ``zaaktype`` and ``documenttype`` URL-based configuration
+    options for the Objects API and ZGW APIs registration plugins.
+  - [:backend:`5769`] The plugin interfaces for extensions are now private API and no longer
+    subject to our semantic versioning policy.
+  - Removed the ``PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION`` feature flag.
+
+* [:backend:`6275`] Changed the behaviour of "clear-on-hide" in logic evaluation - values cleared
+  because the component is hidden are now completely absent from the logic evaluation context.
+  Before, they would get the component default or empty value for logic evaluation.
+* [:backend:`6182`] Moved the position of validation errors and field descriptions to
+  be between the label and input field for improved accessibility. The markup and CSS
+  involved have been updated to make this possible, which may affect custom themes.
+
+Major features
+--------------
+
+**💬 Single step forms**
+
+To make it easier for citizens and companies to digitally contact government organisations, you can
+now create "single step" forms. This simpler kind of form never requires users to authenticate and
+allows them to immediately start filling out the form fields without having to start the form
+submission first. Embedding single step forms in your CMS pages can make it even easier to comply
+with the `WMEBV (Wet Modernisering Elektronisch Bestuurlijk Verkeer) <https://vng.nl/wmebv>`_.
+
+**♿️ Updated form field layout**
+
+The layout of form fields has been updated so that field descriptions and validation errors are now
+displayed between field label and field input, rather than after the field input.
+
+This has been a long-standing request for Open Forms, and aligns the UI and UX with NL Design
+System recommendations, as it vastly improves digital accessibility and user experience.
+
+**ℹ️ Help function**
+
+We've added a help function to provide users assistance while they fill out a form.
+
+When configured, a "help" callout page is presented before a form is started, explaining the
+available assistance function. On each form step a "help" button is added, which (when clicked)
+displays the configured help instructions.
+
+**🏗️ Form designer**
+
+We have replaced the Formio form designer with our own implementation. This allowed us to solve a
+couple UI related issues, and remove and update dependencies with known vulnerabilities.
+
+It also means that we now have full control about future features, wishes and improvements without
+needing external changes first.
+
+New features
+------------
+
+* [:backend:`5932`] Added 'use email for confirmation email' option to the ``customerProfile``
+  component.
+* [:backend:`5764`] Single step forms:
+
+  - Introduced single-step forms which don't have a login/start screen. You can
+    immediately fill out the form and submit it.
+  - [:backend:`6098`] Replaced the form attribute ``is_appointment`` with the attribute
+    ``type``. The ``type`` attribute allows you to choose from a couple options:
+    ``Regular`` (the default), ``Appointment`` and ``Single step``.
+  - [:backend:`6106`] Updated the form designer UI for the new ``Single step`` form type.
+  - [:backend:`6211`] You can now filter forms based on their type.
+  - [:backend:`6350`] Added option to hide the form title.
+  - [:backend:`6398`] Added the ``form_url`` static variable, containing metadata about where a
+    form submission was started.
+  - [:backend:`6399`] Single step forms can now change variable values and evaluate DMN using logic
+    actions.
+
+* Added some workarounds for StUF-ZDS when using Onegov zaaksysteem:
+
+  - [:backend:`6230`] Expose the submission ``completed_on`` timestamp as registration
+    variable.
+  - [:backend:`5951`] Support adding ``extraElementen`` mappings at the initatior level.
+  - [:backend:`6242`] Added option to comma-separate serialize ``extraElement`` values
+    for array-type data.
+
+* [:backend:`5959`] Added support for ``variables`` on the v3 form API endpoint.
+* Various ZGW APIs registration plugin changes:
+
+  - [:backend:`5676`] Added ``Case description`` and ``Case explanation`` configuration
+    fields to the ZGW APIs registration plugin.
+  - [:backend:`4939`] Added upgrade check for legacy ZGW APIs URLs usage.
+  - [:backend:`6217`] In the ZGW APIs registration, you can now add a JSON-document with the
+    submission details to the case and select which file formats to relate (JSON and/or PDF).
+  - [:backend:`5984`] Added ``contactpersoonRol`` attribute when creating rol objects through
+    the ZGW APIs registration plugin.
+  - [:backend:`6343`] You can now add 'overige' case objects in the ZGW APIs registration plugin.
+
+* [:backend:`6274`] Added script for breaking changes in clear-on-hide impact detection.
+* [:backend:`6391`] Added a button to convert simple logic rules to advanced logic.
+* [:backend:`6351`] The available component types in the form builder are now updated when the
+  form type is changed.
+* [:backend:`6281`] You can now specify the document registration options for file upload
+  components tailored to each registration backend defined on the form:
+
+  - Added registration configuration for Objects API and ZGW APIs plugins on the file component
+    variable configuration.
+  - Removed the registration tab from the file component configuration.
+  - Added migration to automatically move the file component level registration configuration to
+    its respective variable registration configuration.
+  - Added documentation about using the new file component variable registration configuration.
+
+* [:backend:`6336`] Added address registration attribute for ``addressNL`` components when using
+  StUF-ZDS and ZGW APIs registration backends.
+* Added some import converters for legacy form exports:
+
+  - [:backend:`6281`] Implemented import converters for file registration options.
+  - Added data migration and import converters for fixing invalid ``date`` and ``datetime``
+    component min/max date configuration.
+  - [:backend:`6349`] Added import conversion for appointment forms to the new form type mechanism.
+
+* [:backend:`6380`] The ``substr`` JSON logic operator is now available in logic rules.
+* [:backend:`5377`] Most "Haal Centraal BRP Personen bevragen" attributes are now available for
+  prefill.
+* [:formio-builder:`265`, :backend:`5714`] Replaced the Formiojs builder with our own
+  implementation, allowing us to remove and update dependencies with known vulnerabilities.
+* [:backend:`6453`] The pre-requests hook (used in token exchange extension) is now
+  called in the ``partners`` and ``children`` family members components.
+* [:backend:`5787`] Added a help function for users needing assistance while filling out
+  a form:
+
+  - [:backend:`6317`] You can now globally configure content for the callout page at the
+    start that explains the help function, with an optional image.
+  - [:backend:`6318`] You can now configure help instructions and an optional image in
+    each form. Additionally, you can control when the help callout page is displayed.
+
+* [:backend:`6315`] You can now provide "FAQ Items/additional tooltips" on form
+  components to provide more context to users filling out forms.
+* [:backend:`6470`] Improved the wording for the domain allowlist configuration description.
+* [:backend:`5913`] Added support for external Consent Management Platforms instead of
+  the built-in cookie consent machinery.
+* [:backend:`5958`] The internal v3 form API endpoint now supports ``logic_rules``.
+* Added telemetry/logging for the submission export feature.
+* [:backend:`6575`] Added data migration for fixing invalid ``time`` component min/max time
+  configuration.
+
+Bugfixes
+--------
+
+* [:backend:`6581`] Fixed ``addressNL`` component incorrectly being treated as required.
+* [:backend:`6497`] Fixed pre-registration failures not being reported in the email digest.
+* [:backend:`6235`] Fixed client-side Sentry error monitoring not being activated.
+* [:backend:`6524`] Fixed a crash when an empty ``content`` field is present.
+* [:backend:`6468`, :backend:`6507`] Fixed logic evaluation having different outcomes
+  for admin and non-admin users.
+* Fixed components with visibility logic inside repeating groups:
+
+  - [:backend:`4004`, :backend:`6142`] Fixed components missing in the summary page.
+  - [:backend:`6447`] Fixed visibility calculation during formio validation.
+
+* [:backend:`6292`] Fixed extracting variables from template expressions.
+* [:backend:`5834`] Fixed special character like ``&`` being unexpectedly escaped.
+* [Sentry#453857] Fixed crash in digest email regarding logs without ``content_object``.
+* [Sentry#496315] Fixed crash when updating ``auto_login_authentication_backend`` on a
+  form with a ``PATCH`` request.
+* [:backend:`5879`] Fixed incorrect removal of ``eq`` properties in logic conditions.
+* [:backend:`6297`] Fixed two bugs regarding components with ``multiple=true``:
+
+  - Fixed component empty list default value incorrectly being changed to empty string.
+  - Fixed required hidden multiple fields triggering validation.
+
+* [:backend:`6510`] Fixed default value for ``checkbox`` and ``selectboxes`` in logic
+  trigger not being saved.
+* Fixed clear on hide check script.
+* [:backend:`6458`] Fixed an issue in the new logic evaluation when the ``today``
+  operator was used in client-side evaluated logic.
+* Fixed V3 form API endpoint automatically changing the form configuration from
+  ``camelCase`` to ``snake_case``.
+* [:backend:`5629`] Fixed invalid component prefill configuration producing a vague,
+  generic error - you now get proper validation errors.
+* Re-introduced the ``DISABLE_2FA`` environment variable.
+* [:backend:`6254`] Fixed pre-3.5 imports of forms that contain logic rules with
+  "trigger from step" options.
+* [:backend:`6155`] Fixed missing registry hooks for ``customerProfile`` component.
+* [:backend:`6113`, :backend:`5730`] Fixed broken table markup on introduction page
+  and/or start page.
+* [Sentry#482931] Fixed type error when session data contains ``None``.
+* [:backend:`6459`] Fixed templating usage in ``radio``, ``select`` and ``selectboxes`` components.
+* Fixed hooks being called conditionally in the frontend.
+* [:backend:`6346`] Fixed a crash in the admin when navigating to nonexistent objects that
+  normally have protected upload fields.
+* [:backend:`6389`] Fixed the form theme not being applied to cosign and form suspension
+  emails.
+* [:backend:`6360`] Fixed validation error for valid uploads in the new renderer when
+  soft-hyphens are used, an issue similar to :backend:`5413`.
+* [:backend:`6259`] Fixed "cosign required" validation not taking into account whether a
+  form step is applicable or not.
+* Fixed missing structlog context propagation across threads, causing prefill (audit) logs not to
+  be saved in the database.
+* [:backend:`3535`] Fixed bug where pausing a form allowed users to go to the next step, even when
+  progressing was blocked.
+* [:backend:`6125`] Fixed incorrect empty value definition for ``addressNL`` components.
+* Fixed missing custom error message information for ``addressNL`` components.
+* [:backend:`6111`] Fixed a browser window crash/freeze when editing the name of a (new)
+  form step.
+* [:backend:`6302`] Fixed missing logo in the confirmation PDF.
+* [:backend:`6320`] Fixed missing component translations when the form does not require
+  backend logic.
+* [:backend:`6171`] Fixed missing required XML-attributes in StUF-ZDS messages.
+* [:backend:`6148`] Fixed crash in JSON schema generation when there's a fieldset inside
+  an editgrid.
+* [:backend:`6139`] Fixed wrong entity type in StUF-ZDS element for the cosigner details.
+* [:backend:`6199`] Fixed crash in outgoing requests when outgoing request logging is
+  enabled for responses that are GZIP-compressed and/or use chunked transfer encoding.
+* [:backend:`6181`] Fixed ``conditional.eq`` comparison with file component.
+* [:backend:`6181`, :backend:`5134`] Fixed simple conditionals ("frontend logic")
+  comparison not interpreting "empty" file upload fields correctly. This patch is a
+  workaround for a more complex structural fix.
+* [:backend:`6213`] Fixed a crash when saving a form that only has metadata without any
+  steps.
+* [:backend:`6057`] Fixed missing configuration that caused ``application/hal+json``
+  responses not to be saved to the outgoing request logs.
+* [:backend:`6091`] Fixed Objects API and ZGW APIs registration backends using the
+  form's internal name for related documents like the confirmation PDF.
+* [:backend:`4699`] Fixed ``addressNL`` not using custom error messages for the
+  city/postcode during validation.
+* Fixed a crash in logic rules when it contains a property action that refers to a
+  non-existing component.
+* Fixed private form step fields being publicly available.
+* Fixed form logic check scripts.
+* [:backend:`6289`] Fixed crash when extracting variables used in template expressions
+  in ``else`` blocks in form definitions.
+* [:backend:`6286`] Fixed template variables not being extracted from the component
+  properties.
+
+Project maintenance
+-------------------
+
+* Dropped a bunch of frontend legacy peer dependencies.
+* Dropped microscope-sass frontend dependency.
+* Updated test tooling:
+
+  - Haal Centraal test tooling, improving the DX.
+  - Objecttypes/objects API test tooling to use Open Object.
+  - Bumped Open Zaak version in test tooling from 1.13 to 1.29.
+
+* Updated upgrade check to require version 3.5.5 before upgrading to 4.0.0.
+* [:backend:`6126`] Hardened CI workflows to protect against supply chain attacks.
+* Added Open Forms branding to the admin interface.
+* Added protections to prevent admin users from modifying their own permissions when they can
+  manage (other) admin users.
+* Disabled OAS CI action due to security concerns.
+* [:backend:`2713`] Clean up submission file attachment handling and formio configuration path
+  usage.
+* Added a default for the maximum amount of tasks that may be executed by a celery worker child.
+* Upgraded to Storybook 10.
+* Reduced flakiness in CI by moving docs linkcheck to a weekly cronjob.
+* Squashed form, Yivi attributes, worldline and submission migrations until Open Forms version
+  3.5.
+* Addressed some browser console messages.
+* Removed the obsoleted submission step validate API endpoint.
+* Updated Open Forms theming and logos.
+* Reduced some test flakiness.
+* Updated translations.
+* Test setup now uses stricter component definitions.
+* Updated bug report issue template by adding an 'affected renderer' option.
+* [:backend:`6018`] Cleaned up component serializers and simplified internal logic.
+* Upgraded build tooling:
+
+  - Upgraded to NodeJS 24.
+
+* Updated backend dependencies:
+
+  - cryptography
+  - django
+  - django-privates
+  - gitpython
+  - idna
+  - lxml
+  - lxml-html-clean
+  - maykin-json-logic-py
+  - msal
+  - pillow
+  - pyasn1
+  - pydantic-settings
+  - PyJWT
+  - pytz
+  - pyopenssl
+  - requests
+  - soupsieve
+  - sqlparse
+  - tablib
+  - Tornado
+  - urllib3
+  - vcrpy
+  - wcwidth
+  - weasyprint
+  - webob
+  - zeep
+
+* Removed pip from production docker image.
+* Updated frontend dependencies:
+
+  - Bumped @fortawesome/fontawesome-free to 6.7.2.
+  - Bumped @open-formulieren/design-tokens to 1.1.0.
+  - Bumped @open-formulieren/formio-builder to 1.4.1.
+  - Bumped @open-formulieren/formio-renderer to 2.0.1.
+  - Bumped babel to its latest versions.
+  - Bumped dompurify to 3.4.13.
+  - Bumped esbuild to 0.28.1.
+  - Bumped js-cookie to 3.0.8.
+  - Bumped react-intl to 7.1.14.
+  - Bumped storybook to 10.5.8.
+  - Bumped typescript to 5.9.3.
+  - Replaced microscope-sass/lib/bem with @bbt/bem.
+
+* Updated documentation for:
+
+  - logic engine.
+  - project installation instructions.
+  - 4.0.0 upgrade notes and form.
+  - the form example decision tree.
+  - [:backend:`6170`] known bug and workaround for using template tags in WYSIWYG url's.
+  - soft required fields.
+  - dynamically setting selectboxes, select and radio options.
+  - frontend toolchain.
+
+* [:backend:`2705`] Cleaned up CSS code in admin and public UI.
+
 3.5.7 (2026-08-24)
 ===================
 
