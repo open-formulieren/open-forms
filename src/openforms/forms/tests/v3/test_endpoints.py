@@ -408,6 +408,8 @@ class FormEndpointTests(APITestCase):
                 ],
             },
         )
+        self.assertEqual(form_definition.name_nl, "Form configuratie 1")
+        self.assertEqual(form_definition.name_en, "Form configuration 1")
 
         # variables
         variables = form.formvariable_set.order_by("source", "key")
@@ -880,7 +882,7 @@ class FormEndpointTests(APITestCase):
                     },
                 },
             ],
-            "literals": "foobar",
+            "translations": "foobar",
         }
         response = self.client.put(url, data=data)
 
@@ -891,7 +893,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(len(response_data["invalidParams"]), 1)
         self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
         self.assertEqual(
-            response_data["invalidParams"][0]["name"], "literals.nonFieldErrors"
+            response_data["invalidParams"][0]["name"], "translations.nonFieldErrors"
         )
 
     def test_create_incorrect_form_configuration(self):
@@ -1900,7 +1902,7 @@ class FormEndpointTests(APITestCase):
                     },
                 },
             ],
-            "literals": "foobar",
+            "translations": "foobar",
         }
         response = self.client.put(url, data=data)
 
@@ -1910,7 +1912,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(len(response_data["invalidParams"]), 1)
         self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
         self.assertEqual(
-            response_data["invalidParams"][0]["name"], "literals.nonFieldErrors"
+            response_data["invalidParams"][0]["name"], "translations.nonFieldErrors"
         )
 
         self.assertEqual(Form.objects.count(), 1)

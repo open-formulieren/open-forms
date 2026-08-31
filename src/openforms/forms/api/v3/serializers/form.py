@@ -34,7 +34,6 @@ from openforms.variables.service import get_static_variables
 
 from ....api.serializers.form import (
     FormAuthenticationBackendSerializer,
-    FormLiteralsSerializer,
     FormRegistrationBackendSerializer,
     HelpCalloutPageSerializer,
     HelpDialogSerializer,
@@ -115,8 +114,6 @@ class FormSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
 
-    literals = FormLiteralsSerializer(source="*", required=False)
-
     confirmation_email_template = ConfirmationEmailTemplateSerializer(
         required=False, allow_null=True
     )
@@ -181,7 +178,6 @@ class FormSerializer(serializers.ModelSerializer):
             "variables",
             "payment",
             "appointment_options",
-            "literals",
             "product",
             "slug",
             "type",
