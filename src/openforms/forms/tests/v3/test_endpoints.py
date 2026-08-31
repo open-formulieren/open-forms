@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.text import get_text_list
 from django.utils.translation import gettext as _
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
@@ -44,7 +45,13 @@ from ...constants import (
     StatementCheckboxChoices,
     SubmissionAllowedChoices,
 )
-from ...models import Form, FormDefinition, FormLogic, FormRegistrationBackend
+from ...models import (
+    Form,
+    FormAuthenticationBackend,
+    FormDefinition,
+    FormLogic,
+    FormRegistrationBackend,
+)
 from ...tests.factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -148,6 +155,13 @@ class FormEndpointTests(APITestCase):
             "internalName": "Create form internal",
             "internalRemarks": "This form is used for xyz",
             "translationEnabled": True,
+            "authBackends": [
+                {
+                    "backend": "digid",
+                    "options": {"loa": DigiDAssuranceLevels.substantial},
+                }
+            ],
+            "autoLoginAuthenticationBackend": "digid",
             "registrationBackends": [
                 {
                     "name": "Email registration",
@@ -422,6 +436,14 @@ class FormEndpointTests(APITestCase):
         self.assertIsNone(variables[3].form_definition)
         self.assertEqual(variables[3].data_type, FormVariableDataTypes.string)
         self.assertEqual(variables[3].source, FormVariableSources.user_defined)
+
+        # authentication options
+        self.assertEqual(form.auto_login_authentication_backend, "digid")
+        authentication_backend = FormAuthenticationBackend.objects.get()
+        self.assertEqual(authentication_backend.backend, "digid")
+        self.assertEqual(
+            authentication_backend.options, {"loa": DigiDAssuranceLevels.substantial}
+        )
 
         # registration backends
         registration_backend = FormRegistrationBackend.objects.get()
@@ -707,6 +729,66 @@ class FormEndpointTests(APITestCase):
                 "attach_files_to_email": None,
                 "to_emails": ["booboo@example.com", "yogi@example.com"],
             },
+        )
+
+    def test_update_clears_existing_auth_backends(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            authentication_backend="demo",
+        )
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "authBackends": [
+                {
+                    "backend": "digid",
+                    "options": {"loa": DigiDAssuranceLevels.substantial},
+                }
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 1)
+        form.refresh_from_db()
+
+        authentication_backend = FormAuthenticationBackend.objects.get()
+        self.assertEqual(authentication_backend.backend, "digid")
+        self.assertEqual(
+            authentication_backend.options, {"loa": DigiDAssuranceLevels.substantial}
         )
 
     @enable_feature_flag("ENABLE_DEMO_PLUGINS")
