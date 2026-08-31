@@ -5,9 +5,9 @@ If you want to contribute, we ask you to follow these guidelines.
 ## Reporting bugs
 
 If you have encountered a bug in this project, please check if an issue already exists in the list
-of existing [issues][issues]. If such an issue does not exist, you can create a [new
-issue][new_issue]. When writing the bug report, try to add a clear example that shows how to
-reproduce said bug.
+of existing [issues][issues]. If such an issue does not exist, you can create a 
+[new issue][new_issue]. When writing the bug report, try to add a clear example that shows
+how to reproduce said bug.
 
 ## Adding new features
 
