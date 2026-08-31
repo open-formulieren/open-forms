@@ -5,7 +5,7 @@ from uuid import UUID
 
 from django.db import transaction
 from django.utils.text import get_text_list
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
@@ -21,6 +21,7 @@ from openforms.formio.service import (
     get_branch_representation,
 )
 from openforms.formio.typing import Component
+from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
@@ -32,6 +33,7 @@ from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import get_static_variables
 
 from ....api.serializers.form import (
+    FormAuthenticationBackendSerializer,
     FormLiteralsSerializer,
     FormRegistrationBackendSerializer,
     HelpCalloutPageSerializer,
@@ -126,6 +128,16 @@ class FormSerializer(serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
+    auth_backends = FormAuthenticationBackendSerializer(many=True, required=False)
+    auto_login_authentication_backend = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "The authentication backend to which the user will be automatically "
+            "redirected upon starting the form. The chosen backend must be present in "
+            "`auth_backends`"
+        ),
+    )
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
 
     help_callout_page = HelpCalloutPageSerializer(
@@ -134,6 +146,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     _nested_fields = (
         "confirmation_email_template",
+        "auth_backends",
         "formstep_set",
         "formvariable_set",
         "formlogic_set",
@@ -161,6 +174,8 @@ class FormSerializer(serializers.ModelSerializer):
             "internal_name",
             "internal_remarks",
             "login_required",
+            "auth_backends",
+            "auto_login_authentication_backend",
             "translation_enabled",
             "registration_backends",
             "variables",
@@ -346,14 +361,21 @@ class FormSerializer(serializers.ModelSerializer):
         for form_definition in form_definitions_created.values():
             FormVariable.objects.synchronize_for(form_definition)
 
-        # 3. registration backends
+        # 3. auth backends
+        auth_backends = validated_data.get("auth_backends", [])
+        FormAuthenticationBackend.objects.bulk_create(
+            FormAuthenticationBackend(form=instance, **backend)
+            for backend in auth_backends
+        )
+
+        # 4. registration backends
         registration_backends = validated_data.get("registration_backends", [])
         FormRegistrationBackend.objects.bulk_create(
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
         )
 
-        #  4. form variables
+        #  5. form variables
         form_variables_data = validated_data.get("formvariable_set", [])
         form_variables: list[FormVariable] = []
         for variable_data in form_variables_data:
@@ -381,7 +403,7 @@ class FormSerializer(serializers.ModelSerializer):
             form_variables.append(form_variable)
         FormVariable.objects.bulk_create(form_variables)
 
-        # 5. logic rules
+        # 6. logic rules
         logic_rules_raw: list[FormLogicData] = validated_data.get("formlogic_set", [])
 
         if not logic_rules_raw:
@@ -480,7 +502,16 @@ class FormSerializer(serializers.ModelSerializer):
         for form_definition in form_definitions_created.values():
             FormVariable.objects.synchronize_for(form_definition)
 
-        # 3. registration backends
+        # 3. auth backends
+        auth_backends = validated_data.get("auth_backends", None)
+        if auth_backends is not None:
+            instance.auth_backends.all().delete()
+            FormAuthenticationBackend.objects.bulk_create(
+                FormAuthenticationBackend(form=instance, **backend)
+                for backend in auth_backends
+            )
+
+        # 4. registration backends
         registration_backends = validated_data.get("registration_backends", None)
         if registration_backends is not None:
             instance.registration_backends.all().delete()
@@ -489,7 +520,7 @@ class FormSerializer(serializers.ModelSerializer):
                 for backend in registration_backends
             )
 
-        # 4. form variables
+        # 5. form variables
         form_variables_data = validated_data.get("formvariable_set", [])
         form_variables: list[FormVariable] = []
         for variable_data in form_variables_data:
@@ -519,7 +550,7 @@ class FormSerializer(serializers.ModelSerializer):
         instance.formvariable_set.exclude(source=FormVariableSources.component).delete()
         FormVariable.objects.bulk_create(form_variables)
 
-        # 5. logic rules
+        # 6. logic rules
         logic_rules_raw = validated_data.get("formlogic_set", [])
         if not logic_rules_raw:
             return instance
@@ -771,11 +802,34 @@ class FormSerializer(serializers.ModelSerializer):
                     _("Exactly one form step is required in a single step form.")
                 )
 
+    def validate_auto_login_backend(self, attrs: FormValidatedData):
+        auth_backends = attrs.get("auth_backends", [])
+        auto_login_backend = attrs.get("auto_login_authentication_backend")
+        if not auto_login_backend:
+            return
+
+        # If an auto login backend is supplied, it must be present in `auth_backends`
+        if auto_login_backend and not any(
+            auth_backend["backend"] == auto_login_backend
+            for auth_backend in auth_backends
+        ):
+            raise serializers.ValidationError(
+                {
+                    "auto_login_authentication_backend": ErrorDetail(
+                        gettext(
+                            "The `auto_login_authentication_backend` must be one of "
+                            "the selected backends from `auth_backends`"
+                        ),
+                        code="invalid",
+                    )
+                }
+            )
+
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)
-
         # validate variables after validation of the form definitions were ran
         self.validate_variable_data(attrs)
+        self.validate_auto_login_backend(attrs)
         return attrs
 
     def save(self, **kwargs):
