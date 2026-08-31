@@ -43,7 +43,7 @@ const RegistrationSummary = ({
   // always pick the right index of the backend from the updated context
   const backendIndex = formContext.registrationBackends.findIndex(item => item.key === backend.key);
 
-  const isForDifferentComponent = component?.key !== variable.key;
+  const isForDifferentComponent = component && component?.key !== variable.key;
 
   return (
     <>
