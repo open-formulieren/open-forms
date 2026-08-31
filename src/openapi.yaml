@@ -8770,15 +8770,6 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
-    FormStepLiteralsV3:
-      type: object
-      properties:
-        previousText:
-          $ref: '#/components/schemas/ButtonText'
-        saveText:
-          $ref: '#/components/schemas/ButtonText'
-        nextText:
-          $ref: '#/components/schemas/ButtonText'
     FormStepModelTranslations:
       type: object
       description: |-
@@ -8854,8 +8845,6 @@ components:
         isApplicable:
           type: boolean
           description: Whether the step is applicable by default.
-        literals:
-          $ref: '#/components/schemas/FormStepLiteralsV3'
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
       required:
@@ -8893,6 +8882,15 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        authBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormAuthenticationBackend'
+        autoLoginAuthenticationBackend:
+          type: string
+          description: The authentication backend to which the user will be automatically
+            redirected upon starting the form. The chosen backend must be present
+            in `auth_backends`
         translationEnabled:
           type: boolean
         registrationBackends:
@@ -8909,8 +8907,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
           nullable: true
-        literals:
-          $ref: '#/components/schemas/FormLiterals'
         product:
           type: string
           format: uuid
@@ -9613,11 +9609,12 @@ components:
           pattern: ^(\w|\w[\w.\-]*\w)$
         formStepSlug:
           type: string
-          description: The slug of the form step that will be affected by the action.
-            This field is required for action types `disable-next`, `step-applicable`,
-            `step-not-applicable` - otherwise it's optional. We deliberately use the
-            slug instead of the uuid because the uuid is not fixed, as we create the
-            form steps from scratch during form update.
+          description: Het URL-deel van de formulierstap waarop de actie van invloed
+            is. Dit veld is verplicht voor actietypen `disable-next`, `step-applicable`,
+            `step-not-applicable` - anders is het optioneel. We gebruiken bewust het
+            URL-deel in plaats van de UUID, aangezien de UUID niet vaststaat. Bij
+            het bijwerken van het formulier worden de formulierstappen namelijk volledig
+            opnieuw aangemaakt.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
