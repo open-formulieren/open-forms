@@ -683,7 +683,7 @@ class PrefillVariablesTransactionTests(OFVCRMixin, TransactionTestCase):
 
         prefill_variables(submission=submission_step.submission)
 
-        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.pk)
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")

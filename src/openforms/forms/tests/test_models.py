@@ -119,7 +119,7 @@ class FormTestCase(TestCase):
                 "components": [
                     {
                         "key": "aaa",
-                        "type": "textfield",
+                        "type": "email",
                         "label": "AAA",
                         "confirmationRecipient": True,
                     },
@@ -132,7 +132,7 @@ class FormTestCase(TestCase):
                 "components": [
                     {
                         "key": "bbb",
-                        "type": "textfield",
+                        "type": "email",
                         "label": "BBB",
                         "confirmationRecipient": True,
                         "multiple": True,
@@ -434,9 +434,24 @@ class FormDefinitionTestCase(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "aaa", "label": "AAA", "confirmationRecipient": True},
-                    {"key": "bbb", "label": "BBB", "confirmationRecipient": False},
-                    {"key": "ccc", "label": "CCC", "confirmationRecipient": True},
+                    {
+                        "type": "email",
+                        "key": "aaa",
+                        "label": "AAA",
+                        "confirmationRecipient": True,
+                    },
+                    {
+                        "type": "email",
+                        "key": "bbb",
+                        "label": "BBB",
+                        "confirmationRecipient": False,
+                    },
+                    {
+                        "type": "email",
+                        "key": "ccc",
+                        "label": "CCC",
+                        "confirmationRecipient": True,
+                    },
                 ],
             }
         )
@@ -482,10 +497,12 @@ class FormDefinitionTestCase(TestCase):
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "components": [
                             {
                                 "type": "textfield",
                                 "key": "textfield",
+                                "label": "textfield",
                             }
                         ],
                     }
@@ -587,7 +604,10 @@ class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
                         "type": "radio",
                         "key": "radio",
                         "label": "Radio",
-                        "openForms": {"dataSrc": "variable"},
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": {"var": "foo"},
+                        },
                         "values": [{"value": "", "label": ""}],
                     }
                 ]
@@ -658,6 +678,7 @@ class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
                         "type": "textfield",
                         "key": "textfield",
                         "label": "Textfield",
+                        "multiple": True,
                         "defaultValue": ["{{ foo }}", "{{ bar }}"],
                     }
                 ]

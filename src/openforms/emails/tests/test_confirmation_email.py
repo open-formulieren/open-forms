@@ -655,9 +655,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             subject="My Subject",
             content="{% confirmation_summary %}",
         )
-        first_step_name = submission.submissionstep_set.all()[  # pyright: ignore[reportAttributeAccessIssue]
-            0
-        ].form_step.form_definition.name
+        first_step = submission.submissionstep_set.all()[0].form_step
+        assert first_step is not None
+        first_step_name = first_step.form_definition.name
 
         send_confirmation_email(submission)
 
