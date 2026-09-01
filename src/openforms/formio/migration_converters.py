@@ -202,14 +202,6 @@ def ensure_postcode_validate_pattern(component: Component) -> bool:
     return True
 
 
-def prevent_datetime_components_from_emptying_invalid_values(
-    component: Component,
-) -> bool:
-    # Issue #3755
-    assign(component, "customOptions.allowInvalidPreload", True, missing=dict)
-    return True
-
-
 def fix_empty_validate_lengths(component: Component) -> bool:
     if not (validate := component.get("validate")):
         return False
@@ -485,7 +477,6 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_default_value": fix_empty_default_value,
-        "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
         "remove_empty_min_max_validation_spec": remove_empty_min_max_validation_spec,

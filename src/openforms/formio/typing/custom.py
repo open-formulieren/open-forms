@@ -1,13 +1,12 @@
 from typing import Literal, NotRequired, TypedDict
 
 from .base import Component
-from .dates import DatePickerConfig, DatePickerCustomOptions
+from .dates import DatePickerConfig
 from .map import MapInitialCenter, MapInteractions, Overlay
 
 
 class DateComponent(Component):
     datePicker: NotRequired[DatePickerConfig]
-    customOptions: NotRequired[DatePickerCustomOptions]
 
 
 class AddressNLComponent(Component):
