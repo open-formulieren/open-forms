@@ -824,15 +824,14 @@ class FormSerializer(serializers.ModelSerializer):
 
     def validate_single_step_form_type(self, attrs: FormValidatedData) -> None:
         steps = attrs.get("formstep_set", [])
+        authentication_error_msg = _("Single step forms do not support authentication.")
 
-        # login required
+        # login required inside step
         for step in steps:
             if (
                 login_required := step["form_definition"].get("login_required")
             ) and login_required is True:
-                raise serializers.ValidationError(
-                    _("Single step forms do not support authentication.")
-                )
+                raise serializers.ValidationError(authentication_error_msg)
 
         # submission allowance
         if (
@@ -841,6 +840,10 @@ class FormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 _("Submission is always allowed in single step forms.")
             )
+
+        # authentication backends
+        if attrs.get("auth_backends"):
+            raise serializers.ValidationError(authentication_error_msg)
 
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)

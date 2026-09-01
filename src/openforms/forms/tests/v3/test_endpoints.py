@@ -772,7 +772,7 @@ class FormEndpointTests(APITestCase):
         )
         self.assertEqual(FormDefinition.objects.count(), 1)
 
-    def test_login_not_allowed_in_single_step_form(self):
+    def test_login_not_allowed_in_single_step_form_step(self):
         form_definition_uuid = str(uuid4())
         url = reverse(
             "api:v3:form-detail",
@@ -803,6 +803,56 @@ class FormEndpointTests(APITestCase):
                 }
             ],
             "active": True,
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Single step forms do not support authentication."),
+        )
+
+    def test_auth_backends_not_allowed_in_single_step_form(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "internalName": "Create form internal",
+            "slug": "create-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+            "active": True,
+            "authBackends": [
+                {
+                    "backend": "digid",
+                    "options": {"loa": DigiDAssuranceLevels.substantial},
+                }
+            ],
         }
         response = self.client.put(url, data=data)
         response_data = response.json()
