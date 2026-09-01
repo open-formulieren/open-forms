@@ -237,17 +237,6 @@ class Email(BasePlugin):
         return to_multiple(base) if multiple else base
 
 
-class FormioTimeField(serializers.TimeField):
-    def validate_empty_values(self, data):
-        is_empty, data = super().validate_empty_values(data)
-        # base field only treats `None` as empty, but formio uses empty strings
-        if data == "":
-            if self.required:
-                self.fail("required")
-            return (True, "")
-        return is_empty, data
-
-
 class TimeBetweenValidator:
     def __init__(self, min_time: time, max_time: time) -> None:
         self.min_time = min_time
@@ -283,7 +272,7 @@ class Time(BasePlugin[Component]):
 
     def build_serializer_field(
         self, component: Component
-    ) -> FormioTimeField | serializers.ListField:
+    ) -> serializers.TimeField | serializers.ListField:
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
         required = validate.get("required", False)
@@ -315,7 +304,7 @@ class Time(BasePlugin[Component]):
                     max_time=max_time,
                 )
 
-        base = FormioTimeField(
+        base = serializers.TimeField(
             required=required,
             allow_null=not required,
             validators=validators,
