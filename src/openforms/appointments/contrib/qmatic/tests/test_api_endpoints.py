@@ -295,7 +295,12 @@ class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     def test_cancel_appointment_deletes_the_appointment(self, m):
         submission = SubmissionFactory.from_components(
             components_list=[
-                {"key": "email", "label": "Email", "confirmationRecipient": True}
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                }
             ],
             submitted_data={"email": "maykin@media.nl"},
         )
@@ -342,7 +347,12 @@ class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         identifier = "123456789"
         submission = SubmissionFactory.from_components(
             components_list=[
-                {"key": "email", "label": "Email", "confirmationRecipient": True}
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                }
             ],
             submitted_data={"email": "maykin@media.nl"},
         )

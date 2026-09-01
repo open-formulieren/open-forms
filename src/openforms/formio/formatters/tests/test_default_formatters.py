@@ -24,7 +24,9 @@ class DefaultFormatterTestCase(SimpleTestCase):
     def test_formatters(self):
         # TODO ditch all_components*.json stuff after #1301 is fixed
         all_components = load_json("all_components.json")["components"]
+        assert isinstance(all_components, list)
         data = load_json("all_components_data.json")
+        assert isinstance(data, dict)
 
         # Submission data should be native Python objects
         data["date"] = date.fromisoformat(data["date"])
@@ -84,6 +86,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
     def test_formatter_multiple(self):
         # TODO simplify without reference to all_components.json
         all_components = load_json("all_components.json")["components"]
+        assert isinstance(all_components, list)
         time_component = next(
             component for component in all_components if component["key"] == "time"
         )
@@ -101,6 +104,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
     def test_formatter_empty_value(self):
         # TODO simplify without reference to all_components.json
         all_components = load_json("all_components.json")["components"]
+        assert isinstance(all_components, list)
         component = all_components[0]
 
         formatted = format_value(component, "")
@@ -135,7 +139,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
             "key": "checkbox",
             "label": "checkbox",
         }
-        yes, no, maybe = _("yes,no,maybe").split(",")
+        yes, no, _maybe = _("yes,no,maybe").split(",")
         expected = [
             ("", ""),
             (None, ""),

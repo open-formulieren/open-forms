@@ -575,7 +575,15 @@ class FormEndpointTests(APITestCase):
             name="Form definition",
             slug="form-definition",
             is_reusable=True,
-            configuration={"components": [{"key": "textfield", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
         )
 
         url = reverse(
@@ -3269,7 +3277,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "textfield",
-                                    "name": "Text field",
+                                    "label": "Text field",
                                 },
                             ],
                         },
@@ -4034,6 +4042,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4100,6 +4109,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4164,6 +4174,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4358,6 +4369,7 @@ class FormEndpointLogicRulesTests(APITestCase):
                                     "type": "fieldset",
                                     "key": "fieldset",
                                     "label": "Fieldset",
+                                    "components": [],
                                 },
                             ],
                         },
@@ -4627,7 +4639,15 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         concurrently, is not possible.
         """
         form_definition = FormDefinitionFactory(
-            configuration={"components": [{"key": "textfield", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
             is_reusable=True,
             uuid=uuid4(),
         )
