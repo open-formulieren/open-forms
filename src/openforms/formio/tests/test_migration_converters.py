@@ -11,7 +11,6 @@ from ..migration_converters import (
     fix_empty_default_value,
     fix_file_default_value,
     fix_multiple_empty_default_value,
-    prevent_datetime_components_from_emptying_invalid_values,
     remove_default_value_translation,
     remove_empty_conditional_values,
     remove_empty_min_max_validation_spec,
@@ -380,17 +379,6 @@ class PostCodeTests(SimpleTestCase):
 
 
 class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
-    def test_update(self):
-        component: Component = {
-            "type": "datetime",
-            "key": "datetime",
-        }
-
-        changed = prevent_datetime_components_from_emptying_invalid_values(component)
-
-        self.assertTrue(changed)
-        self.assertTrue(component["customOptions"]["allowInvalidPreload"])
-
     def test_empty_min_date_property(self):
         component: Component = {
             "type": "datetime",
