@@ -1318,13 +1318,7 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "4.0.0": UpgradeCheck(
-        # 3.5.5 provides the necessary migration tooling
-        VersionRange(minimum="3.5.5"),
-        code_checks=[
-            BinScriptCheck("report_invalid_form_logic"),
-        ],
-    ),
+    "4.1.0": UpgradeCheck(VersionRange(minimum="4.0.0")),
 }
 UPGRADE_CHECK_STRICT = False
 
