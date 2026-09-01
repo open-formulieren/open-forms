@@ -123,6 +123,11 @@ class ServiceFetchConfigurationData(TypedDict):
     cache_timeout: NotRequired[int | None]
 
 
+class AuthBackendData(TypedDict):
+    backend: str
+    options: JSONObject
+
+
 class FormVariableData(TypedDict):
     name: str
     key: str
@@ -258,6 +263,8 @@ class FormValidatedData(TypedDict):
     formstep_set: list[FormStepData]
     payment: NotRequired[PaymentData]
 
+    auth_backends: NotRequired[list[AuthBackendData]]
+    auto_login_authentication_backend: NotRequired[str]
     formvariable_set: list[FormVariableData]
     formlogic_set: list[FormLogicData]
 

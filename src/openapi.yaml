@@ -8770,15 +8770,6 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
-    FormStepLiteralsV3:
-      type: object
-      properties:
-        previousText:
-          $ref: '#/components/schemas/ButtonText'
-        saveText:
-          $ref: '#/components/schemas/ButtonText'
-        nextText:
-          $ref: '#/components/schemas/ButtonText'
     FormStepModelTranslations:
       type: object
       description: |-
@@ -8854,8 +8845,6 @@ components:
         isApplicable:
           type: boolean
           description: Whether the step is applicable by default.
-        literals:
-          $ref: '#/components/schemas/FormStepLiteralsV3'
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
       required:
@@ -8893,6 +8882,15 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        authBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormAuthenticationBackend'
+        autoLoginAuthenticationBackend:
+          type: string
+          description: The authentication backend to which the user will be automatically
+            redirected upon starting the form. The chosen backend must be present
+            in `auth_backends`
         translationEnabled:
           type: boolean
         registrationBackends:
@@ -8909,8 +8907,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
           nullable: true
-        literals:
-          $ref: '#/components/schemas/FormLiterals'
         product:
           type: string
           format: uuid
