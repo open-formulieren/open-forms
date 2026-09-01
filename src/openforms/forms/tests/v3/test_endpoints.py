@@ -793,6 +793,59 @@ class FormEndpointTests(APITestCase):
             authentication_backend.options, {"loa": DigiDAssuranceLevels.substantial}
         )
 
+    def test_update_form_with_auto_login_backend_and_missing_from_auth_backend(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            authentication_backend="demo",
+        )
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "autoLoginAuthenticationBackend": "digid",
+            "authBackends": [],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response_data = response.json()
+
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0]["name"], "autoLoginAuthenticationBackend"
+        )
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _(
+                "The `auto_login_authentication_backend` must be one of the selected backends from `auth_backends`"
+            ),
+        )
+
     @enable_feature_flag("ENABLE_DEMO_PLUGINS")
     def test_create_form_without_configuration_options(self):
         url = reverse(
