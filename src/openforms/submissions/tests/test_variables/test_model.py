@@ -653,12 +653,18 @@ class SubmissionValueVariableManagerTests(TestCase):
         )
 
         state = submission.variables_state
-        for key in ("textfield", "email", "date"):
+        for key in ("textfield", "email"):
             with self.subTest(f"Initial state: {key}"):
                 variable = state.variables[key]
                 # Variable is present in the state, but not in the database (yet)
                 self.assertIsNone(variable.pk)
                 self.assertEqual(variable.value, "")
+
+        with self.subTest("Initial state: date"):
+            variable = state.variables["date"]
+            # Variable is present in the state, but not in the database (yet)
+            self.assertIsNone(variable.pk)
+            self.assertIsNone(variable.value)
 
         # Persist textfield and date to the database
         SubmissionValueVariable.objects.bulk_create_or_update_from_data(
@@ -710,12 +716,17 @@ class SubmissionValueVariableManagerTests(TestCase):
         )
 
         state = submission.variables_state
-        for key in ("textfield", "date"):
-            with self.subTest(f"Initial state: {key}"):
-                variable = state.variables[key]
-                # Variable is present in the state, but not in the database (yet)
-                self.assertIsNone(variable.pk)
-                self.assertEqual(variable.value, "")
+        with self.subTest("Initial state: textfield"):
+            variable = state.variables["textfield"]
+            # Variable is present in the state, but not in the database (yet)
+            self.assertIsNone(variable.pk)
+            self.assertEqual(variable.value, "")
+
+        with self.subTest("Initial state: date"):
+            variable = state.variables["date"]
+            # Variable is present in the state, but not in the database (yet)
+            self.assertIsNone(variable.pk)
+            self.assertIsNone(variable.value)
 
         # Persist the textfield to the database
         SubmissionValueVariable.objects.bulk_create_or_update_from_data(
