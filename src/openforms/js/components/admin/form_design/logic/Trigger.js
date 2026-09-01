@@ -103,13 +103,13 @@ const parseJsonLogic = (logic, allVariablesKeys) => {
         break;
       }
       case 'date': {
-        operandType = compareValue.date.var ? 'variable' : 'literal';
-        operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
+        operandType = compareValue.date?.var ? 'variable' : 'literal';
+        operand = compareValue.date?.var ? compareValue.date.var : compareValue.date;
         break;
       }
       case 'datetime': {
-        operandType = compareValue.datetime.var ? 'variable' : 'literal';
-        operand = compareValue.datetime.var ? compareValue.datetime.var : compareValue.datetime;
+        operandType = compareValue.datetime?.var ? 'variable' : 'literal';
+        operand = compareValue.datetime?.var ? compareValue.datetime.var : compareValue.datetime;
         break;
       }
       case '+':
@@ -204,7 +204,7 @@ const Trigger = ({name, logic, onChange, error}) => {
         <LiteralValueInput
           name="operand"
           type={triggerVariable?.dataType}
-          value={operand.toString()}
+          value={operand === null ? '' : operand.toString()}
           onChange={onTriggerChange}
         />
       );
@@ -212,12 +212,15 @@ const Trigger = ({name, logic, onChange, error}) => {
       const dataType = triggerVariable?.dataType;
       switch (dataType) {
         case 'date': {
-          compareValue = {date: operand};
+          compareValue = !operand ? null : {date: operand};
           break;
         }
         case 'datetime': {
-          compareValue = {datetime: operand};
+          compareValue = !operand ? null : {datetime: operand};
           break;
+        }
+        case 'time': {
+          compareValue = !operand ? null : operand;
         }
         default: {
           compareValue = operand;
@@ -293,6 +296,18 @@ const Trigger = ({name, logic, onChange, error}) => {
           defaultValue === undefined
             ? {date: {var: triggerVariableKey}}
             : {date: {var: [triggerVariableKey, defaultValue]}};
+        // cast from string to null for empty values
+        if (compareValue === '') compareValue = null;
+        break;
+      }
+      case 'datetime': {
+        // cast from string to null for empty values
+        if (compareValue === '') compareValue = null;
+        break;
+      }
+      case 'time': {
+        // cast from string to null for empty values
+        if (compareValue === '') compareValue = null;
         break;
       }
       case 'selectboxes': {
@@ -323,14 +338,26 @@ const Trigger = ({name, logic, onChange, error}) => {
             ? {var: triggerVariableKey}
             : {var: [triggerVariableKey, defaultValue]};
     }
-  } else if (
-    triggerVariable?.source === VARIABLE_SOURCES.userDefined &&
-    triggerVariable.dataType === 'boolean'
-  ) {
-    firstOperand = {var: triggerVariableKey};
-    // cast from string to actual boolean
-    if (compareValue === 'true') compareValue = true;
-    if (compareValue === 'false') compareValue = false;
+  } else if (triggerVariable?.source === VARIABLE_SOURCES.userDefined) {
+    switch (triggerVariable.dataType) {
+      case 'boolean': {
+        firstOperand = {var: triggerVariableKey};
+        // cast from string to actual boolean
+        if (compareValue === 'true') compareValue = true;
+        if (compareValue === 'false') compareValue = false;
+        break;
+      }
+      case 'date':
+      case 'datetime':
+      case 'time': {
+        // cast from string to null for empty values
+        if (compareValue === '') compareValue = null;
+        break;
+      }
+      default: {
+        firstOperand = {var: triggerVariableKey};
+      }
+    }
   } else {
     firstOperand = {var: triggerVariableKey};
   }
