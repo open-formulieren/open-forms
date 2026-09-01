@@ -12,7 +12,11 @@ from openforms.formio.service import holds_submission_data
 from openforms.formio.typing import Component
 from openforms.variables.constants import FormVariableDataTypes
 
-from ...constants import LogicActionTypes
+from ...constants import (
+    SINGLE_STEP_FORM_ACTION_TYPES,
+    FormTypeChoices,
+    LogicActionTypes,
+)
 from ...models import FormVariable
 from .typing import FormLogicActionData
 
@@ -28,6 +32,7 @@ that field. The field names are the keys of a logic action struct (polymorphic).
 def validate_logic_actions(
     actions: Sequence[FormLogicActionData],
     *,
+    form_type: str,
     find_component: Callable[[str], Component | None],
     form_variables: Mapping[str, FormVariable],
     form_step_slugs: Collection[str],
@@ -37,7 +42,8 @@ def validate_logic_actions(
 
     :param actions: The (ordered) collection of actions to verify against the form
       configuration.
-    :param find_component: An (optimized) callback to to resolve a component key against
+    :param form_type: The type of the form.
+    :param find_component: An (optimized) callback to resolve a component key against
       a Formio component in any of the form steps.
     :param form_variables: A mapping of all known form variable keys to their form
       variable instance, including both component and user defined variables.
@@ -49,6 +55,19 @@ def validate_logic_actions(
         # the enum helps enforce the value, and we expect input validation to
         # validate that the action key & type key are present already
         action_type = LogicActionTypes(action["action"]["type"])
+
+        if (
+            form_type == FormTypeChoices.single_step
+            and action_type not in SINGLE_STEP_FORM_ACTION_TYPES
+        ):
+            errors[action_index]["type"].append(
+                ErrorDetail(
+                    _(
+                        "Logic action {action_type} is not allowed in single step forms."
+                    ).format(action_type=action_type),
+                    code="invalid",
+                )
+            )
 
         # actions are polymorphic, so their configuration needs to be validated based on
         # the discriminator key. Pattern matching works well for this.
@@ -85,7 +104,7 @@ def validate_logic_actions(
                         errors[action_index]["component"].append(
                             ErrorDetail(
                                 _(
-                                    "You cannot used the 'disabled' property "
+                                    "You cannot use the 'disabled' property "
                                     "on layout components'."
                                 ),
                                 code="invalid",

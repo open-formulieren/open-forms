@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.models import FormRegistrationBackend
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import RegistrationStatuses
@@ -23,6 +24,42 @@ class UpdateRegistrationWithConfirmationEmailTests(TestCase):
     def test_happy_flow(self):
         submission = SubmissionFactory.create(
             completed=True,
+            form__registration_backend="plugin",
+            form__registration_backend_options={"string": "foo"},
+            registration_result={"result": "bar"},
+            registration_status=RegistrationStatuses.success,
+        )
+
+        register = Registry()
+
+        @register("plugin")
+        class Plugin(BasePlugin):
+            verbose_name = "Cool plugin"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                return {}
+
+            def update_registration_with_confirmation_email(self, submission, options):
+                return {"result": "bar"}
+
+        model_field = FormRegistrationBackend._meta.get_field("backend")
+        with patch_registry(model_field, register):
+            update_registration_with_confirmation_email(submission.pk)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_result, {"result": "bar"})
+
+        # Check log
+        log = TimelineLogProxy.objects.last()
+        self.assertEqual(
+            log.event, "registration_update_with_confirmation_email_success"
+        )
+
+    def test_happy_flow_for_single_step_forms(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__type=FormTypeChoices.single_step,
             form__registration_backend="plugin",
             form__registration_backend_options={"string": "foo"},
             registration_result={"result": "bar"},
