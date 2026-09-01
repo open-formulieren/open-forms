@@ -8,9 +8,13 @@ import jq
 import structlog
 from json_logic import UNDEFINED_VALUE, jsonLogic
 from zgw_consumers.client import build_client
+from zgw_consumers.constants import AuthTypes
 
+from openforms.contrib.client import LoggingClient
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormVariable
+from openforms.pre_requests.clients import PreRequestClientContext, PreRequestMixin
+from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
 
@@ -27,8 +31,21 @@ class FetchResult:
     # response_headers: JSONObject
 
 
+class ServiceFetchClient(PreRequestMixin, LoggingClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # overwrite binding contextvars, as the "client=self" in the loggingMixin
+        # causes errors in this case with submissions
+        structlog.contextvars.bind_contextvars(
+            base_url=self.base_url,
+            client=type(self).__qualname__,
+        )
+
+
 def perform_service_fetch(
-    var: FormVariable, context: FormioData, submission_uuid: str = ""
+    var: FormVariable,
+    context: FormioData,
+    submission: Submission | None = None,
 ) -> FetchResult | None:
     """Fetch a value from a http-service, perform a transformation on it and
     return the result.
@@ -43,7 +60,8 @@ def perform_service_fetch(
     The value returned by the request is cached using the submission UUID and the
     arguments to the request (hashed to make a cache key).
     """
-    log = logger.bind(variable=var.key, submission_uuid=str(submission_uuid))
+    submission_uuid = str(submission.uuid) if submission else None
+    log = logger.bind(variable=var.key, submission_uuid=submission_uuid)
     log.info("perform_service_fetch_started")
 
     if not var.service_fetch_configuration:
@@ -51,10 +69,23 @@ def perform_service_fetch(
             f"Can't perform service fetch on {var}. "
             "It needs a service_fetch_configuration."
         )
-    fetch_config: ServiceFetchConfiguration = var.service_fetch_configuration
 
-    client = build_client(fetch_config.service)
+    fetch_config: ServiceFetchConfiguration = var.service_fetch_configuration
     request_args = fetch_config.request_arguments(context)
+
+    context = (
+        PreRequestClientContext(submission=submission)
+        if submission is not None
+        else None
+    )
+
+    if fetch_config.service.auth_type == AuthTypes.no_auth:
+        client = build_client(
+            fetch_config.service, client_factory=ServiceFetchClient, context=context
+        )
+    else:
+        # default client factory, so we do not overwrite the configured auth
+        client = build_client(fetch_config.service)
 
     def _do_fetch():
         log.info("perform_service_fetch_http_call_started")
