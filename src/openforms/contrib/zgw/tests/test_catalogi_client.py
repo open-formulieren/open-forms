@@ -11,10 +11,20 @@ These tests make use of requests-mock rather than VCR for two reasons:
 
 from datetime import date
 
-from django.test import TestCase
+from django.conf import settings
+from django.core.cache import caches
+from django.test import TestCase, override_settings
 
 import requests_mock
 from furl import furl
+
+from openforms.contrib.zgw.clients.catalogi import (
+    CaseType,
+    Catalogus,
+    InformatieObjectType,
+)
+from openforms.utils.api_clients import PaginatedResponseData
+from openforms.utils.tests.cache import clear_caches
 
 from ..clients import CatalogiClient
 from ..exceptions import StandardViolation
@@ -384,3 +394,214 @@ class CatalogiClientTests(TestCase):
 
         all_results = list(results)
         self.assertEqual(len(all_results), 3)
+
+
+CACHES = settings.CACHES.copy()
+CACHES["catalogi_client"] = {"BACKEND": "openforms.utils.cache.RequestProxyCache"}
+
+
+@override_settings(CACHES=CACHES)
+@requests_mock.Mocker()
+class CatalogiClientCachingTests(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+
+    def test_version_caching(self, mocker: requests_mock.Mocker):
+        client = CatalogiClient(base_url="https://dummy/catalogi/api/v1")
+        mocker.get(
+            "https://dummy/catalogi/api/v1/catalogussen?domein=VRSN",
+            headers={"API-Version": "1.2.3"},
+        )
+
+        api_version = client.api_version
+
+        self.assertEqual(api_version, (1, 2, 3))
+        self.assertEqual(len(mocker.request_history), 1)
+
+        cache = caches["catalogi_client"]
+        cache_key = "ZGW|catalogi|version|https://dummy/catalogi/api/v1"
+        self.assertEqual(cache.get(cache_key), (1, 2, 3))
+
+        # Do another request to a random endpoint, not expecting this to increase the
+        # mocker's request history but using the cached value instead.
+        second_version = client.api_version
+
+        self.assertEqual(second_version, api_version)
+        self.assertEqual(len(mocker.request_history), 1)
+
+    def test_catalogi_caching(self, mocker: requests_mock.Mocker):
+        client = CatalogiClient(base_url="https://dummy/catalogi/api/v1")
+
+        expected_catalogus: Catalogus = {
+            "url": "https://dummy/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10",
+            "domein": "PARTN",
+            "rsin": "000000000",
+            "naam": "Test partners",
+            "informatieobjecttypen": [
+                "https://dummy/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72"
+            ],
+            "zaaktypen": [
+                "https://dummy/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"
+            ],
+        }
+        catalogi_response_data: PaginatedResponseData = {
+            "count": 1,
+            "results": [expected_catalogus],
+            "previous": "https://dummy/catalogi/api/v1/catalogussen?page=-1",
+            "next": "https://dummy/catalogi/api/v1/catalogussen?page=2",
+        }
+        mocker.get(
+            "https://dummy/catalogi/api/v1/catalogussen",
+            json=catalogi_response_data,
+            headers={"API-Version": "1.2.3"},
+        )
+
+        with client:
+            result = client.find_catalogus(domain="PARTN", rsin="000000000")
+
+        self.assertEqual(result, expected_catalogus)
+        self.assertEqual(len(mocker.request_history), 1)
+
+        cache = caches["catalogi_client"]
+        cache_key = (
+            "ZGW|catalogi|find_catalogus|https://dummy/catalogi/api/v1|PARTN|000000000"
+        )
+        self.assertEqual(cache.get(cache_key), result)
+
+        # Call the find_catalogus method again, not expecting this to increase the
+        # mocker's request history but using the cached value instead.
+        with client:
+            client.find_catalogus(domain="PARTN", rsin="000000000")
+
+        self.assertEqual(len(mocker.request_history), 1)
+
+    def test_case_type_caching(self, mocker: requests_mock.Mocker):
+        client = CatalogiClient(base_url="https://dummy/catalogi/api/v1")
+
+        catalogus = "https://dummy/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10"
+        case_types: list[CaseType] = [
+            {
+                "url": "https://dummy/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1",
+                "catalogus": catalogus,
+                "identificatie": "ZAAKTYPE-2020-0000000001",
+                "omschrijving": "Case type for partners component",
+                "beginGeldigheid": "2020-06-20",
+                "eindeGeldigheid": None,
+                "productenOfDiensten": [],
+                "informatieobjecttypen": [
+                    "https://dummy/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72"
+                ],
+                "roltypen": [
+                    "https://dummy/catalogi/api/v1/roltypen/706464f3-cd55-425c-92ac-76be4ac8a61b",
+                    "https://dummy/catalogi/api/v1/roltypen/eedd2d97-19b1-4d66-821b-307f3f44363e",
+                ],
+            }
+        ]
+        case_type_response_data: PaginatedResponseData[CaseType] = {
+            "count": 1,
+            "results": case_types,
+            "previous": "",
+            "next": "",
+        }
+
+        mocker.get(
+            f"https://dummy/catalogi/api/v1/zaaktypen?catalogus={catalogus}",
+            json=case_type_response_data,
+            headers={"API-Version": "1.2.3"},
+        )
+        # the client will do an API version check to determine if filtering
+        # on the `valid_on` query parameter is supported
+        mocker.get(
+            "https://dummy/catalogi/api/v1/catalogussen?domein=VRSN",
+            json={},
+            headers={"API-Version": "1.2.3"},
+        )
+
+        with client:
+            results = client.find_case_types(
+                catalogus=catalogus,
+                identification="",
+            )
+            assert results is not None
+
+        self.assertEqual(results, case_types)
+        self.assertEqual(len(mocker.request_history), 2)
+
+        cache = caches["catalogi_client"]
+        cache_key = (
+            f"ZGW|catalogi|find_case_types|https://dummy/catalogi/api/v1|{catalogus}|"
+        )
+        self.assertEqual(cache.get(cache_key), case_types)
+
+        # Call the find_case_types method again, not expecting this to increase the
+        # mocker's request history but using the cached value instead.
+        with client:
+            results = client.find_case_types(
+                catalogus=catalogus,
+                identification="",
+            )
+            assert results is not None
+
+        self.assertEqual(len(mocker.request_history), 2)
+
+    def test_informatieobjecttype_caching(self, mocker: requests_mock.Mocker):
+        client = CatalogiClient(base_url="https://dummy/catalogi/api/v1")
+
+        catalogus = "https://dummy/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10"
+        informatieobjecttypen: list[InformatieObjectType] = [
+            {
+                "url": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72",
+                "catalogus": "http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10",
+                "omschrijving": "Partners PDF Informatieobjecttype",
+                "beginGeldigheid": "2020-06-20",
+                "eindeGeldigheid": None,
+            }
+        ]
+        informatieobjecttypen_response_data: PaginatedResponseData[
+            InformatieObjectType
+        ] = {
+            "count": 1,
+            "results": informatieobjecttypen,
+            "previous": "",
+            "next": "",
+        }
+
+        mocker.get(
+            f"https://dummy/catalogi/api/v1/informatieobjecttypen?catalogus={catalogus}&omschrijving=",
+            json=informatieobjecttypen_response_data,
+            headers={"API-Version": "1.2.3"},
+        )
+        # the client will do an API version check to determine if filtering
+        # on the `valid_on` query parameter is supported
+        mocker.get(
+            "https://dummy/catalogi/api/v1/catalogussen?domein=VRSN",
+            json={},
+            headers={"API-Version": "1.2.3"},
+        )
+
+        with client:
+            results = client.find_informatieobjecttypen(
+                catalogus=catalogus,
+                description="",
+            )
+            assert results is not None
+
+        self.assertEqual(results, informatieobjecttypen)
+        self.assertEqual(len(mocker.request_history), 2)
+
+        cache = caches["catalogi_client"]
+        cache_key = f"ZGW|catalogi|find_informatieobjecttypen|https://dummy/catalogi/api/v1|{catalogus}|"
+        self.assertEqual(cache.get(cache_key), informatieobjecttypen)
+
+        # Call the find_case_types method again, not expecting this to increase the
+        # mocker's request history but using the cached value instead.
+        with client:
+            results = client.find_informatieobjecttypen(
+                catalogus=catalogus,
+                description="",
+            )
+            assert results is not None
+
+        self.assertEqual(len(mocker.request_history), 2)
