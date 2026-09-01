@@ -16,8 +16,8 @@ from django.db.models import Prefetch
 
 from tabulate import tabulate
 
+from formio_types import EditGrid, File
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
-from openforms.formio.typing import FileComponent
 from openforms.forms.models import Form, FormDefinition, FormRegistrationBackend
 
 
@@ -167,41 +167,41 @@ class FormioConfigurationMigrator:
     @staticmethod
     def _iter_form_def_file_components(
         form_definition: FormDefinition,
-    ) -> Iterator[FileComponent]:
-        config_wrapper = form_definition.configuration_wrapper
+    ) -> Iterator[File]:
         # loop over all components in the form definition and yield only the file
         # components
-        for component in config_wrapper:
-            match component["type"]:
-                case "file":
-                    yield component  # pyright: ignore[reportReturnType]
-                case "editgrid":
+        for component in form_definition.formio_config:
+            match component:
+                case File():
+                    yield component
+                case EditGrid():
                     # no special treatment needed, the child components are included in
-                    # the config_wrapper already.
+                    # the formio_config already.
                     continue
                 case _:
                     continue
 
     @staticmethod
-    def check_file_component(component: FileComponent) -> bool:
+    def check_file_component(component: File) -> bool:
         """
         Check whether the component needs a migration or not.
         """
         # no registration configuration at all - nothing to do
-        if not (registration := component.get("registration")):
+        if not (registration := component.registration):
             return False
 
         # no legacy URL configured, do nothing
-        if not registration.get("informatieobjecttype"):
+        if not registration.informatieobjecttype:
             return False
 
         # new format is already configured, do nothing
-        document_type = registration.get("documentType", {})
+        document_type = registration.document_type
         if (
-            document_type.get("description")
-            and (catalogue := document_type.get("catalogue"))
-            and catalogue.get("domain")
-            and catalogue.get("rsin")
+            document_type
+            and document_type.description
+            and (catalogue := document_type.catalogue)
+            and catalogue.domain
+            and catalogue.rsin
         ):
             return False
         return True
@@ -217,8 +217,8 @@ class FormioConfigurationMigrator:
             form_repr = _get_form_repr(form)
             for form_definition, step_repr in self._iter_form_defs(form):
                 for component in self._iter_form_def_file_components(form_definition):
-                    key = component["key"]
-                    component_label = component.get("label", "")
+                    key = component.key
+                    component_label = component.label
                     component_repr = (
                         f"{component_label} ({key})" if component_label else key
                     )

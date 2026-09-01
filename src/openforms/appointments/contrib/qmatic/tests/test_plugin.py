@@ -2,13 +2,14 @@ from datetime import UTC, date, datetime
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
+from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
 import requests_mock
 from requests.exceptions import RequestException
 from zgw_consumers.constants import AuthTypes
 
-from openforms.formio.service import build_serializer
+from openforms.formio.service import FormioConfig, build_serializer
 from openforms.utils.date import TIMEZONE_AMS
 from openforms.utils.tests.http import (
     fuzzy_client_error_status_code,
@@ -667,10 +668,12 @@ class ConfigurationTests(SimpleTestCase):
 
     def test_can_create_serializer_for_formio_fields(self):
         for component in FIELD_TO_FORMIO_COMPONENT.values():
-            assert "key" in component
+            component["label"] = force_str(component["label"])
+            config = FormioConfig(name="<test>", components=[component])
+
             with self.subTest(component=component["key"]):
                 try:
-                    serializer = build_serializer([component])
+                    serializer = build_serializer(config)
                 except Exception as exc:
                     raise self.failureException(
                         "Could not create validation chain"

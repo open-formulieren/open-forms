@@ -6,28 +6,30 @@ from openforms.formio.tests.search_strategies import formio_key
 from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
-from ..datastructures import FormioConfigurationWrapper, FormioData
-from ..typing import Component
+from ..datastructures import FormioConfig, FormioData
+from ..typing import Component, FileComponent, SelectBoxesComponent
 from ..visibility import is_hidden
 
-FORMIO_COMPONENTS: list[Component] = [
-    {
-        "type": "selectboxes",
-        "key": "selectBoxes1",
-        "label": "Select boxes",
-        "values": [
-            {"value": "a", "label": "A"},
-            {"value": "b", "label": "B"},
-        ],
-    },
-    {
-        "type": "file",
-        "key": "file1",
-        "label": "File",
-        "file": {"type": []},
-        "filePattern": "",
-    },
-]
+SELECTBOXES: SelectBoxesComponent = {
+    "type": "selectboxes",
+    "key": "selectBoxes1",
+    "label": "Select boxes",
+    "values": [
+        {"value": "a", "label": "A"},
+        {"value": "b", "label": "B"},
+    ],
+}
+FILE: FileComponent = {
+    "type": "file",
+    "key": "file1",
+    "label": "File",
+    "file": {"type": [], "allowedTypesLabels": []},
+    "filePattern": "",
+    "useConfigFiletypes": False,
+    "storage": "url",
+    "url": "",
+}
+FORMIO_COMPONENTS: list[Component] = [SELECTBOXES, FILE]
 
 
 class IsHiddenTests(SimpleTestCase):
@@ -40,11 +42,12 @@ class IsHiddenTests(SimpleTestCase):
             "label": "Text field",
             "conditional": {"show": True, "when": "selectBoxes1", "eq": "a"},
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
-        result = is_hidden(component, data, configuration_wrapper)
+        result = is_hidden(formio_config["textField1"], data, formio_config)
 
         self.assertFalse(result)
 
@@ -57,11 +60,12 @@ class IsHiddenTests(SimpleTestCase):
             "label": "Text field",
             "conditional": {"show": False, "when": "selectBoxes1", "eq": "a"},
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
-        result = is_hidden(component, data, configuration_wrapper)
+        result = is_hidden(formio_config["textField1"], data, formio_config)
 
         self.assertTrue(result)
 
@@ -74,11 +78,12 @@ class IsHiddenTests(SimpleTestCase):
             "label": "Text field",
             "conditional": {"show": True, "when": "selectBoxes1", "eq": "a"},
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
-        result = is_hidden(component, data, configuration_wrapper)
+        result = is_hidden(formio_config["textField1"], data, formio_config)
 
         self.assertTrue(result)
 
@@ -91,11 +96,12 @@ class IsHiddenTests(SimpleTestCase):
             "label": "Text field",
             "conditional": {"show": False, "when": "selectBoxes1", "eq": "a"},
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
-        result = is_hidden(component, data, configuration_wrapper)
+        result = is_hidden(formio_config["textField1"], data, formio_config)
 
         self.assertFalse(result)
 
@@ -113,11 +119,12 @@ class IsHiddenTests(SimpleTestCase):
                 "eq": "",  # should be [], but formio-builder/formio legacy use strings...
             },
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
-        result = is_hidden(component, data, configuration_wrapper)
+        result = is_hidden(formio_config["textField1"], data, formio_config)
 
         self.assertTrue(result)
 
@@ -146,16 +153,18 @@ class IsHiddenTests(SimpleTestCase):
             "defaultValue": "",
             "prefill": {"plugin": "", "attribute": ""},
             "conditional": {
-                "show": show,
+                # deliberate wrong type to test resiliency
+                "show": show,  # pyright: ignore[reportAssignmentType]
                 "when": when,
                 "eq": eq,
             },
         }
-        configuration_wrapper = FormioConfigurationWrapper(
-            {"components": [*FORMIO_COMPONENTS, component]}
+        formio_config = FormioConfig(
+            name="test",
+            components=[*FORMIO_COMPONENTS, component],
         )
 
         try:
-            is_hidden(component, data, configuration_wrapper)
+            is_hidden(formio_config["someComponent"], data, formio_config)
         except Exception:
             self.fail("Visibility check unexpectedly crashed")

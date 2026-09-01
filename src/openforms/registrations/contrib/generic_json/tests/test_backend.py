@@ -2155,7 +2155,11 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "label": "Extrachilddetails",
                     "groupLabel": "child",
                     "components": [
-                        {"type": "bsn", "key": "bsn", "label": "BSN"},
+                        {
+                            "type": "bsn",
+                            "key": "bsn",
+                            "label": "BSN",
+                        },
                         {
                             "type": "textfield",
                             "key": "childName",

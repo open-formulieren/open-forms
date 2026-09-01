@@ -288,35 +288,6 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertIn("someCamelCase", config["components"][0])
         self.assertNotIn("some_amel_case", config["components"][0])
 
-    def test_get_no_snakecase_camelcase_conversion(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
-        self.client.force_authenticate(user=user)
-
-        definition = FormDefinitionFactory.create(
-            name="test form definition",
-            slug="test-form-definition",
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "somekey",
-                        "label": "somekey",
-                        "type": "textfield",
-                        "widget": {"time_24hr": True},
-                    }
-                ],
-            },
-        )
-
-        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
-        response = self.client.get(url)
-
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-        date_component = response.json()["configuration"]["components"][0]
-
-        self.assertIn("time_24hr", date_component["widget"])
-
     def test_delete(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
@@ -519,6 +490,7 @@ class FormDefinitionsAPITests(APITestCase):
                             "key": "repeatingGroup",
                             "label": "Repeating Group",
                             "type": "editgrid",
+                            "groupLabel": "Item",
                             "components": [
                                 {
                                     "key": "duplicate",

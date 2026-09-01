@@ -1,4 +1,3 @@
-from copy import deepcopy
 from uuid import UUID
 
 from rest_framework import permissions
@@ -116,7 +115,6 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
         submission = obj.submission
         state = submission.load_execution_state()
         assert obj.form_step is not None
-        configuration_copy = deepcopy(obj.form_step.form_definition.configuration)
         check_submission_logic(submission)
 
         incomplete_steps = [
@@ -126,13 +124,11 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
         ]
 
         submission.clear_execution_state()
-        # restore any possible logic side-effects to the current step configuration.
-        # Some logic rules may trigger that don't for the submission step PUT or logic
-        # check, as we don't take unsaved/dirty data into account here.
-        obj.form_step.form_definition.configuration = configuration_copy
-        del obj.form_step.form_definition.configuration_wrapper
+        # discard any possible logic side-effects to the current step configuration.
+        # Some logic rules may trigger here that don't trigger for the submission step
+        # PUT or logic check, as we don't take unsaved/dirty data into account here.
+        if hasattr(obj.form_step.form_definition, "formio_config"):
+            del obj.form_step.form_definition.formio_config
 
-        if not incomplete_steps:
-            return True
-
-        return False
+        can_continue = not incomplete_steps
+        return can_continue

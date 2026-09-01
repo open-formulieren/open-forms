@@ -9,10 +9,9 @@ from typing import assert_never, cast  # noqa: TID251
 
 from glom import Assign, Path, glom
 
+from formio_types import AddressNL, AnyComponent, EditGrid, File, Map, Selectboxes
 from openforms.api.utils import underscore_to_camel
 from openforms.formio.service import FormioData, as_json_data
-from openforms.formio.typing import Component, EditGridComponent
-from openforms.formio.typing.vanilla import FileComponent
 from openforms.submissions.models import SubmissionValueVariable
 from openforms.typing import JSONObject, JSONValue, VariableValue
 
@@ -59,7 +58,7 @@ def process_mapped_variable(
     value: VariableValue,  # can't narrow it down yet, as the type depends on the component type
     transform_to_list: list[str] | None = None,
     variable: SubmissionValueVariable | None = None,
-    component: Component | None = None,
+    component: AnyComponent | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
     """
@@ -107,7 +106,7 @@ def process_mapped_variable(
         value = as_json_data(component, value)
 
     match component:
-        case {"type": "addressNL"}:
+        case AddressNL():
             assert isinstance(value, dict)
             value = value.copy()
 
@@ -137,24 +136,22 @@ def process_mapped_variable(
                 assert target_path is not None
                 return AssignmentSpec(destination=target_path, value=value)  # pyright: ignore[reportArgumentType]
 
-        case {"type": "file"}:
+        case File():
             assert attachment_urls is not None
-            value = _transform_file_value(
-                cast(FileComponent, component), attachment_urls
-            )
+            value = _transform_file_value(component, attachment_urls)
 
-        case {"type": "map"}:
+        case Map():
             assert isinstance(value, dict)
 
-        case {"type": "editgrid"} if attachment_urls is not None:
+        case EditGrid() if attachment_urls is not None:
             assert isinstance(value, list)
             value = _transform_editgrid_value(
-                cast(EditGridComponent, component),
+                component,
                 cast(list[JSONObject], value),
                 attachment_urls=attachment_urls,
                 key_prefix=variable_key,
             )
-        case {"type": "selectboxes"}:
+        case Selectboxes():
             assert isinstance(value, dict)
             if transform_to_list and variable_key in transform_to_list:
                 value = [option for option, is_selected in value.items() if is_selected]
@@ -171,15 +168,15 @@ def process_mapped_variable(
 
 
 def _transform_file_value(
-    component: FileComponent,
+    component: File,
     attachment_urls: dict[str, list[str]],
     key_prefix: str = "",
 ) -> str | list[str]:
     """
     Transform a single file component value according to the component configuration.
     """
-    key = component["key"]
-    multiple = component.get("multiple", False)
+    key = component.key
+    multiple = component.multiple
 
     # it's possible keys are missing because there are no uploads at all for the
     # component.
@@ -205,12 +202,12 @@ def _transform_file_value(
 
 
 def _transform_editgrid_value(
-    component: EditGridComponent,
+    component: EditGrid,
     value: list[JSONObject],
     attachment_urls: dict[str, list[str]],
     key_prefix: str,
 ) -> list[JSONObject]:
-    nested_components = component["components"]
+    nested_components = component.components
 
     items: list[JSONObject] = []
 
@@ -219,20 +216,20 @@ def _transform_editgrid_value(
         item_values = FormioData(item)
 
         for nested_component in nested_components:
-            key = nested_component["key"]
+            key = nested_component.key
 
             match nested_component:
-                case {"type": "file"}:
+                case File():
                     item_values[key] = _transform_file_value(
-                        cast(FileComponent, nested_component),
+                        nested_component,
                         attachment_urls=attachment_urls,
                         key_prefix=f"{key_prefix}.{index}",
                     )
-                case {"type": "editgrid"}:
+                case EditGrid():
                     nested_items = item_values[key]
                     assert isinstance(nested_items, list)
                     item_values[key] = _transform_editgrid_value(
-                        cast(EditGridComponent, nested_component),
+                        nested_component,
                         value=cast(list[JSONObject], nested_items),
                         attachment_urls=attachment_urls,
                         key_prefix=f"{key_prefix}.{index}.{key}",

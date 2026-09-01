@@ -89,7 +89,7 @@ def apply_data_mapping[T: MutableMapping[str, Any]](
         target_dict = dict()
 
     # build a lookup, also implicitly de-duplicates assigned attributes
-    attr_key_lookup = dict()
+    attr_key_lookup = {}
 
     for component in submission.form.iter_components(recursive=True):
         key = component.get("key")

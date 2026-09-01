@@ -8,6 +8,7 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.utils import get_plugin
+from openforms.formio.datastructures import InvalidFormioTree
 from openforms.formio.typing import FormioConfiguration
 from openforms.formio.utils import iter_components
 from openforms.formio.variables import get_configuration_template_syntax_errors
@@ -203,7 +204,11 @@ def validate_template_expressions(configuration: FormioConfiguration) -> None:
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errors = get_configuration_template_syntax_errors(configuration)
+    try:
+        errors = get_configuration_template_syntax_errors(configuration["components"])
+    except InvalidFormioTree:
+        return
+
     if not errors:
         return
 
