@@ -8,6 +8,7 @@ from ..migration_converters import (
     ensure_licensplate_validate_pattern,
     ensure_map_has_interactions,
     ensure_postcode_validate_pattern,
+    fix_empty_date_datetime_or_time_default_value,
     fix_empty_default_value,
     fix_file_default_value,
     fix_multiple_empty_default_value,
@@ -441,7 +442,7 @@ class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": [],
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
     def test_default_value_noop(self):
@@ -449,24 +450,24 @@ class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
             "type": "datetime",
             "key": "datetime",
             "label": "Datetime",
-            "defaultValue": "",
+            "defaultValue": None,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
-    def test_default_value_none_changed(self):
+    def test_default_value_empty_string_changed(self):
         component: Component = {
             "type": "datetime",
             "key": "datetime",
             "label": "Datetime",
-            "defaultValue": None,
+            "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], "")
+        self.assertIsNone(component["defaultValue"])
 
     def test_no_default_value_noop(self):
         component: Component = {
@@ -475,36 +476,47 @@ class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
             "label": "Datetime",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
-    def test_multiple_default_value_none_in_array_changed(self):
+    def test_multiple_default_value_empty_string_in_array_changed(self):
         component: Component = {
             "type": "datetime",
             "key": "datetime",
             "label": "Datetime",
-            "defaultValue": [None],
+            "defaultValue": [""],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], [""])
+        self.assertEqual(component["defaultValue"], [None])
 
-    def test_multiple_default_value_with_none_changed(self):
+    def test_multiple_default_value_with_empty_string_changed(self):
         component: Component = {
             "type": "datetime",
             "key": "datetime",
             "label": "Datetime",
-            "defaultValue": ["foo", None, "bar"],
+            "defaultValue": [
+                "2026-09-01T21:20:00+02:00",
+                "",
+                "2025-01-01T00:00:00Z",
+            ],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+        self.assertEqual(
+            component["defaultValue"],
+            [
+                "2026-09-01T21:20:00+02:00",
+                None,
+                "2025-01-01T00:00:00Z",
+            ],
+        )
 
     def test_multiple_default_value_none_changed(self):
         component: Component = {
@@ -515,7 +527,7 @@ class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": None,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
@@ -529,7 +541,7 @@ class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
@@ -1048,7 +1060,7 @@ class TimeTests(SimpleTestCase):
             "defaultValue": [],
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertFalse(changed)
 
@@ -1057,25 +1069,25 @@ class TimeTests(SimpleTestCase):
             "type": "time",
             "key": "time",
             "label": "Time",
-            "defaultValue": "",
+            "defaultValue": None,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertFalse(changed)
 
-    def test_default_value_none_changed(self):
+    def test_default_value_empty_string_changed(self):
         component: Component = {
             "type": "time",
             "key": "time",
             "label": "Time",
-            "defaultValue": None,
+            "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], "")
+        self.assertEqual(component["defaultValue"], None)
 
     def test_no_default_value_doesnt_change(self):
         component: Component = {
@@ -1084,23 +1096,23 @@ class TimeTests(SimpleTestCase):
             "label": "Time",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertFalse(changed)
 
-    def test_multiple_default_value_none_changed(self):
+    def test_multiple_default_value_empty_string_changed(self):
         component: Component = {
             "type": "time",
             "key": "time",
             "label": "Time",
-            "defaultValue": [None],
+            "defaultValue": [""],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], [""])
+        self.assertEqual(component["defaultValue"], [None])
 
     def test_multiple_default_value_string_changed(self):
         component: Component = {
@@ -1111,24 +1123,24 @@ class TimeTests(SimpleTestCase):
             "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
 
-    def test_multiple_default_value_with_none_changed(self):
+    def test_multiple_default_value_with_empty_string_changed(self):
         component: Component = {
             "type": "time",
             "key": "time",
             "label": "Time",
-            "defaultValue": ["11:11", None, "22:22"],
+            "defaultValue": ["11:11", "", "22:22"],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], ["11:11", "", "22:22"])
+        self.assertEqual(component["defaultValue"], ["11:11", None, "22:22"])
 
 
 class PhoneNumberTests(SimpleTestCase):
@@ -1905,7 +1917,7 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": [],
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
     def test_default_value_noop(self):
@@ -1913,24 +1925,24 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
             "key": "date",
             "type": "date",
             "label": "Date",
-            "defaultValue": "",
+            "defaultValue": None,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
-    def test_default_value_none_changed(self):
+    def test_default_value_empty_string_changed(self):
         component: Component = {
             "key": "date",
             "type": "date",
             "label": "Date",
-            "defaultValue": None,
+            "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], "")
+        self.assertEqual(component["defaultValue"], None)
 
     def test_no_default_value_noop(self):
         component: Component = {
@@ -1939,36 +1951,47 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
             "label": "Date",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
         self.assertFalse(changed)
 
-    def test_multiple_default_value_none_in_array_changed(self):
+    def test_multiple_default_value_empty_string_in_array_changed(self):
         component: Component = {
             "key": "date",
             "type": "date",
             "label": "Date",
-            "defaultValue": [None],
+            "defaultValue": [""],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], [""])
+        self.assertEqual(component["defaultValue"], [None])
 
-    def test_multiple_default_value_with_none_changed(self):
+    def test_multiple_default_value_with_empty_string_changed(self):
         component: Component = {
             "key": "date",
             "type": "date",
             "label": "Date",
-            "defaultValue": ["foo", None, "bar"],
+            "defaultValue": [
+                "2025-01-01",
+                "",
+                "2026-07-31",
+            ],
             "multiple": True,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+        self.assertEqual(
+            component["defaultValue"],
+            [
+                "2025-01-01",
+                None,
+                "2026-07-31",
+            ],
+        )
 
     def test_multiple_default_value_none_changed(self):
         component: Component = {
@@ -1979,7 +2002,7 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": None,
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
@@ -1993,7 +2016,7 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
             "defaultValue": "",
         }
 
-        changed = fix_empty_default_value(component)
+        changed = fix_empty_date_datetime_or_time_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
