@@ -28,12 +28,5 @@ class DatePickerConfig(TypedDict):
     # ISO-8601 string! Even the date component uses datetimes under the hood because
     # Javascript only has a Date type that covers both, and that leaks into our form
     # builder and backend logic doing dynamic things.
-    showWeeks: NotRequired[bool]
-    startingDay: NotRequired[Literal[0, 1, 2, 3, 4, 5, 6]]
-    initDate: NotRequired[str]
-    minMode: NotRequired[Literal["day", "month", "year"]]
-    maxMode: NotRequired[Literal["day", "month", "year"]]
-    yearRows: NotRequired[int]
-    yearColumns: NotRequired[int]
     minDate: str | None
     maxDate: str | None
