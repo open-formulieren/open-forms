@@ -27,7 +27,7 @@ const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}
     >
       <FormRow>
         <Field
-          name="form.paymentBackend"
+          name="form.payment.backend"
           label={
             <FormattedMessage
               description="Payment backend label"
@@ -41,7 +41,7 @@ const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}
             onChange={event => {
               onChange(event);
               // Clear options when changing backend
-              onChange({target: {name: 'form.paymentBackendOptions', value: {}}});
+              onChange({target: {name: 'form.payment.options', value: {}}});
             }}
             allowBlank
           />
@@ -52,9 +52,7 @@ const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}
           <OptionsFormComponent
             schema={backend.schema}
             formData={backendOptions}
-            onSubmit={values =>
-              onChange({target: {name: 'form.paymentBackendOptions', value: values}})
-            }
+            onSubmit={values => onChange({target: {name: 'form.payment.options', value: values}})}
           />
         </FormRow>
       )}
