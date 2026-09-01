@@ -313,14 +313,7 @@
             "attributes": {},
             "datePicker": {
                 "maxDate": null,
-                "maxMode": "year",
-                "minDate": null,
-                "minMode": "day",
-                "initDate": "",
-                "yearRows": 4,
-                "showWeeks": true,
-                "startingDay": 0,
-                "yearColumns": 5
+                "minDate": null
             },
             "enableDate": true,
             "enableTime": false,
@@ -570,13 +563,6 @@
             "timezone": "",
             "datepickerMode": "day",
             "datePicker": {
-                "showWeeks": true,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "minDate": null,
                 "maxDate": null
             },
