@@ -1,10 +1,12 @@
 from django.test import SimpleTestCase, tag
 
+from unittest_parametrize import ParametrizedTestCase, parametrize
+
 from ..service import normalize_value_for_component
 from ..typing import Component
 
 
-class NormalizationTests(SimpleTestCase):
+class NormalizationTests(ParametrizedTestCase, SimpleTestCase):
     def test_postcode_normalization_with_space(self):
         component: Component = {
             "type": "postcode",
@@ -94,3 +96,15 @@ class NormalizationTests(SimpleTestCase):
 
         self.assertEqual(int_result, "9")
         self.assertEqual(float_result, "9.9")
+
+    @parametrize("component_type", ("date", "datetime", "time"))
+    def test_datelike_normalization_empty_string(self, component_type: str):
+        component: Component = {
+            "type": component_type,
+            "key": component_type,
+            "label": component_type,
+        }
+
+        result = normalize_value_for_component(component, "")
+
+        self.assertIsNone(result)

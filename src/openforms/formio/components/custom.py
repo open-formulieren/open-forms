@@ -96,6 +96,12 @@ class Date(BasePlugin[DateComponent]):
     data_type = FormVariableDataTypes.date
     empty_value = None
 
+    @staticmethod
+    def normalizer(component: DateComponent, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
+
     def mutate_config_dynamically(
         self, component: DateComponent, submission: Submission, data: FormioData
     ) -> None:
@@ -180,6 +186,12 @@ class Datetime(BasePlugin):
     formatter = DateTimeFormatter
     data_type = FormVariableDataTypes.datetime
     empty_value = None
+
+    @staticmethod
+    def normalizer(component: DatetimeComponent, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
 
     def mutate_config_dynamically(
         self,
