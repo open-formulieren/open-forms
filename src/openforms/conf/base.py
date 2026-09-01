@@ -17,7 +17,7 @@ from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
 from maykin_common.branding import ProductDefinition
 from maykin_common.config import DocumentationParams, config
 from maykin_common.health_checks import default_health_check_apps
-from upgrade_check import CommandCheck, UpgradeCheck, VersionRange
+from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
@@ -26,7 +26,6 @@ from openforms.logging.processors import (
     add_open_telemetry_spans,
     drop_user_agent_in_dev,
 )
-from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
@@ -1324,7 +1323,6 @@ UPGRADE_CHECK_PATHS: UpgradePaths = {
         VersionRange(minimum="3.5.5"),
         code_checks=[
             BinScriptCheck("report_invalid_form_logic"),
-            CommandCheck("check_legacy_catalogi_api_urls"),
         ],
     ),
 }
