@@ -70,9 +70,9 @@ class ConvertComponentsOperationTests(TestCase):
                         "label": "Text",
                     },
                     {
-                        "type": "nottextfield",
-                        "key": "textfield",
-                        "label": "Text",
+                        "type": "email",
+                        "key": "email",
+                        "label": "Email",
                     },
                 ]
             }

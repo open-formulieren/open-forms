@@ -35,3 +35,8 @@ class FormioMixin:
                 except GlomError:
                     self.fail(f"Could not find property with path '{key}' in component")
                 self.assertEqual(value, expected_value)
+
+    def assertComponentProperties(self, result, expected):
+        for key, expected_value in expected.items():
+            with self.subTest(key=key):
+                self.assertEqual(result[key], expected_value)

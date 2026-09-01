@@ -62,7 +62,7 @@ class Renderer:
         else:
             return True
 
-    def get_children(self) -> Iterator[SubmissionStepNode | VariablesNode]:
+    def get_children(self) -> Iterator[Node]:
         """
         Produce only the direct child nodes.
         """
@@ -75,6 +75,7 @@ class Renderer:
                 # update the configuration for introspection - note that we are mutating
                 # an instance here without persisting it to the backend on purpose!
                 # this replicates the run-time behaviour while filling out the form
+                assert step.form_step is not None
                 step.form_step.form_definition.configuration = new_configuration
 
             submission_step_node = SubmissionStepNode(renderer=self, step=step)

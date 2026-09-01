@@ -123,7 +123,7 @@ class SubmissionViewSet(
     PermissionFilterMixin,
     SubmissionCompletionMixin,
     mixins.CreateModelMixin,
-    viewsets.ReadOnlyModelViewSet,
+    viewsets.ReadOnlyModelViewSet[Submission],
 ):
     queryset = Submission.objects.select_related("form", "form__product").order_by(
         "created_on"
@@ -143,7 +143,7 @@ class SubmissionViewSet(
             return "pause"
         return None
 
-    def get_object(self):
+    def get_object(self) -> Submission:
         if not hasattr(self, "_get_object_cache"):
             submission = super().get_object()
 
@@ -708,6 +708,7 @@ class SubmissionStepViewSet(
 
         data = form_data_serializer.validated_data["data"]
         new_configuration = evaluate_form_logic(submission, submission_step, data)
+        assert submission_step.form_step is not None
         submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
