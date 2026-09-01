@@ -290,6 +290,7 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required date field is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_date_fixed_value(self):
@@ -379,6 +380,7 @@ class SingleDatetimeTests(ValidationsTestCase):
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required datetime field is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_date_fixed_value(self):
@@ -598,6 +600,7 @@ class SingleTimeTests(ValidationsTestCase):
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required time is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_value(self):
