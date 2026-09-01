@@ -22,7 +22,7 @@ class DateFieldValidationTests(SimpleTestCase):
         invalid_values = [
             ({}, "required"),
             ({"foo": None}, "null"),
-            ({"foo": ""}, "required"),
+            ({"foo": ""}, "invalid"),
         ]
 
         for data, error_code in invalid_values:
@@ -113,6 +113,6 @@ class DateFieldValidationTests(SimpleTestCase):
             "validate": {"required": False},
         }
 
-        is_valid, _ = validate_formio_data(component, {"date": ""})
+        is_valid, _ = validate_formio_data(component, {"date": None})
 
         self.assertTrue(is_valid)
