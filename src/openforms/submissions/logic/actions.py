@@ -595,7 +595,9 @@ class ServiceFetchAction(ActionOperation):
     @property
     def unresolved_input_variables(self) -> set[str]:
         var = self.rule.form.formvariable_set.get(key=self.variable)
-        fetch_config: ServiceFetchConfiguration = var.service_fetch_configuration
+        fetch_config: ServiceFetchConfiguration | None = var.service_fetch_configuration
+        if fetch_config is None:
+            return set()
 
         # The path, query parameters, and header values support templating, so we have
         # to extract the variables from them.
