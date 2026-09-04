@@ -43,6 +43,12 @@ LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_SLUG = (
     LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID
 )
 
+SINGLE_STEP_FORM_ACTION_TYPES: set[str] = {
+    LogicActionTypes.variable.value,
+    LogicActionTypes.evaluate_dmn.value,
+    LogicActionTypes.set_registration_backend.value,
+}
+
 
 class PropertyTypes(models.TextChoices):
     bool = "bool", _("Boolean")

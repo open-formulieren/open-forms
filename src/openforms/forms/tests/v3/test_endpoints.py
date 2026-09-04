@@ -570,6 +570,114 @@ class FormEndpointTests(APITestCase):
         # logic rules
         self.assertEqual(form.formlogic_set.count(), 1)
 
+    def test_create_single_step_form_with_registrations_and_confirmation_template(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "internalName": "Create form internal",
+            "registrationBackends": [
+                {
+                    "name": "Email registration",
+                    "key": "email-fu",
+                    "backend": "email",
+                    "options": {
+                        "to_emails": ["foo@example.com"],
+                    },
+                }
+            ],
+            "slug": "create-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+            "confirmationEmailTemplate": {
+                "translations": {
+                    "en": {
+                        "subject": "Submission received",
+                        "content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+                        "cosign_subject": "Cosign submission received",
+                        "cosign_content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                    },
+                    "nl": {
+                        "subject": "Inzending ontvangen",
+                        "content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+                        "cosign_subject": "Cosign inzending ontvangen",
+                        "cosign_content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                    },
+                }
+            },
+            "sendConfirmationEmail": True,
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+        # registration backends
+        registration_backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(form.registration_backends.get(), registration_backend)
+        self.assertEqual(registration_backend.name, "Email registration")
+        self.assertEqual(registration_backend.key, "email-fu")
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(
+            registration_backend.options,
+            {
+                "to_emails": ["foo@example.com"],
+                "attach_files_to_email": None,
+            },
+        )
+
+        # confirmation email
+        confirmation_email_template = form.confirmation_email_template
+        assert confirmation_email_template, "No confirmation email coupled to form"
+        self.assertEqual(confirmation_email_template.subject_en, "Submission received")
+        self.assertEqual(
+            confirmation_email_template.content_en,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_subject_en, "Cosign submission received"
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_content_en,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+        )
+        self.assertEqual(confirmation_email_template.subject_nl, "Inzending ontvangen")
+        self.assertEqual(
+            confirmation_email_template.content_nl,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_subject_nl, "Cosign inzending ontvangen"
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_content_nl,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+        )
+
     def test_create_reuse_existing_definition(self):
         form_definition = FormDefinitionFactory.create(
             name="Form definition",
@@ -663,6 +771,145 @@ class FormEndpointTests(APITestCase):
             },
         )
         self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_login_not_allowed_in_single_step_form_step(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "internalName": "Create form internal",
+            "slug": "create-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+            "active": True,
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Single step forms do not support authentication."),
+        )
+
+    def test_auth_backends_not_allowed_in_single_step_form(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "internalName": "Create form internal",
+            "slug": "create-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+            "active": True,
+            "authBackends": [
+                {
+                    "backend": "digid",
+                    "options": {"loa": DigiDAssuranceLevels.substantial},
+                }
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Single step forms do not support authentication."),
+        )
+
+    def test_submission_not_allowed_by_default_fails_in_single_step_form(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "internalName": "Create form internal",
+            "slug": "create-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+            "active": True,
+            "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Submission is always allowed in single step forms."),
+        )
 
     def test_update_clears_existing_registration_backends(self):
         form = FormFactory.create(
@@ -4072,7 +4319,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.0.component",
                 "code": "invalid",
-                "reason": "You cannot used the 'disabled' property on layout components'.",
+                "reason": "You cannot use the 'disabled' property on layout components'.",
             },
         )
 
@@ -4201,6 +4448,125 @@ class FormEndpointLogicRulesTests(APITestCase):
                 "name": "logicRules.0.actions.0.formStepSlug",
                 "code": "invalid",
                 "reason": "Could not find a step with the slug 'wrong'.",
+            },
+        )
+
+    def test_valid_action_in_single_step_form(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield",
+                                    "label": "Textfield",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "variable": "textfield",
+                            "action": {
+                                "type": "variable",
+                                "value": "foo",
+                                "property": {"type": "", "value": ""},
+                                "state": "",
+                            },
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_action_in_single_step_form(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "type": FormTypeChoices.single_step,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield",
+                                    "label": "Textfield",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "component": "textfield",
+                            "action": {
+                                "type": "property",
+                                "property": {"type": "bool", "value": "hidden"},
+                                "value": "",
+                                "state": True,
+                            },
+                            "formStepUuid": "fc52a48d-f289-48b1-b02b-805edeb422c0",
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.actions.0.type",
+                "code": "invalid",
+                "reason": "Logic action property is not allowed in single step forms.",
             },
         )
 
