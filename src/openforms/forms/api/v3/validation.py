@@ -32,7 +32,7 @@ that field. The field names are the keys of a logic action struct (polymorphic).
 def validate_logic_actions(
     actions: Sequence[FormLogicActionData],
     *,
-    form_type: str,
+    form_type: FormTypeChoices,
     find_component: Callable[[str], Component | None],
     form_variables: Mapping[str, FormVariable],
     form_step_slugs: Collection[str],

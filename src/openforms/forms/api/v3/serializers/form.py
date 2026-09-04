@@ -253,7 +253,7 @@ class FormSerializer(serializers.ModelSerializer):
             actions: Sequence[FormLogicActionData] = rule.actions
             if rule_action_errors := validate_logic_actions(
                 actions,
-                form_type=form.type,
+                form_type=FormTypeChoices(form.type),
                 find_component=_find_component,
                 form_variables=form_variables,
                 form_step_slugs=form_step_slugs,
@@ -823,15 +823,16 @@ class FormSerializer(serializers.ModelSerializer):
             )
 
     def validate_single_step_form_type(self, attrs: FormValidatedData) -> None:
-        steps = attrs.get("formstep_set", [])
+        # at this point we already know that the form type is that of a single step and
+        # validate_amount_of_steps validated that there is only one form step present
+        form_step = attrs["formstep_set"][0]
         authentication_error_msg = _("Single step forms do not support authentication.")
 
         # login required inside step
-        for step in steps:
-            if (
-                login_required := step["form_definition"].get("login_required")
-            ) and login_required is True:
-                raise serializers.ValidationError(authentication_error_msg)
+        if (
+            login_required := form_step["form_definition"].get("login_required")
+        ) and login_required is True:
+            raise serializers.ValidationError(authentication_error_msg)
 
         # submission allowance
         if (
