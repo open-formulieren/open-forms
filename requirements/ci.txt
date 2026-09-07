@@ -403,7 +403,7 @@ django-yubin==2.0.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-djangorestframework==3.16.1
+djangorestframework==3.17.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1135,7 +1135,7 @@ tinyhtml5==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-tornado==6.5.7
+tornado==6.5.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1243,7 +1243,7 @@ webencodings==0.5.1
     #   cssselect2
     #   tinycss2
     #   tinyhtml5
-webob==1.8.10
+webob==1.8.11
     # via webtest
 webtest==3.0.7
     # via django-webtest
