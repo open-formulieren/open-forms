@@ -829,17 +829,13 @@ class FormSerializer(serializers.ModelSerializer):
         authentication_error_msg = _("Single step forms do not support authentication.")
 
         # login required inside step
-        if (
-            login_required := form_step["form_definition"].get("login_required")
-        ) and login_required is True:
+        if form_step["form_definition"].get("login_required"):
             raise serializers.ValidationError(authentication_error_msg)
 
         # submission allowance
-        if (
-            submission_allowed := attrs.get("submission_allowed")
-        ) and submission_allowed != SubmissionAllowedChoices.yes:
+        if attrs.get("submission_allowed") != SubmissionAllowedChoices.yes:
             raise serializers.ValidationError(
-                _("Submission is always allowed in single step forms.")
+                _("Submission must always be allowed in single step forms.")
             )
 
         # authentication backends

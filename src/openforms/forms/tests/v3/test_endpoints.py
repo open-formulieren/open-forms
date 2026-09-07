@@ -591,6 +591,7 @@ class FormEndpointTests(APITestCase):
             ],
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
+            "submission_allowed": SubmissionAllowedChoices.yes,
             "steps": [
                 {
                     "slug": "step-1",
@@ -827,6 +828,7 @@ class FormEndpointTests(APITestCase):
             "internalName": "Create form internal",
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
+            "submission_allowed": SubmissionAllowedChoices.yes,
             "steps": [
                 {
                     "slug": "step-1",
@@ -908,7 +910,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
         self.assertEqual(
             response_data["invalidParams"][0]["reason"],
-            _("Submission is always allowed in single step forms."),
+            _("Submission must always be allowed in single step forms."),
         )
 
     def test_update_clears_existing_registration_backends(self):
@@ -4465,6 +4467,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             "name": "Update form",
             "slug": "update-form",
             "type": FormTypeChoices.single_step,
+            "submission_allowed": SubmissionAllowedChoices.yes,
             "steps": [
                 {
                     "slug": "step-1",
@@ -4519,6 +4522,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             "name": "Update form",
             "slug": "update-form",
             "type": FormTypeChoices.single_step,
+            "submission_allowed": SubmissionAllowedChoices.yes,
             "steps": [
                 {
                     "slug": "step-1",
