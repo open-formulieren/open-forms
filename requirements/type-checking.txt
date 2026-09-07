@@ -431,7 +431,7 @@ django-yubin==2.0.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-djangorestframework==3.16.1
+djangorestframework==3.17.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1245,7 +1245,7 @@ tinyhtml5==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-tornado==6.5.7
+tornado==6.5.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1381,7 +1381,7 @@ webencodings==0.5.1
     #   cssselect2
     #   tinycss2
     #   tinyhtml5
-webob==1.8.9
+webob==1.8.11
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
