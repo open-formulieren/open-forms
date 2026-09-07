@@ -39,7 +39,7 @@ from ....api.serializers.form import (
     HelpDialogSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
-from ....constants import FormTypeChoices
+from ....constants import FormTypeChoices, SubmissionAllowedChoices
 from ....logic_analysis import CyclesDetected, analyze_rules
 from ....models import (
     Category,
@@ -253,6 +253,7 @@ class FormSerializer(serializers.ModelSerializer):
             actions: Sequence[FormLogicActionData] = rule.actions
             if rule_action_errors := validate_logic_actions(
                 actions,
+                form_type=FormTypeChoices(form.type),
                 find_component=_find_component,
                 form_variables=form_variables,
                 form_step_slugs=form_step_slugs,
@@ -821,11 +822,38 @@ class FormSerializer(serializers.ModelSerializer):
                 }
             )
 
+    def validate_single_step_form_type(self, attrs: FormValidatedData) -> None:
+        # at this point we already know that the form type is that of a single step and
+        # validate_amount_of_steps validated that there is only one form step present
+        form_step = attrs["formstep_set"][0]
+        authentication_error_msg = _("Single step forms do not support authentication.")
+
+        # login required inside step
+        if form_step["form_definition"].get("login_required"):
+            raise serializers.ValidationError(authentication_error_msg)
+
+        # submission allowance
+        if attrs.get("submission_allowed") != SubmissionAllowedChoices.yes:
+            raise serializers.ValidationError(
+                _("Submission must always be allowed in single step forms.")
+            )
+
+        # authentication backends
+        if attrs.get("auth_backends"):
+            raise serializers.ValidationError(authentication_error_msg)
+
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)
         # validate variables after validation of the form definitions were ran
         self.validate_variable_data(attrs)
         self.validate_auto_login_backend(attrs)
+
+        # single step form type validations
+        if (
+            form_type := attrs.get("type")
+        ) and form_type == FormTypeChoices.single_step:
+            self.validate_single_step_form_type(attrs)
+
         return attrs
 
     def save(self, **kwargs):
