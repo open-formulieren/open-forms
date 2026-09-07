@@ -24,7 +24,7 @@ from opentelemetry import trace
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import FormioConfigurationWrapper
-from openforms.forms.models import FormRegistrationBackend, FormStep
+from openforms.forms.models import Form, FormRegistrationBackend, FormStep
 from openforms.logging import audit_logger
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
@@ -51,7 +51,10 @@ if TYPE_CHECKING:
         SubmissionFileAttachmentQuerySet,
     )
     from .submission_report import SubmissionReport
-    from .submission_value_variable import SubmissionValueVariablesState
+    from .submission_value_variable import (
+        SubmissionValueVariable,
+        SubmissionValueVariablesState,
+    )
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.submissions.models.submission")
@@ -132,7 +135,7 @@ class Submission(models.Model):
     """
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
+    form = models.ForeignKey[Form]("forms.Form", on_delete=models.PROTECT)
 
     # meta information
     form_url = models.URLField(
@@ -352,6 +355,8 @@ class Submission(models.Model):
     """
     May raise ``RelatedObjectDoesNotExist`` if no record exists in the database.
     """
+    submissionstep_set: models.Manager[SubmissionStep]
+    submissionvaluevariable_set: models.Manager[SubmissionValueVariable]
 
     class Meta:
         verbose_name = _("submission")
@@ -709,6 +714,7 @@ class Submission(models.Model):
             if isinstance(node, SubmissionStepNode):
                 if current_step != {}:
                     summary_data.append(current_step)
+                assert node.step.form_step is not None
                 current_step = {
                     "slug": node.step.form_step.slug,
                     "name": node.render(),

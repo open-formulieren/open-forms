@@ -149,9 +149,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             },
             language_code="nl",
         )
-        step = (
-            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        step = submission.submissionstep_set.get()
         submission_file_attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_variable__key="file1",
             submission_step=step,
@@ -772,9 +770,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__name="MyName",
             form__internal_name="MyInternalName",
         )
-        submission_step = (
-            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        submission_step = submission.submissionstep_set.get()
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -869,9 +865,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             completed=True,
             with_report=True,
         )
-        submission_step = (
-            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        submission_step = submission.submissionstep_set.get()
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -907,6 +901,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             completed=True,
             components_list=[
                 {
+                    "type": "select",
                     "data": {
                         "values": [
                             {"label": "Hallo", "value": "hallo"},
@@ -923,18 +918,18 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "showInEmail": True,
                 },
                 {
+                    "type": "textfield",
                     "key": "favorieteComponenten",
                     "label": "Favoriete componenten?",
                     "multiple": True,
                     "defaultValue": [],
                     "showInEmail": True,
-                    "type": "textfield",
                 },
                 {
+                    "type": "time",
                     "key": "tijdstip",
                     "label": "Tijdstip",
                     "showInEmail": False,
-                    "type": "time",
                 },
                 {
                     "components": [
@@ -1046,6 +1041,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "key": "dev2",
                     "label": "Ontwikkelaargegevens",
                     "legend": "Ontwikkelaargegevens",
+                    "type": "fieldset",
                 },
             ],
             submitted_data={
@@ -1130,9 +1126,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__internal_name="MyInternalName",
             form__registration_backend="email",
         )
-        step = (
-            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
-        )
+        step = submission.submissionstep_set.get()
         SubmissionFileAttachmentFactory.create(
             submission_variable__key="file1",
             submission_step=step,

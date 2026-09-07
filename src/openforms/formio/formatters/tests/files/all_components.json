@@ -1688,9 +1688,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": false,
             "prefix": "",
             "suffix": "",

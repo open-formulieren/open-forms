@@ -15,9 +15,8 @@ from openforms.formio.service import FormioData
 from openforms.forms.models import FormDefinition, FormStep
 
 if TYPE_CHECKING:
-    from openforms.submissions.models.submission_files import (
-        SubmissionFileAttachmentManager,
-    )
+    from .submission import Submission  # noqa: F401
+    from .submission_files import SubmissionFileAttachmentManager
 
 
 def _make_frozen(obj):
@@ -100,8 +99,10 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     """
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
-    form_step = models.ForeignKey(
+    submission = models.ForeignKey["Submission"](
+        "submissions.Submission", on_delete=models.CASCADE
+    )
+    form_step = models.ForeignKey[FormStep](
         "forms.FormStep",
         on_delete=RECORD_HISTORICAL_FORM_STEP,
         null=True,

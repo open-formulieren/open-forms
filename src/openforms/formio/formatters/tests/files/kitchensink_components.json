@@ -7029,9 +7029,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": false,
             "prefix": "",
             "suffix": "",
@@ -7112,9 +7110,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate Empty",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": false,
             "prefix": "",
             "suffix": "",
@@ -7195,9 +7191,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate Hidden",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": true,
             "prefix": "",
             "suffix": "",
@@ -7278,9 +7272,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate Multi",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": false,
             "prefix": "",
             "suffix": "",
@@ -7361,9 +7353,7 @@
             "type": "licenseplate",
             "input": true,
             "label": "License plate Multi Empty",
-            "errors": {
-                "pattern": "Invalid Dutch license plate"
-            },
+            "errors": {},
             "hidden": false,
             "prefix": "",
             "suffix": "",

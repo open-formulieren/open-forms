@@ -58,6 +58,7 @@ if TYPE_CHECKING:
         FormRegistrationBackend,
         FormStep,
         FormVariable,
+        FormVersion,
     )
 
 
@@ -455,6 +456,7 @@ class Form(models.Model):
     auth_backends: Manager[FormAuthenticationBackend]
     registration_backends: Manager[FormRegistrationBackend]
     formlogic_set: Manager[FormLogic]
+    formversion_set: Manager[FormVersion]
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
