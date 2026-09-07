@@ -249,7 +249,7 @@ django-upgrade-check==1.1.0
     # via -r requirements/base.in
 django-yubin==2.0.6
     # via -r requirements/base.in
-djangorestframework==3.16.1
+djangorestframework==3.18.0
     # via
     #   -r requirements/base.in
     #   drf-jsonschema-serializer
@@ -633,7 +633,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.5.7
+tornado==6.5.8
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
