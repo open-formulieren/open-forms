@@ -48,12 +48,6 @@ const findComponent = (formSteps = [], test) => {
   return null;
 };
 
-const checkKeyChange = (mutationType, newComponent, oldComponent) => {
-  if (mutationType !== 'changed') return false;
-
-  return newComponent.key !== oldComponent.key;
-};
-
 const transformInitialValue = (newType, originalValue) => {
   switch (newType) {
     case 'array':
@@ -238,7 +232,6 @@ export {
   stripIdFromComponents,
   getFormComponents,
   findComponent,
-  checkKeyChange,
   transformInitialValue,
   updateKeyReferencesInLogic,
   updateRemovedKeyInLogic,

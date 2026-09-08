@@ -24,12 +24,14 @@ const AVAILABLE_SERVICES = [
     label: 'Service 1',
     apiRoot: 'http://foo.com/api/v1/',
     apiType: 'ORC',
+    uuid: 'd6ca2a8a-abea-451a-9da6-f48a0df299c7',
   },
   {
     url: 'http://foo.com/services/2',
     label: 'Service 2',
     apiRoot: 'http://bar.com/api/v1/',
     apiType: 'ORC',
+    uuid: '41ee8b98-45f8-4a7f-95cc-d3554f06a7d4',
   },
 ];
 
