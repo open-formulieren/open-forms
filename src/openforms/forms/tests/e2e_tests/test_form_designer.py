@@ -137,6 +137,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             form = FormFactory.create(
                 name="Playwright test",
                 name_nl="Playwright test",
+                generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test",
             )
             return form
@@ -201,6 +202,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             form = FormFactory.create(
                 name="Playwright test",
                 name_nl="Playwright test",
+                generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test",
             )
             return form
