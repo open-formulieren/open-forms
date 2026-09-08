@@ -128,6 +128,10 @@ CACHES = {
         "BACKEND": "openforms.utils.cache.RequestProxyCache",
         "LOCATION": "default",
     },
+    "catalogi_client": {
+        "BACKEND": "openforms.utils.cache.RequestProxyCache",
+        "LOCATION": "default",
+    },
 }
 
 #

@@ -84,6 +84,7 @@ CACHES.update(
         "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
         "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
         "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "catalogi_client": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
     }
 )
 
