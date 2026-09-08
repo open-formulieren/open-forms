@@ -33,7 +33,7 @@
     "@open-formulieren/design-tokens": "^1.2.0",
     "@open-formulieren/formio-builder": "^1.5.0",
     "@open-formulieren/formio-renderer": "^2.0.2",
-    "@open-formulieren/monaco-json-editor": "^0.2.0",
+    "@open-formulieren/monaco-json-editor": "^0.3.0",
     "@tinymce/tinymce-react": "^4.3.2",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "babel-jest": "^29.3.1",

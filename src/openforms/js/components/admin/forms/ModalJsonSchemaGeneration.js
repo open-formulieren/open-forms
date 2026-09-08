@@ -1,9 +1,9 @@
-import {JSONEditor} from '@open-formulieren/monaco-json-editor';
 import PropTypes from 'prop-types';
-import {React, useContext, useState} from 'react';
+import {useContext, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useGlobalState} from 'state-pool';
 
+import JSONEditor from 'components/JSONEditor';
 import {FormContext} from 'components/admin/form_design/Context';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import Modal from 'components/admin/modals/Modal';
