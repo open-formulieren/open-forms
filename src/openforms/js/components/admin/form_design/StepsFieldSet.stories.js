@@ -128,3 +128,86 @@ export const WithValidationErrors = {
     ],
   },
 };
+
+export const BrokenSimpleLogicReferenceWarnings = {
+  args: {
+    form: {type: 'regular'},
+    steps: [
+      {
+        configuration: {
+          display: 'form',
+          components: [
+            {
+              id: 'component1',
+              type: 'textfield',
+              key: 'textfield',
+              label: 'Text field',
+              conditional: {
+                show: true,
+                when: 'brokenReference',
+                eq: 'present',
+              },
+            },
+            {
+              id: 'component2',
+              type: 'editgrid',
+              key: 'editgrid',
+              label: 'Repeating group',
+              components: [
+                {
+                  id: 'component3',
+                  type: 'checkbox',
+                  key: 'trigger',
+                  label: 'Trigger',
+                },
+                {
+                  id: 'component4',
+                  type: 'number',
+                  key: 'number',
+                  label: 'Number',
+                  conditional: {
+                    show: true,
+                    when: 'editgrid.trigger',
+                    eq: true,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        formDefinition: '',
+        index: 0,
+        name: 'Step 1',
+        internalName: '',
+        slug: 'step-1',
+        isApplicable: true,
+        loginRequired: false,
+        isReusable: false,
+        url: '',
+        isNew: false,
+        validationErrors: [],
+        translations: {
+          nl: {
+            name: 'Stap 1',
+            saveText: '',
+            previousText: '',
+            nextText: '',
+          },
+          en: {
+            name: 'Step 1',
+            saveText: '',
+            previousText: '',
+            nextText: '',
+          },
+        },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const warnings = canvas.getAllByText(/Component.*steunt op een niet-bestaande component key/);
+    expect(warnings).toHaveLength(1);
+  },
+};
