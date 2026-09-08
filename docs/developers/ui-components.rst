@@ -84,7 +84,8 @@ when writing HTML.
 Block-Element-Modifier (BEM)
 ----------------------------
 
-`BEM <https://getbem.com/>`_ is a methodology for reusable components.
+`BEM <https://github.com/getbem/getbem.github.io/blob/master/src/pages/introduction.mdx/>`_
+is a methodology for reusable components.
 
 **Blocks**
 
