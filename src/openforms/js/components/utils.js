@@ -18,9 +18,22 @@ const getComponentEmptyValue = component => {
   return null;
 };
 
-const flattenComponents = components =>
-  Array.from(iterComponents(components)).reduce((carry, configuration) => {
-    carry[configuration.component.key] = configuration.component;
+// You can either index by `key` or `dataPath`, where the latter is the fully qualified
+// path with parent keys (for editgrids).
+const flattenComponents = (components, indexBy = 'key') =>
+  Array.from(iterComponents(components)).reduce((carry, {component, dataPath}) => {
+    let lookupKey;
+    switch (indexBy) {
+      case 'key': {
+        lookupKey = component.key;
+        break;
+      }
+      case 'dataPath': {
+        lookupKey = dataPath;
+        break;
+      }
+    }
+    carry[lookupKey] = component;
     return carry;
   }, {});
 
