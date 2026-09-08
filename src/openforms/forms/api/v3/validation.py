@@ -182,9 +182,41 @@ def validate_logic_actions(
                     )
                     continue
 
+            case LogicActionTypes.fetch_from_service:
+                # check that a variable is specified
+                variable_key = action.get("variable") or ""
+                if not variable_key:
+                    errors[action_index]["variable"].append(
+                        ErrorDetail(_("You must specify a variable."), code="blank")
+                    )
+                    continue
+
+                # check that the variable exists
+                form_var = form_variables.get(variable_key)
+                if form_var is None:
+                    errors[action_index]["variable"].append(
+                        ErrorDetail(
+                            _("Could not find the variable with key '{key}'.").format(
+                                key=variable_key
+                            ),
+                            code="invalid",
+                        )
+                    )
+                    continue
+
+                # check that the variable has service fetch configured - the shape itself
+                # has then already been validated
+                if form_var.service_fetch_configuration is None:
+                    errors[action_index]["variable"].append(
+                        ErrorDetail(
+                            _("The service fetch configuration is missing."),
+                            code="invalid",
+                        )
+                    )
+                    continue
+
             case (
-                LogicActionTypes.fetch_from_service
-                | LogicActionTypes.set_registration_backend
+                LogicActionTypes.set_registration_backend
                 | LogicActionTypes.evaluate_dmn
                 | LogicActionTypes.synchronize_variables
             ):

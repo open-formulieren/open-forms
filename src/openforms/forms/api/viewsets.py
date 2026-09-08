@@ -562,7 +562,12 @@ class FormViewSet(viewsets.ModelViewSet):
         form = self.get_object()
         filterset = FormVariableFilter(
             request.GET,
-            queryset=form.formvariable_set.prefetch_related("form", "form_definition"),
+            queryset=form.formvariable_set.prefetch_related(
+                "form", "form_definition"
+            ).select_related(
+                "service_fetch_configuration",
+                "service_fetch_configuration__service",
+            ),
         )
 
         serializer = FormVariableSerializer(

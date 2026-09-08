@@ -1,3 +1,5 @@
+import uuid
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -22,6 +24,10 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
         required=False,
     )
 
+    # only exists to deal with the frontend code nightmare that's split between v2 and
+    # v3, as we clean up the code there...
+    service_uuid = serializers.SerializerMethodField()
+
     def to_internal_value(self, data):
         value = super().to_internal_value(data)
         # add id for the bulk update of form_variables
@@ -37,6 +43,7 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
             "id",
             "name",
             "service",
+            "service_uuid",
             "path",
             "method",
             "headers",
@@ -56,3 +63,8 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
                 "view_name": "api:service-detail",
             },
         }
+
+    def get_service_uuid(self, obj: ServiceFetchConfiguration) -> uuid.UUID | None:
+        if not obj.service:
+            return None
+        return obj.service.uuid

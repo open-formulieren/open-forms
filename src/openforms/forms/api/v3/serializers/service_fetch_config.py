@@ -14,7 +14,7 @@ from openforms.variables.validators import (
 
 @extend_schema_serializer(component_name="ServiceFetchConfigurationV3Serializer")
 class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
+    id = serializers.IntegerField(required=False, allow_null=True)
 
     headers = serializers.DictField(
         label=_("HTTP request headers"),

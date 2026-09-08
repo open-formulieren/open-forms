@@ -7,12 +7,18 @@ from django.db import transaction
 from django.utils.text import get_text_list
 from django.utils.translation import gettext, gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema_serializer
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework.reverse import reverse
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models import Theme
+from openforms.contrib.haal_centraal.api.serializers import (
+    BRPPersonenRequestOptionsSerializer,
+)
+from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.service import (
@@ -136,21 +142,19 @@ class FormSerializer(serializers.ModelSerializer):
         ),
     )
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+    brp_personen_request_options = BRPPersonenRequestOptionsSerializer(
+        label=_("BRP personen request options"),
+        required=False,
+        allow_null=True,
+        help_text=_(
+            "Form-specific parameters to use when making requests to BRP Personen "
+            "APIs, e.g. during prefill."
+        ),
+    )
 
     help_callout_page = HelpCalloutPageSerializer(
         source="*", required=False, allow_null=True
     )
-
-    _nested_fields = (
-        "confirmation_email_template",
-        "auth_backends",
-        "formstep_set",
-        "formvariable_set",
-        "formlogic_set",
-        "registration_backends",
-    )
-
-    form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
 
     help_dialog = HelpDialogSerializer(
         source="*",
@@ -163,11 +167,25 @@ class FormSerializer(serializers.ModelSerializer):
         ),
     )
 
+    url = serializers.SerializerMethodField()
+
+    _nested_fields = (
+        "confirmation_email_template",
+        "auth_backends",
+        "formstep_set",
+        "formvariable_set",
+        "formlogic_set",
+        "registration_backends",
+        "brp_personen_request_options",
+    )
+
+    form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
+
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
         fields = (
+            "url",
             "uuid",
-            "name",
             "internal_name",
             "internal_remarks",
             "login_required",
@@ -207,6 +225,7 @@ class FormSerializer(serializers.ModelSerializer):
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "translations",
+            "brp_personen_request_options",
             "help_callout_page",
             "help_dialog",
         )
@@ -216,6 +235,14 @@ class FormSerializer(serializers.ModelSerializer):
             },
             "type": {"validators": [RequireAppointmentsPlugin()]},
         }
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_url(self, obj: Form) -> str:
+        return reverse(
+            "api:form-detail",
+            kwargs={"uuid_or_slug": obj.uuid},
+            request=self.context.get("request"),
+        )
 
     def _validate_actions(self, form: Form, temp_rules: Mapping[FormLogic, int]):
         form_variables = {
@@ -403,32 +430,36 @@ class FormSerializer(serializers.ModelSerializer):
         # 6. logic rules
         logic_rules_raw: list[FormLogicData] = validated_data.get("formlogic_set", [])
 
-        if not logic_rules_raw:
-            return instance
+        if logic_rules_raw:
+            # Note: model instances without a pk are not hashable, which is a requirement to
+            # use them in the analysis graph, so we assign it manually. These rules will just
+            # live in memory and they will be saved below, after they are analyzed.
+            temp_rules_instances: dict[FormLogic, int] = {
+                FormLogic(**logic_rule_data, pk=-index, form=instance): index
+                for index, logic_rule_data in enumerate(logic_rules_raw)
+            }
 
-        # Note: model instances without a pk are not hashable, which is a requirement to
-        # use them in the analysis graph, so we assign it manually. These rules will just
-        # live in memory and they will be saved below, after they are analyzed.
-        temp_rules_instances: dict[FormLogic, int] = {
-            FormLogic(**logic_rule_data, pk=-index, form=instance): index
-            for index, logic_rule_data in enumerate(logic_rules_raw)
-        }
+            # We have to do these steps in the create method instead of the ideal/proper
+            # choice to do that inside the validate method. The form instance is important
+            # to have been created at the time that we do these validations, as the related
+            # nested fields are needed (have to be saved and available to access). Adding
+            # that to the validate method would require a huge refactor as a lot of our
+            # current implementation depends on the (saved) form instance.
+            self._validate_actions(instance, temp_rules_instances)
+            reordered_rules = self._validate_and_process_logic_rules(
+                instance, logic_rules_raw, temp_rules_instances
+            )
 
-        # We have to do these steps in the create method instead of the ideal/proper
-        # choice to do that inside the validate method. The form instance is important
-        # to have been created at the time that we do these validations, as the related
-        # nested fields are needed (have to be saved and available to access). Adding
-        # that to the validate method would require a huge refactor as a lot of our
-        # current implementation depends on the (saved) form instance.
-        self._validate_actions(instance, temp_rules_instances)
-        reordered_rules = self._validate_and_process_logic_rules(
-            instance, logic_rules_raw, temp_rules_instances
-        )
+            # Save the form logic rules in the correct/updated order
+            FormLogic.objects.bulk_create(
+                [FormLogic(**rule, form=instance) for rule in reordered_rules]
+            )
 
-        # Save the form logic rules in the correct/updated order
-        FormLogic.objects.bulk_create(
-            [FormLogic(**rule, form=instance) for rule in reordered_rules]
-        )
+        # 7. Advanced configuration
+        if (
+            options := validated_data.get("brp_personen_request_options", None)
+        ) is not None:
+            BRPPersonenRequestOptions.objects.create(form=instance, **options)
 
         return instance
 
@@ -549,34 +580,40 @@ class FormSerializer(serializers.ModelSerializer):
 
         # 6. logic rules
         logic_rules_raw = validated_data.get("formlogic_set", [])
-        if not logic_rules_raw:
-            return instance
+        if logic_rules_raw:
+            # Note: model instances without a pk are not hashable, which is a requirement to
+            # use them in the analysis graph, so we assign it manually. These rules will just
+            # live in memory and they will be saved below, after they are analyzed.
+            temp_rules_instances: dict[FormLogic, int] = {
+                FormLogic(**logic_rule_data, pk=-index, form=instance): index
+                for index, logic_rule_data in enumerate(logic_rules_raw)
+            }
 
-        # Note: model instances without a pk are not hashable, which is a requirement to
-        # use them in the analysis graph, so we assign it manually. These rules will just
-        # live in memory and they will be saved below, after they are analyzed.
-        temp_rules_instances: dict[FormLogic, int] = {
-            FormLogic(**logic_rule_data, pk=-index, form=instance): index
-            for index, logic_rule_data in enumerate(logic_rules_raw)
-        }
+            # We have to do these steps in the create method instead of the ideal/proper
+            # choice to do that inside the validate method. The form instance is important
+            # to have been created at the time that we do these validations, as the related
+            # nested fields are needed (have to be saved and available to access). Adding
+            # that to the validate method would require a huge refactor as a lot of our
+            # current implementation depends on the (saved) form instance.
+            self._validate_actions(instance, temp_rules_instances)
+            reordered_rules = self._validate_and_process_logic_rules(
+                instance, logic_rules_raw, temp_rules_instances
+            )
 
-        # We have to do these steps in the create method instead of the ideal/proper
-        # choice to do that inside the validate method. The form instance is important
-        # to have been created at the time that we do these validations, as the related
-        # nested fields are needed (have to be saved and available to access). Adding
-        # that to the validate method would require a huge refactor as a lot of our
-        # current implementation depends on the (saved) form instance.
-        self._validate_actions(instance, temp_rules_instances)
-        reordered_rules = self._validate_and_process_logic_rules(
-            instance, logic_rules_raw, temp_rules_instances
-        )
+            # Remove the existing logic rules.
+            instance.formlogic_set.all().delete()
+            # Save the form logic rules in the correct/updated order.
+            FormLogic.objects.bulk_create(
+                [FormLogic(**rule, form=instance) for rule in reordered_rules]
+            )
 
-        # Remove the existing logic rules.
-        instance.formlogic_set.all().delete()
-        # Save the form logic rules in the correct/updated order.
-        FormLogic.objects.bulk_create(
-            [FormLogic(**rule, form=instance) for rule in reordered_rules]
-        )
+        # 7. Advanced configuration
+        if (
+            options := validated_data.get("brp_personen_request_options", None)
+        ) is not None:
+            BRPPersonenRequestOptions.objects.update_or_create(
+                form=instance, defaults=options
+            )
 
         return instance
 
