@@ -2662,6 +2662,7 @@ class FormEndpointVariableTests(APITestCase):
                             "method": ServiceFetchMethods.get,
                             "headers": {
                                 "Foo": "Bar",
+                                "header1": "value1",
                             },
                             "queryParams": {
                                 "Bar": ["Foo"],
@@ -2708,10 +2709,10 @@ class FormEndpointVariableTests(APITestCase):
             self.assertEqual(
                 service_fetch_configuration.method, ServiceFetchMethods.get
             )
-            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
             self.assertEqual(
-                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+                service_fetch_configuration.headers, {"Foo": "Bar", "header1": "value1"}
             )
+            self.assertEqual(service_fetch_configuration.query_params, {"Bar": ["Foo"]})
             self.assertIsNone(service_fetch_configuration.body)
             self.assertEqual(service_fetch_configuration.data_mapping_type, "")
             self.assertIsNone(service_fetch_configuration.mapping_expression)
@@ -2764,6 +2765,7 @@ class FormEndpointVariableTests(APITestCase):
                             "method": ServiceFetchMethods.get,
                             "headers": {
                                 "Foo": "Bar",
+                                "header1": "value1",
                             },
                             "queryParams": {
                                 "Bar": ["Foo"],
@@ -2810,10 +2812,10 @@ class FormEndpointVariableTests(APITestCase):
             self.assertEqual(
                 service_fetch_configuration.method, ServiceFetchMethods.get
             )
-            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
             self.assertEqual(
-                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+                service_fetch_configuration.headers, {"Foo": "Bar", "header1": "value1"}
             )
+            self.assertEqual(service_fetch_configuration.query_params, {"Bar": ["Foo"]})
             self.assertIsNone(service_fetch_configuration.body)
             self.assertEqual(service_fetch_configuration.data_mapping_type, "")
             self.assertIsNone(service_fetch_configuration.mapping_expression)
