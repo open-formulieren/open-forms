@@ -1,4 +1,3 @@
-import {JSONEditor} from '@open-formulieren/monaco-json-editor';
 import classNames from 'classnames';
 import jsonLogic from 'json-logic-js';
 import {isEqual} from 'lodash';
@@ -7,6 +6,7 @@ import {useEffect, useRef, useState} from 'react';
 import {useIntl} from 'react-intl';
 import {useGlobalState} from 'state-pool';
 
+import JSONEditor from 'components/JSONEditor';
 import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
 import {currentTheme} from 'utils/theme';
 
