@@ -64,7 +64,5 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
             },
         }
 
-    def get_service_uuid(self, obj: ServiceFetchConfiguration) -> uuid.UUID | None:
-        if not obj.service:
-            return None
+    def get_service_uuid(self, obj: ServiceFetchConfiguration) -> uuid.UUID:
         return obj.service.uuid

@@ -4127,6 +4127,63 @@ class FormEndpointLogicRulesTests(APITestCase):
             ],
         )
 
+    def test_invalid_trigger_expression(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"unknownOperator": []},
+                    "is_advanced": True,
+                    "actions": [],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.jsonLogicTrigger",
+                "code": "invalid",
+                "reason": "Invalid JSON logic.",
+            },
+        )
+
     def test_component_missing_from_action_and_present_in_form(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(form=form, slug="step-1")
