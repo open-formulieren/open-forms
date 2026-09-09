@@ -1,3 +1,4 @@
+import hashlib
 from collections.abc import Callable, Iterator
 from datetime import date
 from functools import cached_property
@@ -266,6 +267,7 @@ class CatalogiClient(LoggingMixin, NLXClient):
             f"{self.base_url}|{'|'.join(str(param) for param in params.values())}"
         )
         cache_key = f"ZGW|catalogi|find_case_types|{cache_key_combination}"
+        cache_key = hashlib.md5(cache_key.encode()).hexdigest()
         if (case_types := self.cache.get(cache_key)) is not None:
             return case_types
 
@@ -349,6 +351,7 @@ class CatalogiClient(LoggingMixin, NLXClient):
             f"{self.base_url}|{'|'.join(str(param) for param in params.values())}"
         )
         cache_key = f"ZGW|catalogi|find_informatieobjecttypen|{cache_key_combination}"
+        cache_key = hashlib.md5(cache_key.encode()).hexdigest()
         if (existing_results := self.cache.get(cache_key)) is not None:
             return existing_results
 

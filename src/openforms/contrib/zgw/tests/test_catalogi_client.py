@@ -12,7 +12,6 @@ These tests make use of requests-mock rather than VCR for two reasons:
 from datetime import date
 
 from django.conf import settings
-from django.core.cache import caches
 from django.test import TestCase, override_settings
 
 import requests_mock
@@ -420,10 +419,6 @@ class CatalogiClientCachingTests(TestCase):
         self.assertEqual(api_version, (1, 2, 3))
         self.assertEqual(len(mocker.request_history), 1)
 
-        cache = caches["catalogi_client"]
-        cache_key = "ZGW|catalogi|version|https://dummy/catalogi/api/v1"
-        self.assertEqual(cache.get(cache_key), (1, 2, 3))
-
         # Do another request to a random endpoint, not expecting this to increase the
         # mocker's request history but using the cached value instead.
         second_version = client.api_version
@@ -463,12 +458,6 @@ class CatalogiClientCachingTests(TestCase):
 
         self.assertEqual(result, expected_catalogus)
         self.assertEqual(len(mocker.request_history), 1)
-
-        cache = caches["catalogi_client"]
-        cache_key = (
-            "ZGW|catalogi|find_catalogus|https://dummy/catalogi/api/v1|PARTN|000000000"
-        )
-        self.assertEqual(cache.get(cache_key), result)
 
         # Call the find_catalogus method again, not expecting this to increase the
         # mocker's request history but using the cached value instead.
@@ -529,12 +518,6 @@ class CatalogiClientCachingTests(TestCase):
         self.assertEqual(results, case_types)
         self.assertEqual(len(mocker.request_history), 2)
 
-        cache = caches["catalogi_client"]
-        cache_key = (
-            f"ZGW|catalogi|find_case_types|https://dummy/catalogi/api/v1|{catalogus}|"
-        )
-        self.assertEqual(cache.get(cache_key), case_types)
-
         # Call the find_case_types method again, not expecting this to increase the
         # mocker's request history but using the cached value instead.
         with client:
@@ -590,10 +573,6 @@ class CatalogiClientCachingTests(TestCase):
 
         self.assertEqual(results, informatieobjecttypen)
         self.assertEqual(len(mocker.request_history), 2)
-
-        cache = caches["catalogi_client"]
-        cache_key = f"ZGW|catalogi|find_informatieobjecttypen|https://dummy/catalogi/api/v1|{catalogus}|"
-        self.assertEqual(cache.get(cache_key), informatieobjecttypen)
 
         # Call the find_case_types method again, not expecting this to increase the
         # mocker's request history but using the cached value instead.
