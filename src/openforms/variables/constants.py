@@ -45,9 +45,9 @@ DEFAULT_INITIAL_VALUE = {
     FormVariableDataTypes.array: [],
     FormVariableDataTypes.int: None,
     FormVariableDataTypes.float: None,
-    FormVariableDataTypes.datetime: "",
-    FormVariableDataTypes.date: "",
-    FormVariableDataTypes.time: "",
+    FormVariableDataTypes.datetime: None,
+    FormVariableDataTypes.date: None,
+    FormVariableDataTypes.time: None,
 }
 
 CHECK_VARIABLE_TYPE = {

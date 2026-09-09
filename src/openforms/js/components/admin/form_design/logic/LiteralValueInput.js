@@ -173,6 +173,12 @@ const LiteralValueInput = ({
         value = Number.parseInt(inputValue);
         break;
       }
+      case 'date':
+      case 'datetime':
+      case 'time': {
+        value = inputValue === '' ? null : inputValue;
+        break;
+      }
       default:
         value = inputValue;
     }

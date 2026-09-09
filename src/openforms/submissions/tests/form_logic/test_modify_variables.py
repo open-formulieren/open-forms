@@ -1158,3 +1158,93 @@ class VariableModificationTests(TestCase):
 
         state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["editgrid"], [])
+
+    def test_empty_string_outcome_for_datelike_normalizes_to_none(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "date",
+                    },
+                    {
+                        "type": "datetime",
+                        "key": "datetime",
+                        "label": "datetime",
+                    },
+                    {
+                        "type": "time",
+                        "key": "time",
+                        "label": "time",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="user_defined_date",
+            data_type=FormVariableDataTypes.date,
+            user_defined=True,
+            form=form,
+            initial_value=None,
+        )
+        FormVariableFactory.create(
+            key="user_defined_datetime",
+            data_type=FormVariableDataTypes.datetime,
+            user_defined=True,
+            form=form,
+            initial_value=None,
+        )
+        FormVariableFactory.create(
+            key="user_defined_time",
+            data_type=FormVariableDataTypes.time,
+            user_defined=True,
+            form=form,
+            initial_value=None,
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": key,
+                    "action": {
+                        "type": "variable",
+                        "value": "",  # simulate calculation arriving at empty value
+                    },
+                }
+                for key in (
+                    "date",
+                    "datetime",
+                    "time",
+                    "user_defined_date",
+                    "user_defined_datetime",
+                    "user_defined_time",
+                )
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            form_step=form.formstep_set.get(),
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step)
+
+        state = submission.variables_state
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "date": None,
+                "datetime": None,
+                "time": None,
+                "user_defined_date": None,
+                "user_defined_datetime": None,
+                "user_defined_time": None,
+            },
+        )
