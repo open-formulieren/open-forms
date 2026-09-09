@@ -1,9 +1,10 @@
 from typing import Any
 from unittest import skip
+from unittest.mock import MagicMock, patch
 from urllib.parse import unquote
 
 from django.core.exceptions import SuspiciousOperation
-from django.test import SimpleTestCase, tag
+from django.test import SimpleTestCase, TestCase, tag
 
 import requests_mock
 from furl import furl
@@ -11,8 +12,11 @@ from hypothesis import assume, example, given, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import FormVariableFactory
+from openforms.pre_requests.base import PreRequestHookBase
+from openforms.pre_requests.registry import Registry
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.models import _convert_to_string
@@ -20,6 +24,7 @@ from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
 
 from ...logic.service_fetching import perform_service_fetch
+from ..factories import SubmissionFactory
 
 DEFAULT_REQUEST_HEADERS = {
     "Accept",
@@ -431,3 +436,133 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with self.assertRaises(ValueError):
             perform_service_fetch(var, FormioData())
+
+
+class ServiceFetchConfigPreRequestTests(DisableNLXRewritingMixin, TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.service = ServiceFactory.build(
+            api_type=APITypes.orc,
+            api_root="https://httpbin.org/",
+            auth_type=AuthTypes.no_auth,
+        )
+
+        cls.pre_req_register = Registry()
+        cls.mock = MagicMock()
+
+        @cls.pre_req_register("test")
+        class PreRequestHook(PreRequestHookBase):
+            def __call__(self, *args, **kwargs):
+                cls.mock(*args, **kwargs)
+
+    @requests_mock.Mocker()
+    def test_pre_request_hooks_called(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+        self.mock.reset_mock()
+        submission = SubmissionFactory.from_components(
+            auth_info__value="999970124",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "dummy_field",
+                    "type": "textfield",
+                    "label": "Dummy field",
+                },
+            ],
+        )
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="get",
+            )
+        )
+
+        with patch(
+            "openforms.pre_requests.clients.registry", new=self.pre_req_register
+        ):
+            perform_service_fetch(var, FormioData(), submission)
+
+        self.assertEqual(self.mock.call_count, 1)
+
+        # assert that the pre request hooks are called with the
+        # expected context to make sure that token exchange works properly
+        context = self.mock.call_args.kwargs["context"]
+        self.assertEqual(context, {"submission": submission})
+
+    @requests_mock.Mocker()
+    def test_pre_request_hooks_not_called(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+
+        self.mock.reset_mock()
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="get",
+            )
+        )
+
+        with patch(
+            "openforms.pre_requests.clients.registry", new=self.pre_req_register
+        ):
+            perform_service_fetch(var, FormioData())
+
+        self.assertEqual(self.mock.call_count, 1)
+
+        # assert that the pre request hooks are called without the
+        # context to make sure that token exchange does not interfere with none-submission-loaded calls
+        context = self.mock.call_args.kwargs["context"]
+        self.assertEqual(context, None)
+
+    @requests_mock.Mocker()
+    def test_pre_request_client_factory_used(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+
+        self.mock.reset_mock()
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=ServiceFactory.build(
+                    api_type=APITypes.orc,
+                    api_root="https://httpbin.org/",
+                    auth_type=AuthTypes.no_auth,
+                ),
+                path="get",
+            )
+        )
+
+        with patch(
+            "openforms.pre_requests.clients.registry", new=self.pre_req_register
+        ):
+            perform_service_fetch(var, FormioData())
+
+        self.assertEqual(self.mock.call_count, 1)
+
+    @requests_mock.Mocker()
+    def test_default_client_factory_used(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+        self.mock.reset_mock()
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=ServiceFactory.build(
+                    api_type=APITypes.orc,
+                    api_root="https://httpbin.org/",
+                    auth_type=AuthTypes.api_key,
+                ),
+                path="get",
+            )
+        )
+
+        with patch(
+            "openforms.pre_requests.clients.registry", new=self.pre_req_register
+        ):
+            perform_service_fetch(var, FormioData())
+
+        result = perform_service_fetch(var, FormioData())
+        value = result.value
+
+        self.assertEqual(value["url"], "https://httpbin.org/get")
+        self.assertEqual(self.mock.call_count, 0)
