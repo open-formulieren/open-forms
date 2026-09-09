@@ -8864,13 +8864,14 @@ components:
     FormV3:
       type: object
       properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
         uuid:
           type: string
           format: uuid
           readOnly: true
-        name:
-          type: string
-          maxLength: 150
         internalName:
           type: string
           description: internal name for management purposes
@@ -9048,6 +9049,12 @@ components:
           description: Display the instruction from the confirmation page in the PDF.
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
+        brpPersonenRequestOptions:
+          allOf:
+          - $ref: '#/components/schemas/BRPPersonenRequestOptions'
+          nullable: true
+          description: Form-specific parameters to use when making requests to BRP
+            Personen APIs, e.g. during prefill.
         helpCalloutPage:
           allOf:
           - $ref: '#/components/schemas/HelpCalloutPage'
@@ -9060,9 +9067,9 @@ components:
             render help controls to assist the user filling out the form.
       required:
       - loginRequired
-      - name
       - slug
       - steps
+      - url
       - uuid
     FormVariable:
       type: object
@@ -10635,6 +10642,9 @@ components:
           type: string
           format: uri
           readOnly: true
+        uuid:
+          type: string
+          format: uuid
         slug:
           type: string
           title: Service slug
@@ -10675,6 +10685,11 @@ components:
         service:
           type: string
           format: uri
+        serviceUuid:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
         path:
           type: string
           description: path relative to the Service API root
@@ -10726,11 +10741,13 @@ components:
       - id
       - name
       - service
+      - serviceUuid
     ServiceFetchConfigurationV3:
       type: object
       properties:
         id:
           type: integer
+          nullable: true
         name:
           type: string
           description: human readable name for the configuration

@@ -20,7 +20,17 @@ class FormCamelCaseMixin:
 
         # Needed to not mangle the formio definitions - all processing assumes the
         # original camel case keys.
-        ignore_fields = ["configuration"]
+        ignore_fields = [
+            # form definition configuration (Formio)
+            "configuration",
+            # service fetch literal objects
+            "body",
+            "headers",
+            "mapping_expression",
+            "query_params",
+            # variables - literal values
+            "initial_value",
+        ]
         for plugin in register:
             if not plugin.camel_case_ignore_fields:
                 continue

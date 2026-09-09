@@ -137,6 +137,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             form = FormFactory.create(
                 name="Playwright test",
                 name_nl="Playwright test",
+                generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test",
             )
             return form
@@ -201,6 +202,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             form = FormFactory.create(
                 name="Playwright test",
                 name_nl="Playwright test",
+                generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test",
             )
             return form
@@ -366,10 +368,10 @@ class FormDesignerRegressionTests(E2ETestCase):
             # Save form
             await page.locator('[name="_save"]', has_text="Save").click()
 
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            error_node = page.locator("css=.error")
-            await expect(error_node).not_to_be_visible()
+            # check that we get the success message
+            await expect(
+                page.get_by_text('The form "Playwright test" was changed successfully.')
+            ).to_be_visible()
 
     @tag("gh-3921", "gh-4061")
     async def test_all_components_are_visible_in_component_select_dropdown(self):

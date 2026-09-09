@@ -106,7 +106,7 @@ class PaymentData(TypedDict):
 
 
 class ServiceFetchConfigurationData(TypedDict):
-    id: NotRequired[int]
+    id: NotRequired[int | None]
     name: str
     service: UUID
 
@@ -247,6 +247,11 @@ class FormLogicData(TypedDict):
     is_advanced: NotRequired[bool]
 
 
+class FormBRPPersonenRequestOptions(TypedDict):
+    brp_personen_purpose_limitation_header_value: NotRequired[str]
+    brp_personen_processing_header_value: NotRequired[str]
+
+
 class FormValidatedData(TypedDict):
     uuid: UUID
     name: str
@@ -297,3 +302,4 @@ class FormValidatedData(TypedDict):
     include_confirmation_page_content_in_pdf: NotRequired[bool]
 
     translations: NotRequired[FormTranslationsData]
+    brp_personen_request_options: NotRequired[FormBRPPersonenRequestOptions]

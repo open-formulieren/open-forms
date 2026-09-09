@@ -23,6 +23,7 @@ from openforms.config.tests.factories import ThemeFactory
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
 )
+from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
@@ -80,7 +81,6 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
             "slug": "create-form",
             "steps": [
                 {
@@ -111,6 +111,10 @@ class FormEndpointTests(APITestCase):
                     },
                 },
             ],
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
         }
         response = self.client.put(url, data=data)
 
@@ -151,7 +155,6 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
             "internalName": "Create form internal",
             "internalRemarks": "This form is used for xyz",
             "translationEnabled": True,
@@ -337,6 +340,10 @@ class FormEndpointTests(APITestCase):
                     ],
                 },
             ],
+            "brpPersonenRequestOptions": {
+                "brpPersonenPurposeLimitationHeaderValue": "Foo",
+                "brpPersonenProcessingHeaderValue": "Bar",
+            },
         }
         response = self.client.put(url, data=data)
 
@@ -570,6 +577,17 @@ class FormEndpointTests(APITestCase):
         # logic rules
         self.assertEqual(form.formlogic_set.count(), 1)
 
+        # advanced configuration
+        brp_personen_request_options = BRPPersonenRequestOptions.objects.get()
+        self.assertEqual(brp_personen_request_options.form, form)
+        self.assertEqual(
+            brp_personen_request_options.brp_personen_purpose_limitation_header_value,
+            "Foo",
+        )
+        self.assertEqual(
+            brp_personen_request_options.brp_personen_processing_header_value, "Bar"
+        )
+
     def test_create_single_step_form_with_registrations_and_confirmation_template(self):
         form_definition_uuid = str(uuid4())
         url = reverse(
@@ -577,7 +595,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "internalName": "Create form internal",
             "registrationBackends": [
                 {
@@ -700,7 +721,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -788,7 +812,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "internalName": "Create form internal",
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
@@ -832,7 +859,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "internalName": "Create form internal",
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
@@ -883,7 +913,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "internalName": "Create form internal",
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
@@ -931,7 +964,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1000,7 +1036,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1060,7 +1099,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1110,7 +1152,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "payment": {
                 "backend": "demo",
                 "options": {},
@@ -1161,7 +1206,6 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
             "slug": "Create-form",
             "steps": [
                 {
@@ -1213,7 +1257,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -1258,7 +1305,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "type": FormTypeChoices.regular,
             "steps": [],
@@ -1289,7 +1339,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "type": FormTypeChoices.appointment,
             "steps": [
@@ -1343,7 +1396,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "type": FormTypeChoices.single_step,
             "steps": [],
@@ -1373,7 +1429,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "type": FormTypeChoices.appointment,
             "steps": [],
@@ -1396,7 +1455,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "type": FormTypeChoices.appointment,
             "steps": [],
@@ -1420,7 +1482,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "payment": {
                 "backend": "worldline",
                 "options": {
@@ -1484,7 +1549,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": str(form.uuid)},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1515,6 +1583,10 @@ class FormEndpointTests(APITestCase):
                     },
                 },
             ],
+            "brpPersonenRequestOptions": {
+                "brpPersonenPurposeLimitationHeaderValue": "Foo",
+                "brpPersonenProcessingHeaderValue": "Bar",
+            },
         }
         response = self.client.put(url, data=data)
 
@@ -1524,6 +1596,17 @@ class FormEndpointTests(APITestCase):
 
         self.assertEqual(form.name, "Update form")
         self.assertEqual(form.slug, "update-form")
+
+        # advanced configuration
+        brp_personen_request_options = BRPPersonenRequestOptions.objects.get()
+        self.assertEqual(brp_personen_request_options.form, form)
+        self.assertEqual(
+            brp_personen_request_options.brp_personen_purpose_limitation_header_value,
+            "Foo",
+        )
+        self.assertEqual(
+            brp_personen_request_options.brp_personen_processing_header_value, "Bar"
+        )
 
     def test_update_soft_deleted_form(self):
         form = FormFactory.create(
@@ -1539,7 +1622,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": str(form.uuid)},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1592,7 +1678,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1742,7 +1831,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": existing_form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1825,7 +1917,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -1927,7 +2022,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -2032,7 +2130,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -2104,7 +2205,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -2181,7 +2285,6 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": str(form.uuid)},
         )
         data = {
-            "name": "Update form",
             "slug": "update-form",
             "steps": [
                 {
@@ -2250,7 +2353,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": str(form.uuid)},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -2304,7 +2410,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": str(form.uuid)},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [],
         }
@@ -2319,7 +2428,10 @@ class FormEndpointTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [],
         }
@@ -2350,7 +2462,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -2420,7 +2535,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -2544,6 +2662,7 @@ class FormEndpointVariableTests(APITestCase):
                             "method": ServiceFetchMethods.get,
                             "headers": {
                                 "Foo": "Bar",
+                                "header1": "value1",
                             },
                             "queryParams": {
                                 "Bar": ["Foo"],
@@ -2553,6 +2672,22 @@ class FormEndpointVariableTests(APITestCase):
                             "mappingExpression": None,
                             "cacheTimeout": None,
                         },
+                    },
+                ],
+                "logic_rules": [
+                    {
+                        "order": 0,
+                        "jsonLogicTrigger": True,
+                        "is_advanced": True,
+                        "actions": [
+                            {
+                                "action": {
+                                    "type": "fetch-from-service",
+                                    "value": "",
+                                },
+                                "variable": "extra_var",
+                            },
+                        ],
                     },
                 ],
             }
@@ -2574,10 +2709,10 @@ class FormEndpointVariableTests(APITestCase):
             self.assertEqual(
                 service_fetch_configuration.method, ServiceFetchMethods.get
             )
-            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
             self.assertEqual(
-                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+                service_fetch_configuration.headers, {"Foo": "Bar", "header1": "value1"}
             )
+            self.assertEqual(service_fetch_configuration.query_params, {"Bar": ["Foo"]})
             self.assertIsNone(service_fetch_configuration.body)
             self.assertEqual(service_fetch_configuration.data_mapping_type, "")
             self.assertIsNone(service_fetch_configuration.mapping_expression)
@@ -2630,6 +2765,7 @@ class FormEndpointVariableTests(APITestCase):
                             "method": ServiceFetchMethods.get,
                             "headers": {
                                 "Foo": "Bar",
+                                "header1": "value1",
                             },
                             "queryParams": {
                                 "Bar": ["Foo"],
@@ -2639,6 +2775,22 @@ class FormEndpointVariableTests(APITestCase):
                             "mappingExpression": None,
                             "cacheTimeout": None,
                         },
+                    },
+                ],
+                "logic_rules": [
+                    {
+                        "order": 0,
+                        "jsonLogicTrigger": True,
+                        "is_advanced": True,
+                        "actions": [
+                            {
+                                "action": {
+                                    "type": "fetch-from-service",
+                                    "value": "",
+                                },
+                                "variable": "extra_var",
+                            },
+                        ],
                     },
                 ],
             }
@@ -2660,10 +2812,10 @@ class FormEndpointVariableTests(APITestCase):
             self.assertEqual(
                 service_fetch_configuration.method, ServiceFetchMethods.get
             )
-            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
             self.assertEqual(
-                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+                service_fetch_configuration.headers, {"Foo": "Bar", "header1": "value1"}
             )
+            self.assertEqual(service_fetch_configuration.query_params, {"Bar": ["Foo"]})
             self.assertIsNone(service_fetch_configuration.body)
             self.assertEqual(service_fetch_configuration.data_mapping_type, "")
             self.assertIsNone(service_fetch_configuration.mapping_expression)
@@ -2682,7 +2834,10 @@ class FormEndpointVariableTests(APITestCase):
 
         with self.subTest("Create form"):
             data = {
-                "name": "Create form",
+                "translations": {
+                    "nl": {"name": "Create form"},
+                    "en": {"name": "Create form"},
+                },
                 "slug": "create-form",
                 "steps": [
                     {
@@ -2759,7 +2914,10 @@ class FormEndpointVariableTests(APITestCase):
 
         with self.subTest("Update form"):
             data = {
-                "name": "Update form",
+                "translations": {
+                    "nl": {"name": "Update form"},
+                    "en": {"name": "Update form"},
+                },
                 "slug": "update-form",
                 "steps": [
                     {
@@ -2882,7 +3040,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -3029,7 +3190,10 @@ class FormEndpointVariableTests(APITestCase):
 
         with self.subTest("Create form"):
             data = {
-                "name": "Create form",
+                "translations": {
+                    "nl": {"name": "Create form"},
+                    "en": {"name": "Create form"},
+                },
                 "slug": "create-form",
                 "steps": [
                     {
@@ -3095,7 +3259,10 @@ class FormEndpointVariableTests(APITestCase):
 
         with self.subTest("Update form"):
             data = {
-                "name": "Create form",
+                "translations": {
+                    "nl": {"name": "Create form"},
+                    "en": {"name": "Create form"},
+                },
                 "slug": "create-form",
                 "steps": [
                     {
@@ -3166,7 +3333,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3232,7 +3402,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3299,7 +3472,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3507,7 +3683,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3585,7 +3764,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -3674,7 +3856,10 @@ class FormEndpointVariableTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3759,7 +3944,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -3858,7 +4046,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -3936,6 +4127,63 @@ class FormEndpointLogicRulesTests(APITestCase):
             ],
         )
 
+    def test_invalid_trigger_expression(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"unknownOperator": []},
+                    "is_advanced": True,
+                    "actions": [],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+        self.assertEqual(
+            response_data["invalidParams"][0],
+            {
+                "name": "logicRules.0.jsonLogicTrigger",
+                "code": "invalid",
+                "reason": "Invalid JSON logic.",
+            },
+        )
+
     def test_component_missing_from_action_and_present_in_form(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(form=form, slug="step-1")
@@ -3947,7 +4195,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4015,7 +4266,10 @@ class FormEndpointLogicRulesTests(APITestCase):
     def test_invalid_component_reference_is_caught_during_validation(self):
         url = reverse("api:v3:form-detail", kwargs={"uuid": uuid4()})
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [
                 {
@@ -4080,7 +4334,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4145,7 +4402,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4210,7 +4470,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4278,7 +4541,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4345,7 +4611,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4410,7 +4679,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4475,7 +4747,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "type": FormTypeChoices.single_step,
             "submission_allowed": SubmissionAllowedChoices.yes,
@@ -4530,7 +4805,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "type": FormTypeChoices.single_step,
             "submission_allowed": SubmissionAllowedChoices.yes,
@@ -4597,7 +4875,10 @@ class FormEndpointLogicRulesTests(APITestCase):
         )
 
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4726,7 +5007,10 @@ class FormEndpointLogicRulesTests(APITestCase):
             kwargs={"uuid": form.uuid},
         )
         data = {
-            "name": "Update form",
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
             "slug": "update-form",
             "steps": [
                 {
@@ -4795,6 +5079,101 @@ class FormEndpointLogicRulesTests(APITestCase):
             },
         )
 
+    def test_validates_service_fetch_configuration(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form, slug="step-1")
+        form_definition = form_step.form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield",
+                                    "label": "textfield",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "Service fetch",
+                    "key": "serviceFetch",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.object,
+                    "serviceFetchConfiguration": None,
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "fetch-from-service",
+                                "value": "",
+                            },
+                            "variable": "serviceFetch",
+                        },
+                        {
+                            "action": {
+                                "type": "fetch-from-service",
+                                "value": "",
+                            },
+                            "variable": "",
+                        },
+                        {
+                            "action": {
+                                "type": "fetch-from-service",
+                                "value": "",
+                            },
+                            "variable": "badReference",
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["code"], "invalid")
+
+        self.assertEqual(len(invalid_params := response_data["invalidParams"]), 3)
+
+        error_1, error_2, error_3 = invalid_params
+        with self.subTest(error=error_1):
+            self.assertEqual(error_1["name"], "logicRules.0.actions.0.variable")
+            self.assertEqual(error_1["code"], "invalid")
+
+        with self.subTest(error=error_2):
+            self.assertEqual(error_2["name"], "logicRules.0.actions.1.variable")
+            self.assertEqual(error_2["code"], "blank")
+
+        with self.subTest(error=error_3):
+            self.assertEqual(error_3["name"], "logicRules.0.actions.2.variable")
+            self.assertEqual(error_3["code"], "invalid")
+
 
 class FormEndpointAccessTests(APITestCase):
     def test_non_staff_user(self):
@@ -4803,7 +5182,10 @@ class FormEndpointAccessTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [],
         }
@@ -4821,7 +5203,10 @@ class FormEndpointAccessTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [],
         }
@@ -4839,7 +5224,10 @@ class FormEndpointAccessTests(APITestCase):
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
         )
         data = {
-            "name": "Create form",
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
             "slug": "create-form",
             "steps": [],
         }

@@ -16,6 +16,7 @@ const INITIAL_VALUES = {
   name: '',
   method: 'GET',
   service: '',
+  serviceUuid: '',
   path: '',
   queryParams: [],
   headers: [],
@@ -51,6 +52,12 @@ const ServiceFetchConfigurationPicker = ({
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: (values, {setSubmitting}) => {
+      // ensure we set the service UUID instead of the URL reference
+      const serviceUuidsByUrl = Object.fromEntries(
+        formLogicContext.services.map(service => [service.url, service.uuid])
+      );
+      values.serviceUuid = serviceUuidsByUrl[values.service];
+
       switch (values.dataMappingType) {
         case 'JsonLogic':
           values.mappingExpression = values.jsonLogicExpression;
