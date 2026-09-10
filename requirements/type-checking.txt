@@ -648,7 +648,7 @@ maykin-2fa==2.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.20.0
+maykin-common==0.21.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1354,7 +1354,7 @@ wcwidth==0.8.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   prompt-toolkit
-weasyprint==69.0
+weasyprint==70.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
