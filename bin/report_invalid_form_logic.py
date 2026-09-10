@@ -10,6 +10,12 @@ from tabulate import tabulate
 
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
+FIELDS_TO_DEFER = (
+    "type",
+    "help_callout_page_display",
+    "help_dialog_content",
+    "help_dialog_image",
+)
 
 type Row = tuple[int, str]
 
@@ -27,10 +33,14 @@ def report_invalid_forms() -> bool:
     invalid_rules_detected = False
 
     # check invalid existing forms that are perhaps migrated on the shell
-    forms = Form.objects.filter(
-        new_logic_evaluation_enabled=True,
-        formlogic__trigger_from_step__isnull=False,
-    ).distinct()
+    forms = (
+        Form.objects.filter(
+            new_logic_evaluation_enabled=True,
+            formlogic__trigger_from_step__isnull=False,
+        )
+        .defer(*FIELDS_TO_DEFER)
+        .distinct()
+    )
     if forms.exists():
         invalid_rules_detected = True
         print(
@@ -45,11 +55,15 @@ def report_invalid_forms() -> bool:
         )
 
     # check if any forms still have new logic evaluation disabled
-    forms_to_check = Form.objects.filter(
-        _is_deleted=False,
-        new_logic_evaluation_enabled=False,
-        formlogic__isnull=False,
-    ).distinct()
+    forms_to_check = (
+        Form.objects.filter(
+            _is_deleted=False,
+            new_logic_evaluation_enabled=False,
+            formlogic__isnull=False,
+        )
+        .defer(*FIELDS_TO_DEFER)
+        .distinct()
+    )
 
     non_converted_forms_detected = False
     if forms_to_check.exists():

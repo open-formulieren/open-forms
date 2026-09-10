@@ -20,6 +20,13 @@ from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.formio.typing import FileComponent
 from openforms.forms.models import Form, FormDefinition, FormRegistrationBackend
 
+FIELDS_TO_DEFER = (
+    "type",
+    "help_callout_page_display",
+    "help_dialog_content",
+    "help_dialog_image",
+)
+
 
 @dataclass
 class ComponentProblem:
@@ -157,7 +164,7 @@ class FormioConfigurationMigrator:
 
     def __init__(self, outfile: TextIOBase):
         self.outfile = outfile
-        self.forms_queryset = Form.objects.all()
+        self.forms_queryset = Form.objects.defer(*FIELDS_TO_DEFER).all()
 
     def _iter_form_defs(self, form: Form) -> Iterator[tuple[FormDefinition, str]]:
         for form_definition in FormDefinition.objects.filter(formstep__form=form):
@@ -266,6 +273,7 @@ class RegistrationBackendMigrator:
                     ),
                 )
             )
+            .defer(*FIELDS_TO_DEFER)
             .distinct()
         )
         self.objects_api_groups_queryset = ObjectsAPIGroupConfig.objects.exclude(
