@@ -30,9 +30,9 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.validators import EmailVerificationValidator
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.form_logic import process_visibility
-from openforms.submissions.models import EmailVerification
 from openforms.typing import JSONObject, JSONValue
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
@@ -167,27 +167,6 @@ class TextField(BasePlugin[TextFieldComponent]):
         return to_multiple(base) if multiple else base
 
 
-class EmailVerificationValidator:
-    message = _("The email address {value} has not been verified yet.")
-    requires_context = True
-
-    def __init__(self, component_key: str):
-        self.component_key = component_key
-
-    def __call__(self, value: str, field: serializers.Field) -> None:
-        submission: Submission = field.context["submission"]
-        has_verification = EmailVerification.objects.filter(
-            submission=submission,
-            component_key=self.component_key,
-            email=value,
-            verified_on__isnull=False,
-        ).exists()
-        if not has_verification:
-            raise serializers.ValidationError(
-                self.message.format(value=value), code="unverified"
-            )
-
-
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
@@ -213,7 +192,7 @@ class Email(BasePlugin):
             validators.append(PluginValidator(plugin_ids))
 
         if verification_required:
-            validators.append(EmailVerificationValidator(component["key"]))
+            validators.append(EmailVerificationValidator(component["key"], "email"))
 
         if validators:
             extra["validators"] = validators

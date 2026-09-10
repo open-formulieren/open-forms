@@ -40,8 +40,8 @@ from ..cosigning import CosignData, CosignState
 from ..pricing import get_submission_price
 from ..query import SubmissionQuerySet, SubmissionsManagerType
 from ..serializers import CoSignDataSerializer
+from ..typing import SubmissionCosignData
 from .submission_step import SubmissionStep
-from .typing import SubmissionCosignData
 
 if TYPE_CHECKING:
     from openforms.authentication.models import AuthInfo, RegistratorInfo

@@ -464,7 +464,6 @@ class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):
 
 class EmailVerificationFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    component_key = "email"
     email = factory.Faker("email")
 
     class Meta:
