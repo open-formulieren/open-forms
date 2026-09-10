@@ -383,7 +383,7 @@ oauthlib==3.3.1
     # via requests-oauthlib
 onlinepayments-sdk-python3==7.1.0
     # via -r requirements/base.in
-open-klant-client==0.4.0
+open-klant-client==0.8.0
     # via -r requirements/base.in
 openpyxl==3.1.5
     # via tablib

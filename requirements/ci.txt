@@ -669,7 +669,7 @@ onlinepayments-sdk-python3==7.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-open-klant-client==0.4.0
+open-klant-client==0.8.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
