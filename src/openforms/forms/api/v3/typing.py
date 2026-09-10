@@ -235,6 +235,7 @@ class FormLogicActionData(TypedDict):
     component: NotRequired[str]
     variable: NotRequired[str]
     form_step_slug: NotRequired[str]
+    form_step_uuid: NotRequired[str]  # dynamically set during the processing/validation
     action: LogicActionTypeData
     config: NotRequired[LogicActionDMNEvaluateConfigData]
 
