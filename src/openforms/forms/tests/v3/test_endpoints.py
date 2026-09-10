@@ -5174,6 +5174,97 @@ class FormEndpointLogicRulesTests(APITestCase):
             self.assertEqual(error_3["name"], "logicRules.0.actions.2.variable")
             self.assertEqual(error_3["code"], "invalid")
 
+    def test_form_with_disable_next_action(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_definition = form.formstep_set.get().form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "test-key",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "checkbox",
+                                    "key": "checkbox",
+                                    "label": "Checkbox",
+                                    "hidden": False,
+                                    "clearOnHide": False,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration",
+                                "internalName": "Form configuration",
+                            },
+                            "nl": {
+                                "name": "Form configuratie",
+                                "internalName": "Form configuratie",
+                            },
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": {"==": [0, 1]},
+                    "isAdvanced": True,
+                    "actions": [
+                        {
+                            "formStepSlug": "step-1",
+                            "action": {"type": "disable-next"},
+                        },
+                    ],
+                },
+                {
+                    "order": 1,
+                    "jsonLogicTrigger": {"==": [0, 2]},
+                    "isAdvanced": True,
+                    "actions": [
+                        {
+                            "formStepSlug": "step-1",
+                            "action": {"type": "step-not-applicable"},
+                        },
+                    ],
+                },
+                {
+                    "order": 2,
+                    "jsonLogicTrigger": {"==": [0, 3]},
+                    "isAdvanced": True,
+                    "actions": [
+                        {
+                            "formStepSlug": "step-1",
+                            "action": {"type": "step-applicable"},
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class FormEndpointAccessTests(APITestCase):
     def test_non_staff_user(self):
