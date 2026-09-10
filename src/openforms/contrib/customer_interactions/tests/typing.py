@@ -14,3 +14,4 @@ class ExpectedDigitalAddress(TypedDict):
     isStandaardAdres: bool
     verstrektDoorBetrokkene: NotRequired[FullForeigKeyRef | None]
     verstrektDoorPartij: NotRequired[FullForeigKeyRef | None]
+    referentie: NotRequired[str]
