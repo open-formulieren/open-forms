@@ -156,7 +156,7 @@ class LogicActionServiceData(TypedDict):
     value: JSONValue
 
 
-class LogicActionDummyData(TypedDict):
+class LogicActionMarkStepData(TypedDict):
     type: Literal[
         LogicActionTypes.disable_next,
         LogicActionTypes.step_not_applicable,
@@ -221,7 +221,7 @@ class LogicActionSynchronizeVariableData(TypedDict):
 
 
 type LogicActionTypeData = (
-    LogicActionDummyData
+    LogicActionMarkStepData
     | LogicActionPropertyData
     | LogicActionServiceData
     | LogicValueData
