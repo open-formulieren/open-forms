@@ -106,7 +106,7 @@ def parse_and_validate_logic_actions(
                             ErrorDetail(
                                 _(
                                     "You cannot use the 'disabled' property "
-                                    "on layout components'."
+                                    "on layout components."
                                 ),
                                 code="invalid",
                             )

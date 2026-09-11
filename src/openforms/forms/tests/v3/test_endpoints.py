@@ -4596,7 +4596,7 @@ class FormEndpointLogicRulesTests(APITestCase):
             {
                 "name": "logicRules.0.actions.0.component",
                 "code": "invalid",
-                "reason": "You cannot use the 'disabled' property on layout components'.",
+                "reason": "You cannot use the 'disabled' property on layout components.",
             },
         )
 
