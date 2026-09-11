@@ -4,9 +4,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 10:17+0200\n"
-"PO-Revision-Date: 2026-08-20 17:36+0200\n"
-"Last-Translator:   <admin@admin.com>\n"
+"POT-Creation-Date: 2026-09-11 10:25+0200\n"
+"PO-Revision-Date: 2026-09-11 10:24+0200\n"
+"Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -6001,8 +6001,6 @@ msgstr ""
 "dat het volgnummer van regels voor/na deze regel opnieuw berekend wordt."
 
 #: openforms/forms/api/v3/serializers/form.py:146
-#, fuzzy
-#| msgid "BRP Personen request options"
 msgid "BRP personen request options"
 msgstr "BRP Personen Bevragen request-opties"
 
@@ -6011,6 +6009,9 @@ msgid ""
 "Form-specific parameters to use when making requests to BRP Personen APIs, "
 "e.g. during prefill."
 msgstr ""
+"Formulierspecifieke parameters die toegepast moeten worden bij het opvragen "
+"van gegevens uit de BRP Personen Bevragen API's, bijvoorbeeld tijdens "
+"prefill."
 
 #: openforms/forms/api/v3/serializers/form.py:627
 msgid "Non-unique form step - form definition duplicate(s) detected."
@@ -6056,13 +6057,11 @@ msgstr "Precies één formulierstap is verplicht in een formulier met één stap
 
 #: openforms/forms/api/v3/serializers/form.py:868
 msgid "Single step forms do not support authentication."
-msgstr ""
+msgstr "Authenticatie is niet beschikbaar in \"enkele-stap\"-formulieren."
 
 #: openforms/forms/api/v3/serializers/form.py:877
-#, fuzzy
-#| msgid "Submission is not enabled for this form."
 msgid "Submission must always be allowed in single step forms."
-msgstr "Dit formulier kan niet worden ingezonden."
+msgstr "Je moet altijd een \"enkele stap\"-formulier kunnen inzenden."
 
 #: openforms/forms/api/v3/serializers/logic_rules.py:57
 msgid "Form.io component key"
@@ -6109,10 +6108,11 @@ msgid "HTTP query string"
 msgstr "HTTP query string"
 
 #: openforms/forms/api/v3/validation.py:67
-#, fuzzy, python-brace-format
-#| msgid "Exactly one form step is required in a single step form."
+#, python-brace-format
 msgid "Logic action {action_type} is not allowed in single step forms."
-msgstr "Precies één formulierstap is verplicht in een formulier met één stap."
+msgstr ""
+"De logica-actie {action_type} is niet toegestaan in \"enkele-stap\"-"
+"formulieren."
 
 #: openforms/forms/api/v3/validation.py:83
 #: openforms/forms/api/v3/validation.py:171
@@ -6125,9 +6125,7 @@ msgid "Could not find the component with key '{key}'."
 msgstr "Kon de component met sleutel '{key}' niet vinden."
 
 #: openforms/forms/api/v3/validation.py:108
-#, fuzzy
-#| msgid "You cannot used the 'disabled' property on layout components'."
-msgid "You cannot use the 'disabled' property on layout components'."
+msgid "You cannot use the 'disabled' property on layout components."
 msgstr ""
 "Het 'uitgeschakeld' attribuut kan niet gebruikt worden voor layout-"
 "componenten."
@@ -6157,10 +6155,8 @@ msgid "Could not find a step with the slug '{slug}'."
 msgstr "Kon geen formulierstap vinden met het URL-deel '{slug}'."
 
 #: openforms/forms/api/v3/validation.py:216
-#, fuzzy
-#| msgid "service fetch configurations"
 msgid "The service fetch configuration is missing."
-msgstr "Servicebevragingconfiguraties"
+msgstr "De servicebevragingconfiguratie ontbreekt."
 
 #: openforms/forms/api/v3/viewsets.py:30
 msgid "Create or update all details of a form"
