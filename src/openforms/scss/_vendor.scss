@@ -1,3 +1,6 @@
+// TODO: modular CSS (only loading leaflet, monaco... styles when relevant) would reduce
+// CSS bundle size
+
 @use 'leaflet/dist/leaflet';
 @use 'ckeditor5/ckeditor5';
 @use 'flatpickr/dist/flatpickr';
@@ -7,3 +10,5 @@
 @use './vendor/django-two-factor-auth';
 @use './vendor/design-token-editor';
 @use './vendor/react-select';
+
+@import '@open-formulieren/monaco-json-editor/style.css';

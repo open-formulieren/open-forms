@@ -1,8 +1,8 @@
-import {JSONEditor} from '@open-formulieren/monaco-json-editor';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {useGlobalState} from 'state-pool';
 
+import JSONEditor from 'components/JSONEditor';
 import {currentTheme} from 'utils/theme';
 
 const DataPreview = ({data, maxRows = 20}) => {
