@@ -64,7 +64,7 @@ from ..typing import (
     FormValidatedData,
     FormVariableData,
 )
-from ..validation import ActionsErrors, validate_logic_actions
+from ..validation import ActionsErrors, parse_and_validate_logic_actions
 from .form_step import FormStepSerializer
 from .logic_rules import FormLogicSerializer
 from .payment import FormPaymentSerializer
@@ -248,7 +248,9 @@ class FormSerializer(serializers.ModelSerializer):
         form_variables = {
             var.key: var for var in FormVariable.objects.filter(form=form)
         }
-        form_step_slugs = set(form.formstep_set.values_list("slug", flat=True))
+        step_slug_uuid_mapping: Mapping[str, UUID] = dict(
+            form.formstep_set.values_list("slug", "uuid")
+        )
         rule_errors: RulesErrors = {}
 
         _total_configuration_wrapper: FormioConfigurationWrapper | None = None
@@ -278,12 +280,12 @@ class FormSerializer(serializers.ModelSerializer):
             # at this point, the shape of the actions has been validated, but their semantic
             # meaning hasn't yet
             actions: Sequence[FormLogicActionData] = rule.actions
-            if rule_action_errors := validate_logic_actions(
+            if rule_action_errors := parse_and_validate_logic_actions(
                 actions,
                 form_type=FormTypeChoices(form.type),
                 find_component=_find_component,
                 form_variables=form_variables,
-                form_step_slugs=form_step_slugs,
+                step_slug_uuid_mapping=step_slug_uuid_mapping,
             ):
                 rule_errors[index] = {"actions": rule_action_errors}
 

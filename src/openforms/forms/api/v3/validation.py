@@ -1,7 +1,8 @@
 from collections import defaultdict
-from collections.abc import Callable, Collection, Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date
 from typing import assert_never
+from uuid import UUID
 
 from django.utils.translation import gettext as _
 
@@ -29,13 +30,13 @@ that field. The field names are the keys of a logic action struct (polymorphic).
 """
 
 
-def validate_logic_actions(
+def parse_and_validate_logic_actions(
     actions: Sequence[FormLogicActionData],
     *,
     form_type: FormTypeChoices,
     find_component: Callable[[str], Component | None],
     form_variables: Mapping[str, FormVariable],
-    form_step_slugs: Collection[str],
+    step_slug_uuid_mapping: Mapping[str, UUID],
 ) -> ActionsErrors:
     """
     Validate a collection of logic rule actions.
@@ -162,7 +163,8 @@ def validate_logic_actions(
                 | LogicActionTypes.step_not_applicable
                 | LogicActionTypes.disable_next
             ):
-                # validate form step slug exists in action
+                # validate form step slug exists in actions, and translate to the
+                # form_step_uuid necessary for the actual execution
                 form_step_slug = action.get("form_step_slug") or ""
                 if not form_step_slug:
                     errors[action_index]["formStepSlug"].append(
@@ -171,7 +173,8 @@ def validate_logic_actions(
                     continue
 
                 # validate form step slug is valid
-                if form_step_slug not in form_step_slugs:
+                form_step_uuid = step_slug_uuid_mapping.get(form_step_slug)
+                if form_step_uuid is None:
                     errors[action_index]["formStepSlug"].append(
                         ErrorDetail(
                             _("Could not find a step with the slug '{slug}'.").format(
@@ -181,6 +184,7 @@ def validate_logic_actions(
                         )
                     )
                     continue
+                action["form_step_uuid"] = str(form_step_uuid)
 
             case LogicActionTypes.fetch_from_service:
                 # check that a variable is specified

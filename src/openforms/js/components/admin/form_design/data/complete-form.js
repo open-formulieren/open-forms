@@ -213,6 +213,13 @@ const saveForm = async (state, csrftoken) => {
     processVariables(draft);
   });
 
+  const stepSlugsById = Object.fromEntries(
+    cleanedState.formSteps.map(formStep => {
+      const stepId = formStep.uuid || formStep._generatedId;
+      return [stepId, formStep.slug];
+    })
+  );
+
   const formPutBody = {
     /* top level resource fields */
     ...cleanedState.form,
@@ -237,7 +244,12 @@ const saveForm = async (state, csrftoken) => {
       jsonLogicTrigger: rule.jsonLogicTrigger,
       description: rule.description,
       order: rule.order,
-      actions: rule.actions,
+      actions: rule.actions.map(action => ({
+        ...action,
+        formStepSlug: stepSlugsById[action.formStepUuid]
+          ? stepSlugsById[action.formStepUuid]
+          : undefined,
+      })),
       isAdvanced: rule.isAdvanced,
     })),
   };
