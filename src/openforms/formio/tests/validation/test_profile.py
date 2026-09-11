@@ -1,7 +1,10 @@
 from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    EmailVerificationFactory,
+    SubmissionFactory,
+)
 
 from ...typing.custom import CustomerProfileComponent
 from .helpers import extract_error, validate_formio_data
@@ -24,6 +27,12 @@ class ProfileValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
         )
         valid_values = {
             "profile": [
@@ -54,6 +63,9 @@ class ProfileValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        EmailVerificationFactory.create(
+            submission=submission, component_key="profile", email="", verified=True
         )
         valid_values = {
             "profile": [
@@ -141,6 +153,12 @@ class ProfileValidationTests(TestCase):
                 ]
             },
         )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some-incorrect-email",
+            verified=True,
+        )
         values = {
             "profile": [
                 {
@@ -203,6 +221,18 @@ class ProfileValidationTests(TestCase):
                     component,
                 ]
             },
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="another@email.org",
+            verified=True,
         )
         values = {
             "profile": [
