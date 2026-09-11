@@ -51,7 +51,10 @@ class EmailVerification(models.Model):
     )
     component_key = models.TextField(
         _("component key"),
-        help_text=_("Key of the email component in the submission's form."),
+        help_text=_(
+            "Key of the component in the submission's form. The supported component "
+            "types are Email and Profile."
+        ),
         validators=[variable_key_validator],
     )
     email = models.EmailField(
