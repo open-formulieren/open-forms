@@ -14,6 +14,46 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.1.0-alpha.0 (2026-09-11)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+* [:backend:`6624`] Updated EmailVerification model's help texts according to the new 
+  supported component types (Email, Profile).
+* [:backend:`6515`] Decreased the amount of (external) recurring requests that can be
+  done when validating ZGW form registration backends through caching.
+* [:backend:`6210`] Added extra backend validation for single-step type of forms.
+* [:backend:`3941`] Made it possible to submit/save a form, in the Admin, in a single PUT
+  API call. All errors are now processed in one go.
+
+**Bugfixes**
+
+* [:backend:`6621`] Fixed incorrect warnings shown in the form designer.
+* [:formio-builder:`337`] Fixed the components list position in the form builder.
+
+**Project maintenance**
+
+* Updated Dutch translations.
+* Cleaned up test setup and improved type annotations.
+* Changed upgrade check for v4.1 to a minimum of 4.0.
+* Removed unused ZGW URLs migrator tooling for legacy catalogi configuration.
+* Updated configuration regarding supported/maintained versions.
+* Updated dependencies to their latest security releases:
+
+  - weasyprint
+  - maykin-common
+  - Open Klant Client
+  - gitpython
+  - Tornado
+  - DRF
+  - WebOb 
+  - @open-formulieren/formio-builder
+
+
 4.0.0 "Jongerius" (2026-08-31)
 ==============================
 
@@ -1314,7 +1354,7 @@ Open Forms 3.5.0 is a feature release.
 .. epigraph::
 
    Kjeld Nuis is a Dutch speed skater who broke the 100kph barrier on natural ice in
-   2022. It took us `just a bit longer` to break speed records with Open Forms,
+   1.    It took us `just a bit longer` to break speed records with Open Forms,
    but finally we completed our logic engine rework in the planned timeline and met
    our goals.
 

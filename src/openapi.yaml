@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 4.0.0
+  version: 4.1.0-alpha.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -7641,7 +7641,8 @@ components:
           writeOnly: true
         componentKey:
           type: string
-          description: Key of the email component in the submission's form.
+          description: Key of the component in the submission's form. The supported
+            component types are Email and Profile.
           pattern: ^(\w|\w[\w.\-]*\w)$
         email:
           type: string
@@ -10688,7 +10689,6 @@ components:
         serviceUuid:
           type: string
           format: uuid
-          nullable: true
           readOnly: true
         path:
           type: string
@@ -11544,7 +11544,8 @@ components:
           writeOnly: true
         componentKey:
           type: string
-          description: Key of the email component in the submission's form.
+          description: Key of the component in the submission's form. The supported
+            component types are Email and Profile.
           pattern: ^(\w|\w[\w.\-]*\w)$
         email:
           type: string
