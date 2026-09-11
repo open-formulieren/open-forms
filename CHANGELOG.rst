@@ -14,6 +14,52 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.1.0-alpha.0 (2026-09-11)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+You have to be on at least 4.0 before you can upgrade to 4.1.
+
+New features
+------------
+
+* [:backend:`6624`] Updated EmailVerification model's help texts to clarify that profile
+  components are also supported.
+* [:backend:`6515`] Optimized the validation of ZGW APIs registration plugin configuration.
+* [:backend:`6210`] Added extra backend validation for single-step type of forms.
+* [:backend:`3941`] Optimized the saving of forms in the admin and improved the user
+  experience when there are validation errors by validating as much as possible in one go. 
+
+Bugfixes
+--------
+
+* [:backend:`6621`] Fixed incorrect warnings shown in the form designer.
+* [:formio-builder:`337`] Fixed the components list position in the form builder.
+
+Project maintenance
+-------------------
+
+* Updated Dutch translations.
+* Cleaned up test setup and improved type annotations.
+* Changed upgrade check for v4.1 to a minimum of 4.0.
+* Removed unused ZGW URLs migrator tooling for legacy catalogi configuration.
+* Updated configuration regarding supported/maintained versions.
+* Updated dependencies to their latest security releases:
+
+  - weasyprint
+  - maykin-common
+  - Open Klant Client
+  - gitpython
+  - Tornado
+  - DRF
+  - WebOb 
+  - @open-formulieren/formio-builder
+
+
 4.0.0 "Jongerius" (2026-08-31)
 ==============================
 
