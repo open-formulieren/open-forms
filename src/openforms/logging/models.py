@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar, Literal, Self
 
 from django.contrib import admin
@@ -14,7 +14,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from timeline_logger.manager import TimelineLogManager
 from timeline_logger.models import TimelineLog
 
-from openforms.formio.typing import Component
+from formio_types import BSN, Date, DateTime, Postcode, TextField
 from openforms.typing import StrOrPromise
 
 from .constants import TimelineLogTags
@@ -124,21 +124,28 @@ class TimelineLogProxy(TimelineLog):
         self,
         fields: Sequence[str],
     ) -> list[str]:
-        formatted_fields: list[str] = []
-        assert self.content_object is not None
-        components: Iterator[Component] = self.content_object.form.iter_components(
-            recursive=True
-        )
+        from openforms.submissions.models import Submission
 
-        for component in components:
-            for field in fields:
-                if (
-                    "prefill" not in component
-                    or "attribute" not in component["prefill"]
-                ):
+        formatted_fields: list[str] = []
+        assert isinstance(self.content_object, Submission)
+        for component in self.content_object.formio_config:
+            # skip over components that don't have any prefill config
+            match component:
+                case BSN() | Date() | DateTime() | Postcode() | TextField():
+                    prefill = component.prefill
+                case _ if hasattr(component, "prefill"):
+                    raise RuntimeError(
+                        f"{type(component).__name__} prefill should be handled!"
+                    )
+                case _:
                     continue
-                if component["prefill"]["attribute"] == field:
-                    formatted_fields.append(f"{component['label']} ({field})")
+            if prefill is None:
+                continue
+
+            for field in fields:
+                if prefill.attribute != field:
+                    continue
+                formatted_fields.append(f"{component.label} ({field})")
 
         return formatted_fields
 

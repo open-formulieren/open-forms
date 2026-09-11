@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import date
 
 from django.test import SimpleTestCase, override_settings
@@ -6,8 +5,19 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
-from ..datastructures import FormioConfigurationWrapper, FormioData
-from ..variables import inject_variables, render
+from formio_types import (
+    Content,
+    Date,
+    Radio,
+    Select,
+    Selectboxes,
+    SoftRequiredErrors,
+    TextField,
+)
+from openforms.formio.typing import Component, FieldsetComponent
+
+from ..datastructures import FormioConfig, FormioData
+from ..variables import inject_variables
 
 VARIABLES = FormioData(
     {
@@ -47,11 +57,13 @@ CONFIGURATION = {
         {
             "type": "textfield",
             "key": "text2",
+            "label": "text2",
             "defaultValue": "{{ defaults.text2 }}",
         },
         {
             "type": "textfield",
             "key": "textfieldMulti",
+            "label": "textfieldMulti",
             "multiple": True,
             "defaultValue": [
                 "{{ defaults.text1 }}",
@@ -62,22 +74,12 @@ CONFIGURATION = {
             "type": "date",
             "key": "date1",
             "label": """Het is vandaag {{ now|date:"l" }}""",
-            "defaultValue": "{{ now|date:'d-m-Y' }}",
         },
-        {
-            "type": "number",
-            "key": "number1",
-            # works because formio attempts to parse it as a number, even though we
-            # pass a string
-            "defaultValue": "{{ defaults.number1|floatformat:2 }}",
-        },
-        {
-            "type": "checkbox",
-            "key": "checkbox1",
-            # this works because formio interprets 'false/true' strings as actual
-            # booleans. Note that we don't expose this in the form designer UI yet!
-            "defaultValue": "{{ checkboxChecked|yesno:'true,false,null' }}",
-        },
+        # number, checkbox -> removed - our own renderer does not do the implicit type
+        # casting that formiojs had, and our msgspec types don't accept template strings
+        # for the default value, as that's a data type mismatch
+        # date default value -> removed - our formio-builder does not support entering arbitrary
+        # strings
     ]
 }
 
@@ -86,178 +88,174 @@ CONFIGURATION = {
 @freeze_time("2022-08-16T11:57:02+02:00")
 class VariableInjectionTests(SimpleTestCase):
     def test_variable_interpolation(self):
-        configuration = deepcopy(CONFIGURATION)
+        formio_config = FormioConfig(
+            name="<test>", components=CONFIGURATION["components"]
+        )
 
-        inject_variables(FormioConfigurationWrapper(configuration), VARIABLES)
+        inject_variables(formio_config, VARIABLES)
 
-        lookup_table = {comp["key"]: comp for comp in configuration["components"]}
-
-        content1 = lookup_table["content1"]
-        text1 = lookup_table["text1"]
-        text2 = lookup_table["text2"]
-        textfield_multi = lookup_table["textfieldMulti"]
-        date1 = lookup_table["date1"]
-        number1 = lookup_table["number1"]
-        checkbox1 = lookup_table["checkbox1"]
+        content1 = formio_config["content1"]
+        assert isinstance(content1, Content)
+        text1 = formio_config["text1"]
+        assert isinstance(text1, TextField)
+        text2 = formio_config["text2"]
+        assert isinstance(text2, TextField)
+        textfield_multi = formio_config["textfieldMulti"]
+        assert isinstance(textfield_multi, TextField)
+        date1 = formio_config["date1"]
+        assert isinstance(date1, Date)
 
         with self.subTest("HTML content"):
             self.assertEqual(
-                content1["html"],
+                content1.html,
                 "<p>We expected a &lt;span&gt;HTML injection!&lt;/span&gt; to be escaped.</p>",
             )
-            self.assertEqual(content1["label"], "Message at 2022-08-16")
+            self.assertEqual(content1.label, "Message at 2022-08-16")
 
         with self.subTest("Nested lookups"):
-            self.assertEqual(text1["label"], "Label eerste textfield")
+            self.assertEqual(text1.label, "Label eerste textfield")
 
         with self.subTest("Double quotes in placeholder escaped"):
-            self.assertEqual(text1["placeholder"], "These should &quot; be escaped")
+            self.assertEqual(text1.placeholder, "These should &quot; be escaped")
 
         with self.subTest("Stringified default value"):
-            self.assertEqual(text1["defaultValue"], "123")
+            self.assertEqual(text1.default_value, "123")
 
         with self.subTest("Stringified default value (float)"):
             # localized! Formio seems to handle localized values correctly
-            self.assertEqual(text2["defaultValue"], "123,45")
+            self.assertEqual(text2.default_value, "123,45")
 
         with self.subTest("Default values with multiple=true"):
             # localized! Formio seems to handle localized values correctly
-            self.assertEqual(textfield_multi["defaultValue"], ["123", "123,5"])
+            self.assertEqual(textfield_multi.default_value, ["123", "123,5"])
 
         with self.subTest("Builtin template filters"):
-            self.assertEqual(date1["label"], "Het is vandaag dinsdag")
-            self.assertEqual(date1["defaultValue"], "16-08-2022")
-
-        # questionable but convenient formio behaviour - it parses the string as a number
-        with self.subTest("Number default floatformat, unlocalized"):
-            # localized! Formio seems to handle localized values correctly.
-            # We can't combine `{% localize off %}` with the floatformat template filter,
-            # as the use_l10n parameter is not passed down inside of floatformat. This is fixed
-            # in newer django versions than 3.2. For now, we can accept localized values.
-            self.assertEqual(number1["defaultValue"], "0,30")
-
-        # questionable but convenient formio behaviour - it parses the string as a boolean
-        with self.subTest("Checkbox default value boolean-ish"):
-            self.assertEqual(checkbox1["defaultValue"], "true")
+            self.assertEqual(date1.label, "Het is vandaag dinsdag")
 
     def test_custom_libraries_not_available(self):
-        configuration = {
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "textfield1",
-                    "label": "{% load multidomain %}{% multidomain_switcher %}",
-                }
-            ]
+        component: Component = {
+            "type": "textfield",
+            "key": "textfield1",
+            "label": "{% load multidomain %}{% multidomain_switcher %}",
         }
+        formio_config = FormioConfig(name="<test>", components=[component])
 
-        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
+        inject_variables(formio_config, FormioData())
 
+        textfield = formio_config["textfield1"]
+        assert isinstance(textfield, TextField)
         self.assertEqual(
-            configuration["components"][0]["label"],
+            textfield.label,
             "{% load multidomain %}{% multidomain_switcher %}",
         )
 
     def test_custom_builtins_not_available(self):
-        configuration = {
+        component: Component = {
+            "type": "textfield",
+            "key": "textfield1",
+            "label": "{% privacy_policy %}",
+        }
+        formio_config = FormioConfig(name="<test>", components=[component])
+
+        inject_variables(formio_config, FormioData())
+
+        textfield = formio_config["textfield1"]
+        assert isinstance(textfield, TextField)
+        self.assertEqual(textfield.label, "{% privacy_policy %}")
+
+    def test_rendering_nested_component_trees(self):
+        component: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "fieldset",
             "components": [
                 {
                     "type": "textfield",
                     "key": "textfield1",
-                    "label": "{% privacy_policy %}",
+                    "label": "{{ expression }}",
                 }
-            ]
+            ],
         }
+        formio_config = FormioConfig(name="<test>", components=[component])
 
-        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
+        inject_variables(formio_config, FormioData({"expression": "yepp"}))
 
-        self.assertEqual(
-            configuration["components"][0]["label"],
-            "{% privacy_policy %}",
-        )
-
-    def test_rendering_nested_structures(self):
-        structure = {"topLevel": {"nested": "{{ expression }}"}}
-        context = {"expression": "yepp"}
-
-        result = render(structure, context)
-
-        self.assertEqual(
-            result,
-            {"topLevel": {"nested": "yepp"}},
-        )
+        textfield = formio_config["textfield1"]
+        assert isinstance(textfield, TextField)
+        self.assertEqual(textfield.label, "yepp")
 
     def test_soft_required_errors_no_server_side_template_evaluation(self):
-        configuration = {
-            "components": [
-                {
-                    "key": "softRequiredErrors",
-                    "type": "softRequiredErrors",
-                    "html": "<p>I am hidden</p>{{ missingFields }}{% now %}",
-                },
-            ]
+        component: Component = {
+            "key": "softRequiredErrors",
+            "type": "softRequiredErrors",
+            "html": "<p>I am hidden</p>{{ missingFields }}{% now %}",  # pyright: ignore[reportAssignmentType]
         }
 
-        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
+        formio_config = FormioConfig(name="<test>", components=[component])
 
+        inject_variables(formio_config, FormioData())
+
+        soft_required = formio_config["softRequiredErrors"]
+        assert isinstance(soft_required, SoftRequiredErrors)
         self.assertEqual(
-            configuration["components"][0]["html"],
+            soft_required.html,
             "<p>I am hidden</p>{{ missingFields }}{% now %}",
         )
 
     def test_components_with_choices(self):
-        configuration = {
-            "components": [
-                {
-                    "key": "radio",
-                    "type": "radio",
-                    "label": "radio",
-                    "openForms": {"dataSrc": "manual"},
-                    "values": [
-                        {
-                            "value": "1",
-                            "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
-                        },
-                        {"value": "2", "label": "2"},
-                    ],
-                },
-                {
-                    "key": "selectboxes",
-                    "type": "selectboxes",
-                    "label": "selectboxes",
-                    "openForms": {"dataSrc": "manual"},
-                    "values": [
-                        {
-                            "value": "1",
-                            "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
-                        },
-                        {"value": "2", "label": "2"},
-                    ],
-                },
-                {
-                    "key": "select",
-                    "type": "select",
-                    "label": "select",
-                    "openForms": {"dataSrc": "manual"},
-                    "data": {
-                        "values": [
-                            {
-                                "value": "1",
-                                "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
-                            },
-                            {"value": "2", "label": "2"},
-                        ]
+        components: list[Component] = [  # pyright: ignore[reportAssignmentType]
+            {
+                "key": "radio",
+                "type": "radio",
+                "label": "radio",
+                "openForms": {"dataSrc": "manual"},
+                "values": [
+                    {
+                        "value": "1",
+                        "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
                     },
+                    {"value": "2", "label": "2"},
+                ],
+            },
+            {
+                "key": "selectboxes",
+                "type": "selectboxes",
+                "label": "selectboxes",
+                "openForms": {"dataSrc": "manual"},
+                "values": [
+                    {
+                        "value": "1",
+                        "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
+                    },
+                    {"value": "2", "label": "2"},
+                ],
+            },
+            {
+                "key": "select",
+                "type": "select",
+                "label": "select",
+                "openForms": {"dataSrc": "manual"},
+                "data": {
+                    "values": [
+                        {
+                            "value": "1",
+                            "label": "{% if var == 'foo' %}1{% else %}42{% endif %}",
+                        },
+                        {"value": "2", "label": "2"},
+                    ]
                 },
-            ]
-        }
+            },
+        ]
+        formio_config = FormioConfig(name="<test>", components=components)
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), FormioData({"var": "foo"})
-        )
+        inject_variables(formio_config, FormioData({"var": "foo"}))
 
-        self.assertEqual(configuration["components"][0]["values"][0]["label"], "1")
-        self.assertEqual(configuration["components"][1]["values"][0]["label"], "1")
-        self.assertEqual(
-            configuration["components"][2]["data"]["values"][0]["label"], "1"
-        )
+        radio = formio_config["radio"]
+        assert isinstance(radio, Radio)
+        selectboxes = formio_config["selectboxes"]
+        assert isinstance(selectboxes, Selectboxes)
+        select = formio_config["select"]
+        assert isinstance(select, Select)
+        self.assertEqual(radio.values[0].label, "1")
+        self.assertEqual(selectboxes.values[0].label, "1")
+        self.assertEqual(select.data.values[0].label, "1")

@@ -7,6 +7,7 @@ import requests
 import structlog
 from openklant_client.types.resources.digitaal_adres import DigitaalAdres
 
+from formio_types.customer_profile import CustomerProfile
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.customer_interactions.client import (
     get_customer_interactions_client,
@@ -65,10 +66,9 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
         profile_form_variable = options["profile_form_variable"]
 
         # use component variable to find a formio component
-        total_config_wrapper = submission.total_configuration_wrapper
-        profile_component = total_config_wrapper[profile_form_variable]
-        assert profile_component["type"] == "customerProfile"
-        if not (address_types := profile_component.get("digitalAddressTypes")):
+        profile_component = submission.formio_config[profile_form_variable]
+        assert isinstance(profile_component, CustomerProfile)
+        if not (address_types := profile_component.digital_address_types):
             logger.info(
                 "missing_component_digital_address_types",
                 submission_uuid=str(submission.uuid),

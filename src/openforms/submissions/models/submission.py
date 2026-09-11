@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, assert_never
@@ -23,7 +22,8 @@ from opentelemetry import trace
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.service import FormioConfigurationWrapper
+from openforms.formio.datastructures import FormioConfig
+from openforms.formio.service import dump_to_legacy
 from openforms.forms.models import Form, FormRegistrationBackend, FormStep
 from openforms.logging import audit_logger
 from openforms.payments.constants import PaymentStatus
@@ -345,7 +345,6 @@ class Submission(models.Model):
     ] = SubmissionQuerySet.as_manager()
 
     _form_login_required: bool | None = None  # can be set via annotation
-    _total_configuration_wrapper = None
 
     # type hints for (reverse) related fields
     auth_info: AuthInfo
@@ -455,20 +454,21 @@ class Submission(models.Model):
             fragment=True
         )  # Fragments are present in hash based routing
 
-    @property
-    def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
-        if not self._total_configuration_wrapper:
-            state = self.load_execution_state()
-            form_steps = state.form_steps
-            if len(form_steps) == 0:
-                return FormioConfigurationWrapper(configuration={})
-
-            begin_configuration = deepcopy(form_steps[0].form_definition.configuration)
-            wrapper = FormioConfigurationWrapper(begin_configuration)
-            for form_step in form_steps[1:]:
-                wrapper += form_step.form_definition.configuration_wrapper
-            self._total_configuration_wrapper = wrapper
-        return self._total_configuration_wrapper
+    @cached_property
+    def formio_config(self) -> FormioConfig:
+        state = self.load_execution_state()
+        form_steps = state.form_steps
+        # note that mutations to the step-level formio_config are not reflected in the
+        # submission formio_config, and vice versa!
+        # XXX can we achieve this to make it more intuitive?
+        all_step_components = sum(
+            (
+                form_step.form_definition.configuration.get("components", [])
+                for form_step in form_steps
+            ),
+            [],
+        )
+        return FormioConfig(name=self.form.admin_name, components=all_step_components)
 
     @property
     def form_login_required(self):
@@ -726,7 +726,7 @@ class Submission(models.Model):
                 current_field = {
                     "name": node.label,
                     "value": node.value,
-                    "component": node.component,
+                    "component": dump_to_legacy(node.component),
                 }
                 current_step["data"].append(current_field)
 

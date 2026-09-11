@@ -21,6 +21,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from typing_extensions import deprecated
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
+from formio_types import Email
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
@@ -28,10 +29,10 @@ from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import (
     FormioData,
     build_serializer,
+    dump_to_legacy,
     get_dynamic_configuration,
     rewrite_formio_components_for_request,
 )
-from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import (
     FormDefinitionSerializer,
     LogicComponentActionSerializer,
@@ -389,7 +390,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "span.action": "serialization",
         },
     )
-    def to_representation(self, instance):
+    def to_representation(self, instance: SubmissionStep):
+        assert instance.form_step is not None
         in_form_logic_evaluation = self.context.get("in_form_logic_evaluation", False)
 
         # Before evaluating logic, we need to ensure we determine the "require backend"
@@ -406,13 +408,13 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         if not require_backend:
             # Creating a default configuration is only useful if we do not require the
             # backend for logic evaluation.
-            wrapper = deepcopy(instance.form_step.form_definition.configuration_wrapper)
+            formio_config = deepcopy(instance.form_step.form_definition.formio_config)
             rewrite_formio_components_for_request(
-                wrapper, request=self.context["request"]
+                formio_config, request=self.context["request"]
             )
             variables_state = instance.submission.variables_state
-            wrapper = get_dynamic_configuration(
-                wrapper,
+            formio_config = get_dynamic_configuration(
+                formio_config,
                 submission=instance.submission,
                 # dynamic formio component configuration may depend on filled out data,
                 # but those cases should land us in the 'require backend' mode for the
@@ -425,7 +427,9 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                     include_unsaved=False,
                 ),
             )
-            default_configuration = wrapper.configuration
+            default_configuration = {
+                "components": dump_to_legacy(formio_config.components)
+            }
 
         # invoke the configured form logic to dynamically update the Formio.js
         # configuration
@@ -481,27 +485,23 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         return data
 
     def _run_formio_validation(self, data: FormioData) -> None:
+        assert self.instance.form_step is not None
         submission = self.instance.submission
-        configuration = evaluate_form_logic(
-            submission, step=self.instance, unsaved_data=data
-        )
+        evaluate_form_logic(submission, step=self.instance, unsaved_data=data)
+        formio_config = self.instance.form_step.form_definition.formio_config
 
         # mark them all as not required, to support pausing forms where data is very
         # likely to still be incomplete. See #4144.
-        for component in iter_components(configuration):
-            if "validate" not in component:
-                continue
-            if not component["validate"].get("required", False):
-                continue
-            component["validate"]["required"] = False
+        for component in formio_config:
+            # TODO: how can we make this type safe without checking each component type?
+            validate = getattr(component, "validate", None)
+            if validate and getattr(validate, "required", False):
+                validate.required = False
 
         step_data_serializer = build_serializer(
-            configuration["components"],
+            formio_config,
             data=data,
-            context={
-                "submission": submission,
-                "configuration": configuration,
-            },
+            context={"submission": submission},
         )
         step_data_serializer.is_valid(raise_exception=True)
 
@@ -834,13 +834,13 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         return fields
 
     def validate(self, attrs: EmailVerificationData) -> EmailVerificationData:
-        # validate that the component key is present in the submissoin form *and* points
+        # validate that the component key is present in the submission form *and* points
         # to an email component
-        config_wrapper = attrs["submission"].total_configuration_wrapper
+        formio_config = attrs["submission"].formio_config
         key = attrs["component_key"]
         try:
-            component = config_wrapper.component_map[key]
-            key_valid = component["type"] == "email"
+            component = formio_config[key]
+            key_valid = isinstance(component, Email)
         except KeyError:
             key_valid = False
         if not key_valid:

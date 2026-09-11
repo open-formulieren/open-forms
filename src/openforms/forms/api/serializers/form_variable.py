@@ -227,9 +227,8 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         if (form_definition := attrs.get("form_definition")) and attrs.get(
             "source"
         ) == FormVariableSources.component:
-            config_wrapper = form_definition.configuration_wrapper
-            component = config_wrapper.component_map.get(attrs["key"])
-            if not component:
+            formio_config = form_definition.formio_config
+            if attrs["key"] not in formio_config:
                 raise ValidationError(
                     {
                         "key": _(

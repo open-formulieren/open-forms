@@ -697,18 +697,17 @@ class Form(models.Model):
         return copy
 
     def get_keys_for_email_confirmation(self) -> list[str]:
-        return_keys = set()
+        return_keys: set[str] = set()
         for form_step in self.formstep_set.select_related("form_definition"):
             for key in form_step.form_definition.get_keys_for_email_confirmation():
-                if key:
-                    return_keys.add(key)
+                return_keys.add(key)
         return list(return_keys)
 
     def iter_components(self, recursive=True) -> Iterator[Component]:
         # steps are ordered on the 'order' field because of django-ordered-model through
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
-            yield from form_step.iter_components(recursive=recursive)
+            yield from form_step.form_definition.iter_components(recursive=recursive)
 
     @transaction.atomic
     def restore_old_version(
@@ -789,9 +788,8 @@ class Form(models.Model):
         if step is None:
             return set()
 
-        return step.form_definition.configuration_wrapper.get_child_component_keys(
-            component_key
-        )
+        children = step.form_definition.formio_config.get_children(component_key)
+        return {child.key for child in children}
 
     def get_form_step(self, key: str) -> FormStep | None:
         """

@@ -1,25 +1,26 @@
 from django.utils.translation import gettext as _
 
-from glom import glom
 from requests.exceptions import RequestException
 from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
+from formio_types import Radio, Select, Selectboxes
 from openforms.contrib.reference_lists.client import ReferenceListsClient
+from openforms.formio.service import dump_to_legacy
 from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
-from ..typing import Component
-
 
 def fetch_options_from_reference_lists(
-    component: Component, submission: Submission
+    component: Radio | Select | Selectboxes, submission: Submission
 ) -> list[tuple[str, str]] | None:
-    # TODO
-    # We need to clean up the comoponent type and remove the ignore
-    service_slug = glom(component, "openForms.service", default=None)
-    code = glom(component, "openForms.code", default=None)
-    audit_log = audit_logger.bind(form_id=submission.form.pk, component=component)
+    assert component.open_forms is not None
+    service_slug = component.open_forms.service
+    code = component.open_forms.code
+    audit_log = audit_logger.bind(
+        form_id=submission.form.pk,
+        component=dump_to_legacy(component),
+    )
     if not service_slug:
         audit_log.warning(
             "form_configuration_error",

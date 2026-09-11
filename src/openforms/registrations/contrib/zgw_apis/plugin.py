@@ -14,6 +14,7 @@ import structlog
 from furl import furl
 from glom import assign
 
+from formio_types import AnyComponent, EditGrid, File
 from openforms.authentication.service import get_branch_number
 from openforms.config.data import Action
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -32,8 +33,7 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.emails.service import get_last_confirmation_email
-from openforms.formio.datastructures import FormioConfigurationWrapper
-from openforms.formio.typing import Component
+from openforms.formio.service import FormioConfig
 from openforms.forms.json_schema import NestedDict
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -1047,17 +1047,17 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
     def process_variable_schema(
         self,
-        component: Component,
+        component: AnyComponent,
         schema: JSONObject,
         options: RegistrationOptions,
-        configuration_wrapper: FormioConfigurationWrapper,
+        formio_config: FormioConfig,
     ) -> None:
         match component:
-            case {"type": "file", "multiple": True}:
+            case File(multiple=True):
                 assert isinstance(schema["items"], dict)
                 schema["items"] = {"type": "string", "format": "uri"}
 
-            case {"type": "file"}:
+            case File():
                 # If multiple is false, the value will be an empty string if no
                 # attachment is uploaded, or a URL to the Documents API if there is an
                 # upload.
@@ -1068,41 +1068,50 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 }
                 schema.update(new_schema)
 
-            case {"type": "editgrid"}:
+            case EditGrid():
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)
 
+                editgrid_parent_keys: list[str] = [
+                    parent.key
+                    for parent in formio_config.get_parents(
+                        component.key, add_self=True
+                    )
+                    if isinstance(parent, EditGrid)
+                ]
+
                 for child_key, child_schema in _properties.items():
-                    child_component = configuration_wrapper[child_key]
+                    namespaced_key = ".".join([*editgrid_parent_keys, child_key])
+                    child_component = formio_config[namespaced_key]
                     assert isinstance(child_schema, dict)
                     self.process_variable_schema(
                         child_component,
                         child_schema,
                         options,
-                        configuration_wrapper,
+                        formio_config,
                     )
             case _:
                 pass
 
 
 def process_component(
-    component: Component,
+    component: AnyComponent,
     value: VariableValue,
     schema: NestedDict,
     attachments: Mapping[str, Sequence[str]],
     current_data_path: str = "",
 ) -> VariableValue:
-    key = component["key"]
+    key = component.key
     attachments_key = key if not current_data_path else f"{current_data_path}.{key}"
 
     match component:
-        case {"type": "file", "multiple": True}:
+        case File(multiple=True):
             # for multiple, always emit a squence of URLs (possibly empty)
             urls: Sequence[str] = attachments.get(attachments_key, [])
             return urls
 
-        case {"type": "file"}:  # multiple is False or missing
+        case File():  # multiple is False or missing
             # normalize to a single URL or empty string
             urls: Sequence[str] = attachments.get(attachments_key, [])
             assert len(urls) <= 1  # sanity check

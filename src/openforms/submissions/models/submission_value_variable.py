@@ -18,6 +18,7 @@ import structlog
 
 from openforms.formio.service import (
     FormioData,
+    _dump_to_legacy_component,
     get_component_data_subtype,
     get_component_datatype,
     get_component_empty_value,
@@ -170,10 +171,9 @@ class SubmissionValueVariablesState:
         submission_step: SubmissionStep,
         include_unsaved=True,
     ) -> dict[str, SubmissionValueVariable]:
-        configuration_wrapper = (
-            submission_step.form_step.form_definition.configuration_wrapper
-        )
-        keys_in_step = list(configuration_wrapper.component_map.keys())
+        assert submission_step.form_step is not None
+        formio_config = submission_step.form_step.form_definition.formio_config
+        keys_in_step = {component.key for component in formio_config}
 
         variables = self.variables
         if not include_unsaved:
@@ -228,13 +228,12 @@ class SubmissionValueVariablesState:
             configuration = {}
             initial_value = form_variable.get_initial_value()
             if form_variable.source == FormVariableSources.component:
-                configuration = form_variable.form_definition.configuration_wrapper[
-                    variable_key
-                ]
+                component = form_variable.form_definition.formio_config[variable_key]
+                configuration = _dump_to_legacy_component(component)
                 # If it does not have an initial value, make sure to set the empty
                 # component value.
                 if initial_value is None:
-                    initial_value = get_component_empty_value(configuration)
+                    initial_value = get_component_empty_value(component)
 
             # TODO Fill source field
             unsaved_submission_var = SubmissionValueVariable(
@@ -264,17 +263,16 @@ class SubmissionValueVariablesState:
         """
         for key in keys:
             variable = self.variables[key]
+            assert variable.form_variable is not None
 
             # Get the original initial value from the form variable
             initial_value = variable.form_variable.get_initial_value()
             if variable.form_variable.source == FormVariableSources.component:
-                configuration = (
-                    variable.form_variable.form_definition.configuration_wrapper[key]
-                )
+                component = variable.form_variable.form_definition.formio_config[key]
                 # If it does not have an initial value, make sure we get the empty
                 # component value.
                 if initial_value is None:
-                    initial_value = get_component_empty_value(configuration)
+                    initial_value = get_component_empty_value(component)
 
             # Remove the primary key and reset to the original initial value.
             variable.pk = None

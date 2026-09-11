@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import hashlib
 import json
 import uuid
+from collections.abc import Iterator
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
@@ -11,7 +14,10 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, override
 
 from autoslug import AutoSlugField
+from typing_extensions import deprecated
 
+from formio_types import CustomerProfile, Email
+from openforms.formio.service import dump_to_legacy
 from openforms.formio.utils import iter_components
 from openforms.utils.helpers import get_charfield_max_length, truncate_str_if_needed
 
@@ -19,17 +25,20 @@ from ..models import Form
 from ..validators import validate_template_expressions
 
 if TYPE_CHECKING:
-    from openforms.formio.service import FormioConfigurationWrapper
+    from openforms.formio.datastructures import FormioConfig
 
     from ..models import FormStep
 
 
-def _get_number_of_components(form_definition: "FormDefinition") -> int:
+def _get_number_of_components(form_definition: FormDefinition) -> int:
     """
     Given a form definition, count the total number of (nested) components in the configuration.
     """
-    all_components = iter_components(form_definition.configuration, recursive=True)
-    return len(list(all_components))
+    count = 0
+    for __ in form_definition.formio_config:
+        count += 1
+    del form_definition.formio_config  # avoid stale caches in tests etc.
+    return count
 
 
 class FormDefinition(models.Model):
@@ -47,6 +56,8 @@ class FormDefinition(models.Model):
         help_text=_("internal name for management purposes"),
     )
     slug = AutoSlugField(_("slug"), max_length=100, populate_from="name", editable=True)
+    # TODO: this should ideally be a smarter field that exclusively communicates in
+    # FormioConfig data structures
     configuration = models.JSONField(
         _("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
@@ -70,7 +81,7 @@ class FormDefinition(models.Model):
         help_text=_("The total number of Formio components used in the configuration"),
     )
 
-    formstep_set: models.Manager["FormStep"]
+    formstep_set: models.Manager[FormStep]
 
     class Meta:
         verbose_name = _("Form definition")
@@ -157,16 +168,21 @@ class FormDefinition(models.Model):
         )
 
     def get_hash(self):
+        # normalize the configuration(s) with a msgspec/type conversion roundtrip
+        normalized_components = dump_to_legacy(self.formio_config.components)
         return hashlib.md5(
-            json.dumps(self.configuration, sort_keys=True).encode("utf-8")
+            json.dumps(normalized_components, sort_keys=True).encode("utf-8")
         ).hexdigest()
 
     @cached_property
-    def configuration_wrapper(self) -> "FormioConfigurationWrapper":
-        from openforms.formio.service import FormioConfigurationWrapper
+    def formio_config(self) -> FormioConfig:
+        from openforms.formio.datastructures import FormioConfig
 
-        return FormioConfigurationWrapper(self.configuration)
+        return FormioConfig(
+            name=self.admin_name, components=self.configuration.get("components", [])
+        )
 
+    @deprecated("Deprecated in favour of formio_config datastructure")
     def iter_components(self, configuration=None, recursive=True, **kwargs):
         if configuration is None:
             configuration = self.configuration
@@ -174,15 +190,15 @@ class FormDefinition(models.Model):
             configuration=configuration, recursive=recursive, **kwargs
         )
 
-    def get_keys_for_email_confirmation(self) -> list[tuple[str, str]]:
+    def get_keys_for_email_confirmation(self) -> Iterator[str]:
         """Return the key of fields to include in the confirmation email"""
-        keys_for_email_confirmation = []
-
-        for component in self.iter_components(recursive=True):
-            if component.get("confirmationRecipient"):
-                keys_for_email_confirmation.append(component["key"])
-
-        return keys_for_email_confirmation
+        for component in self.formio_config:
+            match component:
+                case (
+                    Email(confirmation_recipient=True)
+                    | CustomerProfile(confirmation_recipient=True)
+                ):
+                    yield component.key
 
     @property
     def admin_name(self):

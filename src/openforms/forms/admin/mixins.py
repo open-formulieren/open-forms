@@ -4,6 +4,39 @@ from django.utils.translation import gettext as _
 from flags.state import flag_enabled
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
+from formio_types import (
+    BSN,
+    AddressNL,
+    AnyComponent,
+    Checkbox,
+    Children,
+    CosignV2,
+    Currency,
+    CustomerProfile,
+    Date,
+    DateTime,
+    EditGrid,
+    Email,
+    File,
+    Iban,
+    LicensePlate,
+    Map,
+    NpFamilyMembers,
+    Number,
+    Partners,
+    PhoneNumber,
+    Postcode,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    Textarea,
+    TextField,
+    Time,
+)
+from formio_types.datetime import FormioDateTime
+from formio_types.file import FileOptions
+from formio_types.select import SelectData
 from openforms.config.constants import UploadFileType
 from openforms.config.models import (
     GlobalConfiguration,
@@ -45,23 +78,174 @@ def get_component_empty_values():
     empty_values: list[EmptyValueOption] = []
     for component_plugin in component_registry:
         component_type = component_plugin.identifier
-        # this completely ignores if multiple is supported for this component type or not...
         for multiple in (True, False):
-            _component_mock = {
-                "type": component_plugin.identifier,
-                "multiple": multiple,
-                "key": "dummy",
-                "label": "Dummy",
-            }
-            # digitalAddressTypes is needed for customerProfile component
-            if component_type == "customerProfile":
-                _component_mock["digitalAddressTypes"] = ["email", "phoneNumber"]
+            _component: AnyComponent
+            match component_type:
+                case "textfield":
+                    _component = TextField(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "email":
+                    _component = Email(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "date":
+                    _component = Date(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "datetime":
+                    _component = DateTime(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=FormioDateTime([] if multiple else None),
+                    )
+                case "time":
+                    _component = Time(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "phoneNumber":
+                    _component = PhoneNumber(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "postcode":
+                    _component = Postcode(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "file":
+                    _component = File(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        file=FileOptions(type=[]),
+                        file_pattern="",
+                    )
+                case "textarea":
+                    _component = Textarea(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "number":
+                    if multiple:
+                        continue
+                    _component = Number(key="dummy", label="Dummy")
+                case "checkbox":
+                    if multiple:
+                        continue
+                    _component = Checkbox(key="dummy", label="Dummy")
+                case "selectboxes":
+                    if multiple:
+                        continue
+                    _component = Selectboxes(key="dummy", label="Dummy", values=[])
+                case "select":
+                    _component = Select(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                        data=SelectData(),
+                    )
+                case "currency":
+                    if multiple:
+                        continue
+                    _component = Currency(key="dummy", label="Dummy")
+                case "radio":
+                    if multiple:
+                        continue
+                    _component = Radio(key="dummy", label="Dummy", values=[])
+                case "iban":
+                    _component = Iban(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "licenseplate":
+                    _component = LicensePlate(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "bsn":
+                    _component = BSN(
+                        key="dummy",
+                        label="Dummy",
+                        multiple=multiple,
+                        default_value=[] if multiple else "",
+                    )
+                case "npFamilyMembers":
+                    if multiple:
+                        continue
+                    _component = NpFamilyMembers(key="dummy", label="Dummy")
+                case "signature":
+                    if multiple:
+                        continue
+                    _component = Signature(key="dummy", label="Dummy")
+                case "cosign":
+                    if multiple:
+                        continue
+                    _component = CosignV2(key="dummy", label="Dummy")
+                case "map":
+                    if multiple:
+                        continue
+                    _component = Map(key="dummy", label="Dummy")
+                case "editgrid":
+                    if multiple:
+                        continue
+                    _component = EditGrid(
+                        key="dummy", label="Dummy", group_label="", components=[]
+                    )
+                case "addressNL":
+                    if multiple:
+                        continue
+                    _component = AddressNL(key="dummy", label="Dummy")
+                case "partners":
+                    if multiple:
+                        continue
+                    _component = Partners(key="dummy", label="Dummy")
+                case "children":
+                    if multiple:
+                        continue
+                    _component = Children(key="dummy", label="Dummy")
+                case "customerProfile":
+                    if multiple:
+                        continue
+                    _component = CustomerProfile(key="dummy", label="Dummy")
+                case (
+                    "default"
+                    | "content"
+                    | "columns"
+                    | "fieldset"
+                    | "softRequiredErrors"
+                    | "coSign"
+                    | "npfamilyMembers"
+                ):
+                    continue
+                case _:  # pragma: no cover
+                    raise NotImplementedError(f"Type {component_type} not implemented.")
 
-            empty_value = component_registry.get_empty_value(_component_mock)  # pyright: ignore[reportArgumentType]
-            if (
-                empty_value is NotImplemented
-            ):  # layout components don't have an empty value
-                continue
+            empty_value = component_registry.get_empty_value(_component)
             empty_values.append((component_type, multiple, empty_value))
     return empty_values
 

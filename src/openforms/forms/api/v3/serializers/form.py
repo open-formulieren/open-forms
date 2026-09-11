@@ -1,3 +1,4 @@
+import itertools
 from collections import Counter, defaultdict
 from collections.abc import Collection, Mapping, MutableMapping, Sequence
 from typing import TypedDict
@@ -13,6 +14,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.reverse import reverse
 
+from formio_types import AnyComponent, CustomerProfile
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models import Theme
 from openforms.contrib.haal_centraal.api.serializers import (
@@ -21,12 +23,7 @@ from openforms.contrib.haal_centraal.api.serializers import (
 from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
-from openforms.formio.service import (
-    DuplicateKeyError,
-    FormioConfigurationWrapper,
-    get_branch_representation,
-)
-from openforms.formio.typing import Component
+from openforms.formio.service import FormioConfig, get_branch_representation
 from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
@@ -179,7 +176,7 @@ class FormSerializer(serializers.ModelSerializer):
         "brp_personen_request_options",
     )
 
-    form_definition_configurations: dict[UUID, FormioConfigurationWrapper]
+    formio_configs: list[FormioConfig] | None = None
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
@@ -253,26 +250,28 @@ class FormSerializer(serializers.ModelSerializer):
         )
         rule_errors: RulesErrors = {}
 
-        _total_configuration_wrapper: FormioConfigurationWrapper | None = None
+        _formio_config: FormioConfig | None = None
 
-        def _find_component(key: str) -> Component | None:
+        def _find_component(key: str) -> AnyComponent | None:
             """
             Find the component with key ``key`` in any of the form steps.
             """
-            nonlocal _total_configuration_wrapper
+            nonlocal _formio_config
 
-            if _total_configuration_wrapper is None:
-                _total_configuration_wrapper = FormioConfigurationWrapper(
-                    {"components": []}
-                )
-                for form_step in form.formstep_set.select_related("form_definition"):
-                    assert isinstance(form_step.form_definition, FormDefinition)
-                    _total_configuration_wrapper += (
-                        form_step.form_definition.configuration_wrapper
+            if _formio_config is None:
+                queryset = form.formstep_set.select_related("form_definition")
+                all_components = list(
+                    itertools.chain.from_iterable(
+                        form_step.form_definition.configuration["components"]
+                        for form_step in queryset
                     )
+                )
+                _formio_config = FormioConfig(
+                    name="<validation>", components=all_components
+                )
 
-            if key in _total_configuration_wrapper:
-                return _total_configuration_wrapper[key]
+            if key in _formio_config:
+                return _formio_config[key]
 
             return None
 
@@ -627,26 +626,22 @@ class FormSerializer(serializers.ModelSerializer):
                 _("Non-unique form step - form definition duplicate(s) detected.")
             )
 
-        # Step 2: Validate that the form definitions don't have duplicate component keys.
-        configurations: dict[UUID, FormioConfigurationWrapper] = {
-            step["form_definition"]["uuid"]: FormioConfigurationWrapper(
-                step["form_definition"]["configuration"], validate_unique_keys=True
-            )
-            for step in value
-        }
-        # Required for the variable validation.
-        self.form_definition_configurations = configurations
-
+        # Step 2: Validate that the form definitions don't have duplicate component
+        # keys across steps. The individual step configurations have been validated
+        # for uniqueness already.
+        formio_configs: list[FormioConfig] = []
+        # deliberately loop over each step and its components so that duplicates get
+        # added multiple times and we can find all occurrences in all steps
         all_keys: list[str] = []
-        for form_definition, configuration in configurations.items():
-            try:
-                for component in configuration:
-                    all_keys.append(component["key"])
-            except DuplicateKeyError as exc:
-                error_message = _(
-                    "Duplicate component key detected in form definition {form_definition}."
-                ).format(form_definition=form_definition)
-                raise ValidationError(error_message) from exc
+        for step in value:
+            components = step["form_definition"]["configuration"].get("components", [])
+            formio_config = FormioConfig(name="<validation>", components=components)
+            formio_configs.append(formio_config)
+            for component in formio_config:
+                all_keys.append(component.key)
+
+        # Required for the variable validation later on.
+        self.formio_configs = formio_configs
 
         # Check the counter to find duplicates.
         errors: list[StrOrPromise] = []
@@ -657,10 +652,14 @@ class FormSerializer(serializers.ModelSerializer):
             # Find all the places where it occurs to produce a human readable error
             # message.
             readable_paths: list[str] = []
-            for configuration in configurations.values():
-                if component_key not in configuration:
+            for formio_config in formio_configs:
+                if component_key not in formio_config:
                     continue
-                branch = configuration.get_branch(component_key)
+                branch = formio_config.get_parents(
+                    component_key,
+                    ignore_editgrid_prefix=True,
+                    add_self=True,
+                )
                 readable_path = get_branch_representation(branch)
                 readable_paths.append(readable_path)
 
@@ -691,11 +690,14 @@ class FormSerializer(serializers.ModelSerializer):
         ):
             return
 
-        component: Component | None = None
-        for form_configuration in self.form_definition_configurations.values():
-            if profile_form_variable_key not in form_configuration:
+        component: AnyComponent | None = None
+        assert self.formio_configs is not None, (
+            "Must be set during earlier step validation"
+        )
+        for formio_config in self.formio_configs:
+            if profile_form_variable_key not in formio_config:
                 continue
-            component = form_configuration[profile_form_variable_key]
+            component = formio_config[profile_form_variable_key]
             break
         else:
             error_message = ErrorDetail(
@@ -704,7 +706,7 @@ class FormSerializer(serializers.ModelSerializer):
             )
             errors[f"variables.{index}"].append(error_message)
 
-        if component and component["type"] != "customerProfile":
+        if component and not isinstance(component, CustomerProfile):
             error_message = ErrorDetail(
                 _(  # pyright: ignore[reportArgumentType]
                     "Only variables of 'profile' components are allowed as "
@@ -763,10 +765,13 @@ class FormSerializer(serializers.ModelSerializer):
             return
 
         static_keys = [item.key for item in get_static_variables()]
+        assert self.formio_configs is not None, (
+            "Must be set during earlier step validation"
+        )
         component_keys = [
-            component["key"]
-            for configuration in self.form_definition_configurations.values()
-            for component in configuration
+            component.key
+            for formio_config in self.formio_configs
+            for component in formio_config
         ]
         existing_profile_form_vars: list[str] = []
         errors: dict[str, list[ErrorDetail]] = defaultdict(list)
