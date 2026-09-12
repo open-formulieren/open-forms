@@ -11,6 +11,7 @@ from django_webtest import WebTest
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
+from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.logging.models import TimelineLogProxy
@@ -89,6 +90,47 @@ class SearchSubmissionForCosignViewTests(WebTest):
         self.assertEqual(log.extra_data["auth"]["value"], "*******82")
         self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
         self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
+
+    def test_view_uses_form_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        SubmissionFactory.from_components(
+            form__theme=theme,
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            )
+        )
+
+        self.assertIn("#facade", response.text)
 
     def test_successfully_resolve_code_from_GET_params(self):
         submission = SubmissionFactory.from_components(
@@ -674,6 +716,47 @@ class CosignOTPViewTests(FrontendRedirectMixin, WebTest):
 
         # Needed so that when we get self.app.session we get a session object and not a dict
         self.app.get("/", status=403)
+
+    def test_view_uses_submission_form_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        submission = SubmissionFactory.from_components(
+            form__theme=theme,
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+        )
+        session = self.app.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session[COSIGN_VERIFICATION_SESSION_KEY] = submission.pk
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:otp-for-cosign", kwargs={"form_slug": "form-to-cosign"}
+            )
+        )
+
+        self.assertIn("#facade", response.text)
 
     def test_cannot_access_view_without_being_authenticated(self):
         SubmissionFactory.from_components(

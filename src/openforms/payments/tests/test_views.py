@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.views import Request
 
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -309,6 +310,39 @@ class ViewsTests(TestCase):
             self.assertRaises(PaymentError),
         ):
             self.client.get(return_url, {"_error": "1"})
+
+
+class PaymentLinkViewTests(TestCase):
+    def test_view_uses_form_theme(self):
+        with self.subTest("without theme"):
+            submission = SubmissionFactory.create(
+                with_public_registration_reference=True,
+                form__product__price=Decimal("11.25"),
+                form_url="http://allowed.foo/my-form",
+            )
+
+            response = self.client.get(
+                reverse("payments:link", kwargs={"uuid": submission.uuid})
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__theme=theme,
+            form_url="http://allowed.foo/my-form",
+        )
+
+        response = self.client.get(
+            reverse("payments:link", kwargs={"uuid": submission.uuid})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("#facade", response.content.decode())
 
 
 class PaymentPlugin(BasePlugin):

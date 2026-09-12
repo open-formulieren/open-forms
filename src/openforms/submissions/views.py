@@ -25,6 +25,7 @@ from openforms.authentication.utils import (
     is_authenticated_with_plugin,
     meets_plugin_requirements,
 )
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form
 from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import audit_logger
@@ -51,13 +52,19 @@ class ResumeFormMixin(TemplateResponseMixin):
     request: HttpRequest
     token_generator: BaseTokenGenerator
     template_name = "submissions/resume_form_error.html"
+    submission: Submission | None = None
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         try:
             return super().dispatch(request, *args, **kwargs)
         except (FormDeactivated, FormMaintenance, FormMaximumSubmissions) as exc:
+            assert self.submission is not None
+            context = {
+                "error": exc,
+                THEME_OVERRIDE_CONTEXT_VAR: self.submission.form.theme,
+            }
             return self.render_to_response(
-                context={"error": exc},
+                context=context,
                 status=(exc.status_code if isinstance(exc, FormMaintenance) else 200),
             )
 
@@ -70,6 +77,7 @@ class ResumeFormMixin(TemplateResponseMixin):
         except Submission.DoesNotExist:
             log.debug("invalid_submission_lookup")
             raise PermissionDenied("Url is not valid")
+        self.submission = submission
 
         # Check that the token is valid
         valid = self.token_generator.check_token(submission, token)
@@ -286,6 +294,13 @@ class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, Form
     form = None
     submission: Submission | None = None
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        assert self.form is not None
+        if self.form.theme:
+            context[THEME_OVERRIDE_CONTEXT_VAR] = self.form.theme
+        return context
+
     def test_func(self):
         """
         The user should have authenticated with one of the auth plugin specified on the form
@@ -410,6 +425,13 @@ class CosignOTPFormView(ThrottleMixin, UserPassesTestMixin, FormView):
 
     submission: Submission | None = None
     _submission_queried: bool = False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        assert self.submission is not None
+        if self.submission.form.theme:
+            context[THEME_OVERRIDE_CONTEXT_VAR] = self.submission.form.theme
+        return context
 
     def _get_submission(self) -> Submission | None:
         if not self._submission_queried:
