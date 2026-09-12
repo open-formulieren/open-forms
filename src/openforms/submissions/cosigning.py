@@ -251,6 +251,7 @@ def send_cosign_otp(submission: Submission, expires_in_minutes: int = 15) -> Non
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[recipient],
             text_message=content,
+            theme=submission.form.theme,
             extra_headers={
                 "Content-Language": submission.language_code,
                 X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
