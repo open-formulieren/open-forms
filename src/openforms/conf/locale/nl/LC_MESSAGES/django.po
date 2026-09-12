@@ -177,6 +177,10 @@ msgid "Analytics: SiteImprove"
 msgstr "Analytics: SiteImprove"
 
 #: openforms/analytics_tools/admin.py:47
+msgid "Analytics: Silktide"
+msgstr "Analytics: Silktide"
+
+#: openforms/analytics_tools/admin.py:47
 msgid "Analytics: Piwik"
 msgstr "Analytics: Piwik"
 
@@ -347,6 +351,28 @@ msgstr "SiteImprove analytics inschakelen"
 #: openforms/analytics_tools/models.py:234
 msgid "Enabling this installs SiteImprove"
 msgstr "Door dit in te schakelen activeert u SiteImprove"
+
+#: openforms/analytics_tools/models.py:237
+msgid "Silktide site ID"
+msgstr "Silktide site-ID"
+
+#: openforms/analytics_tools/models.py:241
+msgid ""
+"Your Silktide site ID - you can find this from the embed snippet example, "
+"which should contain a URL like 'https://analytics.silktide.com/XXXXX.js'. "
+"The XXXXX is your site ID."
+msgstr ""
+"Uw Silktide site-ID - deze waarde kunt u terugvinden in het embed-voorbeeld. "
+"Deze bevat normaal een URL zoals 'https://analytics.silktide.com/XXXXX.js'. "
+"De XXXXX is uw site-ID."
+
+#: openforms/analytics_tools/models.py:248
+msgid "enable Silktide analytics"
+msgstr "Silktide analytics inschakelen"
+
+#: openforms/analytics_tools/models.py:250
+msgid "Enabling this installs Silktide"
+msgstr "Door dit in te schakelen activeert u Silktide"
 
 #: openforms/analytics_tools/models.py:237
 msgid "GovMetric source ID form aborted"

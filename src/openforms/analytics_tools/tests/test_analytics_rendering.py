@@ -164,6 +164,31 @@ class AnalyticsToolsRenderingTest(WebTest):
         siteimprove = form_page.pyquery("#siteimprove-analytics")
         self.assertTrue(siteimprove.is_("script"))
 
+    def test_silktide_rendering(self):
+        """Assert that the Silktide scripts are rendered"""
+
+        # Enable and configure Silktide
+        self.config.enable_silktide_analytics = True
+        self.config.silktide_site_id = "e52e40921bf09be7dac44db29a73d173"
+        self.config.save()
+
+        # Accept cookies
+        form_page = self.app.get(self.url)
+
+        silktide = form_page.pyquery("#silktide-analytics")
+        self.assertTrue(silktide.is_("script"))
+        self.assertEqual(
+            silktide.attr("src"),
+            "https://analytics.silktide.com/e52e40921bf09be7dac44db29a73d173.js",
+        )
+        self.assertTrue(form_page.pyquery("#silktide-page-load").is_("script"))
+        self.assertTrue(
+            form_page.pyquery("head template.analytics-scripts #silktide-analytics")
+        )
+        self.assertFalse(
+            form_page.pyquery("body template.analytics-scripts #silktide-analytics")
+        )
+
     def test_expoints_rendering(self):
         """Assert that the Expoints script is rendered"""
 
