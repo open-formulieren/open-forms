@@ -14,6 +14,7 @@ from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
@@ -1390,6 +1391,27 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             args["extra_headers"][X_OF_EVENT_HEADER],
             EmailEventChoices.registration,
         )
+
+    def test_email_uses_form_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        submission = SubmissionFactory.create(
+            completed=True,
+            with_public_registration_reference=True,
+            form__theme=theme,
+        )
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+        _, _, html_body = _get_sent_email()
+        self.assertIn("#facade", html_body)
 
     def test_with_deferred_registration(self):
         config = GlobalConfiguration.get_solo()

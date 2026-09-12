@@ -233,6 +233,7 @@ class EmailRegistration(BasePlugin[Options]):
                 X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
                 X_OF_EVENT_HEADER: EmailEventChoices.registration,
             },
+            theme=submission.form.theme,
         )
 
     def update_payment_status(self, submission: "Submission", options: Options):
