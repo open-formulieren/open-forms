@@ -10,6 +10,7 @@ from furl import furl
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.frontend.tests import FrontendRedirectMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -463,10 +464,14 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_resume_with_form_max_submissions_limit_reached(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[],
             form_url="http://maykinmedia.nl/some-form/startpagina",
+            form__theme=theme,
             form__submission_limit=1,
             form__submission_counter=1,
         )
@@ -483,6 +488,7 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context_data["error"], FormMaximumSubmissions)
+        self.assertIn("#facade", response.content.decode())
 
     def test_resume_with_form_max_submissions_limit_not_reached(self):
         submission = SubmissionFactory.from_components(
