@@ -183,6 +183,7 @@ class FormEndpointTests(APITestCase):
                     "descriptorTemplate": "{{ foo }}",
                 },
             },
+            "priceVariableKey": "price",
             "literals": {
                 "beginText": {"value": "Different Begin Text"},
                 "previousText": {"value": "Different Previous Text"},
@@ -246,6 +247,12 @@ class FormEndpointTests(APITestCase):
                     "key": "extra_var_2",
                     "source": FormVariableSources.user_defined,
                     "data_type": FormVariableDataTypes.string,
+                },
+                {
+                    "name": "price",
+                    "key": "price",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.float,
                 },
             ],
             "maintenanceMode": True,
@@ -420,7 +427,7 @@ class FormEndpointTests(APITestCase):
 
         # variables
         variables = form.formvariable_set.order_by("source", "key")
-        self.assertEqual(variables.count(), 4)
+        self.assertEqual(variables.count(), 5)
 
         ## Component variables
         self.assertEqual(variables[0].name, "component1")
@@ -479,6 +486,7 @@ class FormEndpointTests(APITestCase):
                 "descriptor_template": "{{ foo }}",
             },
         )
+        self.assertEqual(form.price_variable_key, "price")
 
         self.assertTrue(form.show_progress_indicator)
         self.assertTrue(form.show_summary_progress)

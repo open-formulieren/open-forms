@@ -194,6 +194,7 @@ class FormSerializer(serializers.ModelSerializer):
             "registration_backends",
             "variables",
             "payment",
+            "price_variable_key",
             "appointment_options",
             "product",
             "slug",
