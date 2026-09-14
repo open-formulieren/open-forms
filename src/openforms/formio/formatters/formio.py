@@ -1,7 +1,7 @@
 from datetime import time
 from typing import Any
 
-from django.template.defaultfilters import time as fmt_time, yesno
+from django.template.defaultfilters import linebreaksbr, time as fmt_time, yesno
 from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
@@ -95,8 +95,10 @@ class FileFormatter(FormatterBase):
 
 class TextAreaFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
-        # TODO custom formatting?
-        return str(value)
+        formatted_value = str(value)
+        if self.as_html:
+            formatted_value = linebreaksbr(formatted_value)
+        return formatted_value
 
 
 class NumberFormatter(FormatterBase):
