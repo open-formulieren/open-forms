@@ -322,7 +322,26 @@ class Time(BasePlugin[Component]):
         label = component.get("label", "Time")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "type": "string", "format": "time"}
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # empty value for a date component/variable is None/null as of Open Forms 4.1
+        time_schema_type = ["string"]
+        if not required:
+            time_schema_type += ["null"]
+
+        time_schema = {"type": time_schema_type, "format": "time"}
+        if not required:
+            time_schema = {
+                "oneOf": [
+                    time_schema,
+                    # DeprecationWarning remove in Open Forms 5.0 - empty strings for
+                    # empty date values are replaced with null, always
+                    {"const": ""},
+                ],
+            }
+
+        base = {"title": label, **time_schema}
         return to_multiple(base) if multiple else base
 
 

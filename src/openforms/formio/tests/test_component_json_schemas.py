@@ -32,7 +32,7 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             **properties,
         }
 
-        self.assertIn("type", schema)
+        self.assertTrue(any(key in schema for key in ("type", "oneOf")))
         self.validator.check_schema(schema)
 
     def assertComponentSchemaIsValid(self, *, component, multiple=False):

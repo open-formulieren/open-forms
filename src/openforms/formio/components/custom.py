@@ -153,7 +153,26 @@ class Date(BasePlugin[DateComponent]):
         label = component.get("label", "Date")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "format": "date", "type": "string"}
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # empty value for a date component/variable is None/null as of Open Forms 4.1
+        date_schema_type = ["string"]
+        if not required:
+            date_schema_type += ["null"]
+
+        date_schema = {"type": date_schema_type, "format": "date"}
+        if not required:
+            date_schema = {
+                "oneOf": [
+                    date_schema,
+                    # DeprecationWarning remove in Open Forms 5.0 - empty strings for
+                    # empty date values are replaced with null, always
+                    {"const": ""},
+                ],
+            }
+
+        base = {"title": label, **date_schema}
         return to_multiple(base) if multiple else base
 
 
@@ -245,7 +264,26 @@ class Datetime(BasePlugin):
         label = component.get("label", "Date time")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "format": "date-time", "type": "string"}
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # empty value for a date component/variable is None/null as of Open Forms 4.1
+        datetime_schema_type = ["string"]
+        if not required:
+            datetime_schema_type += ["null"]
+
+        datetime_schema = {"type": datetime_schema_type, "format": "date-time"}
+        if not required:
+            datetime_schema = {
+                "oneOf": [
+                    datetime_schema,
+                    # DeprecationWarning remove in Open Forms 5.0 - empty strings for
+                    # empty date values are replaced with null, always
+                    {"const": ""},
+                ],
+            }
+
+        base = {"title": label, **datetime_schema}
         return to_multiple(base) if multiple else base
 
 
