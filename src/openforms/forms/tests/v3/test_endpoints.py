@@ -14,6 +14,7 @@ from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
+from unittest_parametrize import ParametrizedTestCase, parametrize
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
@@ -240,19 +241,20 @@ class FormEndpointTests(APITestCase):
                     "name": "extra_var",
                     "key": "extra_var",
                     "source": FormVariableSources.user_defined,
-                    "data_type": FormVariableDataTypes.string,
+                    "dataType": FormVariableDataTypes.string,
                 },
                 {
                     "name": "extra_var_2",
                     "key": "extra_var_2",
                     "source": FormVariableSources.user_defined,
-                    "data_type": FormVariableDataTypes.string,
+                    "dataType": FormVariableDataTypes.string,
                 },
                 {
                     "name": "price",
                     "key": "price",
                     "source": FormVariableSources.user_defined,
-                    "data_type": FormVariableDataTypes.float,
+                    "dataType": FormVariableDataTypes.float,
+                    "initialValue": 10,
                 },
             ],
             "maintenanceMode": True,
@@ -5277,6 +5279,218 @@ class FormEndpointLogicRulesTests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+@override_settings(LANGUAGE_CODE="en")
+class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.admin_user = UserFactory.create(
+            is_staff=True, user_permissions=("forms.change_form",)
+        )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.client.force_authenticate(user=self.admin_user)
+
+    def test_price_logic_variable_exists(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
+            "priceVariableKey": "bad-reference",
+            "variables": [],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(response_data["code"], "invalid")
+
+        self.assertEqual(len(invalid_params := response_data["invalidParams"]), 1)
+
+        error = invalid_params[0]
+        self.assertEqual(error["name"], "priceVariableKey")
+        self.assertEqual(error["code"], "invalid")
+
+    @parametrize(
+        "data_type",
+        [
+            value
+            for value in FormVariableDataTypes
+            if value not in (FormVariableDataTypes.float, FormVariableDataTypes.int)
+        ],
+    )
+    def test_validate_datatype_of_price_logic_variable(
+        self, data_type: FormVariableDataTypes
+    ):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
+            "priceVariableKey": "price",
+            "variables": [
+                {
+                    "name": "Price",
+                    "key": "price",
+                    "source": FormVariableSources.user_defined,
+                    "dataType": data_type,
+                }
+            ],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(response_data["code"], "invalid")
+
+        self.assertEqual(len(invalid_params := response_data["invalidParams"]), 1)
+
+        error = invalid_params[0]
+        self.assertEqual(error["name"], "priceVariableKey")
+        self.assertEqual(error["code"], "invalid")
+
+    def test_variable_has_proper_initial_value(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
+            "priceVariableKey": "price",
+            "variables": [
+                {
+                    "name": "Price",
+                    "key": "price",
+                    "source": FormVariableSources.user_defined,
+                    "dataType": FormVariableDataTypes.float,
+                    "initialValue": None,
+                }
+            ],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(response_data["code"], "invalid")
+
+        self.assertEqual(len(invalid_params := response_data["invalidParams"]), 1)
+
+        error = invalid_params[0]
+        self.assertEqual(error["name"], "priceVariableKey")
+        self.assertEqual(error["code"], "invalid")
 
 
 class FormEndpointAccessTests(APITestCase):
