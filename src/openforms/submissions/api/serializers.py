@@ -1,7 +1,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TypedDict
+from typing import TypedDict, get_args
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
@@ -39,6 +39,7 @@ from openforms.forms.api.serializers import (
 from openforms.forms.constants import LogicActionTypes, SubmissionAllowedChoices
 from openforms.forms.models import FormLogic
 from openforms.forms.validators import validate_not_deleted
+from openforms.submissions.typing import EmailVerificationComponentType
 from openforms.typing import VariableValue
 from openforms.utils.json_logic import partially_evaluate_json_logic
 from openforms.utils.urls import build_absolute_uri
@@ -838,9 +839,12 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         # to an email component
         config_wrapper = attrs["submission"].total_configuration_wrapper
         key = attrs["component_key"]
+        verification_component_types = get_args(
+            EmailVerificationComponentType.__value__
+        )
         try:
             component = config_wrapper.component_map[key]
-            key_valid = component["type"] == "email"
+            key_valid = component["type"] in verification_component_types
         except KeyError:
             key_valid = False
         if not key_valid:
