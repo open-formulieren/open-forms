@@ -14,6 +14,32 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.1 (2026-09-14)
+==================
+
+Regular bugfix release.
+
+* Fixed upgrade checks trying to load fields that do not exist yet.
+* [:formio-builder:`337`] Polished drag-and-drop behaviour in the new form builder.
+* [:formio-builder:`337`] Fixed the components list position in the form builder.
+* [:backend:`6621`] Fixed incorrect warnings shown in the form designer.
+* [:backend:`6515`] Optimized the validation of ZGW APIs registration plugin configuration.
+* Upgraded backend dependencies with security patches (Tornado, DRF, weasyprint).
+* Applied available security patches in our frontend dependencies.
+
+3.5.8 (2026-09-14)
+==================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.5.8, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6515`] Optimized the validation of ZGW APIs registration plugin configuration.
+* [:backend:`6581`] Fixed ``addressNL`` component incorrectly being treated as required.
+* [:backend:`6497`] Fixed pre-registration failures not being reported in the email digest.
+* Applied available security patches in our frontend dependencies.
+* Upgraded backend dependencies with security patches (Tornado, DRF).
+
 4.1.0-alpha.0 (2026-09-11)
 ==========================
 
