@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from openforms.formio.typing import Component
 
@@ -466,3 +466,16 @@ class IssuesTestCase(TestCase):
         res = format_value(component, value)
 
         self.assertEqual(res, "10 - Heel erg tevreden")
+
+    @tag("gh-6649")
+    def test_linebreaks_converted_in_pdf_output(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textarea",
+            "label": "textarea",
+        }
+        value = "content\n\nwith newlines"
+
+        res = format_value(component, value, as_html=True)
+
+        self.assertHTMLEqual(res, "content<br><br>with newlines")
