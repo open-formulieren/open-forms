@@ -5296,7 +5296,7 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
 
         self.client.force_authenticate(user=self.admin_user)
 
-    def test_price_logic_variable_exists(self):
+    def test_price_logic_variable_reference_points_to_existing_variable(self):
         form_definition_uuid = uuid4()
         url = reverse(
             "api:v3:form-detail",
@@ -5358,7 +5358,15 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
         [
             value
             for value in FormVariableDataTypes
-            if value not in (FormVariableDataTypes.float, FormVariableDataTypes.int)
+            if value
+            not in (
+                FormVariableDataTypes.float,
+                FormVariableDataTypes.int,
+                # special markers...
+                FormVariableDataTypes.editgrid,
+                FormVariableDataTypes.partners,
+                FormVariableDataTypes.children,
+            )
         ],
     )
     def test_validate_datatype_of_price_logic_variable(

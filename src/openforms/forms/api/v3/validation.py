@@ -7,6 +7,7 @@ from uuid import UUID
 from django.utils.translation import gettext as _
 
 from json_logic.typing import Primitive
+from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from openforms.formio.service import holds_submission_data
@@ -18,7 +19,7 @@ from ...constants import (
     FormTypeChoices,
     LogicActionTypes,
 )
-from ...models import FormVariable
+from ...models import Form, FormVariable
 from .typing import FormLogicActionData
 
 type ActionsErrors = defaultdict[int, defaultdict[str, list[ErrorDetail]]]
@@ -229,3 +230,37 @@ def parse_and_validate_logic_actions(
                 assert_never(action_type)
 
     return errors
+
+
+def validate_price_variable(form: Form):
+    if not (variable_key := form.price_variable_key):
+        return
+
+    error: ErrorDetail | None = None
+    variables = {var.key: var for var in form.formvariable_set.all()}
+    variable = variables.get(variable_key)
+    match variable:
+        case None:
+            error = ErrorDetail(
+                _("Could not find the variable with key '{key}'.").format(
+                    key=variable_key
+                ),
+                code="invalid",
+            )
+        case FormVariable(data_type=data_type) if data_type not in (
+            FormVariableDataTypes.float,
+            FormVariableDataTypes.int,
+        ):
+            error = ErrorDetail(
+                _("The price variable must have a numeric data type."), code="invalid"
+            )
+        case FormVariable(initial_value=float() | int()):
+            pass
+        case _:
+            error = ErrorDetail(
+                _("The price variable must have a numeric initial value."),
+                code="invalid",
+            )
+
+    if error is not None:
+        raise serializers.ValidationError({"price_variable_key": error})
