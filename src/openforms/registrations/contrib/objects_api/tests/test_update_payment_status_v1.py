@@ -92,6 +92,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "",
             "auth_attribute_path": [],
             "update_existing_object": False,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -161,6 +162,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 }
             }"""
             ),
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -216,6 +218,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "",
             "auth_attribute_path": [],
             "update_existing_object": False,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 

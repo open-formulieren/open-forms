@@ -60,6 +60,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     admin enforcing key uniqueness for *all* components in the form, which is stricter
     than vanilla Formio.
     """
+    use_empty_string_for_empty_datelike_variables: Required[bool]
 
 
 class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):

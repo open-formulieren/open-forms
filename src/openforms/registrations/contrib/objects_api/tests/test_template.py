@@ -80,6 +80,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "iot_submission_report": "PDF Informatieobjecttype other catalog",
             "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)
@@ -200,6 +201,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "CSV Informatieobjecttype other catalog",
             "upload_submission_csv": True,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)
@@ -321,6 +323,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "iot_submission_report": "PDF Informatieobjecttype other catalog",
             "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         with self.assertRaises(
@@ -352,6 +355,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "iot_submission_report": "PDF Informatieobjecttype other catalog",
             "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         with self.assertRaises(RuntimeError):
@@ -437,6 +441,7 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "upload_submission_csv": False,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)
@@ -530,6 +535,7 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
             "iot_submission_csv": "",
             "upload_submission_csv": False,
             "content_json": "{% json_summary %}",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)

@@ -292,6 +292,17 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "and need to be transformed to a list."
         ),
     )
+    # DeprecationWarning - remove in Open Forms 5.0, then always send 'null'.
+    use_empty_string_for_empty_datelike_variables = serializers.BooleanField(
+        label=_("Use empty string for empty date, datetime and time values"),
+        required=False,
+        default=False,
+        help_text=_(
+            "Legacy compatibility option - send empty values for date, datetime and "
+            "time components as empty string instead of 'null'. This option be removed "
+            "in Open Forms 5.0."
+        ),
+    )
 
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do

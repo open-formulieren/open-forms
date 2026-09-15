@@ -464,7 +464,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
                 )
 
                 stored = SubmissionValueVariable.objects.get(key=variable.key)
-                self.assertEqual(stored.value, "")
+                self.assertIsNone(stored.value)
 
         with self.subTest("editgrid"):
             variable = SubmissionValueVariableFactory.create(
@@ -495,7 +495,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
             )
 
             stored = SubmissionValueVariable.objects.get(key=variable.key)
-            self.assertEqual(stored.value, [{"date": "", "time": [""]}])
+            self.assertEqual(stored.value, [{"date": None, "time": [None]}])
 
     @parametrize(
         ("key", "expected_data_type"),

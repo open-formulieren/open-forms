@@ -561,7 +561,12 @@ class SubmissionValueVariable(models.Model):
         self.value = None
         self._is_undefined = True
 
-    def to_json(self, value: VariableValue | object = empty) -> JSONValue:
+    def to_json(
+        self,
+        value: VariableValue | object = empty,
+        *,
+        use_legacy_mode_for_datelike: bool = False,
+    ) -> JSONValue:
         """
         Serialize a value into the JSON type, using the data type information.
 
@@ -571,11 +576,21 @@ class SubmissionValueVariable(models.Model):
             value = self.value
 
         if not self.data_subtype:
-            return self._value_to_json(value, self.data_type, self.configuration)
+            return self._value_to_json(
+                value,
+                self.data_type,
+                self.configuration,
+                use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
+            )
         else:
             assert self.data_type == FormVariableDataTypes.array
             return [
-                self._value_to_json(v, self.data_subtype, self.configuration)
+                self._value_to_json(
+                    v,
+                    self.data_subtype,
+                    self.configuration,
+                    use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
+                )
                 for v in value
             ]
 
@@ -584,6 +599,8 @@ class SubmissionValueVariable(models.Model):
         value: VariableValue,
         data_type: str,
         configuration: Component | None = None,
+        *,
+        use_legacy_mode_for_datelike: bool = False,
     ) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
@@ -603,18 +620,22 @@ class SubmissionValueVariable(models.Model):
             if isinstance(value, str):
                 return value
             if value is None:
-                return ""
+                return "" if use_legacy_mode_for_datelike else None
             return value.isoformat()
 
         if value and data_type == FormVariableDataTypes.partners:
             value["dateOfBirth"] = self._value_to_json(
-                value["dateOfBirth"], FormVariableDataTypes.date
+                value["dateOfBirth"],
+                FormVariableDataTypes.date,
+                use_legacy_mode_for_datelike=True,
             )
             return value
 
         if value and data_type == FormVariableDataTypes.children:
             value["dateOfBirth"] = self._value_to_json(
-                value["dateOfBirth"], FormVariableDataTypes.date
+                value["dateOfBirth"],
+                FormVariableDataTypes.date,
+                use_legacy_mode_for_datelike=True,
             )
             return value
 
@@ -632,12 +653,20 @@ class SubmissionValueVariable(models.Model):
 
                 if not data_subtype:
                     value[child_key] = self._value_to_json(
-                        child_value, data_type, child_component
+                        child_value,
+                        data_type,
+                        child_component,
+                        use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
                     )
                 else:
                     assert data_type == FormVariableDataTypes.array
                     value[child_key] = [
-                        self._value_to_json(v, data_subtype, child_component)
+                        self._value_to_json(
+                            v,
+                            data_subtype,
+                            child_component,
+                            use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
+                        )
                         for v in child_value
                     ]
 
