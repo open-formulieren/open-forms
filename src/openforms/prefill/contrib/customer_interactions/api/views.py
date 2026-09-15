@@ -10,6 +10,10 @@ from rest_framework import views
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ListMixin
+from openforms.contrib.customer_interactions.transform import (
+    filter_duplicate_addresses,
+    transform_options,
+)
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
@@ -66,4 +70,15 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
         state = submission.variables_state
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
-        return value
+
+        # for backwars compatibility we process and transform the options according to
+        # the new format (JSON field with verification date added)
+        transformed_value = None
+        if submission.suspended_on and not submission.completed_on:
+            transformed_value = transform_options(value, submission, form_variable.key)
+
+        result = filter_duplicate_addresses(
+            transformed_value if transformed_value else value
+        )
+
+        return result

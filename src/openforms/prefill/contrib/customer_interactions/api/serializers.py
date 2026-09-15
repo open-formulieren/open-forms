@@ -16,7 +16,7 @@ class CommunicationPreferencesSerializer(serializers.Serializer):
         help_text=_("Communication channel type"),
     )
     options = serializers.ListField(
-        child=serializers.CharField(),
+        child=serializers.JSONField(),
         label=_("Options"),
         help_text=_("List of available address options for this channel"),
     )
