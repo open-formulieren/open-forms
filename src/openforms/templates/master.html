@@ -85,7 +85,7 @@
         {% include "includes/page-footer.html" %}
     {% endblock %}
 
-    <script src="{% static 'bundles/public.js' %}"></script>
+    <script type="module" src="{% static 'bundles/public.js' %}"></script>
     {% block extra_js %}{% endblock %}
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_bottom.html" with analytics_varname=analytics_varname %}

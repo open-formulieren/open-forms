@@ -1,4 +1,4 @@
-from django.forms import Widget
+from django.forms import Script, Widget
 
 
 class FormBuilderWidget(Widget):
@@ -11,4 +11,4 @@ class FormBuilderWidget(Widget):
                 "bundles/core-css.css",
             ),
         }
-        js = ("bundles/core-js.js",)
+        js = (Script("bundles/core-js.js", type="module"),)

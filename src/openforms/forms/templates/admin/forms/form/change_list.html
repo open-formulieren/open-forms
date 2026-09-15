@@ -114,7 +114,7 @@
 
     {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
 
-    <script src="{% static "bundles/core-js.js" %}"></script>
+    <script type="module" src="{% static "bundles/core-js.js" %}"></script>
 {% endblock %}
 
 {% block pagination %}{% endblock %}

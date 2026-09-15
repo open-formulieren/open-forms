@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.forms import Textarea
+from django.forms import Script, Textarea
 
 from flags.state import flag_enabled
 
@@ -26,7 +26,7 @@ class PluginConfigurationTextAreaReact(Textarea):
         css = {
             "all": ("bundles/core-css.css",),
         }
-        js = ("bundles/core-js.js",)
+        js = (Script("bundles/core-js.js", type="module"),)
 
     def get_context(self, name: str, value, attrs: dict) -> dict[str, Any]:
         context = super().get_context(name, value, attrs)
@@ -62,4 +62,4 @@ class DesignTokenValuesTextareaReact(Textarea):
         css = {
             "all": ("bundles/core-css.css",),
         }
-        js = ("bundles/core-js.js",)
+        js = (Script("bundles/core-js.js", type="module"),)
