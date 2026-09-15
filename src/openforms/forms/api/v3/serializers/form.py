@@ -58,7 +58,6 @@ from ....models import (
 )
 from ...validators import RequireAppointmentsPlugin
 from ..typing import (
-    FormLogicActionData,
     FormLogicData,
     FormStepData,
     FormValidatedData,
@@ -244,7 +243,7 @@ class FormSerializer(serializers.ModelSerializer):
             request=self.context.get("request"),
         )
 
-    def _validate_actions(self, form: Form, temp_rules: Mapping[FormLogic, int]):
+    def _validate_actions(self, form: Form, rule_data: Sequence[FormLogicData]):
         form_variables = {
             var.key: var for var in FormVariable.objects.filter(form=form)
         }
@@ -276,12 +275,11 @@ class FormSerializer(serializers.ModelSerializer):
 
             return None
 
-        for index, rule in enumerate(temp_rules):
+        for index, rule in enumerate(rule_data):
             # at this point, the shape of the actions has been validated, but their semantic
             # meaning hasn't yet
-            actions: Sequence[FormLogicActionData] = rule.actions
             if rule_action_errors := parse_and_validate_logic_actions(
-                actions,
+                rule["actions"],
                 form_type=FormTypeChoices(form.type),
                 find_component=_find_component,
                 form_variables=form_variables,
@@ -417,21 +415,13 @@ class FormSerializer(serializers.ModelSerializer):
         logic_rules_raw: list[FormLogicData] = validated_data.get("formlogic_set", [])
 
         if logic_rules_raw:
-            # Note: model instances without a pk are not hashable, which is a requirement to
-            # use them in the analysis graph, so we assign it manually. These rules will just
-            # live in memory and they will be saved below, after they are analyzed.
-            temp_rules_instances: dict[FormLogic, int] = {
-                FormLogic(**logic_rule_data, pk=-index, form=instance): index
-                for index, logic_rule_data in enumerate(logic_rules_raw)
-            }
-
             # We have to do these steps in the create method instead of the ideal/proper
             # choice to do that inside the validate method. The form instance is important
             # to have been created at the time that we do these validations, as the related
             # nested fields are needed (have to be saved and available to access). Adding
             # that to the validate method would require a huge refactor as a lot of our
             # current implementation depends on the (saved) form instance.
-            self._validate_actions(instance, temp_rules_instances)
+            self._validate_actions(instance, logic_rules_raw)
             self._validate_and_process_logic_rules(instance, logic_rules_raw)
 
         # 7. Advanced configuration
@@ -560,21 +550,13 @@ class FormSerializer(serializers.ModelSerializer):
         # 6. logic rules
         logic_rules_raw = validated_data.get("formlogic_set", [])
         if logic_rules_raw:
-            # Note: model instances without a pk are not hashable, which is a requirement to
-            # use them in the analysis graph, so we assign it manually. These rules will just
-            # live in memory and they will be saved below, after they are analyzed.
-            temp_rules_instances: dict[FormLogic, int] = {
-                FormLogic(**logic_rule_data, pk=-index, form=instance): index
-                for index, logic_rule_data in enumerate(logic_rules_raw)
-            }
-
             # We have to do these steps in the create method instead of the ideal/proper
             # choice to do that inside the validate method. The form instance is important
             # to have been created at the time that we do these validations, as the related
             # nested fields are needed (have to be saved and available to access). Adding
             # that to the validate method would require a huge refactor as a lot of our
             # current implementation depends on the (saved) form instance.
-            self._validate_actions(instance, temp_rules_instances)
+            self._validate_actions(instance, logic_rules_raw)
             self._validate_and_process_logic_rules(instance, logic_rules_raw)
 
         # 7. Advanced configuration
