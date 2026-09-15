@@ -136,6 +136,7 @@ class Form(models.Model):
     )
     # XXX a Foreign Key to FormVariable would be nicer, but we can't do this yet since
     # the frontend saves the variables *after* the form record itself is saved.
+    # TODO: viable now in the 4.1 release cycle
     price_variable_key = models.TextField(
         _("price variable key"),
         blank=True,

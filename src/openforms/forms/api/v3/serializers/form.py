@@ -63,7 +63,11 @@ from ..typing import (
     FormValidatedData,
     FormVariableData,
 )
-from ..validation import ActionsErrors, parse_and_validate_logic_actions
+from ..validation import (
+    ActionsErrors,
+    parse_and_validate_logic_actions,
+    validate_price_variable,
+)
 from .form_step import FormStepSerializer
 from .logic_rules import FormLogicSerializer
 from .payment import FormPaymentSerializer
@@ -194,6 +198,7 @@ class FormSerializer(serializers.ModelSerializer):
             "registration_backends",
             "variables",
             "payment",
+            "price_variable_key",
             "appointment_options",
             "product",
             "slug",
@@ -244,9 +249,7 @@ class FormSerializer(serializers.ModelSerializer):
         )
 
     def _validate_actions(self, form: Form, rule_data: Sequence[FormLogicData]):
-        form_variables = {
-            var.key: var for var in FormVariable.objects.filter(form=form)
-        }
+        form_variables = {var.key: var for var in form.formvariable_set.all()}
         step_slug_uuid_mapping: Mapping[str, UUID] = dict(
             form.formstep_set.values_list("slug", "uuid")
         )
@@ -430,6 +433,10 @@ class FormSerializer(serializers.ModelSerializer):
         ) is not None:
             BRPPersonenRequestOptions.objects.create(form=instance, **options)
 
+        # 8. Validate price variable - needs to have the form definitions and associated
+        #    form variables saved for the reference lookup.
+        validate_price_variable(instance)
+
         return instance
 
     @transaction.atomic()
@@ -566,6 +573,10 @@ class FormSerializer(serializers.ModelSerializer):
             BRPPersonenRequestOptions.objects.update_or_create(
                 form=instance, defaults=options
             )
+
+        # 8. Validate price variable - needs to have the form definitions and associated
+        #    form variables saved for the reference lookup.
+        validate_price_variable(instance)
 
         return instance
 

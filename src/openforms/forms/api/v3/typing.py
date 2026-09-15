@@ -268,6 +268,7 @@ class FormValidatedData(TypedDict):
     theme: NotRequired[Theme]
     formstep_set: list[FormStepData]
     payment: NotRequired[PaymentData]
+    price_variable_key: NotRequired[str]
 
     auth_backends: NotRequired[list[AuthBackendData]]
     auto_login_authentication_backend: NotRequired[str]
