@@ -93,18 +93,6 @@ const config = {
             },
           },
         ].filter(Boolean),
-      },
-      // .ejs
-      {
-        test: /\.ejs$/,
-        exclude: /node_modules/,
-        loader: 'ejs-loader',
-        options: {
-          variable: 'ctx',
-          evaluate: /\{%([\s\S]+?)%\}/g,
-          interpolate: /\{\{([\s\S]+?)\}\}/g,
-          escape: /\{\{\{([\s\S]+?)\}\}\}/g,
-        },
       }
     );
     return config;
