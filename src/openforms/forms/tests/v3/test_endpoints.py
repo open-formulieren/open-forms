@@ -4035,6 +4035,11 @@ class FormEndpointLogicRulesTests(APITestCase):
         form = Form.objects.get()
 
         self.assertEqual(form.formlogic_set.count(), 1)
+        rule = form.formlogic_set.get()
+        self.assertQuerySetEqual(
+            rule.form_steps.all(),
+            [form.formstep_set.get()],
+        )
 
     def test_update_form_with_logic_rules(self):
         form = FormFactory.create(generate_minimal_setup=True)
