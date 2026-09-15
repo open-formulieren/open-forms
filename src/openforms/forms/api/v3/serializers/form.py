@@ -1,5 +1,5 @@
 from collections import Counter, defaultdict
-from collections.abc import Collection, Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, MutableMapping, Sequence
 from typing import TypedDict
 from uuid import UUID
 
@@ -46,7 +46,7 @@ from ....api.serializers.form import (
     SubmissionsRemovalOptionsSerializer,
 )
 from ....constants import FormTypeChoices, SubmissionAllowedChoices
-from ....logic_analysis import CyclesDetected, analyze_rules
+from ....logic_analysis import CyclesDetected
 from ....models import (
     Category,
     Form,
@@ -296,18 +296,15 @@ class FormSerializer(serializers.ModelSerializer):
         self,
         form: Form,
         logic_rules_raw: list[FormLogicData],
-        temp_logic_rules: dict[FormLogic, int],
-    ):
-        first_step: FormStep | None = min(
-            form.form_step_map.values(), key=lambda step: step.order, default=None
+    ) -> None:
+        # save the rule data as-is and call the form method to perform logic analysis
+        form.formlogic_set.all().delete()
+        FormLogic.objects.bulk_create(
+            [FormLogic(**rule, form=form) for rule in logic_rules_raw]
         )
 
         try:
-            updated_rules_and_steps = analyze_rules(
-                form,
-                rules=list(temp_logic_rules.keys()),
-                first_step=first_step,
-            )
+            form.apply_logic_analysis()
         except CyclesDetected as exc:
             msg = _("Rule contains cycles through variable(s): {variables}.")
             errors: defaultdict[str, list[ErrorDetail]] = defaultdict(list)
@@ -323,19 +320,6 @@ class FormSerializer(serializers.ModelSerializer):
                         )
                     )
             raise serializers.ValidationError(errors)
-
-        # Reorder the incoming data according to the determined order.
-        steps: list[Collection[FormStep]] = []
-        reordered_rule_data: list[FormLogicData] = []
-        for rule, rule_steps in updated_rules_and_steps:
-            # Lookup the original rule data by checking our rule-to-index map created
-            # earlier.
-            rule_data_index = temp_logic_rules[rule]
-            reordered_rule_data.append(logic_rules_raw[rule_data_index])
-            steps.append(rule_steps)
-
-        self.context["steps_for_each_rule"] = steps
-        return reordered_rule_data
 
     @transaction.atomic()
     def create(self, validated_data: FormValidatedData) -> Form:
@@ -448,14 +432,7 @@ class FormSerializer(serializers.ModelSerializer):
             # that to the validate method would require a huge refactor as a lot of our
             # current implementation depends on the (saved) form instance.
             self._validate_actions(instance, temp_rules_instances)
-            reordered_rules = self._validate_and_process_logic_rules(
-                instance, logic_rules_raw, temp_rules_instances
-            )
-
-            # Save the form logic rules in the correct/updated order
-            FormLogic.objects.bulk_create(
-                [FormLogic(**rule, form=instance) for rule in reordered_rules]
-            )
+            self._validate_and_process_logic_rules(instance, logic_rules_raw)
 
         # 7. Advanced configuration
         if (
@@ -598,16 +575,7 @@ class FormSerializer(serializers.ModelSerializer):
             # that to the validate method would require a huge refactor as a lot of our
             # current implementation depends on the (saved) form instance.
             self._validate_actions(instance, temp_rules_instances)
-            reordered_rules = self._validate_and_process_logic_rules(
-                instance, logic_rules_raw, temp_rules_instances
-            )
-
-            # Remove the existing logic rules.
-            instance.formlogic_set.all().delete()
-            # Save the form logic rules in the correct/updated order.
-            FormLogic.objects.bulk_create(
-                [FormLogic(**rule, form=instance) for rule in reordered_rules]
-            )
+            self._validate_and_process_logic_rules(instance, logic_rules_raw)
 
         # 7. Advanced configuration
         if (

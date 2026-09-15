@@ -831,7 +831,6 @@ class Form(models.Model):
         Broken out from the API serializer so that it can easily be called in tests
         when setting up low-level data.
         """
-        breakpoint()
         from ..logic_analysis import analyze_rules
         from .logic import FormLogic
 
