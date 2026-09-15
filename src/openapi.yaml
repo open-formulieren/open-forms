@@ -7252,8 +7252,7 @@ components:
             * `phoneNumber` - Phone number
         options:
           type: array
-          items:
-            type: string
+          items: {}
           description: List of available address options for this channel
         preferred:
           type: string

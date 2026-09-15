@@ -16,10 +16,19 @@ class CustomerInteractionsMixin:
         )
 
     def assertAddressPresent(self, results, expected_address: ExpectedDigitalAddress):
-        adres = expected_address["adres"]
-        found_address = next((da for da in results if da["adres"] == adres), None)
-        assert found_address is not None
-        for property, expected_value in expected_address.items():
-            self.assertEqual(  # pyright: ignore[reportAttributeAccessIssue]
-                expected_value, found_address[property], f"for address {adres}"
+        matches = [
+            result
+            for result in results
+            if all(
+                result.get(key) == expected_value
+                for key, expected_value in expected_address.items()
             )
+        ]
+
+        self.assertEqual(  # pyright: ignore[reportAttributeAccessIssue]
+            len(matches),
+            1,
+            f"Expected exactly one matching address: {expected_address['adres']}",
+        )
+
+        results.remove(matches[0])
