@@ -72,7 +72,7 @@ def _iter_nodes(nodelist: list[Node]) -> Iterator[Node]:
     for node in nodelist:
         yield node
         for attr in node.child_nodelists:
-            nested_nodelist = getattr(node, attr)
+            nested_nodelist = getattr(node, attr, [])
             yield from _iter_nodes(nested_nodelist)
 
 
