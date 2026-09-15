@@ -79,6 +79,11 @@ class FillInFormTests(E2ETestCase):
                 uploaded_file = page.get_by_role("link", name="test.txt")
                 await expect(uploaded_file).to_be_visible()
 
+                # wait for the upload to complete, indicated by the 'delete' button
+                # being available
+                await expect(
+                    page.get_by_role("button", name="Verwijder 'test.txt")
+                ).to_be_visible()
                 await page.get_by_role("button", name="Volgende").click()
                 await page.get_by_role("button", name="Verzenden").click()
                 await expect(
@@ -147,6 +152,11 @@ class FillInFormTests(E2ETestCase):
                 uploaded_file = page.get_by_role("link", name="test.msg")
                 await expect(uploaded_file).to_be_visible()
 
+                # wait for the upload to complete, indicated by the 'delete' button
+                # being available
+                await expect(
+                    page.get_by_role("button", name="Verwijder 'test.msg")
+                ).to_be_visible()
                 await page.get_by_role("button", name="Volgende").click()
                 await page.get_by_role("button", name="Verzenden").click()
                 await expect(
