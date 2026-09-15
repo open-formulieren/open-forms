@@ -60,7 +60,8 @@ FROM node:24-bookworm-slim AS frontend-build
 WORKDIR /app
 
 # copy configuration/build files
-COPY ./*.json ./*.js /app/
+COPY ./patches /app/patches
+COPY ./*.json ./*.js ./*.mts .npmrc /app/
 
 # install WITH dev tooling
 RUN npm ci
@@ -75,7 +76,7 @@ RUN npm --prefix node_modules/@formatjs/cli ls --all --parseable \
 COPY ./src /app/src
 
 # build frontend
-RUN npm run build
+RUN npm run postinstall && npm run build
 
 # Stage 3 - Build docker image suitable for production
 FROM python:3.12-slim-bookworm
