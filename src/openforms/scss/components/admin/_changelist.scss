@@ -1,6 +1,7 @@
 // taken from changelists.css from django, which scopes things under
 // the #changelist ID. We use classnames since there's a chance a table like that is
 // not unique on the page.
+$django-admin-img: '../admin/img';
 
 .changelist {
   &--react {
@@ -24,7 +25,8 @@
             content: '';
             cursor: help;
             display: inline-block;
-            background-image: url(../admin/img/icon-unknown.svg);
+            // hack to prevent Vite from trying to resolve this asset
+            background-image: url('#{$django-admin-img}/icon-unknown.svg');
             width: 13px;
             height: 13px;
             margin-left: 3px;
