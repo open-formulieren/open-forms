@@ -28,6 +28,7 @@ def validate_object_ownership(
 
     log = logger.bind(
         submission_uuid=str(submission.uuid),
+        submission_pk=submission.pk,
         object_reference=submission.initial_data_reference,
         object_attribute=object_attribute,
     )
