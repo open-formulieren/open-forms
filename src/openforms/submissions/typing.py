@@ -14,3 +14,6 @@ class SubmissionCosignData(TypedDict):
     attribute: AuthAttribute
     value: str
     cosign_date: datetime
+
+
+type EmailVerificationComponentType = Literal["email", "customerProfile"]
