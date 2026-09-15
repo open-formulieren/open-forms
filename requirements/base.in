@@ -68,6 +68,7 @@ django-structlog[celery]
 django-tinymce
 django-treebeard
 django-upgrade-check
+django-vite
 django-yubin
 mozilla-django-oidc<5.0  # mozilla-django-oidc-db needs to be updated first
 mozilla-django-oidc-db[setup-configuration]
