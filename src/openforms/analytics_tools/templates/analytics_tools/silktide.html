@@ -1,0 +1,18 @@
+{% load solo_tags %}
+{% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
+
+{% if analytics_tools_config.is_silktide_enabled %}
+<script
+    id="silktide-analytics"
+    defer
+    src="https://analytics.silktide.com/{{ analytics_tools_config.silktide_site_id|escapejs }}.js">
+</script>
+<script id="silktide-page-load" nonce="{{ request.csp_nonce }}">
+  (function (s, i, l, k, y) {
+    s[i] = s[i] || y;
+    s[l] = s[l] || [];
+    s[k] = function(e, p) { p = p || {}; p.event = e; p.time = Date.now(); s[l].push(p); };
+    s[k]('page_load');
+  })(window, 'stConfig', 'stEvents', 'silktide', {});
+</script>
+{% endif %}

@@ -1,0 +1,14 @@
+[
+    {
+        "directive": "default-src",
+        "value": "https://analytics.silktide.com"
+    },
+    {
+        "directive": "script-src",
+        "value": "https://analytics.silktide.com"
+    },
+    {
+        "directive": "connect-src",
+        "value": "https://a.eu.silktide.com"
+    }
+]

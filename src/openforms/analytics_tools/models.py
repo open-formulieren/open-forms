@@ -106,6 +106,10 @@ DYNAMIC_TOOL_CONFIGURATION = {
         enable_field_name="enable_siteimprove_analytics",
         is_enabled_property="is_siteimprove_enabled",
     ),
+    AnalyticsTools.silktide: ToolConfiguration(
+        enable_field_name="enable_silktide_analytics",
+        is_enabled_property="is_silktide_enabled",
+    ),
     AnalyticsTools.govmetric: ToolConfiguration(
         enable_field_name="enable_govmetric_analytics",
         is_enabled_property="is_govmetric_enabled",
@@ -232,6 +236,21 @@ class AnalyticsToolsConfiguration(SingletonModel):
         _("enable siteImprove analytics"),
         default=False,
         help_text=_("Enabling this installs SiteImprove"),
+    )
+    silktide_site_id = models.CharField(
+        _("Silktide site ID"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "Your Silktide site ID - you can find this from the embed snippet example, "
+            "which should contain a URL like 'https://analytics.silktide.com/XXXXX.js'. "
+            "The XXXXX is your site ID."
+        ),
+    )
+    enable_silktide_analytics = models.BooleanField(
+        _("enable Silktide analytics"),
+        default=False,
+        help_text=_("Enabling this installs Silktide"),
     )
     govmetric_source_id_form_aborted = models.CharField(
         _("GovMetric source ID form aborted"),
@@ -392,6 +411,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
         )
 
     @property
+    def is_silktide_enabled(self) -> bool:
+        return bool(
+            self.silktide_site_id
+            and self.enable_silktide_analytics
+            and self.analytics_cookie_consent_group
+        )
+
+    @property
     def is_google_analytics_enabled(self) -> bool:
         ga_or_gtm_configured = bool(self.ga_code) or bool(self.gtm_code)
         return bool(
@@ -483,6 +510,12 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 _(
                     "If you enable {analytics_tool}, you must fill out all the required fields"
                 ).format(analytics_tool="SiteImprove")
+            )
+        if self.enable_silktide_analytics and not self.is_silktide_enabled:
+            raise ValidationError(
+                _(
+                    "If you enable {analytics_tool}, you must fill out all the required fields"
+                ).format(analytics_tool="Silktide")
             )
         if self.enable_piwik_pro_site_analytics and self.enable_piwik_pro_tag_manager:
             raise ValidationError(

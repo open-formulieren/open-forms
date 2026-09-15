@@ -1177,6 +1177,7 @@ CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         # base-uri does not fall back to default-src
         "base-uri": [csp.constants.SELF],
+        "connect-src": _csp_default_src,
         "default-src": _csp_default_src,
         "font-src": _csp_default_src,
         # Allow any 'https:' host, as we don't know in advance which target is used by eHerkenning.
