@@ -214,6 +214,7 @@ django==5.2.17
     #   django-treebeard
     #   django-two-factor-auth
     #   django-upgrade-check
+    #   django-vite
     #   djangorestframework
     #   drf-jsonschema-serializer
     #   drf-nested-routers
@@ -420,6 +421,10 @@ django-two-factor-auth==1.18.1
     #   -r requirements/ci.txt
     #   maykin-2fa
 django-upgrade-check==1.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-vite==3.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
