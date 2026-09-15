@@ -162,6 +162,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "Attachment Informatieobjecttype other catalog",
             "upload_submission_csv": True,
             "organisatie_rsin": "123456782",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -255,6 +256,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -292,6 +294,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": True,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -351,6 +354,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 }
             """
             ),
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -404,6 +408,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "Attachment Informatieobjecttype",
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -488,6 +493,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "Attachment Informatieobjecttype",
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -608,6 +614,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "title": "A Custom Title",
                 }
             ],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -671,6 +678,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -723,6 +731,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "iot_attachment": "",
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -761,6 +770,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "update_existing_object": False,
             "auth_attribute_path": [],
             "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -820,6 +830,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "update_existing_object": False,
             "auth_attribute_path": [],
             "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -913,6 +924,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 }
                 """
             ),
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -997,6 +1009,7 @@ class V1HandlerTests(TestCase):
                 }
                 """
             ),
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV1Handler()
 
@@ -1050,6 +1063,7 @@ class V1HandlerTests(TestCase):
                 }
                 """
             ),
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV1Handler()
 
@@ -1080,9 +1094,130 @@ class V1HandlerTests(TestCase):
             "update_existing_object": False,
             "auth_attribute_path": [],
             "content_json": """{"amount": {{ payment.amount }}}""",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV1Handler()
 
         record_data = handler.get_record_data(submission=submission, options=options)
 
         self.assertEqual(record_data["data"]["amount"], 10)
+
+    def test_serialize_empty_datelike_fields_to_empty_string_option_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+        step = submission.submissionstep_set.get()
+        assert step.form_step is not None
+        slug = step.form_step.form_definition.slug
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
+            "version": 1,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "productaanvraag_type": "-dummy-",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "content_json": """
+                {"summary": {% json_summary %}, "date": "{{ variables.date }}"}
+            """,
+            "use_empty_string_for_empty_datelike_variables": True,
+        }
+        handler = ObjectsAPIV1Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=options)
+
+        values = record_data["data"]
+        self.assertEqual(
+            values,
+            {
+                "date": "",
+                "summary": {slug: {"date": "", "datetime": "", "time": ""}},
+            },
+        )
+
+    def test_serialize_empty_datelike_fields_to_empty_string_option_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+        step = submission.submissionstep_set.get()
+        assert step.form_step is not None
+        slug = step.form_step.form_definition.slug
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
+            "version": 1,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "productaanvraag_type": "-dummy-",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "content_json": """
+                {"summary": {% json_summary %}, "date": "{{ variables.date }}"}
+            """,
+            "use_empty_string_for_empty_datelike_variables": False,
+        }
+        handler = ObjectsAPIV1Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=options)
+
+        values = record_data["data"]
+        self.assertEqual(
+            values,
+            {
+                "date": "None",
+                "summary": {slug: {"date": None, "datetime": None, "time": None}},
+            },
+        )

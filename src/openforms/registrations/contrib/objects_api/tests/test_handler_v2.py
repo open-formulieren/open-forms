@@ -73,6 +73,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -130,6 +131,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -176,6 +178,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -210,6 +213,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -273,6 +277,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -336,6 +341,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -411,6 +417,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         submission = SubmissionFactory.create(
@@ -525,6 +532,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -663,6 +671,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -732,6 +741,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -786,6 +796,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -836,6 +847,7 @@ class V2HandlerTests(TestCase):
             "iot_submission_csv": "",
             "iot_submission_report": "",
             "transform_to_list": ["selectBoxes1"],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -923,6 +935,7 @@ class V2HandlerTests(TestCase):
             "iot_submission_csv": "",
             "iot_submission_report": "",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 

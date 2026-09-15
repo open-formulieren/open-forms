@@ -74,6 +74,7 @@ class SubmissionContext(TypedDict):
 
 class JSONTemplateContext(TypedDict):
     _submission: Submission
+    _use_legacy_mode_for_datelike: bool
     productaanvraag_type: str
     payment: PaymentContextData
     cosign_data: CosignContextData | None
@@ -81,7 +82,11 @@ class JSONTemplateContext(TypedDict):
     submission: SubmissionContext
 
 
-def _get_variables_for_context(submission: Submission) -> dict[str, VariableValue]:
+def _get_variables_for_context(
+    submission: Submission,
+    *,
+    use_legacy_mode_for_datelike: bool = False,
+) -> dict[str, VariableValue]:
     """
     Return the key/value pairs of data in the state (static, user-defined, and component
     variables). If specified in the settings, strings will be escaped for HTML.
@@ -97,7 +102,9 @@ def _get_variables_for_context(submission: Submission) -> dict[str, VariableValu
     # ``get_variables_for_context``
     for variable in state.saved_variables.values():
         if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-            data[variable.key] = variable.to_json()
+            data[variable.key] = variable.to_json(
+                use_legacy_mode_for_datelike=use_legacy_mode_for_datelike
+            )
     data.update(
         {
             variable.key: variable.initial_value
@@ -120,13 +127,18 @@ def render_template(
     uploaded_attachment_urls: Sequence[str],
     pdf_url: str,
     csv_url: str,
+    use_legacy_mode_for_datelike: bool = False,
 ) -> JSONObject:
     context: JSONTemplateContext = {
         "_submission": submission,
+        "_use_legacy_mode_for_datelike": use_legacy_mode_for_datelike,
         "productaanvraag_type": product_request_type,
         "payment": get_payment_context_data(submission),
         "cosign_data": get_cosign_context_data(submission),
-        "variables": _get_variables_for_context(submission),
+        "variables": _get_variables_for_context(
+            submission,
+            use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
+        ),
         # Github issue #661, nested for namespacing note: other templates and context expose all submission
         # variables in the top level namespace, but that is due for refactor
         "submission": {
