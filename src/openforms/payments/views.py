@@ -27,6 +27,7 @@ from rest_framework.views import APIView
 from openforms.api.parsers import PlainTextParser
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.logging import audit_logger
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import Submission
@@ -448,6 +449,8 @@ class PaymentLinkView(DetailView):
         context = super().get_context_data(**kwargs)
 
         submission = self.get_object()
+        if submission.form.theme:
+            context[THEME_OVERRIDE_CONTEXT_VAR] = submission.form.theme
         context["price"] = submission.price
 
         if submission.payment_required and not submission.payment_user_has_paid:
