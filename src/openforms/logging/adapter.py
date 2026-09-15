@@ -865,7 +865,7 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
                 "object_ownership_failure": "object_ownership_check_failure",
             }
 
-            submission = Submission.objects.get(uuid=submission_uuid)
+            assert submission is not None
             _plugin: PrefillBasePlugin | RegistrationBasePlugin | None = event_dict.get(
                 "plugin"
             )
