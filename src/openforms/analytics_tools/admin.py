@@ -44,6 +44,12 @@ class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             },
         ),
         (
+            _("Analytics: Silktide"),
+            {
+                "fields": ("silktide_site_id", "enable_silktide_analytics"),
+            },
+        ),
+        (
             _("Analytics: Piwik"),
             {
                 "fields": ("piwik_url", "piwik_site_id", "enable_piwik_site_analytics"),
