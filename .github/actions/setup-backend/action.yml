@@ -35,4 +35,5 @@ runs:
         optimize-postgres: ${{ inputs.optimize-postgres }}
         pg-service: 'postgres'
         setup-node: ${{ inputs.setup-node }}
+        npm-ci-flags: '&& npm run postinstall'  # not a flag, but a hack :grimacing:
         working-directory: ${{ inputs.working-directory }}
