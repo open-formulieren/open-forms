@@ -131,3 +131,10 @@ class ExtractVariablesTests(SimpleTestCase):
                 "finalVar",
             },
         )
+
+    def test_lorem_node(self):
+        source = "{% lorem 2 w random %}"
+
+        variable_names = set(extract_variables_used(source))
+
+        self.assertEqual(variable_names, set())
