@@ -95,6 +95,19 @@
     color: var(--body-fg);
   }
 
+  .btn-light {
+    background-color: #333;
+    border-color: var(--hairline-color);
+    color: var(--body-fg);
+
+    &:hover,
+    &:focus {
+      background-color: #444;
+      border-color: var(--hairline-color);
+      color: var(--body-fg);
+    }
+  }
+
   .nav-tabs {
     .nav-link.active {
       color: var(--body-fg);
