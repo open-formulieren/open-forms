@@ -17,3 +17,4 @@ class GenericJSONOptions(TypedDict):
     fixed_metadata_variables: list[str]
     additional_metadata_variables: list[str]
     transform_to_list: list[str]
+    use_empty_string_for_empty_datelike_variables: bool

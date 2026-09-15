@@ -49,7 +49,11 @@ class GenericJSONRegistration(BasePlugin):
 
         # Values
         post_process_component = build_post_process_component_hook(
-            submission=submission, transform_to_list=options["transform_to_list"]
+            submission=submission,
+            transform_to_list=options["transform_to_list"],
+            use_empty_string_for_empty_datelike_variables=options[
+                "use_empty_string_for_empty_datelike_variables"
+            ],
         )
         document_data = get_json_data(
             submission,
@@ -200,6 +204,7 @@ class GenericJSONRegistration(BasePlugin):
 def build_post_process_component_hook(
     submission: Submission,
     transform_to_list: list[str] | None = None,
+    use_empty_string_for_empty_datelike_variables: bool = False,
 ) -> ComponentPostProcessHook:
     """
     Build a callback function for component-specific post-processing.
@@ -220,6 +225,7 @@ def build_post_process_component_hook(
         process_component,
         attachments=attachments_dict,
         transform_to_list=transform_to_list,
+        use_empty_string_for_empty_datelike_variables=use_empty_string_for_empty_datelike_variables,
     )
     return post_process_component
 
@@ -231,6 +237,7 @@ def process_component(
     attachments: dict[str, list[SubmissionFileAttachment]],
     current_data_path: str = "",
     transform_to_list: list[str] | None = None,
+    use_empty_string_for_empty_datelike_variables: bool = False,
 ) -> VariableValue:
     """Process a component.
 
@@ -288,6 +295,10 @@ def process_component(
             assert isinstance(value, Mapping)
             return [option for option, is_selected in value.items() if is_selected]
 
+        case {"type": "date" | "datetime" | "time"} if (
+            value is None and use_empty_string_for_empty_datelike_variables
+        ):
+            return ""
         case _:
             return value
 

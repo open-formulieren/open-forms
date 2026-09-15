@@ -281,23 +281,16 @@ class SingleDateTests(ValidationsTestCase):
             "label": "Required date field",
             "validate": {"required": True},
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "minDate": None,
                 "maxDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required date field is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_date_fixed_value(self):
@@ -309,17 +302,9 @@ class SingleDateTests(ValidationsTestCase):
                 "minDate": {"mode": "fixedValue"},
             },
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "minDate": "2024-03-13",
                 "maxDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
@@ -338,17 +323,9 @@ class SingleDateTests(ValidationsTestCase):
                 "maxDate": {"mode": "fixedValue"},
             },
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "maxDate": "2024-03-13",
                 "minDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
@@ -394,23 +371,16 @@ class SingleDatetimeTests(ValidationsTestCase):
             **self.JS_CONFIG,
             "validate": {"required": True},
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "minDate": None,
                 "maxDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required datetime field is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_date_fixed_value(self):
@@ -423,17 +393,9 @@ class SingleDatetimeTests(ValidationsTestCase):
                 "minDate": {"mode": "fixedValue"},
             },
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "minDate": "2024-03-13T11:00",  # Europe/Amsterdam timezone?
                 "maxDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
@@ -453,17 +415,9 @@ class SingleDatetimeTests(ValidationsTestCase):
                 "maxDate": {"mode": "fixedValue"},
             },
             "datePicker": {
-                "showWeeks": True,
-                "startingDay": 0,
-                "initDate": "",
-                "minMode": "day",
-                "maxMode": "year",
-                "yearRows": 4,
-                "yearColumns": 5,
                 "maxDate": "2024-03-13T12:00:00+00:00",
                 "minDate": None,
             },
-            "customOptions": {"allowInvalidPreload": True},
         }
 
         self.assertValidationIsAligned(
@@ -646,6 +600,7 @@ class SingleTimeTests(ValidationsTestCase):
             component,
             ui_input="",
             expected_ui_error="Het verplichte veld Required time is niet ingevuld.",
+            api_value=None,
         )
 
     def test_min_value(self):

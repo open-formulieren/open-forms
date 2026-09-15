@@ -384,6 +384,11 @@
     "description": "Objects API prefill options: object type select error",
     "originalDefault": "Something went wrong while retrieving the available object types."
   },
+  "7/0umK": {
+    "defaultMessage": "Use empty string for empty date, datetime and time values",
+    "description": "JSON registration options: useEmptyStringForEmptyDatelikeVariables label",
+    "originalDefault": "Use empty string for empty date, datetime and time values"
+  },
   "7/Bhpw": {
     "defaultMessage": "Vul eerst de naam van de vorige variabele in voor u een nieuwe toevoegt",
     "description": "Warning to finish invalid user defined variable",
@@ -1055,6 +1060,11 @@
     "description": "Reset submissions counter",
     "originalDefault": "Reset submissions counter"
   },
+  "GJYjE8": {
+    "defaultMessage": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of <code>null</code>. This option will be removed in Open Forms 5.0.",
+    "description": "JSON registration options: useEmptyStringForEmptyDatelikeVariables helpText",
+    "originalDefault": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of <code>null</code>. This option will be removed in Open Forms 5.0."
+  },
   "GO9yud": {
     "defaultMessage": "Datum en tijdstip waarop het formulier geactiveerd moet worden.",
     "description": "Form activation field help text",
@@ -1541,6 +1551,11 @@
     "description": "JSON datatype selector label",
     "isTranslated": true,
     "originalDefault": "Type"
+  },
+  "O9LxJQ": {
+    "defaultMessage": "Legacy options",
+    "description": "Legacy options fieldset title",
+    "originalDefault": "Legacy options"
   },
   "OB48En": {
     "defaultMessage": "Design token waarden",
