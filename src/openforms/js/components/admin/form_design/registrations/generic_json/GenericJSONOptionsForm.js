@@ -19,6 +19,7 @@ import {
   FixedMetadataVariables,
   Path,
   ServiceSelect,
+  UseEmptyStringForEmptyDatelikeVariables,
   Variables,
 } from './fields';
 
@@ -59,6 +60,7 @@ const GenericJSONOptionsForm = ({name, label, schema, formData, onChange}) => {
         fixedMetadataVariables: fixedMetadataVariables || [],
         additionalMetadataVariables: [],
         transformToList: [],
+        useEmptyStringForEmptyDatelikeVariables: false,
         ...formData,
       }}
       onSubmit={values => onChange({formData: values})}
@@ -85,6 +87,20 @@ const GenericJSONOptionsForm = ({name, label, schema, formData, onChange}) => {
           <FixedMetadataVariables />
           <AdditionalMetadataVariables />
         </Fieldset>
+
+        <Fieldset
+          title={
+            <FormattedMessage
+              description="Legacy options fieldset title"
+              defaultMessage="Legacy options"
+            />
+          }
+          extraClassName="openforms-fieldset"
+          collapsible
+          initialCollapsed
+        >
+          <UseEmptyStringForEmptyDatelikeVariables />
+        </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
   );
@@ -107,6 +123,7 @@ GenericJSONOptionsForm.propTypes = {
     variables: PropTypes.arrayOf(PropTypes.string),
     fixedMetadataVariables: PropTypes.arrayOf(PropTypes.string),
     additionalMetadataVariables: PropTypes.arrayOf(PropTypes.string),
+    useEmptyStringForEmptyDatelikeVariables: PropTypes.bool,
   }),
   onChange: PropTypes.func.isRequired,
 };
