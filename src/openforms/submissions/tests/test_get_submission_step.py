@@ -859,8 +859,10 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
 
     def test_empty_values_for_date_related_components(self):
         """
-        Ensure empty values of date-related components are properly serialized
-        (we convert them to ``None`` in our Python type domain).
+        Ensure empty values of date-related components are properly serialized.
+
+        As of Open Forms 4.1, the intrinsic empty data value is ``None`` rather than
+        Formio's empty string.
         """
         submission = SubmissionFactory.from_components(
             [
@@ -896,7 +898,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["data"],
-            {"date": "", "time": "", "datetime": ""},
+            {"date": None, "time": None, "datetime": None},
         )
 
     @patch(
@@ -1095,7 +1097,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "Textfield"},
                 ]
             },
-            "data": {"dateOfBirth": "", "textfield": ""},
+            "data": {"dateOfBirth": None, "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [
@@ -1180,7 +1182,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "I am a label!"},
                 ]
             },
-            "data": {"dateOfBirth": "", "textfield": ""},
+            "data": {"dateOfBirth": None, "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
@@ -1245,7 +1247,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "Textfield"},
                 ]
             },
-            "data": {"dateOfBirth": "", "textfield": ""},
+            "data": {"dateOfBirth": None, "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
