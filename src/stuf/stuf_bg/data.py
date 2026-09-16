@@ -21,7 +21,7 @@ class NaturalPersonDetails(BaseModel):
     initials: str = ""
     affixes: str = ""
     last_name: str = ""
-    date_of_birth: str = ""
+    date_of_birth: str | None = None
     deceased: bool | None = None
 
     @property
