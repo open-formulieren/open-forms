@@ -19,6 +19,7 @@ import {
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,
+  UseEmptyStringForEmptyDatelikeVariables,
 } from './fields';
 
 /**
@@ -132,6 +133,19 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
       >
         <UploadSubmissionCsv />
         <OrganisationRSIN />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Legacy options fieldset title"
+            defaultMessage="Legacy options"
+          />
+        }
+        collapsible
+        initialCollapsed
+      >
+        <UseEmptyStringForEmptyDatelikeVariables />
       </Fieldset>
     </>
   );

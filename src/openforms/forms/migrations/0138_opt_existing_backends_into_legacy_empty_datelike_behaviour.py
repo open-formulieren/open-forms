@@ -3,14 +3,14 @@
 from django.db import migrations
 from django.db.migrations.state import StateApps
 
-BACKENDS = ("json_dump",)
+BACKENDS = ("json_dump", "objects_api")
 
 
 def opt_into_legacy(apps: StateApps, _):
     FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
     for backend in FormRegistrationBackend.objects.filter(backend__in=BACKENDS):
         match backend.backend:
-            case "json_dump":
+            case "json_dump" | "objects_api":
                 if "use_empty_string_for_empty_datelike_variables" in backend.options:
                     continue
                 backend.options["use_empty_string_for_empty_datelike_variables"] = True
