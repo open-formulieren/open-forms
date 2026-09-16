@@ -17,6 +17,7 @@ class GenericJSONConfig(TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         # Ensuring that the options are valid in the first place
