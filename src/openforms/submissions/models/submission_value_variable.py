@@ -722,6 +722,10 @@ class SubmissionValueVariable(models.Model):
             return value
 
         if data_type == FormVariableDataTypes.date:
+            # as of 4.1, the empty value is None and no longer the empty strong, however
+            # existing data may exist in the database that still has empty strings. This
+            # code path can be removed 90 days after 4.1 is generally available, so that
+            # would be as part of the 4.4 development cycle.
             if value == "":
                 return None
 
@@ -742,6 +746,10 @@ class SubmissionValueVariable(models.Model):
             return timezone.make_aware(maybe_naive_datetime).date()
 
         if data_type == FormVariableDataTypes.datetime:
+            # as of 4.1, the empty value is None and no longer the empty strong, however
+            # existing data may exist in the database that still has empty strings. This
+            # code path can be removed 90 days after 4.1 is generally available, so that
+            # would be as part of the 4.4 development cycle.
             if value == "":
                 return None
 
@@ -756,6 +764,10 @@ class SubmissionValueVariable(models.Model):
             return timezone.make_aware(maybe_naive_datetime)
 
         if data_type == FormVariableDataTypes.time:
+            # as of 4.1, the empty value is None and no longer the empty strong, however
+            # existing data may exist in the database that still has empty strings. This
+            # code path can be removed 90 days after 4.1 is generally available, so that
+            # would be as part of the 4.4 development cycle.
             if value == "":
                 return None
 
