@@ -14,6 +14,21 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.1.0 (2027-01-??)
+==================
+
+Upgrade procedure
+-----------------
+
+To upgrade to 4.1, please:
+
+* ⚠️ Ensure you are currently on Open Forms 4.0.1 or newer.
+* ⚠️ Review the :ref:`detailed release notes <installation_upgrade_410>` in the
+  documentation under **Installation** > **Upgrade details to Open Forms 4.1.0** and
+  prepare accordingly.
+
+.. todo:: Rest of the release notes in due time.
+
 4.0.1 (2026-09-14)
 ==================
 
