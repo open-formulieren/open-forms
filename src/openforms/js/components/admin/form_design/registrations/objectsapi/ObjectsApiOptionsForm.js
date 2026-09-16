@@ -31,6 +31,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
       }
       initialFormData={{
         version,
+        useEmptyStringForEmptyDatelikeVariables: false,
         // Only for version 2 we set the `variablesMapping`
         variablesMapping: version === 2 ? [] : undefined,
         ...formData,
