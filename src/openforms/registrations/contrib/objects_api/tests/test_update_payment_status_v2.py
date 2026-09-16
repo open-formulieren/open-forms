@@ -138,6 +138,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             ],
             "geometry_variable_key": "location",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
