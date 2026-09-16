@@ -807,6 +807,43 @@ class FormLogicTests(TestCase):
         self.assertEqual(rule.input_variable_keys, {"checkbox", "user_defined_number"})
         self.assertEqual(rule.output_variable_keys, {"num.ber", "textfield"})
 
+    def test_input_and_output_variable_keys_handles_incomplete_service_fetch(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            source=FormVariableSources.user_defined,
+            key="user_defined_number",
+            form=form,
+            data_type=FormVariableDataTypes.int,
+            service_fetch_configuration=None,
+        )
+
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                # incomplete service fetch configuration may not cause crashes
+                {
+                    "action": {
+                        "type": "fetch-from-service",
+                    },
+                    "variable": "user_defined_number",
+                }
+            ],
+        )
+
+        self.assertEqual(rule.input_variable_keys, {"checkbox"})
+
     def test_resolve_steps(self):
         form = FormFactory.create()
         step_1 = FormStepFactory.create(

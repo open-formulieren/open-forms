@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from copy import copy, deepcopy
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from django.db import models, transaction
 from django.db.models import CheckConstraint, F, Q
@@ -37,6 +37,9 @@ from openforms.variables.utils import check_initial_value
 
 from .form import Form
 from .form_definition import FormDefinition
+
+if TYPE_CHECKING:
+    from openforms.variables.models import ServiceFetchConfiguration  # noqa: F401
 
 EMPTY_PREFILL_PLUGIN = Q(prefill_plugin="")
 EMPTY_PREFILL_ATTRIBUTE = Q(prefill_attribute="")
@@ -278,7 +281,7 @@ class FormVariable(models.Model):
         choices=FormVariableSources.choices,
         max_length=50,
     )
-    service_fetch_configuration = models.ForeignKey(
+    service_fetch_configuration = models.ForeignKey["ServiceFetchConfiguration | None"](
         verbose_name=_("service fetch configuration"),
         to="variables.ServiceFetchConfiguration",
         blank=True,
