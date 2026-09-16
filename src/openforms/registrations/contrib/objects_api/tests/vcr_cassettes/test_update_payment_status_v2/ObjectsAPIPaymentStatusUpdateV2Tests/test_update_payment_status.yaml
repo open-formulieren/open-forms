@@ -25,8 +25,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/47d41f40-eadb-44a9-b831-d35dec24722c","uuid":"47d41f40-eadb-44a9-b831-d35dec24722c","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"references":[],"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/d7c7f693-903d-49aa-8116-dff4eb36b133","uuid":"d7c7f693-903d-49aa-8116-dff4eb36b133","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"references":[],"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -37,17 +37,16 @@ interactions:
       Content-Length:
       - '713'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/47d41f40-eadb-44a9-b831-d35dec24722c
+      - http://localhost:8001/api/v2/objects/d7c7f693-903d-49aa-8116-dff4eb36b133
       Referrer-Policy:
       - same-origin
       Vary:
@@ -83,11 +82,10 @@ interactions:
       Content-Length:
       - '857'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -124,11 +122,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: PATCH
-    uri: http://localhost:8001/api/v2/objects/47d41f40-eadb-44a9-b831-d35dec24722c
+    uri: http://localhost:8001/api/v2/objects/d7c7f693-903d-49aa-8116-dff4eb36b133
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/47d41f40-eadb-44a9-b831-d35dec24722c","uuid":"47d41f40-eadb-44a9-b831-d35dec24722c","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"references":[],"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/d7c7f693-903d-49aa-8116-dff4eb36b133","uuid":"d7c7f693-903d-49aa-8116-dff4eb36b133","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"references":[],"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -139,11 +137,10 @@ interactions:
       Content-Length:
       - '770'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:

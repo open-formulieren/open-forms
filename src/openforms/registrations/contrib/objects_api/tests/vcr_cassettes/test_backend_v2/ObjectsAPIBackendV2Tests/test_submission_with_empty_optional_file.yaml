@@ -24,11 +24,10 @@ interactions:
       Content-Length:
       - '603'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -46,7 +45,7 @@ interactions:
       message: OK
 - request:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
-      "record": {"typeVersion": 1, "data": {"single_file": ""}, "startAt": "2026-08-17"}}'
+      "record": {"typeVersion": 1, "data": {"single_file": ""}, "startAt": "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -66,7 +65,7 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/e1c7643e-3db0-42f9-b05e-50f39bf3a1c1","uuid":"e1c7643e-3db0-42f9-b05e-50f39bf3a1c1","type":"http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/b67c5362-d51a-4c5d-98d3-da75ff600c42","uuid":"b67c5362-d51a-4c5d-98d3-da75ff600c42","type":"http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -77,17 +76,16 @@ interactions:
       Content-Length:
       - '417'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/e1c7643e-3db0-42f9-b05e-50f39bf3a1c1
+      - http://localhost:8001/api/v2/objects/b67c5362-d51a-4c5d-98d3-da75ff600c42
       Referrer-Policy:
       - same-origin
       Vary:
