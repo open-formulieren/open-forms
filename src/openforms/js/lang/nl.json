@@ -2169,6 +2169,11 @@
     "description": "ZGW APIs defaults override informative message",
     "originalDefault": "Any configuration option specified here overrides the matching option of the selected API group."
   },
+  "Zku2Mw": {
+    "defaultMessage": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of <code>null</code>. This option will be removed in Open Forms 5.0.",
+    "description": "Objects API registration options 'useEmptyStringForEmptyDatelikeVariables' helpText",
+    "originalDefault": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of <code>null</code>. This option will be removed in Open Forms 5.0."
+  },
   "ZzjFxE": {
     "defaultMessage": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?",
     "description": "Objects API registration options: warning message when changing the api group",
@@ -2776,6 +2781,11 @@
     "defaultMessage": "Nee",
     "description": "Component property boolean value \"false\"",
     "originalDefault": "No"
+  },
+  "jb9aE2": {
+    "defaultMessage": "Use empty string for empty date, datetime and time values",
+    "description": "Objects API registration options 'useEmptyStringForEmptyDatelikeVariables' label",
+    "originalDefault": "Use empty string for empty date, datetime and time values"
   },
   "jitewC": {
     "defaultMessage": "HTTP-method",
