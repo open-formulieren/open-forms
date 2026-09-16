@@ -63,3 +63,13 @@ them to the above form:
 
     {% if someDate != '' %}someDate is not empty{% endif %}
     {% if someTime == '' %}someTime is empty{% endif %}
+
+Partners/children component edge case
+-------------------------------------
+
+We have identified an edge case where partners or children with partial dates for their
+date of birth would lead to problems, as the input validation requires the date of birth
+field to be provided. Partial dates are currently not handled and instead changed to the
+empty value. Here too, the empty string becomes ``null``, but there's a bigger issue that
+needs to be solved as we don't currently believe these forms are usable for people with
+partial birthdates.
