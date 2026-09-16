@@ -629,7 +629,7 @@ class SubmissionValueVariable(models.Model):
             value["dateOfBirth"] = self._value_to_json(
                 value["dateOfBirth"],
                 FormVariableDataTypes.date,
-                use_legacy_mode_for_datelike=True,
+                use_legacy_mode_for_datelike=False,
             )
             return value
 
@@ -637,7 +637,7 @@ class SubmissionValueVariable(models.Model):
             value["dateOfBirth"] = self._value_to_json(
                 value["dateOfBirth"],
                 FormVariableDataTypes.date,
-                use_legacy_mode_for_datelike=True,
+                use_legacy_mode_for_datelike=False,
             )
             return value
 

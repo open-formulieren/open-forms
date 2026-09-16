@@ -583,7 +583,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "",
+                "dateOfBirth": None,
                 "deceased": False,
             },
         ]
@@ -671,7 +671,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "",
+                "dateOfBirth": None,
                 "deceased": False,
             },
         ]
@@ -759,7 +759,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "",
+                "dateOfBirth": None,
                 "deceased": False,
             },
             {
@@ -868,7 +868,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "",
+                "dateOfBirth": None,
                 "deceased": False,
             },
         ]
@@ -877,9 +877,9 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
         )
 
-        # Partial dates will be converted to empty strings for the partner component.
-        expected_data[1]["dateOfBirth"] = ""
-        expected_data[2]["dateOfBirth"] = ""
+        # Partial dates will be converted to None for the partner component.
+        expected_data[1]["dateOfBirth"] = None
+        expected_data[2]["dateOfBirth"] = None
 
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
