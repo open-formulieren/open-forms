@@ -62,10 +62,11 @@ const transformInitialValue = (newType, originalValue) => {
       return {};
 
     case 'string':
+      return '';
     case 'datetime':
     case 'date':
     case 'time':
-      return '';
+      return null;
 
     default:
       return originalValue;
