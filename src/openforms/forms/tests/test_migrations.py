@@ -582,3 +582,95 @@ class FixMinMaxTimeDefaultValuesTimeComponentTests(MigratorTestCase):
                 ]
             },
         )
+
+
+class EnableEmptyStringLegacyBehaviourTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0137_normalize_datelike_empty_default_value",
+    )
+    migrate_to = (
+        "forms",
+        "0138_opt_existing_backends_into_legacy_empty_datelike_behaviour",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        form = Form.objects.create(name="Regular form")
+        # irrelevant plugin
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="email",
+            name="Email",
+            backend="email",
+            options={"to_emails": [], "attach_files_to_email": None},
+        )
+        # generic json -> needs to be updated if the key is not present yet
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="genericJson1",
+            name="Generic JSON 1",
+            backend="json_dump",
+            options={
+                "service": 1,
+                "variables": [],
+                "fixed_metadata_variables": [],
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="genericJson2",
+            name="Generic JSON 2",
+            backend="json_dump",
+            options={
+                "service": 1,
+                "variables": [],
+                "fixed_metadata_variables": [],
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
+
+    def test_migration(self):
+        Form = self.new_state.apps.get_model("forms", "Form")
+        form = Form.objects.get()
+
+        backends = {
+            backend.key: backend.options for backend in form.registration_backends.all()
+        }
+
+        with self.subTest("email unmodified"):
+            email_options = backends["email"]
+
+            self.assertEqual(
+                email_options,
+                {"to_emails": [], "attach_files_to_email": None},
+            )
+
+        with self.subTest("generic json modified"):
+            generic_json_1_options = backends["genericJson1"]
+
+            self.assertEqual(
+                generic_json_1_options,
+                {
+                    "service": 1,
+                    "variables": [],
+                    "fixed_metadata_variables": [],
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("generic json unmodified"):
+            generic_json_2_options = backends["genericJson2"]
+
+            self.assertEqual(
+                generic_json_2_options,
+                {
+                    "service": 1,
+                    "variables": [],
+                    "fixed_metadata_variables": [],
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )
