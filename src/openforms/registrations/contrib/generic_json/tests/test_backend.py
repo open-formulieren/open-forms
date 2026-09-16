@@ -95,6 +95,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -174,6 +175,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -237,6 +239,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -327,6 +330,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -396,6 +400,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -450,6 +455,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -509,6 +515,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -553,6 +560,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": ["selectBoxes2"],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -655,6 +663,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": ["selectBoxes2"],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -733,6 +742,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": ["selectBoxes2"],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -811,6 +821,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -868,6 +879,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -917,6 +929,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -967,6 +980,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1018,6 +1032,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1068,6 +1083,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1107,6 +1123,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1203,6 +1220,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1330,6 +1348,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -1444,6 +1463,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             ],
             "additional_metadata_variables": ["auth_type"],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         result = json_plugin.register_submission(submission, options)
         assert result is not None
@@ -1619,6 +1639,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -1713,6 +1734,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -1766,6 +1788,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -1899,6 +1922,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2062,6 +2086,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2239,6 +2264,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2417,6 +2443,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2603,6 +2630,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2809,6 +2837,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
@@ -2908,6 +2937,204 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 result["api_response"]["data"]["values_schema"], expected_schema
             )
 
+    def test_serialize_empty_datelike_fields_to_empty_string_option_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["date", "datetime", "time"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "date": "",
+            "datetime": "",
+            "time": "",
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "date": {
+                    "title": "Date",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "date",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+                "datetime": {
+                    "title": "Datetime",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "date-time",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+                "time": {
+                    "title": "Time",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "time",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+            },
+            "required": ["date", "datetime", "time"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_serialize_empty_datelike_fields_to_empty_string_option_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["date", "datetime", "time"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "date": None,
+            "datetime": None,
+            "time": None,
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "date": {
+                    "title": "Date",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "date",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+                "datetime": {
+                    "title": "Datetime",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "date-time",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+                "time": {
+                    "title": "Time",
+                    "oneOf": [
+                        {
+                            "type": ["string", "null"],
+                            "format": "time",
+                        },
+                        {
+                            "const": "",
+                        },
+                    ],
+                },
+            },
+            "required": ["date", "datetime", "time"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
 
 class GenericJSONRequestTests(TestCase):
     maxDiff = None
@@ -2936,6 +3163,7 @@ class GenericJSONRequestTests(TestCase):
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
         }
         json_plugin = GenericJSONRegistration("json_registration_plugin")
 
