@@ -25,12 +25,12 @@ interactions:
       Content-Length:
       - '802'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -70,12 +70,12 @@ interactions:
       Content-Length:
       - '52'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -117,12 +117,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -166,12 +166,12 @@ interactions:
       Content-Length:
       - '1727'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -215,11 +215,10 @@ interactions:
       Content-Length:
       - '5104'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -265,11 +264,10 @@ interactions:
       Content-Length:
       - '3468'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -311,12 +309,12 @@ interactions:
       Content-Length:
       - '802'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -356,12 +354,12 @@ interactions:
       Content-Length:
       - '52'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -403,12 +401,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -452,12 +450,12 @@ interactions:
       Content-Length:
       - '1727'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -501,11 +499,10 @@ interactions:
       Content-Length:
       - '5104'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -551,11 +548,10 @@ interactions:
       Content-Length:
       - '3468'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -597,12 +593,12 @@ interactions:
       Content-Length:
       - '802'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -642,12 +638,12 @@ interactions:
       Content-Length:
       - '52'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -689,12 +685,12 @@ interactions:
       Content-Length:
       - '1345'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -738,12 +734,12 @@ interactions:
       Content-Length:
       - '1727'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
-        frame-ancestors ''none''; worker-src ''self'' blob:; object-src ''none'';
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
-        cdn.jsdelivr.net; font-src ''self'' fonts.gstatic.com; img-src ''self'' data:
-        cdn.redoc.ly cdnjs.cloudflare.com tile.openstreetmap.org; form-action ''self'';
-        default-src ''self''; base-uri ''self''; frame-src ''self'''
+      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com cdnjs.cloudflare.com
+        cdn.jsdelivr.net; form-action ''self''; img-src ''self'' data: cdn.redoc.ly
+        cdnjs.cloudflare.com tile.openstreetmap.org; default-src ''self''; base-uri
+        ''self''; script-src ''self'' ''unsafe-inline'' cdnjs.cloudflare.com cdn.jsdelivr.net;
+        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; font-src
+        ''self'' fonts.gstatic.com; frame-ancestors ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -787,11 +783,10 @@ interactions:
       Content-Length:
       - '5104'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -837,11 +832,10 @@ interactions:
       Content-Length:
       - '3468'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
