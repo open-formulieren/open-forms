@@ -632,6 +632,67 @@ class EnableEmptyStringLegacyBehaviourTests(MigratorTestCase):
                 "use_empty_string_for_empty_datelike_variables": False,
             },
         )
+        # objects API -> needs to be updated if the key is not present yet
+        objects_base_options = {
+            "objects_api_group": "some-api-group",
+            "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+            "objecttype_version": 1,
+            # the rest of the properties get populated from the serializer defaults
+        }
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV1-1",
+            name="Objects API v1, 1",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 1,
+                "productaanvraag_type": "",
+                "content_json": "",
+                "payment_status_update_json": "",
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV1-2",
+            name="Objects API v1, 2",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 1,
+                "productaanvraag_type": "",
+                "content_json": "",
+                "payment_status_update_json": "",
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV2-1",
+            name="Objects API v2, 1",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 2,
+                "variables_mapping": [],
+                "geometry_variable_key": "",
+                "transform_to_list": [],
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV2-2",
+            name="Objects API v2, 2",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 2,
+                "variables_mapping": [],
+                "geometry_variable_key": "",
+                "transform_to_list": [],
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
 
     def test_migration(self):
         Form = self.new_state.apps.get_model("forms", "Form")
@@ -671,6 +732,74 @@ class EnableEmptyStringLegacyBehaviourTests(MigratorTestCase):
                     "service": 1,
                     "variables": [],
                     "fixed_metadata_variables": [],
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )
+
+        with self.subTest("objects api v1 modified"):
+            objects_v1_1_options = backends["objectsV1-1"]
+
+            self.assertEqual(
+                objects_v1_1_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 1,
+                    "productaanvraag_type": "",
+                    "content_json": "",
+                    "payment_status_update_json": "",
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("objects api v1 unmodified"):
+            objects_v1_2_options = backends["objectsV1-2"]
+
+            self.assertEqual(
+                objects_v1_2_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 1,
+                    "productaanvraag_type": "",
+                    "content_json": "",
+                    "payment_status_update_json": "",
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )
+
+        with self.subTest("objects api v2 modified"):
+            objects_v2_1_options = backends["objectsV2-1"]
+
+            self.assertEqual(
+                objects_v2_1_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 2,
+                    "variables_mapping": [],
+                    "geometry_variable_key": "",
+                    "transform_to_list": [],
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("objects api v2 unmodified"):
+            objects_v2_2_options = backends["objectsV2-2"]
+
+            self.assertEqual(
+                objects_v2_2_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 2,
+                    "variables_mapping": [],
+                    "geometry_variable_key": "",
+                    "transform_to_list": [],
                     "use_empty_string_for_empty_datelike_variables": False,
                 },
             )
