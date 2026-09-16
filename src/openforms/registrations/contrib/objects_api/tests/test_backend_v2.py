@@ -136,6 +136,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             ],
             "geometry_variable_key": "location",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -234,6 +235,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         submission.price = Decimal("40.00")
         submission.save()
@@ -331,6 +333,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -422,6 +425,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -514,6 +518,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -574,6 +579,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -641,6 +647,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "title": "Custom title",
                 },
             ],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -817,6 +824,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -914,6 +922,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             ],
             "transform_to_list": [],
             "upload_submission_csv": False,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -1008,6 +1017,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         prefill_variables(submission)
         handler = ObjectsAPIV2Handler()
@@ -1102,6 +1112,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         prefill_variables(submission)
         # the submitted data needs extra handling because frontend adds some extra field
@@ -1211,6 +1222,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         prefill_variables(submission)
         # the submitted data needs extra handling because frontend adds some extra field
@@ -1321,6 +1333,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
@@ -1408,6 +1421,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
@@ -1527,6 +1541,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
@@ -1650,6 +1665,7 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)

@@ -1,4 +1,3 @@
-from unittest import expectedFailure
 from uuid import UUID
 
 from django.test import TestCase, tag
@@ -74,6 +73,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -131,6 +131,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -177,6 +178,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -211,6 +213,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -274,6 +277,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -337,6 +341,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -412,6 +417,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
         submission = SubmissionFactory.create(
@@ -526,6 +532,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -664,6 +671,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -733,6 +741,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -787,6 +796,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -837,6 +847,7 @@ class V2HandlerTests(TestCase):
             "iot_submission_csv": "",
             "iot_submission_report": "",
             "transform_to_list": ["selectBoxes1"],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -846,9 +857,6 @@ class V2HandlerTests(TestCase):
 
         self.assertEqual(data, {"path1": ["option1"], "path2": {"option2": True}})
 
-    # MUST be removed again before merging the 6563 PR stack - will be
-    # addressed in the backwards compatibility PR for the objects API
-    @expectedFailure
     def test_date_related_components(self):
         submission = SubmissionFactory.from_components(
             [
@@ -927,6 +935,7 @@ class V2HandlerTests(TestCase):
             "iot_submission_csv": "",
             "iot_submission_report": "",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
         handler = ObjectsAPIV2Handler()
 
@@ -949,5 +958,127 @@ class V2HandlerTests(TestCase):
                         ],
                     }
                 ],
+            },
+        )
+
+    def test_serialize_empty_datelike_fields_to_empty_string_option_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {"variable_key": "date", "target_path": ["path1"]},
+                {"variable_key": "datetime", "target_path": ["path2"]},
+                {"variable_key": "time", "target_path": ["path3"]},
+            ],
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(
+            data,
+            {
+                "path1": "",
+                "path2": "",
+                "path3": "",
+            },
+        )
+
+    def test_serialize_empty_datelike_fields_to_empty_string_option_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "date": None,
+                "datetime": None,
+                "time": None,
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {"variable_key": "date", "target_path": ["path1"]},
+                {"variable_key": "datetime", "target_path": ["path2"]},
+                {"variable_key": "time", "target_path": ["path3"]},
+            ],
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": False,
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(
+            data,
+            {
+                "path1": None,
+                "path2": None,
+                "path3": None,
             },
         )
