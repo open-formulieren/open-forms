@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 
-from openforms.forms.models import FormStep
+from openforms.forms.models import Form, FormStep
 from openforms.utils.json_logic import introspect_json_logic
 from openforms.variables.service import resolve_key
 
@@ -26,7 +26,7 @@ class FormLogic(OrderedModel):
         blank=True,
         help_text=_("Logic rule description in natural language."),
     )
-    form = models.ForeignKey(
+    form = models.ForeignKey[Form](
         to="forms.Form",
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
