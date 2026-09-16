@@ -33,8 +33,15 @@ def uploaded_attachment_urls(context: template.Context) -> SafeString:
 @register.simple_tag(takes_context=True)
 def json_summary(context: template.Context) -> SafeString:
     submission = context.get("_submission")
+    use_legacy_mode_for_datelike = bool(context.get("_use_legacy_mode_for_datelike"))
 
-    data = reshape_submission_data_for_json_summary(submission) if submission else {}
+    data = (
+        reshape_submission_data_for_json_summary(
+            submission, use_legacy_mode_for_datelike=use_legacy_mode_for_datelike
+        )
+        if submission
+        else {}
+    )
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
         data = recursively_escape_html_strings(data)
