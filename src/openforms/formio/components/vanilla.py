@@ -279,7 +279,7 @@ class TimeBetweenValidator:
 class Time(BasePlugin[Component]):
     formatter = TimeFormatter
     data_type = FormVariableDataTypes.time
-    empty_value = ""
+    empty_value = None
 
     def build_serializer_field(
         self, component: Component

@@ -105,7 +105,7 @@ class FormioDateField(serializers.DateField):
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
     data_type = FormVariableDataTypes.date
-    empty_value = ""
+    empty_value = None
 
     def mutate_config_dynamically(
         self, component: DateComponent, submission: Submission, data: FormioData
@@ -119,6 +119,7 @@ class Date(BasePlugin[DateComponent]):
         mutate_min_max_validation(component, data)
 
         # inject the translated placeholder for the formio DateField component
+        # TODO: this can be removed now that the legacy renderer is gone?
         component["placeholder"] = _("dd-mm-yyyy")
 
     def build_serializer_field(
@@ -198,7 +199,7 @@ def _normalize_validation_datetime(value: str) -> datetime:
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
     data_type = FormVariableDataTypes.datetime
-    empty_value = ""
+    empty_value = None
 
     def mutate_config_dynamically(
         self,
@@ -212,6 +213,7 @@ class Datetime(BasePlugin):
         mutate_min_max_validation(component, data)
 
         # inject the translated placeholder for the formio DateTimeField component
+        # TODO: this can be removed now that the legacy renderer is gone?
         component["placeholder"] = _("dd-mm-yyyy HH:mm")
 
     def build_serializer_field(
