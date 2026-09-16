@@ -1285,6 +1285,12 @@
       "value": "Er gings iets fout bij het ophalen van de beschikabre objecttypes."
     }
   ],
+  "7/0umK": [
+    {
+      "type": 0,
+      "value": "Use empty string for empty date, datetime and time values"
+    }
+  ],
   "7/Bhpw": [
     {
       "type": 0,
@@ -2998,6 +3004,26 @@
       "value": "Reset aantal gemaakte inzendingen"
     }
   ],
+  "GJYjE8": [
+    {
+      "type": 0,
+      "value": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "null"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ". This option will be removed in Open Forms 5.0."
+    }
+  ],
   "GO9yud": [
     {
       "type": 0,
@@ -4100,6 +4126,12 @@
     {
       "type": 0,
       "value": "Type"
+    }
+  ],
+  "O9LxJQ": [
+    {
+      "type": 0,
+      "value": "Legacy options"
     }
   ],
   "OB48En": [
