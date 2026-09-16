@@ -78,3 +78,14 @@ class GenericJSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serial
             "the default object-shape for selectboxes components."
         ),
     )
+    # DeprecationWarning - remove in Open Forms 5.0, then always send 'null'.
+    use_empty_string_for_empty_datelike_variables = serializers.BooleanField(
+        label=_("Use empty string for empty date, datetime and time values"),
+        required=False,
+        default=False,
+        help_text=_(
+            "Legacy compatibility option - send empty values for date, datetime and "
+            "time components as empty string instead of 'null'. This option will be "
+            "removed in Open Forms 5.0."
+        ),
+    )
