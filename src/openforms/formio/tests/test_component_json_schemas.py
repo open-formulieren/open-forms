@@ -32,7 +32,7 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             **properties,
         }
 
-        self.assertIn("type", schema)
+        self.assertTrue(any(key in schema for key in ("type", "oneOf")))
         self.validator.check_schema(schema)
 
     def assertComponentSchemaIsValid(self, *, component, multiple=False):
@@ -1114,3 +1114,108 @@ class CustomerProfileTests(SimpleTestCase):
         schema = as_json_schema(component)
 
         self.assertEqual(schema["items"]["properties"]["type"]["enum"], ["email"])
+
+
+class DateTests(SimpleTestCase):
+    def test_required_component(self):
+        component: DateComponent = {
+            "label": "Date",
+            "key": "date",
+            "type": "date",
+            "validate": {"required": True},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        self.assertEqual(schema["type"], ["string"])
+        self.assertEqual(schema["format"], "date")
+
+    def test_optional_component(self):
+        component: DateComponent = {
+            "label": "Date",
+            "key": "date",
+            "type": "date",
+            "validate": {"required": False},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        options = schema["oneOf"]
+        assert isinstance(options, list)
+        self.assertIn({"const": ""}, options)
+        self.assertIn(
+            {"type": ["string", "null"], "format": "date"},
+            options,
+        )
+
+
+class DateTimeTests(SimpleTestCase):
+    def test_required_component(self):
+        component: DatetimeComponent = {
+            "label": "Datetime",
+            "key": "datetime",
+            "type": "datetime",
+            "validate": {"required": True},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        self.assertEqual(schema["type"], ["string"])
+        self.assertEqual(schema["format"], "date-time")
+
+    def test_optional_component(self):
+        component: DatetimeComponent = {
+            "label": "Datetime",
+            "key": "datetime",
+            "type": "datetime",
+            "validate": {"required": False},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        options = schema["oneOf"]
+        assert isinstance(options, list)
+        self.assertIn({"const": ""}, options)
+        self.assertIn(
+            {"type": ["string", "null"], "format": "date-time"},
+            options,
+        )
+
+
+class timeTests(SimpleTestCase):
+    def test_required_component(self):
+        component: Component = {
+            "label": "time",
+            "key": "time",
+            "type": "time",
+            "validate": {"required": True},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        self.assertEqual(schema["type"], ["string"])
+        self.assertEqual(schema["format"], "time")
+
+    def test_optional_component(self):
+        component: Component = {
+            "label": "time",
+            "key": "time",
+            "type": "time",
+            "validate": {"required": False},
+        }
+
+        schema = as_json_schema(component)
+
+        assert isinstance(schema, dict)
+        options = schema["oneOf"]
+        assert isinstance(options, list)
+        self.assertIn({"const": ""}, options)
+        self.assertIn(
+            {"type": ["string", "null"], "format": "time"},
+            options,
+        )
