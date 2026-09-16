@@ -12,7 +12,7 @@ from .typing import StufBgIncompleteDateType
 TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
 
 
-def normalize_date_of_birth(date_input: str | StufBgIncompleteDateType) -> str:
+def normalize_date_of_birth(date_input: str | StufBgIncompleteDateType) -> str | None:
     """
     Return a valid date (str) or None depending on the data we retrieve.
 
@@ -31,7 +31,7 @@ def normalize_date_of_birth(date_input: str | StufBgIncompleteDateType) -> str:
         return format_date_value(date_input)
 
     date_text = date_input.get("#text")
-    return date_text if date_text else ""
+    return date_text if date_text else None
 
 
 def fromstring(content: str | bytes):

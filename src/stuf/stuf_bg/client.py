@@ -143,7 +143,7 @@ class Client(BaseClient):
                             member["gerelateerde"].get("geboortedatum")
                         )
                         if member["gerelateerde"].get("geboortedatum")
-                        else ""
+                        else None
                     ),
                     # Add 'deceased' flag only if relation == "children"
                     **(
