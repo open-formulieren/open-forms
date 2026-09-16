@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"name": {"voornaam": "My last name"}},
-      "startAt": "2026-08-17"}}'
+      "startAt": "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -22,8 +22,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"name":{"voornaam":"My
-        last name"}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96","uuid":"9c9645de-2af6-4362-9255-4538a6952c96","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"name":{"voornaam":"My
+        last name"}},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -34,17 +34,16 @@ interactions:
       Content-Length:
       - '435'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
+      - http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96
       Referrer-Policy:
       - same-origin
       Vary:
@@ -80,11 +79,10 @@ interactions:
       Content-Length:
       - '857'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -104,8 +102,8 @@ interactions:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "My last
       name"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "0a28fbb3-eb07-4252-b3f3-7b7f3ee10fee", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
+      "079b4d23-db5d-4e25-9c45-05e9f5178e99", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -125,8 +123,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/9927f194-b13b-4832-a7aa-5a667a73e701","uuid":"9927f194-b13b-4832-a7aa-5a667a73e701","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"My
-        last name"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"0a28fbb3-eb07-4252-b3f3-7b7f3ee10fee","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/b34ab768-913e-480b-9e4c-a706ff114b7d","uuid":"b34ab768-913e-480b-9e4c-a706ff114b7d","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"My
+        last name"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"079b4d23-db5d-4e25-9c45-05e9f5178e99","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -137,17 +135,16 @@ interactions:
       Content-Length:
       - '635'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/9927f194-b13b-4832-a7aa-5a667a73e701
+      - http://localhost:8001/api/v2/objects/b34ab768-913e-480b-9e4c-a706ff114b7d
       Referrer-Policy:
       - same-origin
       Vary:
@@ -183,11 +180,10 @@ interactions:
       Content-Length:
       - '857'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -206,9 +202,9 @@ interactions:
 - request:
     body: '{"record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam":
       "Updated value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [],
-      "submission_id": "48d13091-4420-44d5-8ff4-bebbdc073195", "language_code": "nl",
+      "submission_id": "fdd6d8e6-7ec2-4e4d-8f78-44af4f098b9f", "language_code": "nl",
       "payment": {"completed": false, "amount": 0, "public_order_ids": []}}, "startAt":
-      "2026-08-17"}}'
+      "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -225,11 +221,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: PATCH
-    uri: http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
+    uri: http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"name":{"voornaam":"My
-        last name"},"data":{"fd-test":{"voornaam":"Updated value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"48d13091-4420-44d5-8ff4-bebbdc073195","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96","uuid":"9c9645de-2af6-4362-9255-4538a6952c96","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"name":{"voornaam":"My
+        last name"},"data":{"fd-test":{"voornaam":"Updated value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"fdd6d8e6-7ec2-4e4d-8f78-44af4f098b9f","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -240,11 +236,10 @@ interactions:
       Content-Length:
       - '671'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -274,11 +269,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5
+    uri: http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/5c171b15-8b7b-494a-93bb-3e349f6013e5","uuid":"5c171b15-8b7b-494a-93bb-3e349f6013e5","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"bsn":"","data":{"fd-test":{"voornaam":"Updated
-        value"}},"name":{"voornaam":"My last name"},"type":"","payment":{"amount":0,"completed":false,"public_order_ids":[]},"pdf_url":"","attachments":[],"language_code":"nl","submission_id":"48d13091-4420-44d5-8ff4-bebbdc073195"},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/9c9645de-2af6-4362-9255-4538a6952c96","uuid":"9c9645de-2af6-4362-9255-4538a6952c96","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"bsn":"","data":{"fd-test":{"voornaam":"Updated
+        value"}},"name":{"voornaam":"My last name"},"type":"","payment":{"amount":0,"completed":false,"public_order_ids":[]},"pdf_url":"","attachments":[],"language_code":"nl","submission_id":"fdd6d8e6-7ec2-4e4d-8f78-44af4f098b9f"},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -289,11 +284,10 @@ interactions:
       Content-Length:
       - '671'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -333,11 +327,10 @@ interactions:
       Content-Length:
       - '857'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -357,8 +350,8 @@ interactions:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "Updated
       value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "73032fb7-5121-4c8e-9918-2fb36fbe5cb3", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
+      "1f97bf3c-b5eb-47ab-b369-87eee300cdd1", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -378,8 +371,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/792cb1a2-ee9a-42a1-9aa1-e487355c29ad","uuid":"792cb1a2-ee9a-42a1-9aa1-e487355c29ad","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
-        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"73032fb7-5121-4c8e-9918-2fb36fbe5cb3","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/0b67a141-2c25-4b0d-b3f0-a9e39ef2ca4a","uuid":"0b67a141-2c25-4b0d-b3f0-a9e39ef2ca4a","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
+        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"1f97bf3c-b5eb-47ab-b369-87eee300cdd1","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -390,17 +383,16 @@ interactions:
       Content-Length:
       - '636'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/792cb1a2-ee9a-42a1-9aa1-e487355c29ad
+      - http://localhost:8001/api/v2/objects/0b67a141-2c25-4b0d-b3f0-a9e39ef2ca4a
       Referrer-Policy:
       - same-origin
       Vary:
@@ -436,11 +428,10 @@ interactions:
       Content-Length:
       - '857'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -460,8 +451,8 @@ interactions:
     body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
       "record": {"typeVersion": 3, "data": {"data": {"fd-test": {"voornaam": "Updated
       value"}}, "type": "", "bsn": "", "pdf_url": "", "attachments": [], "submission_id":
-      "57dcbdfb-91d0-4d2d-82f7-8f382adc415c", "language_code": "nl", "payment": {"completed":
-      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-08-17"}}'
+      "8e93bbd3-a9a0-4630-ad03-6bc36a211b07", "language_code": "nl", "payment": {"completed":
+      false, "amount": 0, "public_order_ids": []}}, "startAt": "2026-09-16"}}'
     headers:
       Accept:
       - '*/*'
@@ -481,8 +472,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objects/30b39d95-1d04-4711-a66b-2b8a1ba30c44","uuid":"30b39d95-1d04-4711-a66b-2b8a1ba30c44","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
-        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"57dcbdfb-91d0-4d2d-82f7-8f382adc415c","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-08-17","endAt":null,"registrationAt":"2026-08-17","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8001/api/v2/objects/b06674db-20ff-4203-acac-c1950e5fe678","uuid":"b06674db-20ff-4203-acac-c1950e5fe678","type":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"data":{"fd-test":{"voornaam":"Updated
+        value"}},"type":"","bsn":"","pdf_url":"","attachments":[],"submission_id":"8e93bbd3-a9a0-4630-ad03-6bc36a211b07","language_code":"nl","payment":{"completed":false,"amount":0,"public_order_ids":[]}},"geometry":null,"references":[],"startAt":"2026-09-16","endAt":null,"registrationAt":"2026-09-16","correctionFor":null,"correctedBy":null}}'
     headers:
       API-version:
       - 2.7.0
@@ -493,17 +484,16 @@ interactions:
       Content-Length:
       - '636'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; font-src ''self''
-        fonts.gstatic.com; object-src ''none''; default-src ''self''; base-uri ''self'';
-        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; frame-src ''self'';
-        script-src ''self'' ''unsafe-inline''; form-action ''self''; worker-src ''self''
-        blob:'
+      - 'object-src ''none''; base-uri ''self''; form-action ''self''; font-src ''self''
+        fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; default-src ''self'';
+        frame-ancestors ''none''; frame-src ''self''; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8001/api/v2/objects/30b39d95-1d04-4711-a66b-2b8a1ba30c44
+      - http://localhost:8001/api/v2/objects/b06674db-20ff-4203-acac-c1950e5fe678
       Referrer-Policy:
       - same-origin
       Vary:
