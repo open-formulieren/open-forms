@@ -15,11 +15,10 @@ interactions:
       Content-Length:
       - '1073'
       Content-Security-Policy:
-      - 'frame-ancestors ''none''; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        font-src ''self'' fonts.gstatic.com; object-src ''none''; base-uri ''self'';
-        frame-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
-        ''unsafe-inline'' fonts.googleapis.com; worker-src ''self'' blob:; form-action
-        ''self'''
+      - 'worker-src ''self'' blob:; frame-src ''self''; default-src ''self''; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; form-action ''self''; frame-ancestors
+        ''none''; base-uri ''self''; font-src ''self'' fonts.gstatic.com; object-src
+        ''none''; script-src ''self'' ''unsafe-inline''; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:

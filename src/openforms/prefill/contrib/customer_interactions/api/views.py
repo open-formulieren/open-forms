@@ -10,6 +10,9 @@ from rest_framework import views
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ListMixin
+from openforms.contrib.customer_interactions.transform import (
+    filter_duplicate_addresses,
+)
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
@@ -66,4 +69,7 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
         state = submission.variables_state
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
-        return value
+
+        unique_addresses = filter_duplicate_addresses(value)
+
+        return unique_addresses

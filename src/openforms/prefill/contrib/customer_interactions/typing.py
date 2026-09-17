@@ -12,7 +12,12 @@ class CommunicationPreferencesOptions(TypedDict):
     profile_form_variable: str
 
 
+class CommunicationChannelOptions(TypedDict):
+    address: str
+    verification_date: str | None
+
+
 class CommunicationChannel(TypedDict):
     type: SupportedChannels
-    options: Sequence[str]
+    options: Sequence[CommunicationChannelOptions]
     preferred: str | None  # The preferred address in this channel

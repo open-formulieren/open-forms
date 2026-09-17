@@ -9,17 +9,25 @@ class CommunicationChannels(TextChoices):
     phone_number = "phoneNumber", _("Phone number")
 
 
+class OptionsSerializer(serializers.Serializer):
+    address = serializers.CharField(
+        label=_("Address"),
+        help_text=_("An address value for the supported communication channels."),
+    )
+    verification_date = serializers.CharField(
+        label=_("Verification date"),
+        allow_null=True,
+        help_text=_("The verification date of an address."),
+    )
+
+
 class CommunicationPreferencesSerializer(serializers.Serializer):
     type = serializers.ChoiceField(
         label=_("Type"),
         choices=CommunicationChannels.choices,
         help_text=_("Communication channel type"),
     )
-    options = serializers.ListField(
-        child=serializers.CharField(),
-        label=_("Options"),
-        help_text=_("List of available address options for this channel"),
-    )
+    options = OptionsSerializer(many=True)
     preferred = serializers.CharField(
         label=_("Preferred"),
         allow_null=True,

@@ -125,12 +125,21 @@ def fetch_prefill_values_from_options(
     submission: Submission,
     register: Registry,
     variables: list[SubmissionValueVariable],
+    plugins_for_submission_resume: list[str] | None,
 ) -> dict[str, JSONEncodable]:
     values: dict[str, JSONEncodable] = {}
     for variable in variables:
         assert variable.form_variable is not None
         plugin = register[variable.form_variable.prefill_plugin]
         log = logger.bind(plugin=plugin)
+
+        # re-trigger the prefill only for the allowed/supported plugins (used when we
+        # resume a submission and we need to update the prefill data)
+        if (
+            plugins_for_submission_resume
+            and plugin.identifier not in plugins_for_submission_resume
+        ):
+            continue
 
         if not plugin.is_enabled:
             log.debug("plugin_disabled")

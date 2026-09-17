@@ -79,15 +79,33 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "verificationDate": None,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0687654321", "0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "0687654321",
+                            "verificationDate": None,
+                        },
+                    ],
                     "preferred": "0612345678",
                 },
             ],
@@ -141,12 +159,22 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             [
                 {
                     "type": "email",
-                    "options": ["maykinmail@test.com"],
+                    "options": [
+                        {
+                            "address": "maykinmail@test.com",
+                            "verificationDate": None,
+                        }
+                    ],
                     "preferred": "maykinmail@test.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "verificationDate": None,
+                        }
+                    ],
                     "preferred": "0612345678",
                 },
             ],
@@ -201,12 +229,22 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             [
                 {
                     "type": "email",
-                    "options": ["maykinmailvestiging@test.com"],
+                    "options": [
+                        {
+                            "address": "maykinmailvestiging@test.com",
+                            "verificationDate": None,
+                        }
+                    ],
                     "preferred": "maykinmailvestiging@test.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0612345679"],
+                    "options": [
+                        {
+                            "address": "0612345679",
+                            "verificationDate": None,
+                        }
+                    ],
                     "preferred": "0612345679",
                 },
             ],
@@ -298,12 +336,21 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "verificationDate": None,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
-                },
+                }
             ],
         )
 
@@ -403,15 +450,33 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "verificationDate": None,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0687654321", "0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "verificationDate": None,
+                        },
+                        {
+                            "address": "0687654321",
+                            "verificationDate": None,
+                        },
+                    ],
                     "preferred": "0612345678",
                 },
             ],

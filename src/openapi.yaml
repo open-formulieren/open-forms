@@ -7253,8 +7253,7 @@ components:
         options:
           type: array
           items:
-            type: string
-          description: List of available address options for this channel
+            $ref: '#/components/schemas/Options'
         preferred:
           type: string
           nullable: true
@@ -9900,6 +9899,19 @@ components:
       required:
       - status
       - version
+    Options:
+      type: object
+      properties:
+        address:
+          type: string
+          description: An address value for the supported communication channels.
+        verificationDate:
+          type: string
+          nullable: true
+          description: The verification date of an address.
+      required:
+      - address
+      - verificationDate
     PaginatedFormDefinitionList:
       type: object
       required:
