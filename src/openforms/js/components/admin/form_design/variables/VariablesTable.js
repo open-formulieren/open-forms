@@ -1,5 +1,6 @@
 import {iterComponents} from '@open-formulieren/formio-builder/formio';
 import classNames from 'classnames';
+import {camelCase} from 'lodash-es';
 import groupBy from 'lodash/groupBy';
 import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -160,7 +161,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
 
   const updateKey = e => {
     // Key creation taken from FormIO
-    let updatedKey = _.camelCase(variable.name).replace(/^[0-9]*/, '');
+    let updatedKey = camelCase(variable.name).replace(/^[0-9]*/, '');
     onChange(variable.key, 'key', updatedKey);
   };
 
