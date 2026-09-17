@@ -1,6 +1,6 @@
 import _ from 'lodash';
+import {get, set} from 'lodash-es';
 import PropTypes from 'prop-types';
-import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
@@ -40,7 +40,7 @@ const reducer = (draft, action) => {
   switch (action.type) {
     case 'ACTION_CHANGED': {
       const {value, name, index} = action.payload;
-      _.set(draft.actions[index], name, value);
+      set(draft.actions[index], name, value);
 
       // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
       if (ACTION_SELECTION_ORDER.includes(name)) {
@@ -48,8 +48,8 @@ const reducer = (draft, action) => {
         const nextFieldNames = ACTION_SELECTION_ORDER.slice(currentFieldIndex + 1);
         let emptyValue;
         for (const name of nextFieldNames) {
-          emptyValue = _.get(EMPTY_ACTION, name);
-          _.set(draft.actions[index], name, emptyValue);
+          emptyValue = get(EMPTY_ACTION, name);
+          set(draft.actions[index], name, emptyValue);
         }
       }
       break;

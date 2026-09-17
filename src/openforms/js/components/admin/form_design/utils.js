@@ -2,6 +2,7 @@
 global URLify;
  */
 import {iterComponents} from '@open-formulieren/formio-builder/formio';
+import {set} from 'lodash-es';
 
 const stripIdFromComponents = obj => {
   const {id, ...objWithoutId} = obj;
@@ -185,7 +186,7 @@ const parseValidationErrors = (errors, prefix) => {
   for (const [errorName, errorReason] of errors) {
     const errorNameBits = errorName.split('.');
     if (errorNameBits[0] === prefix) {
-      _.set(parsedErrors, errorNameBits.slice(1), errorReason);
+      set(parsedErrors, errorNameBits.slice(1), errorReason);
     }
   }
   return parsedErrors;

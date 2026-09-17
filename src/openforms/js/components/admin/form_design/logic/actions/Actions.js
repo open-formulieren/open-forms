@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import {cloneDeep} from 'lodash-es';
 import PropTypes from 'prop-types';
 import {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -244,7 +245,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
   const formContext = useContext(FormContext);
 
   const serviceFetchConfigFromVar =
-    _.cloneDeep(formContext.formVariables.find(element => element.key === action.variable))
+    cloneDeep(formContext.formVariables.find(element => element.key === action.variable))
       ?.serviceFetchConfiguration || undefined;
 
   if (serviceFetchConfigFromVar) {

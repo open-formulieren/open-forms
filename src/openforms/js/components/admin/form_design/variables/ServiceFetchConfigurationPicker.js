@@ -1,5 +1,6 @@
 import {useFormik} from 'formik';
 import _ from 'lodash';
+import {cloneDeep} from 'lodash-es';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -98,11 +99,11 @@ const ServiceFetchConfigurationPicker = ({
                 setSelectedServiceFetchConfig(event.target.value);
 
                 const values =
-                  _.cloneDeep(
+                  cloneDeep(
                     formLogicContext.serviceFetchConfigurations.find(
                       element => element.id === parseInt(event.target.value)
                     )
-                  ) || _.cloneDeep(formik.initialValues);
+                  ) || cloneDeep(formik.initialValues);
 
                 switch (values.dataMappingType) {
                   case 'JsonLogic':
