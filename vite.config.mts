@@ -66,8 +66,8 @@ export default defineConfig(({mode}) => {
         ],
       }),
     ],
-    // make chunk imports relative
-    base: './',
+    // must match settings.STATIC_URL
+    base: '/static/bundles/',
     // entry points
     input: {
       // public end user facing
@@ -79,9 +79,8 @@ export default defineConfig(({mode}) => {
       'core-js': resolve(jsRoot, 'index.js'),
       'core-css': resolve(scssRoot, 'screen.scss'),
     },
-    // TODO: replace with import.meta.env.VITE_FOO & .env configuration
+    // TODO: replace with import.meta.env.VITE_FOO & .env configuration?
     define: {
-      STATIC_URL: JSON.stringify(process.env.STATIC_URL ?? '/static/'),
       'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL ?? ''),
     },
     // TODO: migrate to @/ prefix like the other TS/JS projects
@@ -107,6 +106,7 @@ export default defineConfig(({mode}) => {
       },
     },
     build: {
+      manifest: 'manifest.json',
       outDir: resolve(import.meta.dirname, 'src/openforms/static/bundles/'),
       emptyOutDir: true,
       copyPublicDir: false,
