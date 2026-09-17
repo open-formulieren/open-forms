@@ -1,5 +1,5 @@
 {% extends "maykin_2fa/login.html" %}
-{% load mozilla_django_oidc_db i18n static %}
+{% load mozilla_django_oidc_db i18n static django_vite %}
 
 {% block extra_login_options %}
     {% get_oidc_admin_client as oidc_config %}
@@ -29,5 +29,5 @@
 {# Do not show any version information #}
 {% block footer %}
     <div id="footer"></div>
-    <script type="module" src="{% static 'bundles/core-js.js' %}"></script>
+    {% vite_asset 'src/openforms/js/index.js' %}
 {% endblock %}

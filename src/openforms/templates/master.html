@@ -1,4 +1,4 @@
-{% load i18n static cookie_consent_tags solo_tags openforms theme %}<!DOCTYPE html>
+{% load i18n static cookie_consent_tags solo_tags openforms theme django_vite %}<!DOCTYPE html>
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
@@ -40,6 +40,10 @@
     {% for stylesheet in theme.get_stylesheets %}
         <link href="{{ stylesheet }}" media="all" rel="stylesheet" />
     {% endfor %}
+
+    {% vite_hmr_client %}
+    {% vite_react_refresh nonce=request.csp_nonce %}
+
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
     {# If tag managers are forcibly enabled, load the necessary scripts/snippets, even without consent #}
@@ -85,7 +89,7 @@
         {% include "includes/page-footer.html" %}
     {% endblock %}
 
-    <script type="module" src="{% static 'bundles/public.js' %}"></script>
+    {% vite_asset 'src/openforms/js/public.js' %}
     {% block extra_js %}{% endblock %}
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_bottom.html" with analytics_varname=analytics_varname %}
