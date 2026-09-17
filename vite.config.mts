@@ -85,6 +85,13 @@ export default defineConfig(({mode}) => {
     define: {
       'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL ?? ''),
     },
+    optimizeDeps: {
+      rolldownOptions: {
+        moduleTypes: {
+          '.js': 'jsx',
+        },
+      },
+    },
     // TODO: migrate to @/ prefix like the other TS/JS projects
     resolve: {
       alias: {
