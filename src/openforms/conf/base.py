@@ -178,6 +178,7 @@ INSTALLED_APPS = [
     "corsheaders",
     *logging_apps,
     "django_jsonform",  # django_better_admin_arrayfield replacement
+    "django_vite",
     "django_yubin",
     "hijack",
     "hijack.contrib.admin",
@@ -1417,3 +1418,14 @@ O365_MAIL_RESOURCE = config("O365_MAIL_RESOURCE", default="")
 
 if O365_MAIL_RESOURCE:
     O365_MAIL_MAILBOX_KWARGS: dict[str, str] = {"resource": O365_MAIL_RESOURCE}
+
+#
+# DJANGO-VITE - frontend build pipeline
+#
+DJANGO_VITE = {
+    "default": {
+        "dev_mode": DEBUG,
+        "static_url_prefix": "bundles",
+        "manifest_path": DJANGO_PROJECT_DIR / "static" / "bundles" / "manifest.json",
+    },
+}
