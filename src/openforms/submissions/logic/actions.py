@@ -646,7 +646,7 @@ class ServiceFetchAction(ActionOperation):
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
-            result = perform_service_fetch(var, context, str(submission.uuid))
+            result = perform_service_fetch(var, context, submission)
             if result is None:
                 return {}
 
