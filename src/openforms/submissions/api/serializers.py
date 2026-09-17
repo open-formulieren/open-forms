@@ -840,7 +840,12 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         key = attrs["component_key"]
         try:
             component = config_wrapper.component_map[key]
-            key_valid = component["type"] == "email"
+            # TODO: can we derive these allowed components from the
+            # EmailVerificationComponentType type somehow?
+            key_valid = component["type"] in (
+                "email",
+                "customerProfile",
+            )
         except KeyError:
             key_valid = False
         if not key_valid:

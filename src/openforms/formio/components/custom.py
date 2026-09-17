@@ -33,6 +33,7 @@ from openforms.contrib.customer_interactions.update import (
     update_customer_interaction_data,
 )
 from openforms.formio.typing.map import Overlay
+from openforms.formio.validators import EmailVerificationValidator
 from openforms.forms.models import FormVariable
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
@@ -1304,6 +1305,9 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
             digital_address_types=component["digitalAddressTypes"],
             required=required,
             allow_null=not required,
+            validators=[
+                EmailVerificationValidator(component["key"], "customerProfile")
+            ],
         )
 
     @staticmethod

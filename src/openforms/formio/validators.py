@@ -3,6 +3,11 @@ from django.core.validators import RegexValidator
 from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import serializers
+
+from openforms.formio.typing.custom import DigitalAddress
+from openforms.submissions.typing import EmailVerificationComponentType
+
 # Regex and message adapted from
 # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
 variable_key_validator = RegexValidator(
@@ -41,3 +46,44 @@ def validate_formio_js_schema(value: dict):
             _("The 'components' value must be a list of components."),
             code="invalid",
         )
+
+
+class EmailVerificationValidator:
+    message = _("The email address {value} has not been verified yet.")
+    requires_context = True
+
+    component_key: str
+    component_type: EmailVerificationComponentType
+
+    def __init__(
+        self, component_key: str, component_type: EmailVerificationComponentType
+    ) -> None:
+        self.component_key = component_key
+        self.component_type = component_type
+
+    def __call__(self, value: str | DigitalAddress, field: serializers.Field) -> None:
+        from openforms.submissions.models import EmailVerification, Submission
+
+        address: str
+        error_format: str | dict[str, list[str]]
+        if self.component_type == "customerProfile":
+            assert isinstance(value, dict)
+            if value.get("type", "") == "phoneNumber":
+                return
+            address = value.get("address") or ""
+            error_format = {"address": [self.message.format(value=address)]}
+        else:
+            assert isinstance(value, str)
+            address = value
+            error_format = self.message.format(value=address)
+
+        submission: Submission = field.context["submission"]
+        has_verification = EmailVerification.objects.filter(
+            submission=submission,
+            component_key=self.component_key,
+            email=address,
+            verified_on__isnull=False,
+        ).exists()
+
+        if not has_verification:
+            raise serializers.ValidationError(error_format, code="unverified")
