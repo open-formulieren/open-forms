@@ -1438,7 +1438,10 @@ if O365_MAIL_RESOURCE:
 #
 DJANGO_VITE = {
     "default": {
-        "dev_mode": DEBUG,
+        # dev settings enable debug mode if the dev server is up. Tying this to DEBUG
+        # worsens the DX because it forces you to have a (slower) Vite dev server running
+        # even when making backend-only changes.
+        "dev_mode": config("DJANGO_VITE_DEBUG_MODE", default=False),
         "static_url_prefix": "bundles",
         "manifest_path": DJANGO_PROJECT_DIR / "static" / "bundles" / "manifest.json",
     },
