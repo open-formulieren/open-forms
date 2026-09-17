@@ -1,5 +1,5 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n static openforms admin_urls %}
+{% load i18n static openforms admin_urls django_vite %}
 
 {% block extrahead %}
     {% include "admin/forms/includes/formio_config.html" %}
@@ -8,7 +8,7 @@
 
 {% block extrastyle %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% vite_asset_url 'src/openforms/scss/screen.scss' %}">
     {{ block.super }}
 {% endblock %}
 
@@ -43,5 +43,5 @@
 {% endblock %}
 
 {% block admin_change_form_document_ready %}
-    <script type="module" src="{% static 'bundles/core-js.js' %}"></script>
+    {% vite_asset 'src/openforms/js/index.js' %}
 {% endblock %}

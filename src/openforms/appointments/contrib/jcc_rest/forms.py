@@ -1,10 +1,11 @@
 from typing import Any
 
 from django import forms
-from django.forms import Script, Widget
+from django.forms import Widget
 from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.validators import validate_formio_js_schema
+from openforms.media_assets import get_custom_assets
 
 from .constants import CustomerFields
 from .models import JccRestConfig
@@ -13,14 +14,9 @@ from .models import JccRestConfig
 class FormBuilderWidget(Widget):
     template_name = "jcc_rest/widgets/form_builder.html"
 
-    class Media:
-        css = {
-            "all": (
-                "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
-                "bundles/core-css.css",
-            ),
-        }
-        js = (Script("bundles/core-js.js", type="module"),)
+    @property
+    def media(self):
+        return get_custom_assets(include_bootstrap=True)
 
 
 class JccRestConfigForm(forms.ModelForm):

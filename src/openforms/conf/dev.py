@@ -22,6 +22,11 @@ os.environ.setdefault("DB_PASSWORD", "openforms")
 
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("NUM_PROXIES", "0")
+# allow Vite dev server
+os.environ.setdefault(
+    "CSP_EXTRA_DEFAULT_SRC",
+    "http://localhost:5173/,ws://localhost:5173/",
+)
 
 os.environ.setdefault("RELEASE", "dev")
 os.environ.setdefault("SDK_RELEASE", "latest")

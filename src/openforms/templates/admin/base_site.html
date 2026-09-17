@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static multidomain maykin_common %}
+{% load i18n static multidomain maykin_common django_vite %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
@@ -17,6 +17,8 @@
 
 {% block extrahead %}
     {{ block.super }}
+    {% vite_hmr_client %}
+    {% vite_react_refresh nonce=request.csp_nonce %}
     {{ settings.MAX_FILE_UPLOAD_SIZE|json_script:'setting-MAX_FILE_UPLOAD_SIZE' }}
 {% endblock extrahead %}
 
