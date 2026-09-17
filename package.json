@@ -10,7 +10,7 @@
     "test": "jest",
     "test:storybook": "test-storybook",
     "build": "vite build",
-    "start": "vite build --mode development --watch",
+    "start": "vite dev",
     "makemessages": "formatjs extract",
     "compilemessages": "formatjs compile",
     "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
