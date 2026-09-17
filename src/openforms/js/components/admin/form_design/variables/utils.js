@@ -1,5 +1,5 @@
 import {iterComponents} from '@open-formulieren/formio-builder/formio';
-import _ from 'lodash';
+import {cloneDeep, isEqual} from 'lodash-es';
 import {defineMessage} from 'react-intl';
 
 import {
@@ -38,7 +38,7 @@ const isInEditGrid = (targetComponent, configuration) => {
 
 const isPasteEvent = (mutationType, newComponent, oldComponent) => {
   if (mutationType !== 'changed') return false;
-  return _.isEqual(newComponent, oldComponent);
+  return isEqual(newComponent, oldComponent);
 };
 
 const makeNewVariableFromComponent = (component, formDefinition) => {
@@ -196,7 +196,7 @@ const updateFormVariables = (
 };
 
 const checkForDuplicateKeys = (formVariables, staticVariables, validationErrors) => {
-  let updatedValidationErrors = _.cloneDeep(validationErrors);
+  let updatedValidationErrors = cloneDeep(validationErrors);
   let existingKeys = staticVariables.map(variable => variable.key);
 
   const uniqueErrorMessage = defineMessage({
