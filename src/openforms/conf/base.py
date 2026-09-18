@@ -17,15 +17,20 @@ from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
 from maykin_common.branding import ProductDefinition
 from maykin_common.config import DocumentationParams, config
 from maykin_common.health_checks import default_health_check_apps
+from maykin_common.logging.config import (
+    logging_apps,
+    logging_middleware,
+    structlog_configure_defaults,
+)
+from maykin_common.logging.processors import (
+    add_open_telemetry_spans,
+    drop_user_agent_in_dev,
+)
 from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.logging.adapter import from_structlog
-from openforms.logging.processors import (
-    add_open_telemetry_spans,
-    drop_user_agent_in_dev,
-)
 
 from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
@@ -171,7 +176,7 @@ INSTALLED_APPS = [
     "colorfield",
     "cookie_consent",
     "corsheaders",
-    "django_structlog",
+    *logging_apps,
     "django_jsonform",  # django_better_admin_arrayfield replacement
     "django_yubin",
     "hijack",
@@ -286,13 +291,7 @@ INSTALLED_APPS = [
 ]
 
 _log_requests_via_middleware = config("LOG_REQUESTS", default=True)
-_structlog_middleware = (
-    [
-        "django_structlog.middlewares.RequestMiddleware",
-    ]
-    if _log_requests_via_middleware
-    else []
-)
+_structlog_middleware = logging_middleware if _log_requests_via_middleware else []
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -549,28 +548,15 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "maykin_common": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
-structlog.configure(
-    processors=[
-        structlog.contextvars.merge_contextvars,
-        structlog.stdlib.filter_by_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        drop_user_agent_in_dev,
-        add_open_telemetry_spans,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        # structlog.processors.ExceptionPrettyPrinter(),
-        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-    ],
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    cache_logger_on_first_use=True,
-)
+structlog_configure_defaults(format_exc_info=True)
 
 #
 # AUTH settings - user accounts, passwords, backends...
