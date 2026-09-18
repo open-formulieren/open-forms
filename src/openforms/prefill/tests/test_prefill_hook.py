@@ -499,9 +499,7 @@ class PrefillHookTests(TransactionTestCase):
 
         field = new_configuration["components"][0]
         assert "defaultValue" in field
-        self.assertIsNotNone(field["defaultValue"])
-        self.assertIsInstance(field["defaultValue"], str)
-        self.assertEqual("", field["defaultValue"])
+        self.assertIsNone(field["defaultValue"])
 
     def test_value_is_normalized(self):
         """
