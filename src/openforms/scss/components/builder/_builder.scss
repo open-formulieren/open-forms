@@ -63,6 +63,13 @@ div.flatpickr-calendar.open {
   z-index: 10000000;
 }
 
+.formio-dialog .json-editor {
+  min-block-size: 100px;
+}
+.formio-dialog .preview-panel:has(.json-editor) {
+  block-size: 75%;
+}
+
 .component-edit-container {
   .tab-pane.active {
     min-block-size: 50vh;
