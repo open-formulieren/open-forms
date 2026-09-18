@@ -66,16 +66,14 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
         ]
         self.assertEqual(len(data), 8)
 
-        remaining_addresses = list(data)
-
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):
-                self.assertAddressPresent(remaining_addresses, expected_address)
+                self.assertAddressPresent(data, expected_address)
 
         self.assertEqual(
-            remaining_addresses,
+            data,
             [],
-            f"Unexpected addresses found: {remaining_addresses}",
+            f"Unexpected addresses found: {data}",
         )
 
     def test_list_digital_addresses_empty_for_bsn(self):
@@ -110,16 +108,14 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
         ]
         self.assertEqual(len(data), 2)
 
-        remaining_addresses = list(data)
-
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):
-                self.assertAddressPresent(remaining_addresses, expected_address)
+                self.assertAddressPresent(data, expected_address)
 
         self.assertEqual(
-            remaining_addresses,
+            data,
             [],
-            f"Unexpected addresses found: {remaining_addresses}",
+            f"Unexpected addresses found: {data}",
         )
 
     def test_list_digital_addresses_empty_for_kvk(self):

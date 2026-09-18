@@ -13,10 +13,10 @@ from openforms.api.views import ListMixin
 from openforms.contrib.customer_interactions.transform import (
     filter_duplicate_addresses,
 )
+from openforms.contrib.customer_interactions.typing import CommunicationChannelReturn
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
-from openforms.typing import VariableValue
 from openforms.variables.constants import FormVariableSources
 
 from ..plugin import PLUGIN_IDENTIFIER
@@ -33,7 +33,9 @@ logger = structlog.stdlib.get_logger(__name__)
         404: ExceptionSerializer,
     },
 )
-class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
+class CommunicationPreferencesView(
+    ListMixin[CommunicationChannelReturn], views.APIView
+):
     """
     Get prefilled communication preferences for a particular submission
     """
@@ -70,6 +72,6 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
 
-        unique_addresses = filter_duplicate_addresses(value)
+        unique_addresses = filter_duplicate_addresses(value)  # pyright: ignore[reportArgumentType]
 
         return unique_addresses

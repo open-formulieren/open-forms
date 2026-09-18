@@ -13,9 +13,6 @@ from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
-from openforms.prefill.contrib.customer_interactions.typing import (
-    CommunicationChannel,
-)
 from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
 )
@@ -24,6 +21,7 @@ from openforms.submissions.models import Submission
 
 from .client import get_customer_interactions_client
 from .constants import ADDRESS_TYPES_TO_CHANNELS
+from .typing import CommunicationChannel
 
 logger = structlog.stdlib.get_logger(__name__)
 

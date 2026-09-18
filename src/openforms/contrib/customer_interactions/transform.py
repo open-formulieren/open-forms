@@ -9,12 +9,12 @@ from openklant_client.types.resources.digitaal_adres import (
 )
 
 from openforms.formio.typing.custom import SupportedChannels
-from openforms.prefill.contrib.customer_interactions.typing import (
-    CommunicationChannel,
-)
-from openforms.typing import VariableValue
 
 from .constants import ADDRESS_TYPES_TO_CHANNELS
+from .typing import (
+    CommunicationChannel,
+    CommunicationChannelReturn,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -51,7 +51,6 @@ def transform_digital_addresses(
                     "verification_date": address.get("verificatieDatum"),
                 }
                 for address in group
-                if address["soortDigitaalAdres"] in ("email", "telefoonnummer")
             ],
             "preferred": next(
                 (address["adres"] for address in group if address["isStandaardAdres"]),
@@ -62,17 +61,44 @@ def transform_digital_addresses(
     return result
 
 
+def normalized_data_for_frontend(
+    addresses: Sequence[CommunicationChannel],
+) -> Sequence[CommunicationChannelReturn]:
+    """
+    Normalize the addresses before sending them to frontend.
+
+    The frontend accepts addresses that can be considered as verified or not. So we need
+    to return the same result but instead of the whole detailed verification date, we
+    send whether it's verified or not.
+    """
+    return [
+        {
+            **address,
+            "options": [
+                {
+                    "address": option["address"],
+                    "is_verified": bool(option["verification_date"]),
+                }
+                for option in address["options"]
+            ],
+        }
+        for address in addresses
+    ]
+
+
 # TODO
 # Check if we need to choose which address to keep in the case of duplicates (based on
 # another key like isStandaardAdres for example)
 def filter_duplicate_addresses(
-    initial_addresses: VariableValue,
-) -> Iterable[VariableValue]:
+    initial_addresses: Sequence[CommunicationChannel],
+) -> Sequence[CommunicationChannelReturn]:
     """
     Helper function to de-duplicate addresses.
 
     Given a list of digital addresses remove all the duplicates (both emails and phones)
-    and return the updated one.
+    and return the most suitable one. The address with a verification date always takes
+    precedence when available.
+
     """
     assert isinstance(initial_addresses, list)
     deduplicated_addresses = deepcopy(initial_addresses)
@@ -82,17 +108,26 @@ def filter_duplicate_addresses(
         assert isinstance(address, dict)
 
         options = address["options"]
-
         assert isinstance(options, list)
-
         for option in options:
             assert isinstance(option, dict)
 
-            if option["address"] in unique_address_options:
+            cur_address = option["address"]
+            cur_verified = bool(option["verification_date"])
+
+            existing = unique_address_options.get(cur_address)
+
+            if existing is None:
+                unique_address_options[cur_address] = option
                 continue
 
-            unique_address_options[option["address"]] = option
+            existing_verified = bool(existing["verification_date"])
+
+            # prioritize verified address
+            if cur_verified and not existing_verified:
+                unique_address_options[cur_address] = option
 
         address["options"] = list(unique_address_options.values())
 
-    return deduplicated_addresses
+    result = normalized_data_for_frontend(deduplicated_addresses)
+    return result

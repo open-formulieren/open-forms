@@ -1,12 +1,15 @@
 import uuid
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase, override_settings, tag
 from django.urls import reverse
+from django.utils import timezone
 
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
+from structlog.testing import capture_logs
 
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.authentication.contrib.digid.tests.test_auth_procedure import (
@@ -15,14 +18,14 @@ from openforms.authentication.contrib.digid.tests.test_auth_procedure import (
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import ThemeFactory
-from openforms.contrib.customer_interactions.tests.mixins import (
-    CustomerInteractionsMixin,
+from openforms.contrib.customer_interactions.tests.factories import (
+    CustomerInteractionsAPIGroupConfigFactory,
 )
 from openforms.formio.service import FormioData
+from openforms.formio.typing.custom import SupportedChannels
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
 from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.prefill.contrib.customer_interactions.constants import PLUGIN_IDENTIFIER
-from openforms.prefill.contrib.customer_interactions.typing import SupportedChannels
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -525,6 +528,65 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_prefill_rerun_when_plugin_not_supported(self):
+        submission = SubmissionFactory.from_components(
+            suspended_on=timezone.now(),
+            completed=False,
+            components_list=[
+                {
+                    "key": "hc_prefill_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+        )
+        FormVariableFactory.create(
+            key="hc_prefill_partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "hc_prefill_partners_mutable",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "999970124",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        submission.refresh_from_db()
+
+        resume_endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        with (
+            patch(
+                "openforms.prefill.contrib.family_members.plugin.FamilyMembersPrefill.get_prefill_values_from_options"
+            ) as mocked_get_prefill_values_from_options,
+            capture_logs() as logs,
+        ):
+            self.client.get(resume_endpoint)
+
+            mocked_get_prefill_values_from_options.assert_not_called()
+
+            self.assertTrue(
+                any(log["event"] == "plugin_not_supported_in_resume" for log in logs)
+            )
+
 
 @temp_private_root(reset_storage=False)
 @override_settings(
@@ -533,7 +595,6 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
 class SubmissionResumeViewVCRTests(
-    CustomerInteractionsMixin,
     OFVCRMixin,
     FrontendRedirectMixin,
     SubmissionsMixin,
@@ -541,7 +602,11 @@ class SubmissionResumeViewVCRTests(
     TestCase,
 ):
     def test_prefill_rerun_complete_flow_when_plugin_supported(self):
+        config = CustomerInteractionsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+
         form = FormFactory.create(
             generate_minimal_setup=True,
             authentication_backend="digid",
@@ -566,7 +631,7 @@ class SubmissionResumeViewVCRTests(
             data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
-                "customer_interactions_api_group": self.config.identifier,
+                "customer_interactions_api_group": config.identifier,
                 "profile_form_variable": "profile",
             },
         )
@@ -618,13 +683,9 @@ class SubmissionResumeViewVCRTests(
         self.assertEqual(submission.auth_info.value, "123456782")
 
         # override the prefill data with the mocked
-        submission.load_submission_value_variables_state().save_prefill_data(
-            FormioData(mocked_prefill_data)
-        )
+        submission.variables_state.save_prefill_data(FormioData(mocked_prefill_data))
 
-        variables_initial_state_data = (
-            submission.load_submission_value_variables_state().get_data()
-        )
+        variables_initial_state_data = submission.variables_state.get_data()
 
         self.assertEqual(
             variables_initial_state_data["communication-preferences"],
@@ -643,16 +704,6 @@ class SubmissionResumeViewVCRTests(
         )
 
         # 2. suspend submission
-        # update the session again since the user at this point should be authenticated
-        session = self.client.session
-        session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": "digid",
-            "attribute": AuthAttribute.bsn,
-            "value": "123456782",
-            "loa": DIGID_DEFAULT_LOA,
-        }
-        session.save()
-
         suspend_endpoint = reverse(
             "api:submission-suspend", kwargs={"uuid": submission.uuid}
         )
@@ -686,12 +737,21 @@ class SubmissionResumeViewVCRTests(
 
         self.assertNotEqual(submission.auth_info.value, "123456782")
 
-        self.client.get(resume_endpoint)
+        response = self.client.get(resume_endpoint)
+
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url="http://testserver.com/my-form",
+            action="resume",
+            action_params={
+                "step_slug": form.formstep_set.get().slug,
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
+        )
 
         submission.refresh_from_db()
-        variables_updated_state_data = (
-            submission.load_submission_value_variables_state().get_data()
-        )
+        variables_updated_state_data = submission.variables_state.get_data()
 
         self.assertEqual(submission.auth_info.value, "123456782")
         self.assertEqual(

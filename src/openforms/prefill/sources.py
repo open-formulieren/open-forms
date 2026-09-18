@@ -139,6 +139,7 @@ def fetch_prefill_values_from_options(
             plugins_for_submission_resume
             and plugin.identifier not in plugins_for_submission_resume
         ):
+            log.debug("plugin_not_supported_in_resume")
             continue
 
         if not plugin.is_enabled:

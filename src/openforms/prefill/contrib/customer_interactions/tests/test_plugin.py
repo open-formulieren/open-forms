@@ -4,6 +4,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
 )
+from openforms.formio.typing.custom import SupportedChannels
 from openforms.forms.tests.factories import (
     FormFactory,
     FormVariableFactory,
@@ -14,7 +15,6 @@ from openforms.variables.constants import FormVariableDataTypes
 
 from ....service import prefill_variables
 from ..constants import PLUGIN_IDENTIFIER
-from ..typing import SupportedChannels
 
 
 class CommunicationPreferencesTests(OFVCRMixin, TestCase):
@@ -193,7 +193,10 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             {
                 "type": "email",
                 "options": [
-                    {"address": "maykinmail@test.com", "verification_date": None}
+                    {
+                        "address": "maykinmail@test.com",
+                        "verification_date": None,
+                    }
                 ],
                 "preferred": "maykinmail@test.com",
             },

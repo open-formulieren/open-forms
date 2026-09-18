@@ -12,12 +12,13 @@ class CommunicationChannels(TextChoices):
 class OptionsSerializer(serializers.Serializer):
     address = serializers.CharField(
         label=_("Address"),
+        read_only=True,
         help_text=_("An address value for the supported communication channels."),
     )
-    verification_date = serializers.CharField(
-        label=_("Verification date"),
-        allow_null=True,
-        help_text=_("The verification date of an address."),
+    is_verified = serializers.BooleanField(
+        label=_("Is address verified"),
+        read_only=True,
+        help_text=_("Whether the address is verified or not."),
     )
 
 

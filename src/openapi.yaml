@@ -8904,6 +8904,11 @@ components:
             $ref: '#/components/schemas/FormVariableV3'
         payment:
           $ref: '#/components/schemas/FormPayment'
+        priceVariableKey:
+          type: string
+          description: Key of the variable that contains the calculated submission
+            price.
+          pattern: ^(\w|\w[\w.\-]*\w)$
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
@@ -9904,14 +9909,16 @@ components:
       properties:
         address:
           type: string
+          readOnly: true
           description: An address value for the supported communication channels.
-        verificationDate:
-          type: string
-          nullable: true
-          description: The verification date of an address.
+        isVerified:
+          type: boolean
+          readOnly: true
+          title: Is address verified
+          description: Whether the address is verified or not.
       required:
       - address
-      - verificationDate
+      - isVerified
     PaginatedFormDefinitionList:
       type: object
       required:
