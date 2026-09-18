@@ -14,6 +14,18 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.9 (2026-09-18)
+===================
+
+Regular bugfix release.
+
+* [:backend:`6649`] Fixed newlines of textarea components being stripped out in the
+  confirmation PDF.
+* [:backend:`6692`] Fixed component JSON Editor not being visible.
+* [Sentry#461713] Fixed some logs not being saved to the database during prefill.
+* [:backend:`6650`] Fixed the form theme not being used on resume pages and confirmation
+  emails.
+
 3.5.8 (2026-09-14)
 ===================
 
