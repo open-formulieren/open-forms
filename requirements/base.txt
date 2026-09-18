@@ -236,7 +236,9 @@ django-solo==2.5.1
     #   django-log-outgoing-requests
     #   zgw-consumers
 django-structlog==10.0.0
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   maykin-common
 django-timeline-logger==6.0.0
     # via -r requirements/base.in
 django-tinymce==5.0.0
@@ -347,7 +349,7 @@ maykin-2fa==2.1.0
     # via
     #   -r requirements/base.in
     #   maykin-common
-maykin-common==0.21.0
+maykin-common==0.22.0
     # via -r requirements/base.in
 maykin-json-logic-py==0.16.0
     # via -r requirements/base.in
@@ -619,7 +621,9 @@ sqids==0.5.2
 sqlparse==0.6.0
     # via django
 structlog==25.5.0
-    # via django-structlog
+    # via
+    #   django-structlog
+    #   maykin-common
 tablib==3.10.0
     # via
     #   -r requirements/base.in
