@@ -270,6 +270,12 @@ class Time(BasePlugin[Component]):
     data_type = FormVariableDataTypes.time
     empty_value = None
 
+    @staticmethod
+    def normalizer(component: Component, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
+
     def build_serializer_field(
         self, component: Component
     ) -> serializers.TimeField | serializers.ListField:
