@@ -4,6 +4,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
 )
+from openforms.formio.typing.custom import SupportedChannels
 from openforms.forms.tests.factories import (
     FormFactory,
     FormVariableFactory,
@@ -14,7 +15,6 @@ from openforms.variables.constants import FormVariableDataTypes
 
 from ....service import prefill_variables
 from ..constants import PLUGIN_IDENTIFIER
-from ..typing import SupportedChannels
 
 
 class CommunicationPreferencesTests(OFVCRMixin, TestCase):
@@ -69,15 +69,45 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             {
                 "type": "email",
                 "options": [
-                    "someemail@example.org",
-                    "devilkiller@example.org",
-                    "john.smith@gmail.com",
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": "2026-09-09",
+                    },
+                    {
+                        "address": "someemail@example.org",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "devilkiller@example.org",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": None,
+                    },
                 ],
                 "preferred": "john.smith@gmail.com",
             },
             {
                 "type": "phoneNumber",
-                "options": ["0687654321", "0612345678"],
+                "options": [
+                    {
+                        "address": "0612345678",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "0687654321",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "0612345678",
+                        "verification_date": None,
+                    },
+                ],
                 "preferred": "0612345678",
             },
         ]
@@ -162,12 +192,22 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         expected = [
             {
                 "type": "email",
-                "options": ["maykinmail@test.com"],
+                "options": [
+                    {
+                        "address": "maykinmail@test.com",
+                        "verification_date": None,
+                    }
+                ],
                 "preferred": "maykinmail@test.com",
             },
             {
                 "type": "phoneNumber",
-                "options": ["0612345678"],
+                "options": [
+                    {
+                        "address": "0612345678",
+                        "verification_date": None,
+                    },
+                ],
                 "preferred": "0612345678",
             },
         ]
@@ -288,9 +328,26 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             {
                 "type": "email",
                 "options": [
-                    "someemail@example.org",
-                    "devilkiller@example.org",
-                    "john.smith@gmail.com",
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": "2026-09-09",
+                    },
+                    {
+                        "address": "someemail@example.org",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "devilkiller@example.org",
+                        "verification_date": None,
+                    },
+                    {
+                        "address": "john.smith@gmail.com",
+                        "verification_date": None,
+                    },
                 ],
                 "preferred": "john.smith@gmail.com",
             }
@@ -337,7 +394,11 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         expected = [
             {
                 "type": "phoneNumber",
-                "options": ["0687654321", "0612345678"],
+                "options": [
+                    {"address": "0612345678", "verification_date": None},
+                    {"address": "0687654321", "verification_date": None},
+                    {"address": "0612345678", "verification_date": None},
+                ],
                 "preferred": "0612345678",
             }
         ]

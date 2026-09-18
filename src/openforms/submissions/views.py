@@ -29,6 +29,8 @@ from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form
 from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import audit_logger
+from openforms.prefill.constants import PREFILL_ON_SUBMISSION_RESUME_PLUGINS
+from openforms.prefill.service import prefill_variables
 from openforms.tokens import BaseTokenGenerator
 from openforms.typing import is_authenticated_request
 from openforms.utils.helpers import obfuscate
@@ -173,7 +175,24 @@ class ResumeFormMixin(TemplateResponseMixin):
 class ResumeSubmissionView(ResumeFormMixin, RedirectView):
     token_generator = submission_resume_token_generator
 
+    def _re_run_prefill_plugins(self, submission: Submission) -> None:
+        """
+        Perform the prefill flow again for specific/supported plugins.
+        """
+        # After the signal is done we need a fresh instance of the submission where all
+        # the needed data has been updated (see AuthInfo model for example which is updated
+        # via the ``store_auth_details`` function during the ``submission_resumed`` signal)
+        submission.refresh_from_db()
+
+        if submission.suspended_on and not submission.completed_on:
+            prefill_variables(
+                submission,
+                plugins_for_submission_resume=PREFILL_ON_SUBMISSION_RESUME_PLUGINS,
+            )
+
     def get_form_resume_url(self, submission: Submission) -> str:
+        self._re_run_prefill_plugins(submission)
+
         state = submission.load_execution_state()
         last_completed_step = state.get_last_completed_step()
         target_step = last_completed_step or state.submission_steps[0]
