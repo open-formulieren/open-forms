@@ -2042,7 +2042,7 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
         output: str | None,
     ):
         with self.subTest(multiple=False):
-            component: Component = {
+            component1: Component = {
                 "key": "date",
                 "type": "date",
                 "label": "Date",
@@ -2050,12 +2050,12 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
                 "defaultValue": input,
             }
 
-            normalize_date_default_value(component)
+            normalize_date_default_value(component1)
 
-            self.assertEqual(component["defaultValue"], output)
+            self.assertEqual(component1["defaultValue"], output)
 
-        with self.subTest(multiple=False):
-            component: Component = {
+        with self.subTest(multiple=True):
+            component2: Component = {
                 "key": "date",
                 "type": "date",
                 "label": "Date",
@@ -2063,9 +2063,9 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
                 "defaultValue": [input],
             }
 
-            normalize_date_default_value(component)
+            normalize_date_default_value(component2)
 
-            self.assertEqual(component["defaultValue"], [output])
+            self.assertEqual(component2["defaultValue"], [output])
 
 
 class SelectBoxTests(SimpleTestCase):
