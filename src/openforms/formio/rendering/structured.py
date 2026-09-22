@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 from openforms.formio.service import FormioData
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 def reshape_submission_data_for_json_summary(
     submission: Submission,
+    *,
+    use_legacy_mode_for_datelike: bool = False,
 ) -> dict[str, VariableValue]:
     """Reshape the submission data for rendering a JSON summary.
 
@@ -54,6 +57,22 @@ def reshape_submission_data_for_json_summary(
             value = {} if isinstance(node, FieldSetNode | ColumnsNode) else node.value
             if isinstance(node, EditGridNode):
                 value = []
+
+            # backwards compatibility shim...
+            if (
+                node.component["type"] in ("date", "datetime", "time")
+                and use_legacy_mode_for_datelike
+            ):
+                warnings.warn(
+                    "Converting empty date/datetime/time values to empty string is "
+                    "deprecated and scheduled for removal in Open Forms 5.0",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                if value is None:
+                    value = ""
+                elif isinstance(value, list):  # multiple
+                    value = [item or "" for item in value]
 
             data[node_path] = value
 

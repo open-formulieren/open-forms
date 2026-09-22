@@ -18,7 +18,7 @@ class TimeFieldValidationTests(SimpleTestCase):
         invalid_values = [
             ({}, "required"),
             ({"foo": None}, "null"),
-            ({"foo": ""}, "required"),
+            ({"foo": ""}, "invalid"),
         ]
 
         for data, error_code in invalid_values:
@@ -159,7 +159,7 @@ class TimeFieldValidationTests(SimpleTestCase):
             "validate": {"required": False},
         }
 
-        is_valid, _ = validate_formio_data(component, {"time": ""})
+        is_valid, _ = validate_formio_data(component, {"time": None})
 
         self.assertTrue(is_valid)
 

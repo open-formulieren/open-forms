@@ -582,3 +582,224 @@ class FixMinMaxTimeDefaultValuesTimeComponentTests(MigratorTestCase):
                 ]
             },
         )
+
+
+class EnableEmptyStringLegacyBehaviourTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0137_normalize_datelike_empty_default_value",
+    )
+    migrate_to = (
+        "forms",
+        "0138_opt_existing_backends_into_legacy_empty_datelike_behaviour",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        form = Form.objects.create(name="Regular form")
+        # irrelevant plugin
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="email",
+            name="Email",
+            backend="email",
+            options={"to_emails": [], "attach_files_to_email": None},
+        )
+        # generic json -> needs to be updated if the key is not present yet
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="genericJson1",
+            name="Generic JSON 1",
+            backend="json_dump",
+            options={
+                "service": 1,
+                "variables": [],
+                "fixed_metadata_variables": [],
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="genericJson2",
+            name="Generic JSON 2",
+            backend="json_dump",
+            options={
+                "service": 1,
+                "variables": [],
+                "fixed_metadata_variables": [],
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
+        # objects API -> needs to be updated if the key is not present yet
+        objects_base_options = {
+            "objects_api_group": "some-api-group",
+            "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+            "objecttype_version": 1,
+            # the rest of the properties get populated from the serializer defaults
+        }
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV1-1",
+            name="Objects API v1, 1",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 1,
+                "productaanvraag_type": "",
+                "content_json": "",
+                "payment_status_update_json": "",
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV1-2",
+            name="Objects API v1, 2",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 1,
+                "productaanvraag_type": "",
+                "content_json": "",
+                "payment_status_update_json": "",
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV2-1",
+            name="Objects API v2, 1",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 2,
+                "variables_mapping": [],
+                "geometry_variable_key": "",
+                "transform_to_list": [],
+            },
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="objectsV2-2",
+            name="Objects API v2, 2",
+            backend="objects_api",
+            options={
+                **objects_base_options,
+                "version": 2,
+                "variables_mapping": [],
+                "geometry_variable_key": "",
+                "transform_to_list": [],
+                "use_empty_string_for_empty_datelike_variables": False,
+            },
+        )
+
+    def test_migration(self):
+        Form = self.new_state.apps.get_model("forms", "Form")
+        form = Form.objects.get()
+
+        backends = {
+            backend.key: backend.options for backend in form.registration_backends.all()
+        }
+
+        with self.subTest("email unmodified"):
+            email_options = backends["email"]
+
+            self.assertEqual(
+                email_options,
+                {"to_emails": [], "attach_files_to_email": None},
+            )
+
+        with self.subTest("generic json modified"):
+            generic_json_1_options = backends["genericJson1"]
+
+            self.assertEqual(
+                generic_json_1_options,
+                {
+                    "service": 1,
+                    "variables": [],
+                    "fixed_metadata_variables": [],
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("generic json unmodified"):
+            generic_json_2_options = backends["genericJson2"]
+
+            self.assertEqual(
+                generic_json_2_options,
+                {
+                    "service": 1,
+                    "variables": [],
+                    "fixed_metadata_variables": [],
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )
+
+        with self.subTest("objects api v1 modified"):
+            objects_v1_1_options = backends["objectsV1-1"]
+
+            self.assertEqual(
+                objects_v1_1_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 1,
+                    "productaanvraag_type": "",
+                    "content_json": "",
+                    "payment_status_update_json": "",
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("objects api v1 unmodified"):
+            objects_v1_2_options = backends["objectsV1-2"]
+
+            self.assertEqual(
+                objects_v1_2_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 1,
+                    "productaanvraag_type": "",
+                    "content_json": "",
+                    "payment_status_update_json": "",
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )
+
+        with self.subTest("objects api v2 modified"):
+            objects_v2_1_options = backends["objectsV2-1"]
+
+            self.assertEqual(
+                objects_v2_1_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 2,
+                    "variables_mapping": [],
+                    "geometry_variable_key": "",
+                    "transform_to_list": [],
+                    "use_empty_string_for_empty_datelike_variables": True,
+                },
+            )
+
+        with self.subTest("objects api v2 unmodified"):
+            objects_v2_2_options = backends["objectsV2-2"]
+
+            self.assertEqual(
+                objects_v2_2_options,
+                {
+                    "objects_api_group": "some-api-group",
+                    "objecttype": "56599c40-ffa9-4aff-9644-9d265bf01156",
+                    "objecttype_version": 1,
+                    "version": 2,
+                    "variables_mapping": [],
+                    "geometry_variable_key": "",
+                    "transform_to_list": [],
+                    "use_empty_string_for_empty_datelike_variables": False,
+                },
+            )

@@ -61,6 +61,7 @@ def process_mapped_variable(
     variable: SubmissionValueVariable | None = None,
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
+    use_legacy_mode_for_datelike: bool = False,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
     """
     Apply post-processing to a mapped variable.
@@ -98,7 +99,9 @@ def process_mapped_variable(
     # format. Utilize the variable if we have one, otherwise convert to ISO-8601 string
     # directly.
     if variable is not None:
-        value = variable.to_json(value)
+        value = variable.to_json(
+            value, use_legacy_mode_for_datelike=use_legacy_mode_for_datelike
+        )
     elif isinstance(value, date | datetime):
         value = value.isoformat()
 

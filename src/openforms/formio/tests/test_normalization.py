@@ -1,10 +1,13 @@
 from django.test import SimpleTestCase, tag
 
+from hypothesis import given, strategies as st
+from unittest_parametrize import ParametrizedTestCase, parametrize
+
 from ..service import normalize_value_for_component
 from ..typing import Component
 
 
-class NormalizationTests(SimpleTestCase):
+class NormalizationTests(ParametrizedTestCase, SimpleTestCase):
     def test_postcode_normalization_with_space(self):
         component: Component = {
             "type": "postcode",
@@ -94,3 +97,51 @@ class NormalizationTests(SimpleTestCase):
 
         self.assertEqual(int_result, "9")
         self.assertEqual(float_result, "9.9")
+
+    @parametrize("component_type", ("date", "datetime", "time"))
+    def test_datelike_normalization_empty_string(self, component_type: str):
+        component: Component = {
+            "type": component_type,
+            "key": component_type,
+            "label": component_type,
+        }
+
+        result = normalize_value_for_component(component, "")
+
+        self.assertIsNone(result)
+
+    @given(value=st.dates().map(lambda d: d.isoformat()))
+    def test_date_normalization_non_empty_value(self, value: str):
+        component: Component = {
+            "type": "date",
+            "key": "date",
+            "label": "date",
+        }
+
+        result = normalize_value_for_component(component, value)
+
+        self.assertEqual(result, value)
+
+    @given(value=st.datetimes().map(lambda d: d.isoformat()))
+    def test_datetime_normalization_non_empty_value(self, value: str):
+        component: Component = {
+            "type": "datetime",
+            "key": "datetime",
+            "label": "datetime",
+        }
+
+        result = normalize_value_for_component(component, value)
+
+        self.assertEqual(result, value)
+
+    @given(value=st.times().map(lambda d: d.isoformat()))
+    def test_time_normalization_non_empty_value(self, value: str):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "time",
+        }
+
+        result = normalize_value_for_component(component, value)
+
+        self.assertEqual(result, value)

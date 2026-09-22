@@ -1,3 +1,4 @@
+import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Iterator, Mapping
@@ -360,6 +361,16 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             submission_file_attachment__submission_step__submission=submission
         ).values_list("document_url", flat=True)
 
+        use_legacy_mode_for_datelike = options[
+            "use_empty_string_for_empty_datelike_variables"
+        ]
+        if use_legacy_mode_for_datelike:
+            warnings.warn(
+                "Converting empty date/datetime/time values to empty string is "
+                "deprecated and scheduled for removal in Open Forms 5.0",
+                DeprecationWarning,
+                stacklevel=1,
+            )
         data = render_template(
             submission=submission,
             template=options["content_json"],
@@ -367,6 +378,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             uploaded_attachment_urls=list(attachment_urls),
             pdf_url=registration_data.pdf_url,
             csv_url=registration_data.csv_url,
+            use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
         )
 
         record_data = prepare_data_for_registration(
@@ -447,6 +459,16 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_mapping = options["variables_mapping"]
         transform_to_list = options["transform_to_list"]
+        use_legacy_mode_for_datelike = options[
+            "use_empty_string_for_empty_datelike_variables"
+        ]
+        if use_legacy_mode_for_datelike:
+            warnings.warn(
+                "Converting empty date/datetime/time values to empty string is "
+                "deprecated and scheduled for removal in Open Forms 5.0",
+                DeprecationWarning,
+                stacklevel=1,
+            )
 
         # collect all the assignments to be done to the object
         assignment_specs: list[AssignmentSpec] = []
@@ -489,6 +511,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 component=component,
                 attachment_urls=urls_map,
                 transform_to_list=transform_to_list,
+                use_legacy_mode_for_datelike=use_legacy_mode_for_datelike,
             )
             if isinstance(assignment_spec, AssignmentSpec):
                 assignment_specs.append(assignment_spec)
@@ -546,6 +569,9 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             assignment_spec = process_mapped_variable(
                 mapping=mapping,
                 value=registration_values[key],
+                use_legacy_mode_for_datelike=options[
+                    "use_empty_string_for_empty_datelike_variables"
+                ],
             )
             if isinstance(assignment_spec, AssignmentSpec):
                 assignment_specs.append(assignment_spec)

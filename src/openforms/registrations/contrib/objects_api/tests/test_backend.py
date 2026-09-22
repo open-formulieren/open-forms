@@ -132,6 +132,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "upload_submission_csv": True,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         with self.assertRaises(RegistrationFailed):
@@ -222,6 +223,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "upload_submission_csv": False,
             "auth_attribute_path": [],
             "update_existing_object": False,
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         with self.assertRaises(RegistrationFailed):
@@ -291,6 +293,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "upload_submission_csv": True,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         with self.assertRaises(RegistrationFailed):
@@ -354,6 +357,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "iot_attachment": "",
                 "update_existing_object": False,
                 "auth_attribute_path": [],
+                "use_empty_string_for_empty_datelike_variables": True,
             }
             object_create_result = plugin.register_submission(
                 submission_create, options1
@@ -389,6 +393,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "iot_attachment": "",
                 "update_existing_object": True,
                 "auth_attribute_path": ["bsn"],
+                "use_empty_string_for_empty_datelike_variables": True,
             }
             object_update_result = plugin.register_submission(
                 submission_update, options2
@@ -429,6 +434,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "iot_attachment": "",
                 "update_existing_object": False,
                 "auth_attribute_path": [],
+                "use_empty_string_for_empty_datelike_variables": True,
             }
 
             object_create_result2 = plugin.register_submission(
@@ -463,6 +469,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "iot_attachment": "",
                 "update_existing_object": True,
                 "auth_attribute_path": ["bsn"],
+                "use_empty_string_for_empty_datelike_variables": True,
             }
 
             object_create_result3 = plugin.register_submission(
@@ -538,6 +545,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             ],
             "upload_submission_csv": True,
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         for suffix in ("attachment", "submission_report", "submission_csv"):
@@ -617,6 +625,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "iot_submission_csv": "",
             "iot_attachment": "Attachment Informatieobjecttype",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)
@@ -687,6 +696,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "iot_submission_csv": "",
             "iot_attachment": "Unpublished",
             "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
         }
 
         result = plugin.register_submission(submission, options)

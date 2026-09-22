@@ -90,22 +90,17 @@ HOUSE_LETTER_REGEX = r"^[a-zA-Z]$"
 HOUSE_NUMBER_ADDITION_REGEX = r"^[a-zA-Z0-9]{1,4}$"
 
 
-class FormioDateField(serializers.DateField):
-    def validate_empty_values(self, data):
-        is_empty, data = super().validate_empty_values(data)
-        # base field only treats `None` as empty, but formio uses empty strings
-        if data == "":
-            if self.required:
-                self.fail("required")
-            return (True, "")
-        return is_empty, data
-
-
 @register("date")
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
     data_type = FormVariableDataTypes.date
-    empty_value = ""
+    empty_value = None
+
+    @staticmethod
+    def normalizer(component: DateComponent, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
 
     def mutate_config_dynamically(
         self, component: DateComponent, submission: Submission, data: FormioData
@@ -119,11 +114,12 @@ class Date(BasePlugin[DateComponent]):
         mutate_min_max_validation(component, data)
 
         # inject the translated placeholder for the formio DateField component
+        # TODO: this can be removed now that the legacy renderer is gone?
         component["placeholder"] = _("dd-mm-yyyy")
 
     def build_serializer_field(
         self, component: DateComponent
-    ) -> FormioDateField | serializers.ListField:
+    ) -> serializers.DateField | serializers.ListField:
         """
         Accept date values.
 
@@ -145,7 +141,7 @@ class Date(BasePlugin[DateComponent]):
             max_value = datetime_in_amsterdam(datetime.fromisoformat(max_date)).date()
             validators.append(MaxValueValidator(max_value))
 
-        base = FormioDateField(
+        base = serializers.DateField(
             required=required,
             allow_null=not required,
             validators=validators,
@@ -157,20 +153,30 @@ class Date(BasePlugin[DateComponent]):
         label = component.get("label", "Date")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "format": "date", "type": "string"}
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # empty value for a date component/variable is None/null as of Open Forms 4.1
+        date_schema_type = ["string"]
+        if not required:
+            date_schema_type += ["null"]
+
+        date_schema = {"type": date_schema_type, "format": "date"}
+        if not required:
+            date_schema = {
+                "oneOf": [
+                    date_schema,
+                    # DeprecationWarning remove in Open Forms 5.0 - empty strings for
+                    # empty date values are replaced with null, always
+                    {"const": ""},
+                ],
+            }
+
+        base = {"title": label, **date_schema}
         return to_multiple(base) if multiple else base
 
 
-class FormioDateTimeField(serializers.DateTimeField):
-    def validate_empty_values(self, data):
-        is_empty, data = super().validate_empty_values(data)
-        # base field only treats `None` as empty, but formio uses empty strings
-        if data == "":
-            if self.required:
-                self.fail("required")
-            return (True, "")
-        return is_empty, data
-
+class DateTimeField(serializers.DateTimeField):
     def to_internal_value(self, value):
         # we *only* accept datetimes in ISO-8601 format. Python will happily parse a
         # YYYY-MM-DD string as a datetime (with hours/minutes set to 0). For a component
@@ -198,7 +204,13 @@ def _normalize_validation_datetime(value: str) -> datetime:
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
     data_type = FormVariableDataTypes.datetime
-    empty_value = ""
+    empty_value = None
+
+    @staticmethod
+    def normalizer(component: DatetimeComponent, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
 
     def mutate_config_dynamically(
         self,
@@ -212,11 +224,12 @@ class Datetime(BasePlugin):
         mutate_min_max_validation(component, data)
 
         # inject the translated placeholder for the formio DateTimeField component
+        # TODO: this can be removed now that the legacy renderer is gone?
         component["placeholder"] = _("dd-mm-yyyy HH:mm")
 
     def build_serializer_field(
         self, component: DateComponent
-    ) -> FormioDateTimeField | serializers.ListField:
+    ) -> DateTimeField | serializers.ListField:
         """
         Accept datetime values.
 
@@ -238,7 +251,7 @@ class Datetime(BasePlugin):
             max_value = _normalize_validation_datetime(max_date)
             validators.append(MaxValueValidator(max_value))
 
-        base = FormioDateTimeField(
+        base = DateTimeField(
             input_formats=[ISO_8601],
             required=required,
             allow_null=not required,
@@ -251,7 +264,26 @@ class Datetime(BasePlugin):
         label = component.get("label", "Date time")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "format": "date-time", "type": "string"}
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # empty value for a date component/variable is None/null as of Open Forms 4.1
+        datetime_schema_type = ["string"]
+        if not required:
+            datetime_schema_type += ["null"]
+
+        datetime_schema = {"type": datetime_schema_type, "format": "date-time"}
+        if not required:
+            datetime_schema = {
+                "oneOf": [
+                    datetime_schema,
+                    # DeprecationWarning remove in Open Forms 5.0 - empty strings for
+                    # empty date values are replaced with null, always
+                    {"const": ""},
+                ],
+            }
+
+        base = {"title": label, **datetime_schema}
         return to_multiple(base) if multiple else base
 
 
@@ -785,7 +817,7 @@ class PartnerSerializer(serializers.Serializer):
         help_text=_("The last name of the partner"),
         allow_blank=True,
     )
-    dateOfBirth = FormioDateField(
+    dateOfBirth = serializers.DateField(
         label=_("date of birth"),
         help_text=_("The date of birth of the partner"),
     )
@@ -918,7 +950,7 @@ class ChildSerializer(serializers.Serializer):
         help_text=_("The first names of the child"),
         allow_blank=True,
     )
-    dateOfBirth = FormioDateField(
+    dateOfBirth = serializers.DateField(
         label=_("date of birth"),
         help_text=_("The date of birth of the child"),
     )

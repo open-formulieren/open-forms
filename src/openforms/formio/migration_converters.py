@@ -202,14 +202,6 @@ def ensure_postcode_validate_pattern(component: Component) -> bool:
     return True
 
 
-def prevent_datetime_components_from_emptying_invalid_values(
-    component: Component,
-) -> bool:
-    # Issue #3755
-    assign(component, "customOptions.allowInvalidPreload", True, missing=dict)
-    return True
-
-
 def fix_empty_validate_lengths(component: Component) -> bool:
     if not (validate := component.get("validate")):
         return False
@@ -369,6 +361,36 @@ def fix_empty_default_value(component: Component) -> bool:
     return changed
 
 
+def fix_empty_date_datetime_or_time_default_value(component: Component) -> bool:
+    if "defaultValue" not in component:
+        return False
+
+    changed = False
+    match component:
+        # ensure each item in the list has the proper data type
+        case {"multiple": True, "defaultValue": list(values)}:
+            for index, value in enumerate(values):
+                assert isinstance(component["defaultValue"], list)
+                if value == "":
+                    component["defaultValue"][index] = None
+                    changed = True
+
+        # not a list, but multiple -> normalize to empty list
+        case {"multiple": True, "defaultValue": _}:
+            changed = True
+            component["defaultValue"] = []
+
+        # before 4.1, the empty string was the empty value, we need to correct that now
+        # to None
+        case {"defaultValue": ""}:
+            component["defaultValue"] = get_component_empty_value(component)
+            changed = True
+        case _:
+            pass
+
+    return changed
+
+
 def replace_empty_datepicker_properties(component: Component) -> bool:
     config_modified = False
 
@@ -476,7 +498,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
-        "fix_empty_default_value": fix_empty_default_value,
+        "fix_empty_default_value": fix_empty_date_datetime_or_time_default_value,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
@@ -484,15 +506,14 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
-        "fix_empty_default_value": fix_empty_default_value,
-        "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
+        "fix_empty_default_value": fix_empty_date_datetime_or_time_default_value,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
         "remove_empty_min_max_validation_spec": remove_empty_min_max_validation_spec,
     },
     "time": {
         "move_time_validators": move_time_validators,
-        "fix_empty_default_value": fix_empty_default_value,
+        "fix_empty_default_value": fix_empty_date_datetime_or_time_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "fix_min_max_time_default_values": fix_min_max_time_default_values,
     },
