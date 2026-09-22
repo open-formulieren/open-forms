@@ -5,6 +5,7 @@ from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.service import AuthAttribute
+from openforms.authentication.typing import BaseAuth
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.cosigning import CosignV2Data
 from openforms.submissions.models import Submission
@@ -188,6 +189,25 @@ class CosignPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.pseudo)
+
+
+@register("registrator")
+class Registrator(BaseStaticVariable):
+    name = _("Registrator")
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(
+        self, submission: Submission | None = None
+    ) -> BaseAuth | None:
+        if not submission or not submission.has_registrator:
+            return None
+        registrator = submission.registrator
+        assert registrator is not None
+        return {
+            "plugin": registrator.plugin,
+            "attribute": registrator.attribute,
+            "value": registrator.value,
+        }
 
 
 PAYMENT_VARIABLE_NAMES = [
