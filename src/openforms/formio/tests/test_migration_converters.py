@@ -12,6 +12,7 @@ from ..migration_converters import (
     fix_empty_default_value,
     fix_file_default_value,
     fix_multiple_empty_default_value,
+    normalize_date_default_value,
     remove_default_value_translation,
     remove_empty_conditional_values,
     remove_empty_min_max_validation_spec,
@@ -2020,6 +2021,51 @@ class DateTests(ParametrizedTestCase, SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    @parametrize(
+        ("input", "output"),
+        [
+            (None, None),
+            ("2026-01-01", "2026-01-01"),
+            ("2026-01-01T23:59:59Z", "2026-01-02"),
+            ("2025-08-01T22:00:00+02:00", "2025-08-01"),
+            ("2025-08-01T22:00:00+01:00", "2025-08-01"),
+            ("2025-08-01T22:00:00+00:00", "2025-08-02"),
+            ("2025-08-01T22:00:00", "2025-08-01"),
+            # gibberish that can't be parsed -> kept as is
+            ("gibberish", "gibberish"),
+        ],
+    )
+    def test_default_value_normalized(
+        self,
+        input: str | None,
+        output: str | None,
+    ):
+        with self.subTest(multiple=False):
+            component: Component = {
+                "key": "date",
+                "type": "date",
+                "label": "Date",
+                "multiple": False,
+                "defaultValue": input,
+            }
+
+            normalize_date_default_value(component)
+
+            self.assertEqual(component["defaultValue"], output)
+
+        with self.subTest(multiple=False):
+            component: Component = {
+                "key": "date",
+                "type": "date",
+                "label": "Date",
+                "multiple": True,
+                "defaultValue": [input],
+            }
+
+            normalize_date_default_value(component)
+
+            self.assertEqual(component["defaultValue"], [output])
 
 
 class SelectBoxTests(SimpleTestCase):

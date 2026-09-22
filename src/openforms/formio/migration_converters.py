@@ -473,6 +473,9 @@ def remove_empty_min_max_validation_spec(component: Component) -> bool:
     return changed
 
 
+def normalize_date_default_value(component: Component): ...
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
