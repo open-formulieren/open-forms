@@ -1,5 +1,6 @@
 from collections import defaultdict
 from functools import partial
+from typing import Literal
 
 from django.core.exceptions import PermissionDenied
 
@@ -125,12 +126,19 @@ def fetch_prefill_values_from_options(
     submission: Submission,
     register: Registry,
     variables: list[SubmissionValueVariable],
+    submission_phase: Literal["start", "resume"] = "start",
 ) -> dict[str, JSONEncodable]:
     values: dict[str, JSONEncodable] = {}
     for variable in variables:
         assert variable.form_variable is not None
         plugin = register[variable.form_variable.prefill_plugin]
         log = logger.bind(plugin=plugin)
+
+        # re-trigger the prefill only for the allowed/supported plugins (used when we
+        # resume a submission and we need to update the prefill data)
+        if submission_phase == "resume" and not plugin.rerun_on_submission_resume:
+            log.debug("plugin_not_supported_in_resume")
+            continue
 
         if not plugin.is_enabled:
             log.debug("plugin_disabled")
