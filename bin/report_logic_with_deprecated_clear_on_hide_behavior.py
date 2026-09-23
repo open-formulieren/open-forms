@@ -39,27 +39,31 @@ def iter_variables_with_compare_value(expression: JSON):
     if operator in ["==", "!=", "===", "!=="]:
         a, b = argument
         match a, b:
-            case {"var": _}, {"var": _}:
-                # Cannot determine anything if we have two variable expressions
-                return
             case {"var": _}, None | int() | float() | str() | bool():
                 # A variable expression + primitive -> possibility of comparing to an
                 # empty value
-                var_name = JSONLogicExpression.normalize(a)["var"][0]
+                var_name, *default = JSONLogicExpression.normalize(a)["var"]
+                if default:
+                    # No need to report expressions that already have a default value
+                    return
                 # Could be another variable expression, in theory
                 if isinstance(var_name, str):
                     yield var_name, b
             case None | int() | float() | str() | bool(), {"var": _}:
                 # A primitive + variable expression -> possibility of comparing to an
                 # empty value
-                var_name = JSONLogicExpression.normalize(b)["var"][0]
+                var_name, *default = JSONLogicExpression.normalize(b)["var"]
+                if default:
+                    # No need to report expressions that already have a default value
+                    return
                 # Could be another variable expression, in theory
                 if isinstance(var_name, str):
                     yield var_name, a
             case _:
                 # In all other cases, just process the arguments recursively:
-                # 1. Variable expression + other expression
-                # 2. Two other expressions
+                # 1. Two variable expressions
+                # 2. Variable expression + other expression
+                # 3. Two other expressions
                 yield from iter_variables_with_compare_value(argument)
         return
     elif operator == "in":
@@ -73,11 +77,19 @@ def iter_variables_with_compare_value(expression: JSON):
                 else:
                     # If x is a primitive, we can yield it together with the variable
                     # name
-                    var_name = JSONLogicExpression.normalize(a)["var"][0]
+                    var_name, *default = JSONLogicExpression.normalize(a)["var"]
+                    if default:
+                        # No need to report expressions that already have a default value
+                        return
                     # Could be another variable expression, in theory
                     if isinstance(var_name, str):
                         yield var_name, compare_value
             return
+    elif operator == "var" and len(argument) == 1:
+        # Individual variable expressions can be reported if they don't have a default
+        # (ignoring nested expressions)
+        if isinstance(argument[0], str):
+            yield argument[0], None
 
     yield from iter_variables_with_compare_value(argument)
 
@@ -95,126 +107,165 @@ def analyze_rule(
         iter_components,
     )
     from openforms.formio.typing import Component
-    from openforms.forms.constants import LogicActionTypes
+    from openforms.submissions.logic.actions import (
+        EvaluateDMNAction,
+        ServiceFetchAction,
+        VariableAction,
+    )
     from openforms.variables.service import resolve_key
 
-    ##############################
-    ### CLEAR ON HIDE BEHAVIOR ###
-    ##############################
-    variable_names = set()
-    for var_name, comp_value in iter_variables_with_compare_value(
-        rule.json_logic_trigger
-    ):
-        if (resolved_key := resolve_key(var_name, component_map)) is None:
-            # Variable cannot be resolved, so we cannot determine anything
-            continue
+    first_execution_step = (
+        min(rule.steps, key=lambda step: step.order) if rule.steps else None
+    )
 
-        component = component_map[resolved_key]
-        if component["type"] == "editgrid" and var_name != resolved_key:
-            # We expect data access "editgrid.x.child_key" here, so discard the
-            # parent key and index. Assuming there are no nested editgrids here
-            # :see_no_evil:
-            _, child_key = var_name.removeprefix(f"{resolved_key}.").split(".", 1)
-
-            children_map: dict[str, Component] = {
-                child["key"]: child
-                for child in iter_components(
-                    component, recursive=True, recurse_into_editgrid=False
-                )
-            }
-            resolved_key = resolve_key(child_key, children_map)
-            assert resolved_key is not None
-            component = children_map[resolved_key]
-
-        # Visibility of component is not affected and/or component does not have
-        # clearOnHide enabled, so it's not relevant
-        if resolved_key not in components_with_affected_visibility or not component.get(
-            "clearOnHide", True
+    def analyze_json_logic(json_logic_expression):
+        variable_names_clearonhide = set()
+        variable_names_future_steps = set()
+        for var_name, comp_value in iter_variables_with_compare_value(
+            json_logic_expression
         ):
-            continue
+            if (resolved_key := resolve_key(var_name, component_map)) is None:
+                # Variable cannot be resolved, so we cannot determine anything
+                continue
 
-        empty_value = get_component_empty_value(component)
-        if component["type"] == "selectboxes":
-            # `get_component_empty_value` returns {"option_a": False, "option_b": False, etc...}
-            # for a selectboxes component, which is not a useful in this
-            # context. It is not possible to use a dictionary as a comparison
-            # value in a logic trigger, because it will be interpreted as an
-            # expression itself. This means data access always happens using
-            # "selectboxes.option_a", and we should just default to the
-            # individual empty value.
-            empty_value = False
+            variable_step = form.get_form_step(resolved_key)
+            component = component_map[resolved_key]
+            if component["type"] == "editgrid" and var_name != resolved_key:
+                key_list = var_name.removeprefix(f"{resolved_key}.").split(".", 1)
+                if len(key_list) == 2:
+                    # We expect data access "editgrid.x.child_key" here, so discard the
+                    # parent key and index. Assuming there are no nested editgrids here
+                    # :see_no_evil:
+                    children_map: dict[str, Component] = {
+                        child["key"]: child
+                        for child in iter_components(
+                            component, recursive=True, recurse_into_editgrid=False
+                        )
+                    }
+                    resolved_key = resolve_key(key_list[1], children_map)
+                    assert resolved_key is not None
+                    component = children_map[resolved_key]
+                else:
+                    # Data access key was "editgrid.x" - we can't do anything in that
+                    # case
+                    continue
 
-        # The comparison value `None` will also no longer work, as it's the
-        # current default that is set when a variable is missing from the
-        # context. Note that all form variables should be present in the context
-        # at the moment, but there is no such guarantee for nested data.
-        if comp_value in [empty_value, None, component.get("defaultValue")]:
-            variable_names.add(var_name)
+            empty_value = get_component_empty_value(component)
+            if component["type"] == "selectboxes":
+                # `get_component_empty_value` returns {"option_a": False, "option_b": False, etc...}
+                # for a selectboxes component, which is not a useful in this
+                # context. It is not possible to use a dictionary as a comparison
+                # value in a logic trigger, because it will be interpreted as an
+                # expression itself. This means data access always happens using
+                # "selectboxes.option_a", and we should just default to the
+                # individual empty value.
+                empty_value = False
 
-    if variable_names:
+            # The comparison value `None` will also no longer work, as it's the
+            # current default that is set when a variable is missing from the
+            # context. Note that all form variables should be present in the context
+            # at the moment, but there is no such guarantee for nested data. If the
+            # compare value is anything else (for example, one of the options of a radio
+            # component) we don't have to report it, because the expression can only
+            # trigger once the component is actually filled in -> no change w.r.t.
+            # current behaviour.
+            if comp_value not in [empty_value, None, component.get("defaultValue")]:
+                continue
+
+            if resolved_key in components_with_affected_visibility and component.get(
+                "clearOnHide", True
+            ):
+                variable_names_clearonhide.add(var_name)
+
+            if (
+                variable_step
+                and first_execution_step
+                and first_execution_step.order < variable_step.order
+            ):
+                variable_names_future_steps.add(var_name)
+
+        return variable_names_clearonhide, variable_names_future_steps
+
+    ##########################
+    ### JSON LOGIC TRIGGER ###
+    ##########################
+    vars_clearonhide, vars_future_steps = analyze_json_logic(rule.json_logic_trigger)
+    if vars_clearonhide:
         data.append(
             (
                 form.admin_name,
                 form.pk,
                 rule.order,
-                ", ".join(variable_names),
-                "clear on hide behavior",
+                ", ".join(vars_clearonhide),
+                "clear on hide behavior (trigger)",
+            )
+        )
+    if vars_future_steps:
+        data.append(
+            (
+                form.admin_name,
+                form.pk,
+                rule.order,
+                ", ".join(vars_future_steps),
+                "variables from future steps (trigger)",
             )
         )
 
-    ###################################
-    ### VARIABLES FROM FUTURE STEPS ###
-    ###################################
-    # Steps of the input variables
-    input_steps = {
-        step for key in rule.input_variable_keys if (step := form.get_form_step(key))
-    }
-    # Steps on which the rule will be executed
-    executing_steps = rule.steps
-    if input_steps and executing_steps:
-        # Input steps and/or executing steps can be empty if we are only dealing
-        # with user-defined variables. We don't have to do anything in that
-        # case.
-
-        # If the earliest executing step is before the last step of the input
-        # variables, the input value(s) will not be available yet -> risk of
-        # difference in behavior.
-        if (
-            min(executing_steps, key=lambda step: step.order).order
-            < max(input_steps, key=lambda step: step.order).order
-        ):
-            data.append(
-                (
-                    form.admin_name,
-                    form.pk,
-                    rule.order,
-                    "-",
-                    "variables from future steps",
+    ###############
+    ### ACTIONS ###
+    ###############
+    for action in rule.action_operations:
+        if isinstance(action, VariableAction):
+            vars_clearonhide, vars_future_steps = analyze_json_logic(action.value)
+            if vars_clearonhide:
+                data.append(
+                    (
+                        form.admin_name,
+                        form.pk,
+                        rule.order,
+                        ", ".join(vars_clearonhide),
+                        "clear on hide behavior (variable action)",
+                    )
                 )
-            )
-
-    ###################################
-    ### VARIABLES USED AS DMN INPUT ###
-    ###################################
-    for action in rule.actions:
-        if action["action"]["type"] != LogicActionTypes.evaluate_dmn:
-            continue
-        # raw config lookup so that we can also run this on older versions of
-        # open forms
-        input_variable_keys = {
-            mapping["form_variable"]
-            for mapping in action["action"]["config"]["input_mapping"]
-        }
-        if variable_names := components_with_affected_visibility & input_variable_keys:
-            data.append(
-                (
-                    form.admin_name,
-                    form.pk,
-                    rule.order,
-                    ", ".join(variable_names),
-                    "used in DMN input but may be missing",
+            if vars_future_steps:
+                data.append(
+                    (
+                        form.admin_name,
+                        form.pk,
+                        rule.order,
+                        ", ".join(vars_future_steps),
+                        "variables from future steps (variable action)",
+                    )
                 )
-            )
+
+        # Note: variables from service fetch settings are extracted from templates, so
+        # we can't check whether form designers have fixed their implementations.
+        # Note: it is not possible to add defaults for variables used in DMN actions, so
+        # we can only report that they are used.
+        elif isinstance(action, ServiceFetchAction | EvaluateDMNAction):
+            resolved_keys = {
+                resolved_key
+                for key in action.unresolved_input_variables
+                if (resolved_key := resolve_key(key, component_map))
+            }
+            vars_clearonhide = components_with_affected_visibility & resolved_keys
+            vars_future_steps = {
+                key
+                for key in resolved_keys
+                if first_execution_step
+                and (step := form.get_form_step(key))
+                and first_execution_step.order < step.order
+            }
+            if variable_names := vars_clearonhide | vars_future_steps:
+                data.append(
+                    (
+                        form.admin_name,
+                        form.pk,
+                        rule.order,
+                        ", ".join(variable_names),
+                        f"used in {action.__class__.__name__} but may be missing",
+                    )
+                )
 
 
 def report_rules() -> bool:
@@ -296,7 +347,7 @@ def report_rules() -> bool:
                     "Form admin name",
                     "Form ID",
                     "Logic rule number",
-                    "Variable names in logic trigger",
+                    "Variable names",
                     "Reason",
                 ),
             )
