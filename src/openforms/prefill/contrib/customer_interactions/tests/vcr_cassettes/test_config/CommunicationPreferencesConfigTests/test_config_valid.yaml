@@ -1,38 +1,37 @@
 interactions:
-- request:
-    body: null
-    headers: {}
-    method: GET
-    uri: http://localhost:8005/klantinteracties/api/v1/
-  response:
-    body:
-      string: '{"actoren":"http://localhost:8005/klantinteracties/api/v1/actoren","digitaleadressen":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen","rekeningnummers":"http://localhost:8005/klantinteracties/api/v1/rekeningnummers","actorklantcontacten":"http://localhost:8005/klantinteracties/api/v1/actorklantcontacten","klantcontacten":"http://localhost:8005/klantinteracties/api/v1/klantcontacten","betrokkenen":"http://localhost:8005/klantinteracties/api/v1/betrokkenen","onderwerpobjecten":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten","bijlagen":"http://localhost:8005/klantinteracties/api/v1/bijlagen","maak-klantcontact":"http://localhost:8005/klantinteracties/api/v1/maak-klantcontact","internetaken":"http://localhost:8005/klantinteracties/api/v1/internetaken","categorieen":"http://localhost:8005/klantinteracties/api/v1/categorieen","categorie-relaties":"http://localhost:8005/klantinteracties/api/v1/categorie-relaties","partijen":"http://localhost:8005/klantinteracties/api/v1/partijen","partij-identificatoren":"http://localhost:8005/klantinteracties/api/v1/partij-identificatoren","vertegenwoordigingen":"http://localhost:8005/klantinteracties/api/v1/vertegenwoordigingen"}'
-    headers:
-      API-version:
-      - 0.4.1
-      Allow:
-      - GET, HEAD, OPTIONS
-      Content-Length:
-      - '1211'
-      Content-Security-Policy:
-      - 'object-src ''none''; frame-src ''self''; form-action ''self''; default-src
-        ''self''; script-src ''self'' ''unsafe-inline''; font-src ''self'' fonts.gstatic.com;
-        base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        frame-ancestors ''none''; img-src ''self'' data: cdn.redoc.ly; worker-src
-        ''self'' blob:'
-      Content-Type:
-      - application/json
-      Cross-Origin-Opener-Policy:
-      - same-origin
-      Referrer-Policy:
-      - same-origin
-      Vary:
-      - origin
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - DENY
-    status:
-      code: 200
-      message: OK
+  - request:
+      body: null
+      headers: {}
+      method: GET
+      uri: http://localhost:8005/klantinteracties/api/v1/
+    response:
+      body:
+        string: '{"actoren":"http://localhost:8005/klantinteracties/api/v1/actoren","digitaleadressen":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen","rekeningnummers":"http://localhost:8005/klantinteracties/api/v1/rekeningnummers","actorklantcontacten":"http://localhost:8005/klantinteracties/api/v1/actorklantcontacten","klantcontacten":"http://localhost:8005/klantinteracties/api/v1/klantcontacten","betrokkenen":"http://localhost:8005/klantinteracties/api/v1/betrokkenen","onderwerpobjecten":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten","bijlagen":"http://localhost:8005/klantinteracties/api/v1/bijlagen","maak-klantcontact":"http://localhost:8005/klantinteracties/api/v1/maak-klantcontact","internetaken":"http://localhost:8005/klantinteracties/api/v1/internetaken","categorieen":"http://localhost:8005/klantinteracties/api/v1/categorieen","categorie-relaties":"http://localhost:8005/klantinteracties/api/v1/categorie-relaties","partijen":"http://localhost:8005/klantinteracties/api/v1/partijen","partij-identificatoren":"http://localhost:8005/klantinteracties/api/v1/partij-identificatoren","vertegenwoordigingen":"http://localhost:8005/klantinteracties/api/v1/vertegenwoordigingen"}'
+      headers:
+        API-version:
+          - 0.4.1
+        Allow:
+          - GET, HEAD, OPTIONS
+        Content-Length:
+          - '1211'
+        Content-Security-Policy:
+          - "default-src 'self'; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline'
+            fonts.googleapis.com; form-action 'self'; frame-ancestors 'none'; frame-src 'self';
+            base-uri 'self'; script-src 'self' 'unsafe-inline'; object-src 'none'; worker-src 'self'
+            blob:; img-src 'self' data: cdn.redoc.ly"
+        Content-Type:
+          - application/json
+        Cross-Origin-Opener-Policy:
+          - same-origin
+        Referrer-Policy:
+          - same-origin
+        Vary:
+          - origin
+        X-Content-Type-Options:
+          - nosniff
+        X-Frame-Options:
+          - DENY
+      status:
+        code: 200
+        message: OK
 version: 1

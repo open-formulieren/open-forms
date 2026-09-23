@@ -34,7 +34,8 @@ So, to recap:
    form field default values.
 """
 
-import elasticapm
+from typing import Literal
+
 import structlog
 from opentelemetry import trace
 
@@ -112,8 +113,11 @@ def inject_prefill(
 @tracer.start_as_current_span(
     name="prefill-variables", attributes={"span.type": "app", "span.subtype": "prefill"}
 )
-@elasticapm.capture_span(span_type="app.prefill")
-def prefill_variables(submission: Submission, register: Registry | None = None) -> None:
+def prefill_variables(
+    submission: Submission,
+    register: Registry | None = None,
+    submission_phase: Literal["start", "resume"] = "start",
+) -> None:
     """
     Update the submission variables state with the fetched attribute values.
 
@@ -160,7 +164,10 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
 
         if variables_with_options:
             results_from_options = fetch_prefill_values_from_options(
-                submission, register, variables_with_options
+                submission,
+                register,
+                variables_with_options,
+                submission_phase,
             )
             prefill_data.update(**results_from_options)
 

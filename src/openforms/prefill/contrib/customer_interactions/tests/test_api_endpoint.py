@@ -8,6 +8,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
 )
+from openforms.formio.typing.custom import SupportedChannels
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -16,7 +17,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..plugin import PLUGIN_IDENTIFIER
-from ..typing import SupportedChannels
 
 
 class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase):
@@ -79,15 +79,33 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "isVerified": True,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "isVerified": False,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0687654321", "0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "0687654321",
+                            "isVerified": False,
+                        },
+                    ],
                     "preferred": "0612345678",
                 },
             ],
@@ -141,12 +159,22 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             [
                 {
                     "type": "email",
-                    "options": ["maykinmail@test.com"],
+                    "options": [
+                        {
+                            "address": "maykinmail@test.com",
+                            "isVerified": False,
+                        }
+                    ],
                     "preferred": "maykinmail@test.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "isVerified": False,
+                        }
+                    ],
                     "preferred": "0612345678",
                 },
             ],
@@ -201,12 +229,22 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             [
                 {
                     "type": "email",
-                    "options": ["maykinmailvestiging@test.com"],
+                    "options": [
+                        {
+                            "address": "maykinmailvestiging@test.com",
+                            "isVerified": False,
+                        }
+                    ],
                     "preferred": "maykinmailvestiging@test.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0612345679"],
+                    "options": [
+                        {
+                            "address": "0612345679",
+                            "isVerified": False,
+                        }
+                    ],
                     "preferred": "0612345679",
                 },
             ],
@@ -298,12 +336,21 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "isVerified": True,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "isVerified": False,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
-                },
+                }
             ],
         )
 
@@ -403,15 +450,33 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 {
                     "type": "email",
                     "options": [
-                        "someemail@example.org",
-                        "devilkiller@example.org",
-                        "john.smith@gmail.com",
+                        {
+                            "address": "john.smith@gmail.com",
+                            "isVerified": True,
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "isVerified": False,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
-                    "options": ["0687654321", "0612345678"],
+                    "options": [
+                        {
+                            "address": "0612345678",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "0687654321",
+                            "isVerified": False,
+                        },
+                    ],
                     "preferred": "0612345678",
                 },
             ],

@@ -77,6 +77,10 @@ assignees: sergei-maertens
     - [ ] `openforms.registrations.contrib.stuf_zds`
     - [ ] `openforms.registrations.contrib.zgw_apis`
 
+  - Submissions:
+
+    - [ ] `openforms.submissions.tests.test_resume_form_view`
+
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations

@@ -1,37 +1,37 @@
 interactions:
-- request:
-    body: null
-    headers: {}
-    method: GET
-    uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen?verstrektDoorPartij__partijIdentificator__codeSoortObjectId=kvk_nummer&verstrektDoorPartij__partijIdentificator__codeRegister=hr&verstrektDoorPartij__partijIdentificator__codeObjecttype=niet_natuurlijk_persoon&verstrektDoorPartij__partijIdentificator__objectId=12345678
-  response:
-    body:
-      string: '{"count":2,"next":null,"previous":null,"results":[{"uuid":"66089cf4-fe6b-45c8-b618-4c9d46790b16","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/66089cf4-fe6b-45c8-b618-4c9d46790b16","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"0612345678","soortDigitaalAdres":"telefoonnummer","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}},{"uuid":"6b0099b5-85ac-4f13-b138-26e123debe51","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6b0099b5-85ac-4f13-b138-26e123debe51","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"maykinmail@test.com","soortDigitaalAdres":"email","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}}]}'
-    headers:
-      API-version:
-      - 0.4.1
-      Allow:
-      - GET, POST, HEAD, OPTIONS
-      Content-Length:
-      - '1073'
-      Content-Security-Policy:
-      - 'frame-src ''self''; font-src ''self'' fonts.gstatic.com; worker-src ''self''
-        blob:; object-src ''none''; form-action ''self''; default-src ''self''; base-uri
-        ''self''; img-src ''self'' data: cdn.redoc.ly; script-src ''self'' ''unsafe-inline'';
-        frame-ancestors ''none''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
-      Content-Type:
-      - application/json
-      Cross-Origin-Opener-Policy:
-      - same-origin
-      Referrer-Policy:
-      - same-origin
-      Vary:
-      - origin
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - DENY
-    status:
-      code: 200
-      message: OK
+  - request:
+      body: null
+      headers: {}
+      method: GET
+      uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen?verstrektDoorPartij__partijIdentificator__codeSoortObjectId=kvk_nummer&verstrektDoorPartij__partijIdentificator__codeRegister=hr&verstrektDoorPartij__partijIdentificator__codeObjecttype=niet_natuurlijk_persoon&verstrektDoorPartij__partijIdentificator__objectId=12345678
+    response:
+      body:
+        string: '{"count":2,"next":null,"previous":null,"results":[{"uuid":"66089cf4-fe6b-45c8-b618-4c9d46790b16","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/66089cf4-fe6b-45c8-b618-4c9d46790b16","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"0612345678","soortDigitaalAdres":"telefoonnummer","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}},{"uuid":"6b0099b5-85ac-4f13-b138-26e123debe51","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6b0099b5-85ac-4f13-b138-26e123debe51","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"maykinmail@test.com","soortDigitaalAdres":"email","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}}]}'
+      headers:
+        API-version:
+          - 0.4.1
+        Allow:
+          - GET, POST, HEAD, OPTIONS
+        Content-Length:
+          - '1073'
+        Content-Security-Policy:
+          - "default-src 'self'; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline'
+            fonts.googleapis.com; form-action 'self'; frame-ancestors 'none'; frame-src 'self';
+            base-uri 'self'; script-src 'self' 'unsafe-inline'; object-src 'none'; worker-src 'self'
+            blob:; img-src 'self' data: cdn.redoc.ly"
+        Content-Type:
+          - application/json
+        Cross-Origin-Opener-Policy:
+          - same-origin
+        Referrer-Policy:
+          - same-origin
+        Vary:
+          - origin
+        X-Content-Type-Options:
+          - nosniff
+        X-Frame-Options:
+          - DENY
+      status:
+        code: 200
+        message: OK
 version: 1

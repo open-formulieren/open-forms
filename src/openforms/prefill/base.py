@@ -51,6 +51,10 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     """
     for_components: Container[str] = AllComponentTypes()
     options: SerializerCls = EmptyOptions
+    rerun_on_submission_resume: ClassVar[bool] = False
+    """
+    Indicates whether the prefill flow should re-run when a submission is resumed.
+    """
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
