@@ -6,7 +6,7 @@ component definitions are rewritten to be compatible with the current code.
 """
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Protocol, cast  # noqa: TID251
 
 import structlog
@@ -509,6 +509,24 @@ def normalize_date_default_value(component: Component) -> bool:
     return changed
 
 
+def normalize_time_default_value(component: Component):
+    if not (default_value := component.get("defaultValue")):
+        return False
+
+    def normalize(value):
+        if not value:
+            return None
+        # tzinfo is deliberately discarded - our frontend does not emit that anywhere
+        return time.fromisoformat(value).isoformat()
+
+    _list_initially = isinstance(default_value, list)
+    _values = [default_value] if not _list_initially else default_value
+    _normalized = [normalize(value) for value in _values]
+    changed = _normalized != _values
+    component["defaultValue"] = _normalized if _list_initially else _normalized[0]
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -553,6 +571,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_default_value": fix_empty_date_datetime_or_time_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "fix_min_max_time_default_values": fix_min_max_time_default_values,
+        "normalize_time_default_value": normalize_time_default_value,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,

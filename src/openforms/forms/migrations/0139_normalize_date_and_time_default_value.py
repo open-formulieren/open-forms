@@ -12,4 +12,5 @@ class Migration(migrations.Migration):
 
     operations = [
         ConvertComponentsOperation("date", "normalize_date_default_value"),
+        ConvertComponentsOperation("time", "normalize_time_default_value"),
     ]

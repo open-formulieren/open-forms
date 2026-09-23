@@ -13,6 +13,7 @@ from ..migration_converters import (
     fix_file_default_value,
     fix_multiple_empty_default_value,
     normalize_date_default_value,
+    normalize_time_default_value,
     remove_default_value_translation,
     remove_empty_conditional_values,
     remove_empty_min_max_validation_spec,
@@ -1051,7 +1052,7 @@ class EmailTests(SimpleTestCase):
         )
 
 
-class TimeTests(SimpleTestCase):
+class TimeTests(ParametrizedTestCase, SimpleTestCase):
     def test_multiple_noop(self):
         component: Component = {
             "type": "time",
@@ -1142,6 +1143,32 @@ class TimeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["11:11", None, "22:22"])
+
+    @parametrize(
+        ("original", "expected_changed", "expected"),
+        [
+            ("12:00", True, "12:00:00"),
+            ("12:00:00", False, "12:00:00"),
+            (None, False, None),
+            (["12:00"], True, ["12:00:00"]),
+            (["12:00", "23:15:00"], True, ["12:00:00", "23:15:00"]),
+            (["12:00", None], True, ["12:00:00", None]),
+            (["12:00:00", "23:15:00"], False, ["12:00:00", "23:15:00"]),
+        ],
+    )
+    def test_normalize_times_to_rfc3339(self, original, expected_changed, expected):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "defaultValue": original,
+            "multiple": isinstance(original, list),
+        }
+
+        changed = normalize_time_default_value(component)
+
+        self.assertEqual(changed, expected_changed)
+        self.assertEqual(component["defaultValue"], expected)
 
 
 class PhoneNumberTests(SimpleTestCase):
