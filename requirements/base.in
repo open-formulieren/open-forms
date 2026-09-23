@@ -71,7 +71,7 @@ django-upgrade-check
 django-yubin
 mozilla-django-oidc<5.0  # mozilla-django-oidc-db needs to be updated first
 mozilla-django-oidc-db[setup-configuration]
-maykin-common[axes,cli,health-checks,mfa,otel,pdf]
+maykin-common[axes,cli,health-checks,mfa,otel,pdf,structlog]
 maykin-2fa
 django-timeline-logger
 django-csp
