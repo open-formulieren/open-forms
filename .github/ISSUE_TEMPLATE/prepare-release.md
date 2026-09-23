@@ -82,6 +82,7 @@ assignees: sergei-maertens
   - Submissions:
 
     - [ ] `openforms.submissions.tests.test_single_step_form`
+    - [ ] `openforms.submissions.tests.test_resume_form_view`
 
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`

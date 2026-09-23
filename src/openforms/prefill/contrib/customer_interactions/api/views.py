@@ -10,10 +10,13 @@ from rest_framework import views
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ListMixin
+from openforms.contrib.customer_interactions.transform import (
+    prepare_addresses_for_frontend,
+)
+from openforms.contrib.customer_interactions.typing import CommunicationChannelReturn
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
-from openforms.typing import VariableValue
 from openforms.variables.constants import FormVariableSources
 
 from ..plugin import PLUGIN_IDENTIFIER
@@ -30,7 +33,9 @@ logger = structlog.stdlib.get_logger(__name__)
         404: ExceptionSerializer,
     },
 )
-class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
+class CommunicationPreferencesView(
+    ListMixin[CommunicationChannelReturn], views.APIView
+):
     """
     Get prefilled communication preferences for a particular submission
     """
@@ -66,4 +71,7 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
         state = submission.variables_state
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
-        return value
+
+        unique_addresses = prepare_addresses_for_frontend(value)  # pyright: ignore[reportArgumentType]
+
+        return unique_addresses
