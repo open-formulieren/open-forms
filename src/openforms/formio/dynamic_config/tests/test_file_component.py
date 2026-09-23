@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from rest_framework.test import APIRequestFactory
 
@@ -8,6 +8,7 @@ from openforms.config.models import GlobalConfiguration
 
 from ...datastructures import FormioConfigurationWrapper
 from ...service import rewrite_formio_components_for_request
+from ...typing import FileComponent
 
 request_factory = APIRequestFactory()
 
@@ -68,3 +69,20 @@ class FileComponentTests(TestCase):
         self.assertEqual(
             updated_component["file"]["allowedTypesLabels"], ["any filetype"]
         )
+
+    @tag("gh-6698")
+    def test_allowed_types_labels_are_always_injected(self):
+        component: FileComponent = {  # pyright: ignore[reportAssignmentType]
+            "type": "file",
+            "key": "fileTest",
+            "label": "fileTest",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "*",
+            "file": {"type": ["image/png"]},
+        }
+
+        wrapper = _get_dynamic_config(component)
+
+        updated_component = wrapper["fileTest"]
+        self.assertEqual(updated_component["file"]["allowedTypesLabels"], [".png"])
