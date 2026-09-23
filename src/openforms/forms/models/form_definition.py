@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import json
 import uuid
@@ -24,7 +26,7 @@ if TYPE_CHECKING:
     from ..models import FormStep
 
 
-def _get_number_of_components(form_definition: "FormDefinition") -> int:
+def _get_number_of_components(form_definition: FormDefinition) -> int:
     """
     Given a form definition, count the total number of (nested) components in the configuration.
     """
@@ -70,7 +72,7 @@ class FormDefinition(models.Model):
         help_text=_("The total number of Formio components used in the configuration"),
     )
 
-    formstep_set: models.Manager["FormStep"]
+    formstep_set: models.Manager[FormStep]
 
     class Meta:
         verbose_name = _("Form definition")
@@ -162,7 +164,7 @@ class FormDefinition(models.Model):
         ).hexdigest()
 
     @cached_property
-    def configuration_wrapper(self) -> "FormioConfigurationWrapper":
+    def configuration_wrapper(self) -> FormioConfigurationWrapper:
         from openforms.formio.service import FormioConfigurationWrapper
 
         return FormioConfigurationWrapper(self.configuration)

@@ -8323,6 +8323,7 @@ components:
       required:
       - configuration
       - name
+      - translations
       - uuid
     FormENTranslations:
       type: object
