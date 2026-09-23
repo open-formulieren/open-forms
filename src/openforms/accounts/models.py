@@ -40,6 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_("last name"), max_length=255, blank=True)
     email = models.EmailField(_("email address"), blank=True)
 
+    # TODO: this should have a unique constraint!
     employee_id = models.CharField(
         _("employee id"),
         max_length=150,
@@ -60,6 +61,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+
+    # this is deliberately not exposed in the admin
+    raw_oidc_claims = models.JSONField(
+        _("raw OIDC claims"),
+        default=dict,
+        help_text=_(
+            "OIDC claims obtained from the last OpenID Connect login. Contains (a "
+            "subset of) the claims listed on https://openid.net/specs/"
+            "openid-connect-core-1_0.html#StandardClaims."
+        ),
+    )
 
     # user preferences
     ui_language = models.CharField(

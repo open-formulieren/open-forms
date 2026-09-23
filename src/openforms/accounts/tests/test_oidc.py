@@ -189,3 +189,21 @@ class OIDCFlowTests(OIDCMixin, OFVCRMixin, WebTest):
         staff_user.refresh_from_db()
         self.assertEqual(staff_user.username, "admin")
         self.assertEqual(staff_user.email, "admin@example.com")
+        self.assertEqual(
+            staff_user.raw_oidc_claims,
+            {
+                "aud": "testid",
+                "email": "admin@example.com",
+                "email_verified": True,
+                "employeeId": "9999",
+                "groups": [
+                    "Registreerders",
+                    "default-roles-test",
+                    "offline_access",
+                    "uma_authorization",
+                ],
+                "iss": "http://localhost:8080/realms/test",
+                "preferred_username": "admin",
+                "sub": "6db2db87-de31-4e30-9f25-cefe5da8b154",
+            },
+        )
