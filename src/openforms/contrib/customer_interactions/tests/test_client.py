@@ -19,7 +19,7 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
 
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
-                "adres": "0687654321",
+                "adres": "0612345678",
                 "soortDigitaalAdres": "telefoonnummer",
                 "isStandaardAdres": False,
             },
@@ -29,25 +29,52 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
                 "isStandaardAdres": True,
             },
             {
-                "adres": "someemail@example.org",
-                "soortDigitaalAdres": "email",
+                "adres": "0687654321",
+                "soortDigitaalAdres": "telefoonnummer",
                 "isStandaardAdres": False,
             },
             {
                 "adres": "devilkiller@example.org",
                 "soortDigitaalAdres": "email",
                 "isStandaardAdres": False,
+                "verificatieDatum": None,
+            },
+            {
+                "adres": "john.smith@gmail.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": None,
+            },
+            {
+                "adres": "john.smith@gmail.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": "2026-09-09",
             },
             {
                 "adres": "john.smith@gmail.com",
                 "soortDigitaalAdres": "email",
                 "isStandaardAdres": True,
+                "verificatieDatum": None,
+            },
+            {
+                "adres": "someemail@example.org",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": None,
             },
         ]
-        self.assertEqual(len(data), 5)
+        self.assertEqual(len(data), 8)
+
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):
                 self.assertAddressPresent(data, expected_address)
+
+        self.assertEqual(
+            data,
+            [],
+            f"Unexpected addresses found: {data}",
+        )
 
     def test_list_digital_addresses_empty_for_bsn(self):
         with get_customer_interactions_client(self.config) as client:
@@ -80,9 +107,16 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
             },
         ]
         self.assertEqual(len(data), 2)
+
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):
                 self.assertAddressPresent(data, expected_address)
+
+        self.assertEqual(
+            data,
+            [],
+            f"Unexpected addresses found: {data}",
+        )
 
     def test_list_digital_addresses_empty_for_kvk(self):
         with get_customer_interactions_client(self.config) as client:

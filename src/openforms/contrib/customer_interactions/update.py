@@ -13,7 +13,6 @@ from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
-from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
 )
@@ -22,6 +21,7 @@ from openforms.submissions.models import Submission
 
 from .client import get_customer_interactions_client
 from .constants import ADDRESS_TYPES_TO_CHANNELS
+from .typing import CommunicationChannel
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -37,6 +37,10 @@ class UpdateCustomerInteractionsResult(TypedDict):
     onderwerpobject: OnderwerpObject
     digital_addresses: DigitalAddressResults
     partij_uuid: str
+
+
+# TODO
+# make sure that the duplicate addresses are properly handled according to the referentie?
 
 
 def update_customer_interaction_data(
@@ -148,11 +152,15 @@ def update_customer_interaction_data(
                 (value for value in prefill_value if value["type"] == address_channel),
                 None,
             )
-            prefill_channel_options = (
-                prefill_communication_channel["options"]
-                if prefill_communication_channel
-                else []
-            )
+
+            if not prefill_communication_channel:
+                prefill_channel_options = []
+            else:
+                prefill_channel_options = [
+                    option["address"]
+                    for option in prefill_communication_channel["options"]
+                ]
+
             prefill_preferred = (
                 prefill_communication_channel["preferred"]
                 if prefill_communication_channel

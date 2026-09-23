@@ -309,6 +309,51 @@
     }
 },
 {
+    "model": "klantinteracties.digitaaladres",
+    "pk": 10,
+    "fields": {
+      "uuid": "c19f736f-0bfb-43b0-851e-4118ac28375a",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "email",
+      "is_standaard_adres": false,
+      "adres": "john.smith@gmail.com",
+      "omschrijving": "",
+      "referentie": "",
+      "verificatie_datum": "2026-09-09"
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 11,
+    "fields": {
+      "uuid": "c5673d3f-3da0-46e0-93e7-b078bd6b7ed8",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "email",
+      "is_standaard_adres": false,
+      "adres": "john.smith@gmail.com",
+      "omschrijving": "",
+      "referentie": "",
+      "verificatie_datum": null
+    }
+  },
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 12,
+    "fields": {
+      "uuid": "897fcb59-4cf4-4e99-9cbd-7fec39f79c2d",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "telefoonnummer",
+      "is_standaard_adres": false,
+      "adres": "0612345678",
+      "omschrijving": "",
+      "referentie": "",
+      "verificatie_datum": null
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {

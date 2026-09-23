@@ -40,6 +40,7 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
         AuthAttribute.kvk,
     )
     options = CommunicationPreferencesSerializer
+    rerun_on_submission_resume = True
 
     @classmethod
     def get_prefill_values_from_options(

@@ -7253,8 +7253,7 @@ components:
         options:
           type: array
           items:
-            type: string
-          description: List of available address options for this channel
+            $ref: '#/components/schemas/Options'
         preferred:
           type: string
           nullable: true
@@ -8905,6 +8904,11 @@ components:
             $ref: '#/components/schemas/FormVariableV3'
         payment:
           $ref: '#/components/schemas/FormPayment'
+        priceVariableKey:
+          type: string
+          description: Key of the variable that contains the calculated submission
+            price.
+          pattern: ^(\w|\w[\w.\-]*\w)$
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
@@ -9896,6 +9900,21 @@ components:
       required:
       - status
       - version
+    Options:
+      type: object
+      properties:
+        address:
+          type: string
+          readOnly: true
+          description: An address value for the supported communication channels.
+        isVerified:
+          type: boolean
+          readOnly: true
+          title: Is address verified
+          description: Whether the address is verified or not.
+      required:
+      - address
+      - isVerified
     PaginatedFormDefinitionList:
       type: object
       required:
