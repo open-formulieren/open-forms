@@ -6,7 +6,7 @@ from uuid import UUID
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, override_settings, tag
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -48,7 +48,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-    @freeze_time("2026-06-25T18:07:00+00:00")
+    @time_machine.travel("2026-06-25T18:07:00+00:00", tick=False)
     def test_default_template(self):
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -144,7 +144,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
                 },
             )
 
-    @freeze_time("2026-06-25T18:07:00+00:00")
+    @time_machine.travel("2026-06-25T18:07:00+00:00", tick=False)
     def test_custom_template(self):
         self.config.content_json = textwrap.dedent(
             """

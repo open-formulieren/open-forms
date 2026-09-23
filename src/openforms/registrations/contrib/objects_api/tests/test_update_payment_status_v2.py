@@ -3,7 +3,7 @@ from uuid import UUID
 from django.test import TestCase
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -19,7 +19,7 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
 
 
-@freeze_time("2020-02-02")
+@time_machine.travel("2020-02-02", tick=False)
 class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     config_group: ObjectsAPIGroupConfig
 

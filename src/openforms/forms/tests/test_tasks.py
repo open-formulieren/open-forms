@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.db import DatabaseError
 from django.test import TestCase, override_settings
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.logging.models import TimelineLogProxy
 
@@ -12,7 +12,7 @@ from .factories import FormFactory
 
 
 class ActivateFormsTests(TestCase):
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_forms_are_activated_on_specified_datetime(self):
         form1 = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
         form2 = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
@@ -41,7 +41,7 @@ class ActivateFormsTests(TestCase):
                     f"{log_entry.fmt_lead}: Form was activated.",
                 )
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_with_timedelta(self):
         with self.subTest("5 min have not passed"):
             form = FormFactory(active=False, activate_on="2023-10-10T21:12:00Z")
@@ -63,7 +63,7 @@ class ActivateFormsTests(TestCase):
             self.assertFalse(form.active)
             self.assertIsNotNone(form.activate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_activated_on_different_date(self):
         form = FormFactory(active=False, activate_on="2023-10-19T21:15:00Z")
 
@@ -74,7 +74,7 @@ class ActivateFormsTests(TestCase):
         self.assertFalse(form.active)
         self.assertIsNotNone(form.activate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_activated_on_different_time(self):
         form = FormFactory(active=False, activate_on="2023-10-10T21:16:00Z")
 
@@ -85,7 +85,7 @@ class ActivateFormsTests(TestCase):
         self.assertFalse(form.active)
         self.assertIsNotNone(form.activate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_activated_when_soft_deleted(self):
         form = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
         form._is_deleted = True
@@ -98,7 +98,7 @@ class ActivateFormsTests(TestCase):
         self.assertFalse(form.active)
         self.assertIsNotNone(form.activate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     @patch("openforms.forms.tasks.Form.activate")
     def test_database_error(self, mocked_activation):
         FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
@@ -113,7 +113,7 @@ class ActivateFormsTests(TestCase):
 
 
 class DeactivateFormsTests(TestCase):
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_forms_are_deactivated_on_specified_datetime(self):
         form1 = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
         form2 = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
@@ -142,7 +142,7 @@ class DeactivateFormsTests(TestCase):
                     f"{log_entry.fmt_lead}: Form was deactivated.",
                 )
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_with_timedelta(self):
         with self.subTest("5 min have not passed"):
             form = FormFactory(deactivate_on="2023-10-10T21:12:00Z")
@@ -164,7 +164,7 @@ class DeactivateFormsTests(TestCase):
             self.assertTrue(form.active)
             self.assertIsNotNone(form.deactivate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_deactivated_on_different_date(self):
         form = FormFactory(deactivate_on="2023-10-19T21:15:00Z")
 
@@ -175,7 +175,7 @@ class DeactivateFormsTests(TestCase):
         self.assertTrue(form.active)
         self.assertIsNotNone(form.deactivate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_deactivated_on_different_time(self):
         form = FormFactory(deactivate_on="2023-10-10T21:16:00Z")
 
@@ -186,7 +186,7 @@ class DeactivateFormsTests(TestCase):
         self.assertTrue(form.active)
         self.assertIsNotNone(form.deactivate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     def test_form_is_not_deactivated_when_soft_deleted(self):
         form = FormFactory(active=False, deactivate_on="2023-10-10T21:15:00Z")
         form._is_deleted = True
@@ -199,7 +199,7 @@ class DeactivateFormsTests(TestCase):
         self.assertFalse(form.active)
         self.assertIsNotNone(form.deactivate_on)
 
-    @freeze_time("2023-10-10T21:15:00Z")
+    @time_machine.travel("2023-10-10T21:15:00Z", tick=False)
     @patch("openforms.forms.tasks.Form.deactivate")
     def test_database_error(self, mocked_deactivation):
         FormFactory(deactivate_on="2023-10-10T21:15:00Z")

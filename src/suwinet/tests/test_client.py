@@ -7,8 +7,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
 import lxml.etree
+import time_machine
 from bs4 import BeautifulSoup
-from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
 from zeep.exceptions import Fault
@@ -136,7 +136,7 @@ class SuwinetTestCase(OFVCRMixin, TestCase):
         # WSS signatures expire: freeze the time in CI
         if self.cassette.responses:
             now = self.cassette.responses[0]["headers"]["Date"][0]
-            time_ctx = freeze_time(now)
+            time_ctx = time_machine.travel(now, tick=False)
             self.addCleanup(time_ctx.stop)
             time_ctx.start()
 

@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models.form_step import FormStep
@@ -68,7 +68,7 @@ class DeleteSubmissionsTask(TestCase):
             all_submissions_removal_limit=7,
         )
 
-        with freeze_time("2024-11-12T18:00:00+01:00"):
+        with time_machine.travel("2024-11-12T18:00:00+01:00", tick=False):
             # Submission not connected to form
             SubmissionFactory.create(registration_success=True)
 
@@ -78,7 +78,7 @@ class DeleteSubmissionsTask(TestCase):
 
         self.assertEqual(Submission.objects.count(), 2)
 
-        with freeze_time("2024-11-12T19:00:00+01:00"):
+        with time_machine.travel("2024-11-12T19:00:00+01:00", tick=False):
             delete_submissions()
 
         # Only the submission connected to the form should be deleted
@@ -94,7 +94,7 @@ class DeleteSubmissionsTask(TestCase):
         before_limit = timezone.now() - timedelta(
             days=config.successful_submissions_removal_limit + 1
         )
-        with freeze_time(before_limit):
+        with time_machine.travel(before_limit, tick=False):
             sub = SubmissionFactory.create(completed=True)
 
         # create a form step to then delete which introduces the RecursionError
@@ -214,7 +214,7 @@ class DeleteSubmissionsTask(TestCase):
             all_submissions_removal_limit=7,
         )
 
-        with freeze_time("2024-11-12T18:00:00+01:00"):
+        with time_machine.travel("2024-11-12T18:00:00+01:00", tick=False):
             # Incomplete submissions not connected to the form
             SubmissionFactory.create(registration_status=RegistrationStatuses.pending)
             SubmissionFactory.create(
@@ -231,7 +231,7 @@ class DeleteSubmissionsTask(TestCase):
 
         self.assertEqual(Submission.objects.count(), 5)
 
-        with freeze_time("2024-11-12T19:00:00+01:00"):
+        with time_machine.travel("2024-11-12T19:00:00+01:00", tick=False):
             delete_submissions()
 
         self.assertEqual(Submission.objects.count(), 3)
@@ -351,7 +351,7 @@ class DeleteSubmissionsTask(TestCase):
             all_submissions_removal_limit=7,
         )
 
-        with freeze_time("2024-11-12T18:00:00+01:00"):
+        with time_machine.travel("2024-11-12T18:00:00+01:00", tick=False):
             # Failed submission not connected to the form
             SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
 
@@ -370,7 +370,7 @@ class DeleteSubmissionsTask(TestCase):
 
         self.assertEqual(Submission.objects.count(), 5)
 
-        with freeze_time("2024-11-12T19:00:00+01:00"):
+        with time_machine.travel("2024-11-12T19:00:00+01:00", tick=False):
             delete_submissions()
 
         self.assertEqual(Submission.objects.count(), 4)
@@ -449,7 +449,7 @@ class DeleteSubmissionsTask(TestCase):
             all_submissions_removal_limit=0,
         )
 
-        with freeze_time("2024-11-12T18:00:00+01:00"):
+        with time_machine.travel("2024-11-12T18:00:00+01:00", tick=False):
             # Submissions not connected to the form
             SubmissionFactory.create(registration_success=True)
             SubmissionFactory.create(registration_status=RegistrationStatuses.pending)
@@ -473,7 +473,7 @@ class DeleteSubmissionsTask(TestCase):
 
         self.assertEqual(Submission.objects.count(), 8)
 
-        with freeze_time("2024-11-12T19:00:00+01:00"):
+        with time_machine.travel("2024-11-12T19:00:00+01:00", tick=False):
             delete_submissions()
 
         self.assertEqual(Submission.objects.count(), 4)

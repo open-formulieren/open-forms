@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings, tag
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 
@@ -312,7 +312,7 @@ class SubmissionReportGenerationTests(TestCase):
 
         self.assertEqual(reference_node.text, "Your reference is: OF-12345")
 
-    @freeze_time("2024-01-01")
+    @time_machine.travel("2024-01-01T00:00:00+00:00", tick=False)
     @override_settings(LANGUAGE_CODE="en")
     def test_timestamp_included(self):
         submission = SubmissionFactory.from_components(

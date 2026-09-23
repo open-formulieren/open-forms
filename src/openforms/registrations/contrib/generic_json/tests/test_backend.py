@@ -7,7 +7,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, tag
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from requests import RequestException
 from zgw_consumers.constants import AuthTypes
@@ -1434,7 +1434,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 expected_properties,
             )
 
-    @freeze_time("2025-01-30T13:05:00Z")
+    @time_machine.travel("2025-01-30T13:05:00Z", tick=False)
     def test_metadata(self):
         submission = SubmissionFactory.from_components(
             [

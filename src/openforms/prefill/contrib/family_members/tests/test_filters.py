@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.contrib.haal_centraal.data import (
     NaturalPersonDetails as HC_NaturalPersonDetails,
@@ -10,7 +10,7 @@ from stuf.stuf_bg.data import NaturalPersonDetails as StUFBG_NaturalPersonDetail
 from ..filters import filter_members_by_age
 
 
-@freeze_time("2025-04-25T18:00:00+01:00")
+@time_machine.travel("2025-04-25T18:00:00+01:00", tick=False)
 class FamilyMembersFiltersTests(TestCase):
     def test_age_filter_with_empty_input(self):
         data = []

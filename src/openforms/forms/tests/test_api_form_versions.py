@@ -3,7 +3,7 @@ import datetime
 from django.urls import reverse
 from django.utils import translation
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -58,7 +58,7 @@ class FormVersionSaveAPITests(APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    @freeze_time("2020-12-11T10:53:19+01:00")
+    @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     def test_save_version(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)

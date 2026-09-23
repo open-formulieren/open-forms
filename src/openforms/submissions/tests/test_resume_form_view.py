@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from furl import furl
 from privates.test import temp_private_root
 from structlog.testing import capture_logs
@@ -121,14 +121,15 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
 
         submission = SubmissionFactory.create()
 
-        with freeze_time(
+        with time_machine.travel(
             submission.created_on
             - timedelta(
                 days=(
                     submission_resume_token_generator.get_token_timeout_days(submission)
                     + 1
                 )
-            )
+            ),
+            tick=False,
         ):
             token = submission_resume_token_generator.make_token(submission)
 

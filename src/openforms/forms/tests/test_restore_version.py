@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import translation
 from django.utils.translation import gettext as _
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
@@ -85,7 +85,7 @@ class RestoreVersionTest(TestCase):
             restored_form_definition.configuration,
         )
 
-    @freeze_time("2022-02-21T17:00:00Z")
+    @time_machine.travel("2022-02-21T17:00:00Z", tick=False)
     def test_restore_version_description_correct(self):
         """
         Assert that the counting of the form version number works correctly.
@@ -100,7 +100,7 @@ class RestoreVersionTest(TestCase):
                     form_version.description, _("Version {number}").format(number=1)
                 )
 
-        with freeze_time("2022-02-21T18:00:00Z"):
+        with time_machine.travel("2022-02-21T18:00:00Z", tick=False):
             form_version3 = FormVersion.objects.create_for(form=form1)
             form_version4 = FormVersion.objects.create_for(form=form2)
 

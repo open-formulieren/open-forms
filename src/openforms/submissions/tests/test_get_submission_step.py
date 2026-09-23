@@ -17,7 +17,7 @@ from unittest.mock import patch
 from django.test import tag
 from django.utils.translation import gettext_lazy as _
 
-from freezegun import freeze_time
+import time_machine
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
@@ -1028,7 +1028,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         }
         self.assertEqual(expected, response.json())
 
-    @freeze_time("2026-03-18")
+    @time_machine.travel("2026-03-18", tick=False)
     def test_with_logic_rule_that_does_not_require_backend(self):
         step = FormStepFactory.create(
             form_definition__configuration={
@@ -1254,7 +1254,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         }
         self.assertEqual(expected, response.json())
 
-    @freeze_time("2026-03-18")
+    @time_machine.travel("2026-03-18", tick=False)
     def test_logic_rule_is_serialized_properly(self):
         form = FormFactory.create()
         step_1 = FormStepFactory.create(
@@ -1369,7 +1369,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         self.assertFalse(data["requireBackendLogicEvaluation"])
         self.assertEqual(expected, data["logicRules"][0])
 
-    @freeze_time("2026-03-18")
+    @time_machine.travel("2026-03-18", tick=False)
     def test_with_date_trigger_that_could_be_partially_resolved(self):
         step = FormStepFactory.create(
             form_definition__configuration={

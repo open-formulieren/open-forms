@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import SimpleTestCase, TestCase, override_settings, tag
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
@@ -27,7 +27,7 @@ from .factories import (
 class SubmissionTests(TestCase):
     maxDiff = None
 
-    @freeze_time("2021-11-26T17:00:00+01:00")
+    @time_machine.travel("2021-11-26T17:00:00+01:00", tick=False)
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_str(self):
         submission = SubmissionFactory.create()

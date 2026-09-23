@@ -3,7 +3,7 @@ from django.template.defaultfilters import capfirst
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.models import Form
@@ -138,7 +138,7 @@ class TimelineLogProxyTests(TestCase):
         log = TimelineLogProxyFactory.create(content_object=form)
         self.assertEqual(f'"MyForm" (ID: {form.id})', log.fmt_form)
 
-    @freeze_time("2020-01-02 12:34:00")
+    @time_machine.travel("2020-01-02T12:34:00+00:00", tick=False)
     def test_formatting_accessors(self):
         submission = SubmissionFactory.create(
             form__name="MyForm", auth_info__value="111222333"
@@ -197,7 +197,7 @@ class TimelineLogProxyTests(TestCase):
         with self.subTest("unknown plugin"):
             self.assertEqual(_("(unknown)"), log.fmt_plugin)
 
-    @freeze_time("2020-01-02 12:34:00")
+    @time_machine.travel("2020-01-02T12:34:00+00:00", tick=False)
     def test_non_existing_object(self):
         # Github issue #1408: object has a .content_type (and presumably .object_id) but object could not be retrieved
 

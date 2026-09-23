@@ -5,8 +5,8 @@ from django.test import tag
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import time_machine
 from django_webtest import WebTest
-from freezegun import freeze_time
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import (
@@ -51,7 +51,7 @@ class TestPlugin(DemoAppointment):
 
 @disable_admin_mfa()
 class AppointmentInfoAdminTests(WebTest):
-    @freeze_time("2021-11-26T17:00:00+01:00")
+    @time_machine.travel("2021-11-26T17:00:00+01:00", tick=False)
     def test_cancel_link_only_for_superuser(self):
         normal, staff = [
             UserFactory.create(user_permissions=["view_appointmentinfo"]),
@@ -83,7 +83,7 @@ class AppointmentInfoAdminTests(WebTest):
             object_actions_col = changelist.pyquery(".field-get_object_actions")
             self.assertFalse(object_actions_col)
 
-    @freeze_time("2021-11-26T17:00:00+01:00")
+    @time_machine.travel("2021-11-26T17:00:00+01:00", tick=False)
     def test_cancel_link(self):
         user = SuperUserFactory.create()
         # appointment in the past

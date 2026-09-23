@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytz
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -77,7 +77,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
         self.assertEqual(logs.count(), 1)
 
     def test_cancel_appointment_and_successful_submissions_pruning(self):
-        with freeze_time("2021-07-20T12:00:00Z"):
+        with time_machine.travel("2021-07-20T12:00:00Z", tick=False):
             form = FormFactory.create(
                 type=FormTypeChoices.appointment,
                 successful_submissions_removal_limit=2,
@@ -107,7 +107,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
             )
 
         # appointment still valid, submission should not be deleted
-        with freeze_time("2021-07-25T12:00:00Z"):
+        with time_machine.travel("2021-07-25T12:00:00Z", tick=False):
             self.assertEqual(Submission.objects.count(), 1)
 
             delete_submissions()
@@ -118,7 +118,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
         # appointment invalid, submission should be deleted
-        with freeze_time("2021-07-27T12:00:00Z"):
+        with time_machine.travel("2021-07-27T12:00:00Z", tick=False):
             self.assertEqual(Submission.objects.count(), 1)
 
             delete_submissions()
@@ -129,7 +129,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_cancel_appointment_and_all_submissions_pruning(self):
-        with freeze_time("2021-07-20T12:00:00Z"):
+        with time_machine.travel("2021-07-20T12:00:00Z", tick=False):
             form = FormFactory.create(
                 type=FormTypeChoices.appointment,
                 all_submissions_removal_limit=2,
@@ -156,7 +156,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
             )
 
         # appointment still valid, submission should not be deleted
-        with freeze_time("2021-07-25T12:00:00Z"):
+        with time_machine.travel("2021-07-25T12:00:00Z", tick=False):
             self.assertEqual(Submission.objects.count(), 1)
 
             delete_submissions()
@@ -167,7 +167,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
         # appointment invalid, submission should be deleted
-        with freeze_time("2021-07-27T12:00:00Z"):
+        with time_machine.travel("2021-07-27T12:00:00Z", tick=False):
             self.assertEqual(Submission.objects.count(), 1)
 
             delete_submissions()

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from django.test import TestCase, override_settings
 
-from freezegun import freeze_time
+import time_machine
 from jsonschema import Draft202012Validator
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -15,7 +15,7 @@ def _get_variable(key: str, **kwargs):
     return register[key].get_static_variable(**kwargs)
 
 
-@freeze_time("2022-08-29T17:10:55+02:00")
+@time_machine.travel("2022-08-29T17:10:55+02:00", tick=False)
 class NowTests(TestCase):
     def test_with_submission(self):
         submission = SubmissionFactory.build()
@@ -32,7 +32,7 @@ class NowTests(TestCase):
         self.assertEqual(variable.initial_value, expected)
 
 
-@freeze_time("2022-08-29T17:10:00+02:00")
+@time_machine.travel("2022-08-29T17:10:00+02:00", tick=False)
 class CurrentYearTests(TestCase):
     def test_with_submission(self):
         submission = SubmissionFactory.build()
@@ -114,7 +114,7 @@ class FormTests(TestCase):
 
 
 class TodayTests(TestCase):
-    @freeze_time("2022-11-24T00:30:00+01:00")
+    @time_machine.travel("2022-11-24T00:30:00+01:00", tick=False)
     def test_date_has_the_right_day(self):
         submission = SubmissionFactory.build()
 

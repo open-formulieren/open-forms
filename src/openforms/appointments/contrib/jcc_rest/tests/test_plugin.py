@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -194,7 +194,7 @@ class PluginTests(OFVCRMixin, TestCase):
         # empty list. This is also not impossible of course, but less likely.
         self.assertTrue(len(dates) != 0)
 
-    @freeze_time(RECORDING_DATETIME)
+    @time_machine.travel(RECORDING_DATETIME, tick=False)
     def test_get_dates_with_custom_range(self):
         product = Product(
             identifier="6063baab-b077-4eaf-8671-98394793724c",
@@ -220,7 +220,7 @@ class PluginTests(OFVCRMixin, TestCase):
         self.assertTrue(min(dates) >= start_at)
         self.assertTrue(max(dates) <= end_at)
 
-    @freeze_time(RECORDING_DATETIME)
+    @time_machine.travel(RECORDING_DATETIME, tick=False)
     def test_get_times(self):
         product = Product(
             identifier="6063baab-b077-4eaf-8671-98394793724c",
@@ -957,7 +957,7 @@ class PluginTests(OFVCRMixin, TestCase):
             ),
         )
 
-    @freeze_time(RECORDING_DATETIME)
+    @time_machine.travel(RECORDING_DATETIME, tick=False)
     def test_create_retrieve_and_cancel_appointment_flow(self):
         product = Product(
             identifier="2e656741-db4d-4c75-ae57-97fda6ce5ce8",
@@ -1032,7 +1032,7 @@ class PluginTests(OFVCRMixin, TestCase):
         # 5. cancel the appointment
         self.plugin.delete_appointment(appointment_id)
 
-    @freeze_time(RECORDING_DATETIME)
+    @time_machine.travel(RECORDING_DATETIME, tick=False)
     def test_create_appointment_with_multiple_products(self):
         product1 = Product(
             identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
@@ -1074,7 +1074,7 @@ class PluginTests(OFVCRMixin, TestCase):
 
         self.assertTrue(isinstance(appointment_id, str))
 
-    @freeze_time(RECORDING_DATETIME)
+    @time_machine.travel(RECORDING_DATETIME, tick=False)
     def test_appointment_with_multiple_persons(self):
         product = Product(
             identifier="2e656741-db4d-4c75-ae57-97fda6ce5ce8",

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from freezegun import freeze_time
+import time_machine
 
 from ...config.models import GlobalConfiguration
 from ..public_references import generate_unique_submission_reference
@@ -29,7 +29,7 @@ class ObtainSubmissionReferenceTests(TestCase):
 
             self.assertNotEqual(reference, another_reference)
 
-    @freeze_time("2026-01-01")
+    @time_machine.travel("2026-01-01T08:00:00+01:00", tick=False)
     def test_generate_public_reference_with_different_templates(self):
         submission = SubmissionFactory.create()
 

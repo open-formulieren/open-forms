@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from django.test import TestCase
 from django.urls import reverse
 
-from freezegun import freeze_time
+import time_machine
 from furl import furl
 
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
@@ -17,7 +17,7 @@ from ..tokens import submission_appointment_token_generator
 from .factories import AppointmentInfoFactory
 
 
-@freeze_time("2021-07-15T21:15:00Z")
+@time_machine.travel("2021-07-15T21:15:00Z", tick=False)
 class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.create(
@@ -38,7 +38,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         )
 
         # one day after token generation
-        with freeze_time("2021-07-16T21:15:00Z"):
+        with time_machine.travel("2021-07-16T21:15:00Z", tick=False):
             response = self.client.get(endpoint)
 
         self.assertRedirectsToFrontend(
@@ -105,7 +105,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
             },
         )
 
-        with freeze_time("2021-07-22T12:00:00Z"):
+        with time_machine.travel("2021-07-22T12:00:00Z", tick=False):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 403)
@@ -126,7 +126,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
             },
         )
 
-        with freeze_time("2021-07-21T11:59:59Z"):
+        with time_machine.travel("2021-07-21T11:59:59Z", tick=False):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, 302)

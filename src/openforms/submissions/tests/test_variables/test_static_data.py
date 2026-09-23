@@ -1,6 +1,6 @@
 from django.test import override_settings
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -61,7 +61,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
                 "step_uuid": form.formstep_set.get().uuid,
             },
         )
-        with freeze_time("2021-07-29T14:00:00Z"):
+        with time_machine.travel("2021-07-29T14:00:00Z", tick=False):
             response = self.client.get(submission_step_endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

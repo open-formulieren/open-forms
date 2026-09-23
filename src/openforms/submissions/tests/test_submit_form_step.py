@@ -8,7 +8,7 @@ by using HTTP PUT.
 
 from django.test import tag
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -61,7 +61,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # ensure there is a submission
         cls.submission = SubmissionFactory.create(form=cls.form)
 
-    @freeze_time("2022-05-25T10:53:19+00:00")
+    @time_machine.travel("2022-05-25T10:53:19+00:00", tick=False)
     def test_create_step_data(self):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
@@ -116,7 +116,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         self.assertEqual("example data", variable.value)
         self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
 
-    @freeze_time("2022-05-25T10:53:19+00:00")
+    @time_machine.travel("2022-05-25T10:53:19+00:00", tick=False)
     def test_create_step_data_from_suspended_form(self):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(

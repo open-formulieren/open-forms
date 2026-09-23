@@ -4,7 +4,7 @@ import textwrap
 from django.db import connection
 from django.test import override_settings, tag
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -508,7 +508,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         state = submission.variables_state
-        with freeze_time("2015-10-10"):
+        with time_machine.travel("2015-10-10", tick=False):
             response = self.client.post(endpoint, {"data": state.get_data()})
 
         submission_details = response.json()
@@ -882,7 +882,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
         )
 
-        with freeze_time("2024-03-18T08:31:08+01:00"):
+        with time_machine.travel("2024-03-18T08:31:08+01:00", tick=False):
             response = self.client.post(
                 logic_check_endpoint, {"data": {"datetime": ""}}
             )
@@ -933,7 +933,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
         )
 
-        with freeze_time("2024-03-18T08:31:08+01:00"):
+        with time_machine.travel("2024-03-18T08:31:08+01:00", tick=False):
             response = self.client.post(logic_check_endpoint, {"data": {"date": ""}})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

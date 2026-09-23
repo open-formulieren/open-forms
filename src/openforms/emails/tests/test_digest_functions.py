@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
+import time_machine
 from django_yubin.models import Message
-from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import serializers
 from simple_certmanager.test.factories import CertificateFactory
@@ -119,7 +119,7 @@ class ErrorFormConfiguration(BasePlugin):
         pass
 
 
-@freeze_time("2023-02-02T12:30:00+01:00")
+@time_machine.travel("2023-02-02T12:30:00+01:00", tick=False)
 class FailedEmailsTests(TestCase):
     def test_failed_emails_are_collected(self):
         submission = SubmissionFactory.create()
@@ -170,7 +170,7 @@ class FailedEmailsTests(TestCase):
         self.assertEqual(failed_emails, [])
 
 
-@freeze_time("2023-01-02T12:30:00+01:00")
+@time_machine.travel("2023-01-02T12:30:00+01:00", tick=False)
 class FailedRegistrationsTests(TestCase):
     def test_failed_registrations_are_collected(self):
         # 1st form with 2 failures in the past 24 hours
@@ -279,7 +279,7 @@ class FailedRegistrationsTests(TestCase):
         self.assertEqual(context["failed_emails"], [])
 
 
-@freeze_time("2023-01-02T12:30:00+01:00")
+@time_machine.travel("2023-01-02T12:30:00+01:00", tick=False)
 class FailedPrefillTests(TestCase):
     def test_prefill_plugin_failures_are_collected(self):
         hc_plugin = prefill_register["haalcentraal"]
@@ -1316,7 +1316,7 @@ class InvalidCertificatesTests(TestCase):
                 public_certificate=File(client_certificate_f, name="test.certificate"),
             )
 
-        with freeze_time("2026-04-01T21:15:00Z"):
+        with time_machine.travel("2026-04-01T21:15:00Z", tick=False):
             invalid_certificates = collect_invalid_certificates()
 
         self.assertEqual(len(invalid_certificates), 0)
@@ -1330,7 +1330,7 @@ class InvalidCertificatesTests(TestCase):
             )
             ServiceFactory.create(client_certificate=certificate)
 
-        with freeze_time("2024-04-15T21:15:00Z"):
+        with time_machine.travel("2024-04-15T21:15:00Z", tick=False):
             invalid_certificates = collect_invalid_certificates()
 
         self.assertEqual(len(invalid_certificates), 0)
@@ -1345,14 +1345,14 @@ class InvalidCertificatesTests(TestCase):
             ServiceFactory.create(client_certificate=certificate)
 
         with self.subTest("expiry in the near future"):
-            with freeze_time("2027-03-20T21:15:00Z"):
+            with time_machine.travel("2027-03-20T21:15:00Z", tick=False):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
             self.assertEqual(invalid_certificates[0].error_message, "will expire soon")
 
         with self.subTest("expiry in the past"):
-            with freeze_time("2027-03-27T21:15:00Z"):
+            with time_machine.travel("2027-03-27T21:15:00Z", tick=False):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
@@ -1394,7 +1394,7 @@ class InvalidCertificatesTests(TestCase):
             ServiceFactory.create(client_certificate=certificate)
 
         with self.subTest("expiry in the near future"):
-            with freeze_time("2027-03-21T21:15:00Z"):
+            with time_machine.travel("2027-03-21T21:15:00Z", tick=False):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
@@ -1404,7 +1404,7 @@ class InvalidCertificatesTests(TestCase):
             )
 
         with self.subTest("expiry in the past"):
-            with freeze_time("2027-03-27T21:15:00Z"):
+            with time_machine.travel("2027-03-27T21:15:00Z", tick=False):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)

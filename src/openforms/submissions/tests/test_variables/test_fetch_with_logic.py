@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -209,13 +209,13 @@ class ServiceFetchWithActionsTest(TestCase):
 
         m.get("https://httpbin.org/get", json=42)
 
-        with freeze_time("2023-02-21T18:00:00Z"):
+        with time_machine.travel("2023-02-21T18:00:00Z", tick=False):
             evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         self.assertEqual(len(m.request_history), 1)
         self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")
 
-        with freeze_time("2023-02-21T18:01:00Z"):
+        with time_machine.travel("2023-02-21T18:01:00Z", tick=False):
             evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         self.assertEqual(len(m.request_history), 2)

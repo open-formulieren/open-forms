@@ -7,8 +7,8 @@ from django.test import RequestFactory, TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 
+import time_machine
 from django_webtest import WebTest
-from freezegun import freeze_time
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 from rest_framework.test import APIClient
@@ -403,21 +403,21 @@ class TestSubmissionTimeListFilterAdmin(TestCase):
     def test_time_filtering(self):
         rf = RequestFactory()
 
-        with freeze_time("2023-04-02T12:30:00+01:00"):
+        with time_machine.travel("2023-04-02T12:30:00+01:00", tick=False):
             # registered in the past 24 hours
             submission_1 = SubmissionFactory.create(
                 last_register_date=timezone.now(),
                 registration_status=RegistrationStatuses.failed,
             )
 
-        with freeze_time("2023-01-02T12:30:00+01:00"):
+        with time_machine.travel("2023-01-02T12:30:00+01:00", tick=False):
             # registered out of filtering bounds
             submission_2 = SubmissionFactory.create(
                 last_register_date=timezone.now(),
                 registration_status=RegistrationStatuses.failed,
             )
 
-        with freeze_time("2023-04-02T18:30:00+01:00"):
+        with time_machine.travel("2023-04-02T18:30:00+01:00", tick=False):
             site = AdminSite()
             request = rf.get("/irrelevant")
             model_admin = SubmissionAdmin(Submission, site)

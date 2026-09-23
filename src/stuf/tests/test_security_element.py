@@ -1,7 +1,7 @@
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase
 
-from freezegun import freeze_time
+import time_machine
 from lxml import etree
 
 from soap.constants import EndpointSecurity
@@ -12,7 +12,7 @@ from .factories import StufServiceFactory
 
 
 class SecurityElementTests(SimpleTestCase):
-    @freeze_time("2023-02-03T15:09:27+01:00")
+    @time_machine.travel("2023-02-03T15:09:27+01:00", tick=False)
     def test_resolution_timestamps(self):
         nsmap = {
             "soap": "http://www.w3.org/2003/05/soap-envelope",

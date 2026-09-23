@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from django.test import TestCase, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -64,7 +64,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             for_test_docker_compose=True
         )
 
-    @freeze_time("2026-06-25T18:07:00+00:00")
+    @time_machine.travel("2026-06-25T18:07:00+00:00", tick=False)
     def test_register_with_mapping_and_objecttype_and_document_types_resolve(self):
         submission = SubmissionFactory.from_components(
             [

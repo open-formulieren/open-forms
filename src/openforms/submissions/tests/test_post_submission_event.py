@@ -6,7 +6,7 @@ from django.core import mail
 from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext_lazy as _
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
@@ -1123,7 +1123,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
 
             self.assertFalse(submission.needs_on_completion_retry)
 
-    @freeze_time("2024-02-16T18:15:00Z")
+    @time_machine.travel("2024-02-16T18:15:00Z", tick=False)
     def test_successful_registration_records_registration_counter_and_date(self):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
@@ -1139,7 +1139,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
 
         with (
-            freeze_time("2024-02-16T21:15:00Z"),
+            time_machine.travel("2024-02-16T21:15:00Z", tick=False),
             patch(
                 "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission"
             ) as mock_registration,
@@ -1155,7 +1155,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         self.assertEqual(submission.registration_attempts, 1)
 
-    @freeze_time("2024-02-16T18:15:00Z")
+    @time_machine.travel("2024-02-16T18:15:00Z", tick=False)
     def test_preregister_success_and_registration_failure_records_counter_and_date_only_once(
         self,
     ):
@@ -1173,7 +1173,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
 
         with (
-            freeze_time("2024-02-16T21:15:00Z"),
+            time_machine.travel("2024-02-16T21:15:00Z", tick=False),
             patch(
                 "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission"
             ) as mock_registration,

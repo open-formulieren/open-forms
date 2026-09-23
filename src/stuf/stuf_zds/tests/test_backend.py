@@ -1,7 +1,7 @@
 from django.test import tag
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from lxml import etree
 from privates.test import temp_private_root
 from requests import RequestException
@@ -20,7 +20,7 @@ from . import StUFZDSTestBase
 from .utils import load_mock, match_text, xml_from_request_history
 
 
-@freeze_time("2021-10-11 11:23:00")
+@time_machine.travel("2021-10-11 11:23:00", tick=False)
 @temp_private_root()
 @requests_mock.Mocker()
 class StufZDSClientTests(StUFZDSTestBase):
