@@ -20,7 +20,7 @@ annotated-types==0.7.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pydantic
-anyio==4.12.1
+anyio==4.14.2
     # via httpx
 ape-pie==0.2.0
     # via
