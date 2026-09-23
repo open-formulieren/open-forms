@@ -44,7 +44,8 @@ from .submission_step import SubmissionStep
 from .typing import SubmissionCosignData
 
 if TYPE_CHECKING:
-    from openforms.authentication.models import AuthInfo, RegistratorInfo
+    from openforms.authentication.models import AuthInfo
+    from openforms.authentication.service import Registrator
     from openforms.payments.models import SubmissionPaymentManager
 
     from .submission_files import (
@@ -487,9 +488,13 @@ class Submission(models.Model):
         return hasattr(self, "auth_info")
 
     @property
-    def registrator(self) -> AuthInfo | RegistratorInfo | None:
-        if hasattr(self, "_registrator") and self._registrator:
-            return self._registrator
+    def registrator(self) -> AuthInfo | Registrator | None:
+        from openforms.authentication.models import RegistratorInfo
+        from openforms.authentication.service import Registrator
+
+        if hasattr(self, "_registrator") and (registrator := self._registrator):
+            assert isinstance(registrator, RegistratorInfo)
+            return Registrator.create_from(registrator)
         elif self.is_authenticated:
             return self.auth_info
 

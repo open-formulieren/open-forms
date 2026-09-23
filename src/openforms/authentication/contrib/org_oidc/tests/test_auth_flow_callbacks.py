@@ -75,13 +75,14 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
             self.assertEqual(user.username, "admin")
             self.assertEqual(user.email, "admin@example.com")
             self.assertEqual(user.employee_id, "9999")
+            self.assertGreater(len(user.raw_oidc_claims.keys()), 1)
 
         # check our session data
         self.assertIn(FORM_AUTH_SESSION_KEY, self.app.session)
         s = self.app.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(s["plugin"], "org-oidc")
-        self.assertEqual(s["attribute"], AuthAttribute.employee_id)
-        self.assertEqual(s["value"], "9999")
+        self.assertEqual(s["attribute"], AuthAttribute.local_user_id)
+        self.assertEqual(s["value"], str(user.pk))
 
     def test_failing_claim_verification(self):
         OFOIDCClientFactory.create(

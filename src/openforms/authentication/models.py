@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
+from openforms.accounts.models import User
 from openforms.authentication.registry import register as auth_registry
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
@@ -86,7 +87,7 @@ class BaseAuthInfo(models.Model):
         relying on the global Django ``PASSWORD_HASHERS`` setting.
         """
         if delay:
-            hash_identifying_attributes_task.delay(self.pk)  # pyright: ignore[reportFunctionMemberAccess]
+            hash_identifying_attributes_task.delay(self.pk)
             return
 
         for field_name in self.identifying_attributes:
@@ -401,6 +402,20 @@ class AuthInfo(BaseAuthInfo):
                         "legalSubject": {
                             "identifierType": "opaque",
                             "identifier": self.value,
+                        }
+                    },
+                }
+                return employee_context
+
+            case (AuthAttribute.local_user_id, ""):
+                user = User.objects.get(pk=self.value)
+                employee_context: EmployeeContext = {
+                    "source": "custom",
+                    "levelOfAssurance": "unknown",
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "opaque",
+                            "identifier": user.employee_id or user.username,
                         }
                     },
                 }

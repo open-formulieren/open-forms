@@ -4,11 +4,12 @@ from datetime import datetime
 
 from django.utils.translation import gettext_lazy as _
 
-from openforms.authentication.service import AuthAttribute
+from openforms.authentication.service import AuthAttribute, Registrator
 from openforms.authentication.typing import BaseAuth
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.cosigning import CosignV2Data
 from openforms.submissions.models import Submission
+from openforms.typing import JSONObject
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -191,22 +192,27 @@ class CosignPseudo(BaseStaticVariable):
         return get_cosign_value(submission, AuthAttribute.pseudo)
 
 
+class RegistratorAuth(BaseAuth):
+    oidc_claims: JSONObject | None
+
+
 @register("registrator")
-class Registrator(BaseStaticVariable):
+class SubmissionRegistrator(BaseStaticVariable):
     name = _("Registrator")
     data_type = FormVariableDataTypes.object
 
     def get_initial_value(
         self, submission: Submission | None = None
-    ) -> BaseAuth | None:
+    ) -> RegistratorAuth | None:
         if not submission or not submission.has_registrator:
             return None
         registrator = submission.registrator
-        assert registrator is not None
+        assert isinstance(registrator, Registrator)
         return {
             "plugin": registrator.plugin,
             "attribute": registrator.attribute,
             "value": registrator.value,
+            "oidc_claims": registrator.oidc_claims,
         }
 
 

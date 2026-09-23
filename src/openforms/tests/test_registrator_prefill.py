@@ -12,7 +12,11 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.accounts.models import User
 from openforms.authentication.constants import REGISTRATOR_SUBJECT_SESSION_KEY
 from openforms.authentication.contrib.org_oidc.plugin import PLUGIN_IDENTIFIER
-from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.service import (
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+    Registrator,
+)
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.haal_centraal.constants import BRPVersions
@@ -139,8 +143,8 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
             self.assertIn(FORM_AUTH_SESSION_KEY, self.app.session)
             s = self.app.session[FORM_AUTH_SESSION_KEY]
             self.assertEqual(s["plugin"], "org-oidc")
-            self.assertEqual(s["attribute"], AuthAttribute.employee_id)
-            self.assertEqual(s["value"], "9999")
+            self.assertEqual(s["attribute"], AuthAttribute.local_user_id)
+            self.assertEqual(s["value"], str(user.pk))
 
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             s = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
@@ -176,6 +180,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
             self.assertEqual(submission.auth_info.plugin, "registrator")
             self.assertEqual(submission.auth_info.attribute, AuthAttribute.bsn)
 
+            assert isinstance(submission.registrator, Registrator)
             self.assertEqual(submission.registrator.value, "9999")
             self.assertEqual(submission.registrator.plugin, "org-oidc")
             self.assertEqual(
