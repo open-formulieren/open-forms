@@ -13,7 +13,7 @@ from unittest.mock import patch
 from django.test import override_settings, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -119,7 +119,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertIn("steps.0.data.firstName", invalid_param_names)
 
     @patch("openforms.submissions.api.mixins.on_post_submission_event")
-    @freeze_time("2020-12-11T10:53:19+01:00")
+    @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     def test_complete_submission(self, mock_on_post_submission_event):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."

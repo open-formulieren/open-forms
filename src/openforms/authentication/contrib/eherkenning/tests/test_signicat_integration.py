@@ -7,9 +7,9 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests
+import time_machine
 from digid_eherkenning.choices import AssuranceLevels, ConfigTypes, XMLContentTypes
 from digid_eherkenning.models import ConfigCertificate, EherkenningConfiguration
-from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
 from simple_certmanager.test.factories import CertificateFactory
@@ -136,7 +136,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         # and it missed recording episodes during your holiday)
         if self.cassette.responses:
             now = self.cassette.responses[0]["headers"]["date"][0]
-            time_ctx = freeze_time(now)
+            time_ctx = time_machine.travel(now, tick=False)
             self.addCleanup(time_ctx.stop)
             time_ctx.start()
 

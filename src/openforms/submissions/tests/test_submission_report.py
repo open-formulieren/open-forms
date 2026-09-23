@@ -6,7 +6,7 @@ from uuid import UUID
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -39,7 +39,7 @@ class DownloadSubmissionReportTests(APITestCase):
             kwargs={"report_id": report.id, "token": token},
         )
 
-        with freeze_time(timedelta(days=1)):
+        with time_machine.travel(timedelta(days=1), tick=False):
             response = self.client.get(download_report_url)
 
             self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -70,7 +70,7 @@ class DownloadSubmissionReportTests(APITestCase):
             kwargs={"report_id": report.id, "token": token},
         )
 
-        with freeze_time(timedelta(days=3)):
+        with time_machine.travel(timedelta(days=3), tick=False):
             response = self.client.get(download_report_url)
 
             self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)

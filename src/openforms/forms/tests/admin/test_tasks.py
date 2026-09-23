@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from privates.storages import private_media_storage
 from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
@@ -23,7 +23,7 @@ from ..factories import FormFactory
 @temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
 class ExportFormsTaskTests(TestCase):
-    @freeze_time("2022-02-21T00:00:00")
+    @time_machine.travel("2022-02-21T00:00:00", tick=False)
     def test_zip_file_contains_data(self):
         form1, form2 = FormFactory.create_batch(2)
         user = SuperUserFactory.create(email="test@email.nl")

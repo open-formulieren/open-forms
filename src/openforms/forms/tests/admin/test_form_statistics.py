@@ -1,8 +1,8 @@
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 
+import time_machine
 from django_webtest import WebTest
-from freezegun import freeze_time
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
@@ -120,13 +120,13 @@ class SubmissionStatisticsAdminTests(WebTest):
         superuser = SuperUserFactory.create()
         form = FormFactory.create(name="Order coffee")
         # create submissions at different points in time
-        with freeze_time("2024-10-07T12:00:00Z"):
+        with time_machine.travel("2024-10-07T12:00:00Z", tick=False):
             submission1 = SubmissionFactory.create(completed=True, form=form)
             _log_form_submit_success(submission1)
-        with freeze_time("2025-01-03T10:00:00Z"):
+        with time_machine.travel("2025-01-03T10:00:00Z", tick=False):
             submission1 = SubmissionFactory.create(completed=True, form=form)
             _log_form_submit_success(submission1)
-        with freeze_time("2025-01-04T23:59:59+01:00"):
+        with time_machine.travel("2025-01-04T23:59:59+01:00", tick=False):
             submission1 = SubmissionFactory.create(completed=True, form=form)
             _log_form_submit_success(submission1)
 
@@ -217,7 +217,7 @@ class FormStatisticsExportAdminTests(WebTest):
         plugin = DemoRegistration("demo")
         audit_log = audit_logger.bind(plugin=plugin)
         # create some log records for submissions
-        with freeze_time("2024-12-20T16:44:00+01:00"):
+        with time_machine.travel("2024-12-20T16:44:00+01:00", tick=False):
             sub1, sub2, sub3 = SubmissionFactory.create_batch(
                 3, registration_success=True
             )
@@ -251,7 +251,7 @@ class FormStatisticsExportAdminTests(WebTest):
         plugin = DemoRegistration("demo")
         audit_log = audit_logger.bind(plugin=plugin)
         form1, form2, form3 = FormFactory.create_batch(3)
-        with freeze_time("2024-12-20T16:44:00+01:00"):
+        with time_machine.travel("2024-12-20T16:44:00+01:00", tick=False):
             registered_submission_1 = SubmissionFactory.create(
                 form=form1,
                 registration_success=True,
@@ -272,7 +272,7 @@ class FormStatisticsExportAdminTests(WebTest):
                 submission_uuid=str(failed_submission.uuid),
                 exc_info=Exception("nope"),
             )
-        with freeze_time("2024-11-20T12:00:00+01:00"):
+        with time_machine.travel("2024-11-20T12:00:00+01:00", tick=False):
             registered_submission_2 = SubmissionFactory.create(
                 form=form2,
                 registration_success=True,
@@ -283,7 +283,7 @@ class FormStatisticsExportAdminTests(WebTest):
                 submission_uuid=str(registered_submission_2.uuid),
             )
 
-        with freeze_time("2024-12-05T12:00:00+01:00"):
+        with time_machine.travel("2024-12-05T12:00:00+01:00", tick=False):
             registered_submission_3 = SubmissionFactory.create(
                 form=form3,
                 registration_success=True,
@@ -294,7 +294,7 @@ class FormStatisticsExportAdminTests(WebTest):
                 submission_uuid=str(registered_submission_3.uuid),
             )
 
-        with freeze_time("2024-12-06T10:00:00+01:00"):
+        with time_machine.travel("2024-12-06T10:00:00+01:00", tick=False):
             registered_submission_4 = SubmissionFactory.create(
                 form=form3,
                 registration_success=True,

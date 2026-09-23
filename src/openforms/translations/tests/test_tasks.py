@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from ..constants import StatusChoices
@@ -15,7 +15,7 @@ from .factories import TranslationsMetaDataFactory
 @override_settings(LANGUAGE_CODE="en")
 @temp_private_root()
 class ProcessingCustomTranslationAssetTests(TestCase):
-    @freeze_time("2026-01-27T18:00:00+01:00")
+    @time_machine.travel("2026-01-27T18:00:00+01:00", tick=False)
     def test_input_messages_file_successfully_processed(self):
         translations_metadata = TranslationsMetaDataFactory.create()
 

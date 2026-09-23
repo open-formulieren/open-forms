@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.test import RequestFactory, tag
 
-from freezegun import freeze_time
+import time_machine
 from maykin_2fa.test import disable_admin_mfa
 from privates.test import temp_private_root
 from rest_framework import status
@@ -190,18 +190,18 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertFalse(SubmissionFileAttachment.objects.exists())
 
     def test_cleanup_unclaimed_temporary_uploaded_files(self):
-        with freeze_time("2020-06-01 10:00"):
+        with time_machine.travel("2020-06-01 10:00", tick=False):
             TemporaryFileUploadFactory.create()
 
-        with freeze_time("2020-06-02 10:00"):
+        with time_machine.travel("2020-06-02 10:00", tick=False):
             TemporaryFileUploadFactory.create()
             keep_1 = TemporaryFileUploadFactory.create()
             SubmissionFileAttachmentFactory.create(temporary_file=keep_1)
 
-        with freeze_time("2020-06-03 10:00"):
+        with time_machine.travel("2020-06-03 10:00", tick=False):
             keep_2 = TemporaryFileUploadFactory.create()
 
-        with freeze_time("2020-06-04 10:00"):
+        with time_machine.travel("2020-06-04 10:00", tick=False):
             keep_3 = TemporaryFileUploadFactory.create()
             cleanup_unclaimed_temporary_uploaded_files(timedelta(days=1))
 

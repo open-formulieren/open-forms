@@ -8,7 +8,7 @@ from unittest.mock import patch
 from django.test import TestCase, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -57,7 +57,7 @@ class RegistrationHookTests(TestCase):
             },
         )
 
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_assertion_plugin_with_deserialized_options(self):
         register = Registry()
 
@@ -92,7 +92,7 @@ class RegistrationHookTests(TestCase):
         )
         self.assertEqual(self.submission.last_register_date, timezone.now())
 
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_failing_registration(self):
         register = Registry()
 
@@ -135,7 +135,7 @@ class RegistrationHookTests(TestCase):
         ):
             register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_failing_registration_with_bugged_plugin(self):
         register = Registry()
 
@@ -178,7 +178,7 @@ class RegistrationHookTests(TestCase):
         ):
             register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_retrying_registration_already_succeeded_just_returns(self):
         register = Registry()
 
@@ -216,7 +216,7 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
         self.assertEqual(submission.last_register_date, last_register_date)
 
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_submission_marked_complete_when_form_has_no_registration_backend(self):
         submission_no_registration_backend = SubmissionFactory.create(
             completed=True,
@@ -253,7 +253,7 @@ class RegistrationHookTests(TestCase):
             raise self.failureException("Should not raise") from exc
 
     @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
-    @freeze_time("2021-08-04T12:00:00+02:00")
+    @time_machine.travel("2021-08-04T12:00:00+02:00", tick=False)
     def test_registration_plugin_not_enabled(self, mock_get_solo):
         register = Registry()
 

@@ -18,7 +18,7 @@ from django.test import override_settings, tag
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -55,7 +55,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @freeze_time("2020-12-11T10:53:19+01:00")
+    @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     def test_suspended_submission(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
@@ -77,7 +77,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
         self.assertIn(str(submission.uuid), submissions_in_session)
 
-    @freeze_time("2020-12-11T10:53:19+01:00")
+    @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     @override_settings(LANGUAGE_CODE="en")
     def test_suspended_submission_not_allowed(self):
         submission = SubmissionFactory.create(
@@ -131,7 +131,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
         self.assertIsNone(submission.suspended_on)
 
-    @freeze_time("2021-11-15")
+    @time_machine.travel("2021-11-15T12:00:00+01:00", tick=False)
     @patch(
         "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
@@ -174,7 +174,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         self.assertIn(defaulttags.date(datetime_removed), email.body)
 
-    @freeze_time("2021-11-15")
+    @time_machine.travel("2021-11-15T00:00:00+00:00", tick=False)
     @patch("openforms.submissions.api.serializers.GlobalConfiguration.get_solo")
     @override_settings(LANGUAGE_CODE="nl")
     def test_email_sent_with_custom_configuration(self, m_solo):
@@ -201,7 +201,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
             email.body.strip(), "The Content: Form 000 (15 november 2021 01:00)"
         )
 
-    @freeze_time("2020-11-15T12:00:00+01:00")
+    @time_machine.travel("2020-11-15T12:00:00+01:00", tick=False)
     def test_resume_url_does_not_work_after_submission_has_been_completed(self):
         form = FormFactory.create()
         FormStepFactory.create(form=form)
@@ -317,7 +317,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @freeze_time("2020-12-11T10:53:19+01:00")
+    @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     def test_suspend_submission_does_not_mark_step_completed(self):
         form = FormFactory.create()
         step = FormStepFactory.create(form=form)

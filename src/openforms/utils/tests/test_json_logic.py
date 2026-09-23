@@ -8,7 +8,7 @@ from unittest import skipIf
 from django.test import SimpleTestCase, override_settings, tag
 
 import requests
-from freezegun import freeze_time
+import time_machine
 from json_logic.typing import JSON
 from unittest_parametrize import ParametrizedTestCase, param, parametrize
 
@@ -390,7 +390,7 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
             }
             data = {"dateOfBirth": "2002-01-01"}
 
-            with freeze_time("2024-01-01T12:00:00"):
+            with time_machine.travel("2024-01-01T12:00:00", tick=False):
                 result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(
                 result,

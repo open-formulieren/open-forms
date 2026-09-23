@@ -5,7 +5,7 @@ from django.test import override_settings
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -530,7 +530,7 @@ class AppointmentCreateValidationErrorTests(
             self.assertEqual(len(invalid_params), 1)
             self.assertEqual(invalid_params[0]["name"], "date")
 
-    @freeze_time("2023-07-18T07:42:00Z")  # pin to DST, UTC+2
+    @time_machine.travel("2023-07-18T07:42:00Z", tick=False)  # pin to DST, UTC+2
     def test_invalid_datetime(self):
         today = timezone.localdate()
         base = {

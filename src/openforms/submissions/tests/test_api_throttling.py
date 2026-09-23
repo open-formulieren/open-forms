@@ -3,7 +3,7 @@ import datetime
 from django.conf import settings
 from django.test import override_settings
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -25,7 +25,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             year=2023, month=1, day=21, hour=11, minute=30, second=0
         )
 
-        with freeze_time(initial_datetime) as frozen_datetime:
+        with time_machine.travel(initial_datetime, tick=False) as frozen_datetime:
             # 10 requests per minute allowed
             for _ in range(10):
                 submission = SubmissionFactory.create()
@@ -52,7 +52,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             )
 
             # Wait 1 minute for the next request
-            frozen_datetime.tick(delta=datetime.timedelta(minutes=1))
+            frozen_datetime.shift(delta=datetime.timedelta(minutes=1))
 
             response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
@@ -67,7 +67,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             year=2023, month=1, day=21, hour=11, minute=30, second=0
         )
 
-        with freeze_time(initial_datetime) as frozen_datetime:
+        with time_machine.travel(initial_datetime, tick=False) as frozen_datetime:
             # 3 requests per minute allowed
             for _ in range(3):
                 submission = SubmissionFactory.create()
@@ -94,7 +94,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             )
 
             # Wait 1 minute for the next request
-            frozen_datetime.tick(delta=datetime.timedelta(minutes=1))
+            frozen_datetime.shift(delta=datetime.timedelta(minutes=1))
 
             response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
 

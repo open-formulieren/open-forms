@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
-from freezegun import freeze_time
+import time_machine
 from O365 import Account
 from O365.drive import Drive
 from privates.test import temp_private_root
@@ -359,7 +359,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
 
         set_submission_reference(submission)
 
-        with freeze_time("2021-07-16"):
+        with time_machine.travel("2021-07-16", tick=False):
             with (
                 patch.object(Account, "is_authenticated", True),
                 patch.object(Drive, "get_root_folder", return_value=MockFolder()),

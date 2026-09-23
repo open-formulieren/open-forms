@@ -5,8 +5,8 @@ from unittest.mock import patch
 from django.test import TestCase, tag
 from django.utils import timezone
 
+import time_machine
 from celery import states
-from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -54,13 +54,13 @@ class SubmissionStatusPermissionTests(APITestCase):
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
         )
 
-        with freeze_time(timedelta(days=1)):
+        with time_machine.travel(timedelta(days=1), tick=False):
             response = self.client.get(check_status_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @freeze_time(
-        "2023-02-24T10:05:00+01:00"
+    @time_machine.travel(
+        "2023-02-24T10:05:00+01:00", tick=False
     )  # between 0-1am this fails because the tokens "roll over""
     def test_expired_token(self):
         # Use empty task ID to not need a real broker
@@ -70,7 +70,7 @@ class SubmissionStatusPermissionTests(APITestCase):
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
         )
 
-        with freeze_time(timedelta(days=2)):
+        with time_machine.travel(timedelta(days=2), tick=False):
             response = self.client.get(check_status_url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

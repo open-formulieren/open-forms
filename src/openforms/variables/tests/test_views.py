@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -40,7 +40,7 @@ class GetStaticVariablesViewTest(APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    @freeze_time("2021-07-16T21:15:00+00:00")
+    @time_machine.travel("2021-07-16T21:15:00+00:00", tick=False)
     def test_get_static_variables(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         url = reverse(

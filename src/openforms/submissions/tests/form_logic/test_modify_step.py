@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -301,7 +301,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        with freeze_time("2020-01-01"):
+        with time_machine.travel("2020-01-01", tick=False):
             evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
@@ -526,8 +526,8 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        with freeze_time(
-            "2023-01-16T16:00:00+01:00"
+        with time_machine.travel(
+            "2023-01-16T16:00:00+01:00", tick=False
         ):  # The start of construction is 48h in the future
             evaluate_form_logic(submission, submission_step)
 

@@ -4,7 +4,7 @@ from datetime import date
 from django.test import SimpleTestCase, override_settings
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 
 from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..variables import inject_variables, render
@@ -83,7 +83,7 @@ CONFIGURATION = {
 
 
 @override_settings(LANGUAGE_CODE="nl")
-@freeze_time("2022-08-16T11:57:02+02:00")
+@time_machine.travel("2022-08-16T11:57:02+02:00", tick=False)
 class VariableInjectionTests(SimpleTestCase):
     def test_variable_interpolation(self):
         configuration = deepcopy(CONFIGURATION)

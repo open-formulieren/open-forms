@@ -4,7 +4,7 @@ from uuid import UUID
 
 from django.test import TestCase
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -97,7 +97,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
-            freeze_time("2020-02-02"),
+            time_machine.travel("2020-02-02", tick=False),
             patch(
                 "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
                 return_value=config,
@@ -167,7 +167,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
-            freeze_time("2020-02-02"),
+            time_machine.travel("2020-02-02", tick=False),
             patch(
                 "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
                 return_value=config,
@@ -223,7 +223,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
-            freeze_time("2020-02-02"),
+            time_machine.travel("2020-02-02", tick=False),
             patch(
                 "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
                 return_value=config,

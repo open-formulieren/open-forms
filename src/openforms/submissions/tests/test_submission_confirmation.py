@@ -1,4 +1,4 @@
-from freezegun import freeze_time
+import time_machine
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
@@ -198,7 +198,7 @@ class SubmissionConfirmationPageTests(APITestCase):
             data={"name": "John"},
         )
 
-        with freeze_time("2023-03-03"):
+        with time_machine.travel("2023-03-03", tick=False):
             confirmation_page_content = submission.render_confirmation_page()
 
         self.assertIn(

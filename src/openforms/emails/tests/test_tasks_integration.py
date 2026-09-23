@@ -8,8 +8,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests_mock
+import time_machine
 from django_yubin.models import Message
-from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
 from requests import RequestException
@@ -75,20 +75,20 @@ class EmailDigestTaskIntegrationTests(TestCase):
             email_event="registration",
         )
 
-        with freeze_time("2023-01-02T12:30:00+01:00"):
+        with time_machine.travel("2023-01-02T12:30:00+01:00", tick=False):
             audit_log.info(
                 "email_status_change",
                 new_status=Message.STATUS_FAILED,
                 status_label="Failed",
             )
-        with freeze_time("2023-01-02T13:30:00+01:00"):
+        with time_machine.travel("2023-01-02T13:30:00+01:00", tick=False):
             audit_log.info(
                 "email_status_change",
                 new_status=Message.STATUS_FAILED,
                 status_label="Failed",
             )
 
-        with freeze_time("2023-01-03T01:00:00+01:00"):
+        with time_machine.travel("2023-01-03T01:00:00+01:00", tick=False):
             send_email_digest()
 
         sent_email = mail.outbox[0]
@@ -106,7 +106,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
     def test_subject_includes_environment_label(self):
         submission = SubmissionFactory.create()
 
-        with freeze_time("2023-01-02T12:30:00+01:00"):
+        with time_machine.travel("2023-01-02T12:30:00+01:00", tick=False):
             audit_logger.info(
                 "email_status_change",
                 submission_uuid=str(submission.uuid),
@@ -115,7 +115,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 status_label="Failed",
             )
 
-        with freeze_time("2023-01-03T01:00:00+01:00"):
+        with time_machine.travel("2023-01-03T01:00:00+01:00", tick=False):
             send_email_digest()
 
         sent_email = mail.outbox[0]
@@ -135,7 +135,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         config.save()
         submission = SubmissionFactory.create()
 
-        with freeze_time("2023-01-02T12:30:00+01:00"):
+        with time_machine.travel("2023-01-02T12:30:00+01:00", tick=False):
             audit_logger.info(
                 "email_status_change",
                 submission_uuid=str(submission.uuid),
@@ -144,7 +144,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 status_label="Failed",
             )
 
-        with freeze_time("2023-01-03T01:00:00+01:00"):
+        with time_machine.travel("2023-01-03T01:00:00+01:00", tick=False):
             send_email_digest()
 
         self.assertEqual(0, len(mail.outbox))
@@ -153,7 +153,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         "openforms.contrib.brk.client.BRKConfig.get_solo",
         return_value=BRKConfig(service=INVALID_BRK_SERVICE),
     )
-    @freeze_time("2023-01-03T01:00:00+01:00")
+    @time_machine.travel("2023-01-03T01:00:00+01:00", tick=False)
     @temp_private_root()
     @override_settings(BASE_URL="http://testserver")
     @requests_mock.Mocker()
@@ -200,7 +200,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
 
         # trigger failures
-        with freeze_time("2023-01-02T12:30:00+01:00"):
+        with time_machine.travel("2023-01-02T12:30:00+01:00", tick=False):
             audit_log.info(
                 "email_status_change",
                 email_event="registration",
@@ -389,7 +389,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         )
 
         # expiring
-        with freeze_time("2020-01-30T12:30:00+01:00"):
+        with time_machine.travel("2020-01-30T12:30:00+01:00", tick=False):
             send_email_digest()
             sent_email = mail.outbox[-1]
             assert isinstance(sent_email.body, str)
@@ -400,7 +400,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
             )
 
         # expired
-        with freeze_time("2020-03-30T12:30:00+01:00"):
+        with time_machine.travel("2020-03-30T12:30:00+01:00", tick=False):
             send_email_digest()
             sent_email = mail.outbox[-1]
             assert isinstance(sent_email.body, str)
@@ -430,7 +430,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         )
 
         # expiring
-        with freeze_time("2025-02-01T12:30:00+01:00"):
+        with time_machine.travel("2025-02-01T12:30:00+01:00", tick=False):
             send_email_digest()
             sent_email = mail.outbox[-1]
             assert isinstance(sent_email.body, str)
@@ -441,7 +441,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
             )
 
         # expired
-        with freeze_time("2025-03-01T12:30:00+01:00"):
+        with time_machine.travel("2025-03-01T12:30:00+01:00", tick=False):
             send_email_digest()
             sent_email = mail.outbox[-1]
             assert isinstance(sent_email.body, str)

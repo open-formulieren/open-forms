@@ -3,7 +3,7 @@ from uuid import UUID
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -30,7 +30,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
         # We manually create the objects instance as if it was created upfront by some
         # external party
         with (
-            freeze_time("2024-12-04T18:11:00+01:00"),
+            time_machine.travel("2024-12-04T18:11:00+01:00", tick=False),
             get_objects_client(self.api_group) as client,
         ):
             object_data = client.create_object(
@@ -76,7 +76,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
         # We manually create the objects instance as if it was created upfront by some
         # external party
         with (
-            freeze_time("2024-12-04T18:11:00+01:00"),
+            time_machine.travel("2024-12-04T18:11:00+01:00", tick=False),
             get_objects_client(self.api_group) as client,
         ):
             object_data = client.create_object(

@@ -23,7 +23,7 @@ from uuid import uuid4
 from django.test import override_settings, tag
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from hypothesis import example, given, settings
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from lxml import etree
@@ -184,7 +184,7 @@ class StufZDSHelperTests(StUFZDSTestBase):
         self.assertEqual("J", actual.indicator)
 
 
-@freeze_time("2020-12-22")
+@time_machine.travel("2020-12-22T12:00:00+01:00", tick=False)
 @temp_private_root()
 @requests_mock.Mocker()
 class StufZDSPluginTests(StUFZDSTestBase):
@@ -3854,7 +3854,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, ParametrizedTestCase, StUFZDSTestBase):
         self.assertXPathNotExists(xml_doc, f"{prefix}/bg:aoa.huisnummertoevoeging")
 
 
-@freeze_time("2020-12-22")
+@time_machine.travel("2020-12-22", tick=False)
 @temp_private_root()
 @requests_mock.Mocker()
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

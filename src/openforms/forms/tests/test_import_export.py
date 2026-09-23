@@ -10,8 +10,8 @@ from uuid import UUID
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
+import time_machine
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
-from freezegun import freeze_time
 from rest_framework.exceptions import ValidationError
 
 from openforms.config.constants import UploadFileType
@@ -699,7 +699,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form = Form.objects.get()
         self.assertIsNone(form.category)
 
-    @freeze_time()  # export metadata contains a timestamp
+    @time_machine.travel(None, tick=False)  # export metadata contains a timestamp
     def test_roundtrip_a_translated_form(self):
         self.maxDiff = None
 

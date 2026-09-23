@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -205,7 +205,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             },
         )
 
-        with freeze_time("2025-04-25T18:00:00+01:00"):
+        with time_machine.travel("2025-04-25T18:00:00+01:00", tick=False):
             prefill_variables(submission=submission)
 
         state = submission.variables_state
@@ -256,7 +256,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             },
         )
 
-        with freeze_time("2025-04-25T18:00:00+01:00"):
+        with time_machine.travel("2025-04-25T18:00:00+01:00", tick=False):
             prefill_variables(submission=submission)
 
         state = submission.variables_state
@@ -325,7 +325,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             },
         )
 
-        with freeze_time("2025-04-25T18:00:00+01:00"):
+        with time_machine.travel("2025-04-25T18:00:00+01:00", tick=False):
             prefill_variables(submission=submission)
 
         state = submission.load_submission_value_variables_state()

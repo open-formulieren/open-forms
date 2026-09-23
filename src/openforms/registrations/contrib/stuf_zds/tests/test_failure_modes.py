@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.test import tag
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.config.models import GlobalConfiguration
@@ -21,7 +21,7 @@ from ....tasks import register_submission
 
 
 @tag("gh-1183")
-@freeze_time("2020-12-22")
+@time_machine.travel("2020-12-22", tick=False)
 @temp_private_root(reset_storage=False)
 class PartialRegistrationFailureTests(StUFZDSTestBase):
     """

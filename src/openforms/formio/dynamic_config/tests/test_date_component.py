@@ -4,7 +4,7 @@ from datetime import datetime
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import VariableValue
@@ -82,7 +82,7 @@ class DynamicDateConfigurationTests(TestCase):
             new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
         )
 
-    @freeze_time("2022-09-12T14:07:00Z")
+    @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
     def test_min_date_future(self):
         date_component: DateComponent = {
             "type": "date",
@@ -113,7 +113,7 @@ class DynamicDateConfigurationTests(TestCase):
                 "2022-09-13T00:00:00+02:00",
             )
 
-    @freeze_time("2022-09-12T14:07:00Z")
+    @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
     def test_max_date_past(self):
         date_component: DateComponent = {
             "type": "date",
@@ -145,7 +145,7 @@ class DynamicDateConfigurationTests(TestCase):
                 "2022-09-11T00:00:00+02:00",
             )
 
-    @freeze_time("2022-10-03T12:00:00Z")
+    @time_machine.travel("2022-10-03T12:00:00Z", tick=False)
     def test_relative_to_variable_blank_delta(self):
         component: DateComponent = {
             "type": "date",
@@ -170,7 +170,7 @@ class DynamicDateConfigurationTests(TestCase):
             new_component["datePicker"]["minDate"], "2022-10-03T00:00:00+02:00"
         )
 
-    @freeze_time("2022-11-03T12:00:00Z")
+    @time_machine.travel("2022-11-03T12:00:00Z", tick=False)
     def test_relative_to_variable_blank_delta_dst_over(self):
         component: DateComponent = {
             "type": "date",

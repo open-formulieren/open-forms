@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import StaffUserFactory
@@ -21,7 +21,7 @@ class DeleteFormExportFilesTest(TestCase):
         form1, form2 = FormFactory.create_batch(2)
         user = StaffUserFactory.create(username="testuser", email="test@email.nl")
 
-        with freeze_time("2022-01-01T00:00:00Z"):
+        with time_machine.travel("2022-01-01T00:00:00Z", tick=False):
             process_forms_export(
                 forms_uuids=[form1.uuid, form2.uuid],
                 user_id=user.id,
@@ -31,7 +31,7 @@ class DeleteFormExportFilesTest(TestCase):
         path = forms_export.export_content.path
         storage = forms_export.export_content.storage
 
-        with freeze_time("2022-01-09T00:00:00Z"):
+        with time_machine.travel("2022-01-09T00:00:00Z", tick=False):
             with self.captureOnCommitCallbacks(execute=True):
                 call_command("delete_export_files")
 

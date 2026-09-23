@@ -1,4 +1,4 @@
-from freezegun import freeze_time
+import time_machine
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
@@ -485,7 +485,7 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
             {"zgwApiGroup", "catalogueUrl", "caseTypeIdentification"},
         )
 
-    @freeze_time("2024-10-31T18:00:00+02:00")
+    @time_machine.travel("2024-10-31T18:00:00+02:00", tick=False)
     def test_fetch_products_by_case_type(self):
         user = StaffUserFactory.create()
         self.client.force_login(user)

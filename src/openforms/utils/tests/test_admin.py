@@ -6,9 +6,9 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+import time_machine
 from cookie_consent.models import LogItem
 from django_webtest import WebTest
-from freezegun import freeze_time
 from log_outgoing_requests.models import OutgoingRequestsLog
 from maykin_2fa.test import disable_admin_mfa
 
@@ -40,7 +40,7 @@ class OutgoingRequestLogAdminTests(WebTest):
             status=404,
         )
 
-    @freeze_time(datetime(2024, 1, 1, tzinfo=UTC))
+    @time_machine.travel(datetime(2024, 1, 1, tzinfo=UTC), tick=False)
     @override_settings(LANGUAGE_CODE="en")
     def test_viewing_outgoing_request_log_details_in_admin_creates_log(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)

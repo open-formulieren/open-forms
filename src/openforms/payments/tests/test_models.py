@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TransactionTestCase
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -58,7 +58,7 @@ class SubmissionPaymentTests(TransactionTestCase):
         )
         self.assertEqual(payment.public_order_id, "OF-123456/4")
 
-    @freeze_time("2020-01-01")
+    @time_machine.travel("2020-01-01T08:00:00+01:00", tick=False)
     @patch(
         "openforms.payments.models.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(

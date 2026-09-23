@@ -3,7 +3,7 @@ from datetime import datetime
 from django.test import TestCase, tag
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.formio.tests.factories import SubmittedFileFactory
@@ -19,7 +19,7 @@ from .factories import (
 
 
 class ExportTests(TestCase):
-    @freeze_time("2022-05-09T13:00:00Z")
+    @time_machine.travel("2022-05-09T13:00:00Z", tick=False)
     def test_complex_formio_configuration(self):
         """
         Assert that complex formio configurations are exported correctly.
@@ -144,7 +144,7 @@ class ExportTests(TestCase):
             ),
         )
 
-    @freeze_time("2022-05-09T13:00:00Z")
+    @time_machine.travel("2022-05-09T13:00:00Z", tick=False)
     def test_user_defined_variables_in_export(self):
         submission = SubmissionFactory.from_components(
             [
@@ -190,7 +190,7 @@ class ExportTests(TestCase):
         )
 
     @tag("gh-2117")
-    @freeze_time("2022-05-09T13:00:00Z")
+    @time_machine.travel("2022-05-09T13:00:00Z", tick=False)
     def test_submission_export_with_mixed_fields(self):
         # Github issue #2117
         form = FormFactory.create(name="Export form 1")
@@ -275,7 +275,7 @@ class ExportTests(TestCase):
         )
 
     @tag("gh-2389")
-    @freeze_time()
+    @time_machine.travel(None, tick=False)
     def test_submissions_of_forms_with_translation_enabled_have_language_codes(self):
         SubmissionFactory.create(
             form__translation_enabled=True,

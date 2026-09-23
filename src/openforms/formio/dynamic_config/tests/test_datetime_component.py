@@ -4,7 +4,7 @@ from datetime import datetime
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from freezegun import freeze_time
+import time_machine
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import VariableValue
@@ -71,7 +71,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
             new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
         )
 
-    @freeze_time("2022-09-12T14:07:00Z")
+    @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
     def test_min_datetime_future(self):
         component: DatetimeComponent = {
             "type": "datetime",
@@ -87,7 +87,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
             new_component["datePicker"]["minDate"], "2022-09-12T16:07:00+02:00"
         )
 
-    @freeze_time("2022-09-12T14:07:00Z")
+    @time_machine.travel("2022-09-12T14:07:00Z", tick=False)
     def test_max_datetime_past(self):
         component: DatetimeComponent = {
             "type": "datetime",
@@ -116,7 +116,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
         self.assertEqual(new_component["placeholder"], "dd-mm-yyyy HH:mm")
 
-    @freeze_time("2022-10-03T12:00:00Z")
+    @time_machine.travel("2022-10-03T12:00:00Z", tick=False)
     def test_relative_to_variable_blank_delta(self):
         component: DatetimeComponent = {
             "type": "datetime",
@@ -141,7 +141,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
             new_component["datePicker"]["minDate"], "2022-10-03T14:00:00+02:00"
         )
 
-    @freeze_time("2022-11-03T12:00:00Z")
+    @time_machine.travel("2022-11-03T12:00:00Z", tick=False)
     def test_relative_to_variable_blank_delta_dst_over(self):
         component: DatetimeComponent = {
             "type": "datetime",
@@ -252,7 +252,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
 
                 self.assertIsNone(new_component["datePicker"]["maxDate"])
 
-    @freeze_time("2022-11-03T12:00:05.12345Z")
+    @time_machine.travel("2022-11-03T12:00:05.12345Z", tick=False)
     def test_seconds_microseconds_are_truncated(self):
         component: DatetimeComponent = {
             "type": "datetime",

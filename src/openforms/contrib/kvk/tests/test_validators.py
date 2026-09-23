@@ -5,7 +5,7 @@ from django.test import SimpleTestCase, override_settings
 from django.utils.translation import gettext as _
 
 import requests_mock
-from freezegun import freeze_time
+import time_machine
 from privates.test import temp_private_root
 
 from openforms.submissions.models import Submission
@@ -151,7 +151,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
         # valid-existing kvkNummer
         validator = partial(KVKNumberRemoteValidator("id"), submission=Submission())
 
-        with freeze_time("2024-01-01T12:00:00"):
+        with time_machine.travel("2024-01-01T12:00:00", tick=False):
             self.assertNumRequests(0)
 
             validator("69599084")
@@ -168,7 +168,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
             # validate with different KVK number should trigger new request
             self.assertNumRequests(2)
 
-        with freeze_time("2024-01-01T12:05:01"):
+        with time_machine.travel("2024-01-01T12:05:01", tick=False):
             validator("69599084")
 
         # Request is made, because cached result is timed out
@@ -177,7 +177,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
     def test_rsin_validator_caching(self):
         validator = partial(KVKRSINRemoteValidator("id"), submission=Submission())
 
-        with freeze_time("2024-01-01T12:00:00"):
+        with time_machine.travel("2024-01-01T12:00:00", tick=False):
             self.assertNumRequests(0)
 
             validator("992760562")
@@ -194,7 +194,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
             # validate with different RSIN should trigger new request
             self.assertNumRequests(2)
 
-        with freeze_time("2024-01-01T12:05:01"):
+        with time_machine.travel("2024-01-01T12:05:01", tick=False):
             validator("992760562")
 
         # Request is made, because cached result is timed out
@@ -203,7 +203,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
     def test_branchNumber_validator_caching(self):
         validator = partial(KVKBranchNumberRemoteValidator(""), submission=Submission())
 
-        with freeze_time("2024-01-01T12:00:00"):
+        with time_machine.travel("2024-01-01T12:00:00", tick=False):
             self.assertNumRequests(0)
 
             validator("990000541921")
@@ -220,7 +220,7 @@ class KvKRemoteValidatorCachingTestCase(KVKTestMixin, SimpleTestCase):
             # validate with different branchnumber should trigger new request
             self.assertNumRequests(2)
 
-        with freeze_time("2024-01-01T12:05:01"):
+        with time_machine.travel("2024-01-01T12:05:01", tick=False):
             validator("990000541921")
 
         # Request is made, because cached result is timed out

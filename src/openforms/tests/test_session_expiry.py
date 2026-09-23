@@ -16,7 +16,7 @@ from django.urls import path
 from django.utils.translation import gettext as _
 
 import csp.constants
-from freezegun import freeze_time
+import time_machine
 from maykin_2fa.test import disable_admin_mfa
 from rest_framework import permissions, status
 from rest_framework.response import Response
@@ -91,7 +91,7 @@ class FormUserSessionExpiryTests(APITestCase):
                 "form": f"http://testserver{self.form_url}",
                 "formUrl": "http://testserver.com/my-form",
             }
-            with freeze_time("2021-07-29T14:00:00Z"):
+            with time_machine.travel("2021-07-29T14:00:00Z", tick=False):
                 response = self.client.post(reverse("api:submission-list"), body)
 
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -102,7 +102,7 @@ class FormUserSessionExpiryTests(APITestCase):
 
         # submit the first step, one minute later, simulating some time to fill out the step
         with self.subTest(part="fill out step 1"):
-            with freeze_time("2021-07-29T14:01:00Z"):
+            with time_machine.travel("2021-07-29T14:01:00Z", tick=False):
                 step1_response = self.client.put(
                     response.data["steps"][0]["url"], {"data": {"foo": "bar"}}
                 )
@@ -116,7 +116,7 @@ class FormUserSessionExpiryTests(APITestCase):
         # 30s after the initial expiry. If the # previous step reset the session expiry,
         # this should go through, because the expiry is now 14:06:00.
         with self.subTest(part="fill out step 2"):
-            with freeze_time("2021-07-29T14:05:30Z"):
+            with time_machine.travel("2021-07-29T14:05:30Z", tick=False):
                 step2_response = self.client.put(
                     response.data["steps"][1]["url"], {"data": {"foo": "bar"}}
                 )
@@ -140,7 +140,7 @@ class FormUserSessionExpiryTests(APITestCase):
                 "form": f"http://testserver{self.form_url}",
                 "formUrl": "http://testserver.com/my-form",
             }
-            with freeze_time("2021-07-29T14:00:00Z"):
+            with time_machine.travel("2021-07-29T14:00:00Z", tick=False):
                 response = self.client.post(reverse("api:submission-list"), body)
 
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -151,7 +151,7 @@ class FormUserSessionExpiryTests(APITestCase):
 
         # submit the first step, 5 and a half minutes later, simulating the session has expired
         with self.subTest(part="fill out step 1"):
-            with freeze_time("2021-07-29T14:05:30Z"):
+            with time_machine.travel("2021-07-29T14:05:30Z", tick=False):
                 step1_response = self.client.put(
                     response.data["steps"][0]["url"], {"data": {"foo": "bar"}}
                 )
@@ -218,7 +218,7 @@ class AdminSessionExpiryTests(APITestCase):
         """
         # make a request to the admin to validate this modifies the session
         with self.subTest(part="initial check"):
-            with freeze_time("2021-07-29T14:00:00Z"):
+            with time_machine.travel("2021-07-29T14:00:00Z", tick=False):
                 response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -229,7 +229,7 @@ class AdminSessionExpiryTests(APITestCase):
 
         # make another request to the admin to validate the session has not expired yet
         with self.subTest(part="check not expired"):
-            with freeze_time("2021-07-29T14:04:00Z"):
+            with time_machine.travel("2021-07-29T14:04:00Z", tick=False):
                 response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -241,7 +241,7 @@ class AdminSessionExpiryTests(APITestCase):
         # make another request to the admin to validate the session has expired
         #  and the user will be redirected to the admin login page
         with self.subTest(part="check expired and redirection to login page"):
-            with freeze_time("2021-07-29T14:10:00Z"):
+            with time_machine.travel("2021-07-29T14:10:00Z", tick=False):
                 response = self.client.get(self.url, user=self.superuser)
 
                 self.assertEqual(response.status_code, status.HTTP_302_FOUND)

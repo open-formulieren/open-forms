@@ -506,10 +506,6 @@ fonttools==4.61.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-freezegun==1.5.5
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 frozendict==2.4.7
     # via
     #   -c requirements/ci.txt
@@ -985,7 +981,6 @@ python-dateutil==2.9.0.post0
     #   celery
     #   django-camunda
     #   django-relativedelta
-    #   freezegun
     #   o365
 python-decouple==3.8
     # via
@@ -1249,6 +1244,10 @@ tblib==3.2.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 tenacity==9.1.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+time-machine==3.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

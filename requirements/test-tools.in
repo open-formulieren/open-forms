@@ -7,13 +7,13 @@ django-test-migrations
 django-simple-certmanager[testutils]
 django-webtest
 factory-boy<3.3.3  # type-hints are messed up in 3.3.3
-freezegun
 maykin-common[axes,mfa,pdf,vcr]
 playwright
 pyquery  # integrates with webtest
 requests-mock
-tenacity
 tblib
+tenacity
+time-machine[dateutil]
 hypothesis  # property-based testing
 unittest-parametrize
 zgw-consumers[testutils]

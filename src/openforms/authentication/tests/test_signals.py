@@ -3,7 +3,7 @@ from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import PermissionDenied
 from django.test import override_settings, tag
 
-from freezegun import freeze_time
+import time_machine
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -266,7 +266,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertFalse(submission.auth_info.attribute_hashed)
 
 
-@freeze_time("2021-11-26T17:00:00+00:00")
+@time_machine.travel("2021-11-26T17:00:00+00:00", tick=False)
 class SetCosignDataTests(APITestCase):
     @override_settings(ALLOWED_HOSTS=["localhost"])
     def test_set_cosigner_data(self):
