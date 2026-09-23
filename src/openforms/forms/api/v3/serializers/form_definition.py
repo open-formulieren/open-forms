@@ -24,7 +24,7 @@ class FormDefinitionConfigurationSerializer(serializers.Serializer):
     deprecate_fields=["slug"], component_name="FormDefinitionV3Serializer"
 )
 class FormDefinitionSerializer(serializers.ModelSerializer[FormDefinition]):
-    translations = ModelTranslationsSerializer()
+    translations = ModelTranslationsSerializer(required=True)
     configuration = FormDefinitionConfigurationSerializer(
         label=_("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
