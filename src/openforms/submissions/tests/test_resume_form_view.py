@@ -588,7 +588,7 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
             )
 
 
-@temp_private_root(reset_storage=False)
+@temp_private_root()
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     ALLOWED_HOSTS=["*"],
