@@ -113,10 +113,6 @@ COPY ./bin/celery_worker.sh \
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
 COPY \
     ./bin/report_component_problems.py \
-    ./bin/report_invalid_form_logic.py \
-    ./bin/report_logic_with_deprecated_clear_on_hide_behavior.py \
-    ./bin/report_file_component_inconsistent_catalogues.py \
-    ./bin/report_conditional_eq_properties.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
