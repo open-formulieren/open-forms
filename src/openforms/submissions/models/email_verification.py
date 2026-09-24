@@ -76,6 +76,15 @@ class EmailVerification(models.Model):
     class Meta:
         verbose_name = _("email verification")
         verbose_name_plural = _("email verifications")
+        models.constraints = [
+            models.CheckConstraint(
+                name="email_not_blank",
+                check=(~models.Q(email="")),
+                violation_error_message=_(
+                    "You must specify an non-empty email address."
+                ),
+            ),
+        ]
 
     def __str__(self):
         return _("{email} (component '{component}'): {status}").format(
