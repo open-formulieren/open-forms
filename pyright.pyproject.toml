@@ -1,5 +1,6 @@
 [tool.pyright]
 include = [
+    "src/formio/",
     "src/openforms/api/urls.py",
     "src/openforms/api/v2_urls.py",
     "src/openforms/api/v3_urls.py",
