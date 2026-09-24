@@ -10,10 +10,10 @@ from drf_spectacular.utils import extend_schema_serializer
 from json_logic.typing import Primitive
 from rest_framework import serializers
 
+from formio_types import AnyComponent
 from openforms.api.serializers import DummySerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.formio.service import holds_submission_data
-from openforms.formio.typing import Component
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -331,12 +331,12 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
         # check that "disabled" property is not changed for layout components
         if action_type == LogicActionTypes.property:
-            formio_component: None | Component = None
+            formio_component: None | AnyComponent = None
             for form_step in self.context.get("form_steps", {}).values():
                 if component in (
-                    wrapper := form_step.form_definition.configuration_wrapper
+                    formio_config := form_step.form_definition.formio_config
                 ):
-                    formio_component = wrapper[component]
+                    formio_component = formio_config[component]
                     break
 
             if (

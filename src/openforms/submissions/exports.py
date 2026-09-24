@@ -64,7 +64,7 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
     for data_node in iter_submission_data_nodes(first_submission):
         match data_node:
             case ComponentNode():
-                headers.append(data_node.component["key"])
+                headers.append(data_node.component.key)
             case SubmissionValueVariableNode():
                 headers.append(data_node.variable.key)
             case _:  # pragma: no cover

@@ -76,8 +76,8 @@ def count_component_usage(
     for form in forms:
         uuid_to_name_map[form.uuid] = form.name
         for step in form.formstep_set.all():
-            for component in step.iter_components(recursive=True):
-                counter[(form.uuid, component["type"])] += 1
+            for component in step.form_definition.formio_config:
+                counter[(form.uuid, component.type)] += 1
 
     return [
         metrics.Observation(

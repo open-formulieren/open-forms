@@ -178,7 +178,7 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
                 {"html": "<p>First &quot;textfield&quot; enabled: yes</p>"},
             )
 
-    def test_logic_evalution_endpoint(self):
+    def test_logic_evaluation_endpoint(self):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
             "api:submission-steps-logic-check",

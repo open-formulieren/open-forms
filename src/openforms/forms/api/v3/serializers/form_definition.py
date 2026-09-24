@@ -3,12 +3,16 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
-from openforms.formio.service import rewrite_formio_components_for_request
+from openforms.formio.service import (
+    dump_to_legacy,
+    rewrite_formio_components_for_request,
+)
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ....models import FormDefinition
 from ....validators import (
     validate_form_definition_is_reusable,
+    validate_no_duplicate_keys,
     validate_template_expressions,
 )
 from ...validators import FormIOComponentsValidator
@@ -30,6 +34,7 @@ class FormDefinitionSerializer(serializers.ModelSerializer[FormDefinition]):
         help_text=_("The form definition as Form.io JSON schema"),
         validators=[
             FormIOComponentsValidator(),
+            validate_no_duplicate_keys,
             validate_template_expressions,
         ],
     )
@@ -70,12 +75,17 @@ class FormDefinitionSerializer(serializers.ModelSerializer[FormDefinition]):
         #    for the dynamic formio configuration in the context of a submission.
         # 2. The serializers/API endpoints of :module:`openforms.forms.api` for
         #    'standalone' use/introspection.
+
+        # XXX is this even necessary for the admin-only internal v3 endpoint?? it
+        # shouldn't be tbh
         rewrite_formio_components_for_request(
-            instance.configuration_wrapper,
+            instance.formio_config,
             request=self.context["request"],
         )
 
-        representation["configuration"] = instance.configuration_wrapper.configuration
+        representation["configuration"] = {
+            "components": dump_to_legacy(instance.formio_config.components),
+        }
 
         return representation
 

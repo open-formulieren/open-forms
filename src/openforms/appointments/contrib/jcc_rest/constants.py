@@ -5,10 +5,10 @@ from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import Component
 
 
-class GenderType(IntegerChoices):
-    other = 0, _("Other")
-    male = 1, _("Male")
-    female = 2, _("Female")
+class GenderType(TextChoices):
+    other = "0", _("Other")
+    male = "1", _("Male")
+    female = "2", _("Female")
 
 
 class FieldState(IntegerChoices):

@@ -9,12 +9,12 @@ import requests_mock
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from formio_types import Content, Option, Selectboxes
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.formio.service import get_dynamic_configuration
 from openforms.logging.tests.utils import disable_timelinelog
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
@@ -23,8 +23,11 @@ from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
-from ..haal_centraal import get_np_family_members_haal_centraal
-from ..stuf_bg import get_np_family_members_stuf_bg
+from ...components.np_family_members.haal_centraal import (
+    get_np_family_members_haal_centraal,
+)
+from ...components.np_family_members.stuf_bg import get_np_family_members_stuf_bg
+from ...service import get_dynamic_configuration
 
 TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
@@ -64,7 +67,9 @@ class FamilyMembersCustomFieldTypeTest(OFVCRMixin, TestCase):
             auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="999990676",
         )
-        formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
+        step = submission.submissionstep_set.get()
+        assert step.form_step is not None
+        formio_config = step.form_step.form_definition.formio_config
 
         with patch(
             "openforms.formio.components.custom.GlobalConfiguration.get_solo",
@@ -72,29 +77,19 @@ class FamilyMembersCustomFieldTypeTest(OFVCRMixin, TestCase):
                 family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
             ),
         ):
-            updated_config_wrapper = get_dynamic_configuration(
-                formio_wrapper,
-                submission=submission,
+            updated_config = get_dynamic_configuration(
+                formio_config, submission=submission
             )
 
-        rewritten_component = updated_config_wrapper["npFamilyMembers"]
-        self.assertEqual("selectboxes", rewritten_component["type"])
-        self.assertFalse(rewritten_component["fieldSet"])
-        self.assertFalse(rewritten_component["inline"])
-        self.assertEqual("checkbox", rewritten_component["inputType"])
-        self.assertEqual(3, len(rewritten_component["values"]))
-        self.assertEqual(
-            rewritten_component["values"][0],
-            {"label": "Angélie Francisca Holthuizen", "value": "999991760"},
-        )
-        self.assertEqual(
-            rewritten_component["values"][1],
-            {"label": "Margaretha Holthuizen", "value": "999993392"},
-        )
-        self.assertEqual(
-            rewritten_component["values"][2],
-            {"label": "Adrianus Holthuizen", "value": "999991978"},
-        )
+        rewritten_component = updated_config["npFamilyMembers"]
+        assert isinstance(rewritten_component, Selectboxes)
+
+        expected_options = [
+            Option(value="999991760", label="Angélie Francisca Holthuizen"),
+            Option(value="999993392", label="Margaretha Holthuizen"),
+            Option(value="999991978", label="Adrianus Holthuizen"),
+        ]
+        self.assertEqual(rewritten_component.values, expected_options)
 
     def test_get_children_haal_centraal(self):
         kids_choices = get_np_family_members_haal_centraal(
@@ -221,17 +216,16 @@ class FamilyMembersCustomFieldTypeTest(OFVCRMixin, TestCase):
             ],
             auth_info=None,
         )
-        formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
+        step = submission.submissionstep_set.get()
+        assert step.form_step is not None
+        formio_config = step.form_step.form_definition.formio_config
 
-        updated_config_wrapper = get_dynamic_configuration(
-            formio_wrapper,
-            submission=submission,
-        )
+        updated_config = get_dynamic_configuration(formio_config, submission=submission)
 
-        rewritten_component = updated_config_wrapper["npFamilyMembers"]
-        self.assertEqual(rewritten_component["type"], "content")
+        rewritten_component = updated_config["npFamilyMembers"]
+        assert isinstance(rewritten_component, Content)
         self.assertEqual(
-            rewritten_component["html"],
+            rewritten_component.html,
             format_html(
                 "<p>{message}</p>",
                 message=_("Selecting family members is currently not available."),

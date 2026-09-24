@@ -255,6 +255,7 @@ class FormAdminImportExportTests(WebTest):
                                         {
                                             "id": "eer6qln",
                                             "key": "email",
+                                            "label": "email",
                                             "type": "email",
                                         }
                                     ]
@@ -279,6 +280,7 @@ class FormAdminImportExportTests(WebTest):
                                         {
                                             "id": "eer6qln",
                                             "key": "email",
+                                            "label": "email",
                                             "type": "email",
                                         }
                                     ]
@@ -421,6 +423,7 @@ class FormAdminImportExportTests(WebTest):
                                     "components": [
                                         {
                                             "key": "radio",
+                                            "label": "radio",
                                             "type": "radio",
                                             "values": [
                                                 {"label": "yes", "value": "yes"},
