@@ -367,6 +367,8 @@ mozilla-django-oidc-db==1.1.1
     #   django-digid-eherkenning
 msal==1.37.0
     # via o365
+msgspec==0.21.1
+    # via -r requirements/base.in
 networkx==3.6.1
     # via -r requirements/base.in
 nh3==0.3.3
