@@ -340,7 +340,7 @@
             "description": "",
             "placeholder": "dd-mm-yyyy",
             "showInEmail": false,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
@@ -429,7 +429,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
