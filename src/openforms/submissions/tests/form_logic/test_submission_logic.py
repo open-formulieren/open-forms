@@ -1831,7 +1831,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             }
 
         # Hide (and clear) the textfield when 'a' is selected in the radio
-        FormLogicFactory.create(
+        rule_1 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[
@@ -1843,7 +1843,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
-        FormLogicFactory.create(
+        rule_2 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={
                 "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
@@ -1862,7 +1862,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             ],
         )
         # Show the textfield when the checkbox is checked
-        FormLogicFactory.create(
+        rule_3 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"var": "checkbox"},
             actions=[
@@ -1872,7 +1872,10 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
-        form.apply_logic_analysis()
+        # Deliberately do not use `form.apply_logic_analysis()` here, because it will
+        # re-order the third logic rule to execute before the second one, which makes it
+        # impossible to check the value after clearing.
+        form_step.logic_rules.set([rule_1, rule_2, rule_3])
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1974,7 +1977,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             }
 
         # Hide (and clear) the textfield when 'a' is selected in the radio
-        FormLogicFactory.create(
+        rule_1 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[
@@ -1986,7 +1989,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
-        FormLogicFactory.create(
+        rule_2 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={
                 "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
@@ -2005,7 +2008,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             ],
         )
         # Show the textfield when the checkbox is checked
-        FormLogicFactory.create(
+        rule_3 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"var": "checkbox"},
             actions=[
@@ -2015,7 +2018,10 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
-        form.apply_logic_analysis()
+        # Deliberately do not use `form.apply_logic_analysis()` here, because it will
+        # re-order the third logic rule to execute before the second one, which makes it
+        # impossible to check the value after clearing.
+        form_step.logic_rules.set([rule_1, rule_2, rule_3])
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)

@@ -14,6 +14,34 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.10 (2026-xx-xx)
+===================
+
+.. warning::
+
+    In 3.5.2, we introduced migration tooling to convert forms to the new logic evalution in bulk.
+
+    Unfortunately, there is a chance that the rules were assigned an incorrect order. If you have
+    used this command to convert forms, the solution is to manually save the forms in the admin once,
+    which will re-trigger the logic rule analysis and assign the correct order.
+
+    If you have not used this command or if the forms have already been saved afterwards, you don't
+    have to do anything.
+
+    The root cause is fixed in this patch, so it can be safely used now. It will report all forms
+    that were converted to the new logic evaluation, as well as forms for which problems occurred during
+    conversion.
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``, reports changes
+        # without executing them:
+        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+        # pass the --no-dry-run argument to make changes:
+        # python /app/src/manage.py enable_new_logic_evaluation_for_all_forms --no-dry-run
+
 3.5.9 (2026-09-18)
 ===================
 
