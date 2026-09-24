@@ -37,12 +37,13 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
     def test_with_empty_value_in_trigger_and_component_visibility_not_affected(self):
         form = FormFactory.create()
         FormStepFactory.create(
+            form=form,
             form_definition__configuration={
                 "components": [{"type": "textfield", "key": "textfield"}]
-            }
+            },
         )
         FormLogicFactory.create(
-            form=form, json_logic_trigger={"var": {"==": [{"var": "textfield"}, ""]}}
+            form=form, json_logic_trigger={"==": [{"var": "textfield"}, ""]}
         )
 
         self.assertTrue(self.script.execute())
@@ -247,6 +248,220 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
                             "output_mapping": [],
                         },
                     },
+                }
+            ],
+        )
+
+        self.assertFalse(self.script.execute())
+
+    def test_with_dmn_action_referring_variables_from_future_step(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "invoiceAmount",
+                        "label": "Invoice Amount",
+                    },
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "Textfield",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "",
+                    "action": {
+                        "type": LogicActionTypes.evaluate_dmn,
+                        "config": {
+                            "plugin_id": "camunda7",
+                            "decision_definition_id": "invoiceClassification",
+                            "decision_definition_version": "2",
+                            "input_mapping": [
+                                {
+                                    "form_variable": "invoiceAmount",
+                                    "dmn_variable": "amount",
+                                },
+                                {
+                                    "form_variable": "textField",
+                                    "dmn_variable": "invoiceCategory",
+                                },
+                            ],
+                            "output_mapping": [],
+                        },
+                    },
+                }
+            ],
+        )
+
+        self.assertFalse(self.script.execute())
+
+    def test_variable_from_future_step_in_trigger(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield2"}]
+            },
+        )
+        step = FormStepFactory.create(form=form)
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "textfield2"}, ""]},
+            actions=[
+                {
+                    "action": {"type": "step-not-applicable"},
+                    "formStepUuid": str(step.uuid),
+                }
+            ],
+        )
+
+        self.assertFalse(self.script.execute())
+
+    @parametrize(
+        "logic_trigger",
+        [
+            {"==": [{"var": ["textfield", ""]}, ""]},
+            {"in": [{"var": ["textfield", ""]}, [""]]},
+            {"var": ["textfield", ""]},
+        ],
+    )
+    def test_variable_from_future_step_with_default_in_trigger_not_reported(
+        self, logic_trigger
+    ):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield2"}]
+            },
+        )
+        step = FormStepFactory.create(form=form)
+        # This rule is executed on all steps, because of the not-applicable action
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=logic_trigger,
+            actions=[
+                {
+                    "action": {"type": "step-not-applicable"},
+                    "formStepUuid": str(step.uuid),
+                }
+            ],
+        )
+
+        self.assertTrue(self.script.execute())
+
+    @parametrize(
+        "logic_trigger",
+        [
+            {"==": [{"var": ["textfield", ""]}, ""]},
+            {"in": [{"var": ["textfield", ""]}, [""]]},
+            {"var": ["textfield", ""]},
+        ],
+    )
+    def test_trigger_with_default_is_not_reported(self, logic_trigger):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                }
+            ],
+        )
+        FormLogicFactory.create(form=form, json_logic_trigger=logic_trigger)
+
+        self.assertTrue(self.script.execute())
+
+    @parametrize(
+        "value",
+        [
+            {"cat": [{"var": "textfield"}, "foo"]},
+            {"var": "textfield"},
+        ],
+    )
+    def test_with_variable_action_and_component_visibility_affected_by_other_rule(
+        self, value
+    ):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "components": [{"type": "textfield", "key": "textfield"}],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": value,
+                    },
+                    "variable": "textfield",
                 }
             ],
         )
