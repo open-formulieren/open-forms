@@ -1,6 +1,7 @@
 from io import StringIO
+from unittest.mock import patch
 
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.test import TestCase
 
 from ...models import Form, FormLogic
@@ -8,20 +9,49 @@ from ..factories import FormFactory, FormLogicFactory, FormStepFactory
 
 
 class CommandTests(TestCase):
-    def test_happy(self):
+    def test_happy_dry_run(self):
         FormFactory.create(
-            generate_minimal_setup=True, new_logic_evaluation_enabled=False
+            name="foo", generate_minimal_setup=True, new_logic_evaluation_enabled=False
         )
-        FormFactory.create(new_logic_evaluation_enabled=False)  # no steps
+        FormFactory.create(name="bar", new_logic_evaluation_enabled=False)  # no steps
         FormFactory.create(
-            new_logic_evaluation_enabled=False, is_appointment=True
+            name="baz", new_logic_evaluation_enabled=False, is_appointment=True
         )  # appointment
 
         stdout = StringIO()
         call_command("enable_new_logic_evaluation_for_all_forms", stdout=stdout)
 
         output = stdout.getvalue().strip()
-        self.assertEqual("New logic evaluation has been enabled for 3 form(s).", output)
+        self.assertIn(
+            "New logic evaluation has been enabled for the following forms:", output
+        )
+        for name in ("foo", "bar", "baz"):
+            self.assertIn(name, output)
+        for form in Form.objects.iterator():
+            self.assertFalse(form.new_logic_evaluation_enabled)
+
+    def test_happy(self):
+        FormFactory.create(
+            name="foo", generate_minimal_setup=True, new_logic_evaluation_enabled=False
+        )
+        FormFactory.create(name="bar", new_logic_evaluation_enabled=False)  # no steps
+        FormFactory.create(
+            name="baz", new_logic_evaluation_enabled=False, is_appointment=True
+        )  # appointment
+
+        stdout = StringIO()
+        call_command(
+            "enable_new_logic_evaluation_for_all_forms",
+            "--no-dry-run",
+            stdout=stdout,
+        )
+
+        output = stdout.getvalue().strip()
+        self.assertIn(
+            "New logic evaluation has been enabled for the following forms:", output
+        )
+        for name in ("foo", "bar", "baz"):
+            self.assertIn(name, output)
         for form in Form.objects.iterator():
             self.assertTrue(form.new_logic_evaluation_enabled)
 
@@ -70,10 +100,14 @@ class CommandTests(TestCase):
         )
 
         stdout = StringIO()
-        call_command("enable_new_logic_evaluation_for_all_forms", stdout=stdout)
+        with self.assertRaises(CommandError):
+            call_command(
+                "enable_new_logic_evaluation_for_all_forms",
+                "--no-dry-run",
+                stdout=stdout,
+            )
 
         output = stdout.getvalue().strip()
-        self.assertIn("New logic evaluation has been enabled for 0 form(s).", output)
         self.assertIn("The following forms still contain cycles", output)
         self.assertIn("Cool form", output)
         self.assertIn("bar, foo", output)
@@ -104,9 +138,36 @@ class CommandTests(TestCase):
         )
 
         stdout = StringIO()
-        call_command("enable_new_logic_evaluation_for_all_forms", stdout=stdout)
+        call_command(
+            "enable_new_logic_evaluation_for_all_forms", "--no-dry-run", stdout=stdout
+        )
 
         output = stdout.getvalue().strip()
-        self.assertEqual("New logic evaluation has been enabled for 1 form(s).", output)
+        self.assertIn(
+            "New logic evaluation has been enabled for the following forms:", output
+        )
         self.assertTrue(Form.objects.get().new_logic_evaluation_enabled)
         self.assertIsNone(FormLogic.objects.get().trigger_from_step)
+
+    def test_with_error_during_conversion(self):
+        FormFactory.create(
+            name="foo", generate_minimal_setup=True, new_logic_evaluation_enabled=False
+        )
+
+        stderr = StringIO()
+        with (
+            patch(
+                "openforms.forms.models.Form.apply_logic_analysis",
+                side_effect=ValueError,
+            ),
+            self.assertRaises(CommandError),
+        ):
+            call_command(
+                "enable_new_logic_evaluation_for_all_forms",
+                "--no-dry-run",
+                stderr=stderr,
+            )
+
+        output = stderr.getvalue().strip()
+        self.assertIn("Conversion of the following forms failed unexpectedly.", output)
+        self.assertFalse(Form.objects.get().new_logic_evaluation_enabled)
