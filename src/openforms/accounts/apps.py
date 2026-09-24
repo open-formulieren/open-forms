@@ -37,12 +37,16 @@ class AccountsConfig(AppConfig):
     name = "openforms.accounts"
 
     def ready(self):
+        from maykin_common.accounts.audit import connect_signals
+
         # register async metrics
         from . import (
             metrics,  # noqa
             signals,  # noqa
         )
         from .oidc_hacks import replace_builtin_admin_plugin
+
+        connect_signals()
 
         # enforce some fixtures after migrating
         post_migrate.connect(update_admin_index, sender=self)

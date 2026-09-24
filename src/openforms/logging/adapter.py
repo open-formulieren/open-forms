@@ -139,6 +139,9 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
         #
         # Accounts
         #
+        case {"event": "user_logged_in" | "user_logged_out" | "user_login_failed"}:
+            pass  # already handled by django-axes :)
+
         case {
             "event": "hijack_started" | "hijack_ended" as event,
             "hijacked": str(hijacked_username),
