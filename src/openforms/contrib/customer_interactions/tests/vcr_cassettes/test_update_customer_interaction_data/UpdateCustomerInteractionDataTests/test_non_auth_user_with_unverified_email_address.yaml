@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: '{"klantcontact": {"kanaal": "Webformulier", "onderwerp": "With profile",
+      "taal": "nld", "vertrouwelijk": true}, "betrokkene": {"rol": "klant", "initiator":
+      true, "organisatienaam": ""}, "onderwerpobject": {"onderwerpobjectidentificator":
+      {"objectId": "OF-12345", "codeObjecttype": "formulierinzending", "codeRegister":
+      "Open Formulieren", "codeSoortObjectId": "public_registration_reference"}}}'
+    headers:
+      Content-Length:
+      - '394'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: http://localhost:8005/klantinteracties/api/v1/maak-klantcontact
+  response:
+    body:
+      string: '{"klantcontact":{"uuid":"68305e99-6a7c-498f-aa11-b22a3edea045","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/68305e99-6a7c-498f-aa11-b22a3edea045","gingOverOnderwerpobjecten":[{"uuid":"4bfc8827-302e-4c76-89dd-bc836b034022","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/4bfc8827-302e-4c76-89dd-bc836b034022"}],"hadBetrokkenActoren":[],"omvatteBijlagen":[],"hadBetrokkenen":[{"uuid":"71d446fd-1c45-4eac-911a-2d17ee165f99","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/71d446fd-1c45-4eac-911a-2d17ee165f99"}],"leiddeTotInterneTaken":[],"nummer":"0000000006","kanaal":"Webformulier","onderwerp":"With
+        profile","inhoud":"","indicatieContactGelukt":null,"taal":"nld","vertrouwelijk":true,"plaatsgevondenOp":"2026-09-24T10:18:20.970159Z"},"betrokkene":{"uuid":"71d446fd-1c45-4eac-911a-2d17ee165f99","url":"http://localhost:8005/klantinteracties/api/v1/betrokkenen/71d446fd-1c45-4eac-911a-2d17ee165f99","wasPartij":null,"hadKlantcontact":{"uuid":"68305e99-6a7c-498f-aa11-b22a3edea045","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/68305e99-6a7c-498f-aa11-b22a3edea045"},"digitaleAdressen":[],"bezoekadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"correspondentieadres":{"nummeraanduidingId":"","straatnaam":"","huisnummer":null,"huisnummertoevoeging":"","postcode":"","stad":"","adresregel1":"","adresregel2":"","adresregel3":"","land":""},"contactnaam":{"voorletters":"","voornaam":"","voorvoegselAchternaam":"","achternaam":""},"volledigeNaam":"","rol":"klant","organisatienaam":"","initiator":true},"onderwerpobject":{"uuid":"4bfc8827-302e-4c76-89dd-bc836b034022","url":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten/4bfc8827-302e-4c76-89dd-bc836b034022","klantcontact":{"uuid":"68305e99-6a7c-498f-aa11-b22a3edea045","url":"http://localhost:8005/klantinteracties/api/v1/klantcontacten/68305e99-6a7c-498f-aa11-b22a3edea045"},"wasKlantcontact":null,"onderwerpobjectidentificator":{"objectId":"OF-12345","codeObjecttype":"formulierinzending","codeRegister":"Open
+        Formulieren","codeSoortObjectId":"public_registration_reference"}}}'
+    headers:
+      API-version:
+      - 0.4.1
+      Allow:
+      - POST, OPTIONS
+      Content-Length:
+      - '2259'
+      Content-Security-Policy:
+      - 'object-src ''none''; default-src ''self''; frame-ancestors ''none''; worker-src
+        ''self'' blob:; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; frame-src ''self''; script-src ''self'' ''unsafe-inline'';
+        img-src ''self'' data: cdn.redoc.ly; base-uri ''self''; font-src ''self''
+        fonts.gstatic.com'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 201
+      message: Created
+version: 1

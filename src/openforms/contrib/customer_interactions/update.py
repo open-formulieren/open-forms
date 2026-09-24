@@ -17,13 +17,17 @@ from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
 )
 from openforms.prefill.registry import register as prefill_registry
-from openforms.submissions.models import Submission
+from openforms.submissions.models import EmailVerification, Submission
 
 from .client import get_customer_interactions_client
 from .constants import ADDRESS_TYPES_TO_CHANNELS
 from .typing import CommunicationChannel
 
 logger = structlog.stdlib.get_logger(__name__)
+
+
+class EmailNotVerifiedException(Exception):
+    pass
 
 
 class DigitalAddressResults(TypedDict):
@@ -143,6 +147,25 @@ def update_customer_interaction_data(
                 continue
 
             address_channel: SupportedChannels = digital_address["type"]
+
+            # address verification is only supported for email addresses. At this point,
+            # the email address should be already verified and our db should be updated
+            # with the verification date
+            verification_date: str | None = None
+            if address_channel == "email":
+                verification = EmailVerification.objects.filter(
+                    submission=submission,
+                    component_key=profile_key,
+                    email=address_value,
+                    verified_on__isnull=False,
+                ).first()
+
+                if not verification:
+                    logger.warning("email_unverified", component=profile_key)
+                    raise EmailNotVerifiedException()
+
+                verification_date = str(verification.verified_on.date())
+
             is_address_new_preferred = (
                 digital_address.get("preferenceUpdate") == "isNewPreferred"
             )
@@ -176,7 +199,10 @@ def update_customer_interaction_data(
                 # flow 5. we update it only if it's marked as "isNewPreferred"
                 if is_address_new_preferred:
                     updated_address = client.update_digital_address_for_party(
-                        address=address_value, party_uuid=party_uuid, is_preferred=True
+                        address=address_value,
+                        party_uuid=party_uuid,
+                        is_preferred=True,
+                        verification_date=verification_date,
                     )
                     updated_addresses.append(updated_address)
 
@@ -187,6 +213,7 @@ def update_customer_interaction_data(
                         address_type=channels_to_address_types[address_channel],
                         betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                         is_preferred=False,
+                        verification_date=verification_date,
                     )
                     created_addresses.append(created_address)
 
@@ -199,6 +226,7 @@ def update_customer_interaction_data(
                     betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                     party_uuid=party_uuid if is_address_new_preferred else "",
                     is_preferred=is_address_new_preferred,
+                    verification_date=verification_date,
                 )
                 created_addresses.append(created_address)
 
