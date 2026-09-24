@@ -941,7 +941,10 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "useConfigFiletypes": True,
             "filePattern": "image/png,application/pdf",
             "url": "http://testserver/api/v2/formio/fileupload",
-            "file": {"allowedTypesLabels": [".png", ".pdf"]},
+            "file": {
+                "type": ["image/png", "application/pdf"],
+                "allowedTypesLabels": [".png", ".pdf"],
+            },
         }
         self.assertEqual(
             expected, response.json()["defaultConfiguration"]["components"][0]
