@@ -6,6 +6,7 @@ component definitions are rewritten to be compatible with the current code.
 """
 
 import json
+from datetime import date, datetime, time
 from typing import Protocol, cast  # noqa: TID251
 
 import structlog
@@ -14,6 +15,7 @@ from glom import assign, glom
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
+from openforms.utils.date import datetime_in_amsterdam
 
 from .datastructures import FormioConfigurationWrapper
 from .service import get_component_empty_value
@@ -473,6 +475,58 @@ def remove_empty_min_max_validation_spec(component: Component) -> bool:
     return changed
 
 
+def normalize_date_default_value(component: Component) -> bool:
+    if not (default_value := component.get("defaultValue")):
+        return False
+
+    def normalize(value):
+        if not value:
+            return None
+
+        # if we can parse it as a date, it's already in the right format
+        try:
+            date.fromisoformat(value)
+            return value
+        except ValueError:
+            pass
+
+        # it could be a datetime
+        try:
+            dt = datetime.fromisoformat(value)
+        except ValueError:
+            # no idea what it is -> just pass it through, we can't guess at this point,
+            # it's going to cause runtime errors anyway
+            return value
+
+        local_date = datetime_in_amsterdam(dt).date()
+        return local_date.isoformat()
+
+    _list_initially = isinstance(default_value, list)
+    _values = [default_value] if not _list_initially else default_value
+    _normalized = [normalize(value) for value in _values]
+    changed = _normalized != _values
+    component["defaultValue"] = _normalized if _list_initially else _normalized[0]
+    return changed
+
+
+def normalize_time_default_value(component: Component):
+    if not (default_value := component.get("defaultValue")):
+        return False
+
+    def normalize(value):
+        if not value:
+            return None
+        # tzinfo is deliberately discarded - our frontend does not emit that anywhere
+        return time.fromisoformat(value).isoformat()
+
+    _list_initially = isinstance(default_value, list)
+    _values = [default_value] if not _list_initially else default_value
+    _normalized = [normalize(value) for value in _values]
+    changed = _normalized != _values
+    component["defaultValue"] = _normalized if _list_initially else _normalized[0]
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -503,6 +557,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
         "remove_empty_min_max_validation_spec": remove_empty_min_max_validation_spec,
+        "normalize_date_default_value": normalize_date_default_value,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -516,6 +571,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_default_value": fix_empty_date_datetime_or_time_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "fix_min_max_time_default_values": fix_min_max_time_default_values,
+        "normalize_time_default_value": normalize_time_default_value,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
