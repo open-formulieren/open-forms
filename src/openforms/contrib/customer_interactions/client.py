@@ -113,7 +113,11 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
                     )
                 return self._get_digital_addresses_for_kvk(kvk=auth_value)
 
-            case AuthAttribute.pseudo | AuthAttribute.employee_id:  # pragma: no cover
+            case (
+                AuthAttribute.pseudo
+                | AuthAttribute.employee_id
+                | AuthAttribute.local_user_id
+            ):  # pragma: no cover
                 raise NotImplementedError(
                     "Only bsn and kvk authentications are supported for Customer Interactions API"
                 )
@@ -330,7 +334,11 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
                 return party, created
 
-            case AuthAttribute.pseudo | AuthAttribute.employee_id:
+            case (
+                AuthAttribute.pseudo
+                | AuthAttribute.employee_id
+                | AuthAttribute.local_user_id
+            ):
                 raise NotImplementedError(
                     "Only bsn and kvk authentications are supported for Customer Interactions API"
                 )

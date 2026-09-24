@@ -1,6 +1,7 @@
 from openforms.authentication.types import AnyAuthContext
 
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from .datastructures import Registrator
 from .typing import BaseAuth
 from .utils import (
     check_user_is_submission_initiator,
@@ -14,6 +15,7 @@ __all__ = [
     "FORM_AUTH_SESSION_KEY",
     "AuthAttribute",
     "BaseAuth",
+    "Registrator",
     "check_user_is_submission_initiator",
     "store_auth_details",
     "is_authenticated_with_plugin",

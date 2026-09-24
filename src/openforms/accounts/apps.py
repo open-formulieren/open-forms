@@ -37,11 +37,15 @@ class AccountsConfig(AppConfig):
     name = "openforms.accounts"
 
     def ready(self):
-        from . import signals  # noqa
-
         # register async metrics
-        from . import metrics  # noqa
+        from . import (
+            metrics,  # noqa
+            signals,  # noqa
+        )
+        from .oidc_hacks import replace_builtin_admin_plugin
 
         # enforce some fixtures after migrating
         post_migrate.connect(update_admin_index, sender=self)
         post_migrate.connect(update_groups, sender=self)
+
+        replace_builtin_admin_plugin()

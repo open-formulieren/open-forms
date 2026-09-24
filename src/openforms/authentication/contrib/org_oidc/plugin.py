@@ -66,10 +66,14 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
+        # while we provide the employee ID, this is translated at runtime and we
+        # actually persist the local user ID - this allows querying and conversion to
+        # the employee ID *and* inclusion of the (standard) OIDC claims in the derived
+        # registration variable(s)
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
-            "attribute": self.provides_auth[0],
-            "value": request.user.employee_id or request.user.username,
+            "attribute": AuthAttribute.local_user_id,
+            "value": str(request.user.pk),
         }
 
         # we could render here but let's redirect

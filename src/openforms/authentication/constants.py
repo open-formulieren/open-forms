@@ -16,6 +16,7 @@ class AuthAttribute(models.TextChoices):
     kvk = "kvk", _("KvK number")
     pseudo = "pseudo", _("Pseudo ID")
     employee_id = "employee_id", _("Employee ID")
+    local_user_id = "local_user_id", _("Local user ID")
 
 
 class LogoAppearance(models.TextChoices):
