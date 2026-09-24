@@ -16,4 +16,4 @@ class SubmissionCosignData(TypedDict):
     cosign_date: datetime
 
 
-type EmailVerificationComponentType = Literal["email", "customerProfile"]
+EMAIL_VERIFICATION_COMPONENT_TYPES = ("email", "customerProfile")

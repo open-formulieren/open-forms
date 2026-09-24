@@ -58,14 +58,11 @@ class ProfileValidationTests(TestCase):
             "type": "customerProfile",
             "digitalAddressTypes": ["email", "phoneNumber"],
             "shouldUpdateCustomerData": True,
-            "validate": {},
+            "validate": {"required": False},
         }
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
-        )
-        EmailVerificationFactory.create(
-            submission=submission, component_key="profile", email="", verified=True
         )
         valid_values = {
             "profile": [
@@ -152,12 +149,6 @@ class ProfileValidationTests(TestCase):
                     component,
                 ]
             },
-        )
-        EmailVerificationFactory.create(
-            submission=submission,
-            component_key="profile",
-            email="some-incorrect-email",
-            verified=True,
         )
         values = {
             "profile": [

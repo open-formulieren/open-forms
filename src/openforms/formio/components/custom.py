@@ -1299,6 +1299,11 @@ class DigitalAddressSerializer(serializers.Serializer):
             match type:
                 case "email":
                     validate_email(address)
+                    if component_key := self.context.get("component_key"):
+                        verification_validator = EmailVerificationValidator(
+                            component_key
+                        )
+                        verification_validator(address, self.fields["address"])
 
                 case "phoneNumber":
                     # replicate client-side validation in formio-renderer (buildPhoneNumberValidationSchema)
@@ -1329,17 +1334,13 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     def build_serializer_field(
         self, component: CustomerProfileComponent
     ) -> DigitalAddressSerializer:
-
         required = component.get("validate", {}).get("required", False)
-
         return DigitalAddressSerializer(
             many=True,
             digital_address_types=component["digitalAddressTypes"],
             required=required,
             allow_null=not required,
-            validators=[
-                EmailVerificationValidator(component["key"], "customerProfile")
-            ],
+            context={"component_key": component["key"]},
         )
 
     @staticmethod

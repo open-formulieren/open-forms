@@ -5,9 +5,6 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.formio.typing.custom import DigitalAddress
-from openforms.submissions.typing import EmailVerificationComponentType
-
 # Regex and message adapted from
 # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
 variable_key_validator = RegexValidator(
@@ -53,35 +50,20 @@ class EmailVerificationValidator:
     requires_context = True
 
     component_key: str
-    component_type: EmailVerificationComponentType
 
-    def __init__(
-        self, component_key: str, component_type: EmailVerificationComponentType
-    ) -> None:
+    def __init__(self, component_key: str) -> None:
         self.component_key = component_key
-        self.component_type = component_type
 
-    def __call__(self, value: str | DigitalAddress, field: serializers.Field) -> None:
+    def __call__(self, value: str, field: serializers.Field) -> None:
         from openforms.submissions.models import EmailVerification, Submission
 
-        address: str
-        error_format: str | dict[str, list[str]]
-        if self.component_type == "customerProfile":
-            assert isinstance(value, dict)
-            if value.get("type", "") != "email":
-                return
-            address = value.get("address") or ""
-            error_format = {"address": [self.message.format(value=address)]}
-        else:
-            assert isinstance(value, str)
-            address = value
-            error_format = self.message.format(value=address)
-
+        assert isinstance(value, str)
+        error_format = self.message.format(value=value)
         submission: Submission = field.context["submission"]
         has_verification = EmailVerification.objects.filter(
             submission=submission,
             component_key=self.component_key,
-            email=address,
+            email=value,
             verified_on__isnull=False,
         ).exists()
 

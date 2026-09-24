@@ -192,7 +192,7 @@ class Email(BasePlugin):
             validators.append(PluginValidator(plugin_ids))
 
         if verification_required:
-            validators.append(EmailVerificationValidator(component["key"], "email"))
+            validators.append(EmailVerificationValidator(component["key"]))
 
         if validators:
             extra["validators"] = validators
