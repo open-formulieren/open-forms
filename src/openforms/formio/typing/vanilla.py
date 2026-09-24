@@ -29,7 +29,6 @@ class FileComponentRegistration(TypedDict):
 
 
 class FileComponent(Component):
-    storage: Literal["url"]
     url: str
     useConfigFiletypes: bool
     filePattern: str

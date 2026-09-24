@@ -1209,7 +1209,7 @@
             "description": "",
             "placeholder": "dd-mm-yyyy",
             "showInEmail": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
@@ -1328,7 +1328,7 @@
             "description": "",
             "placeholder": "dd-mm-yyyy",
             "showInEmail": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
@@ -1447,7 +1447,7 @@
             "description": "",
             "placeholder": "dd-mm-yyyy",
             "showInEmail": true,
-            "defaultValue": "2022-02-15T00:00:00+01:00",
+            "defaultValue": "2022-02-15",
             "registration": {
                 "attribute": ""
             },
@@ -2169,7 +2169,7 @@
             "customClass": "",
             "suffix": "",
             "multiple": true,
-            "defaultValue": null,
+            "defaultValue": [],
             "protected": false,
             "unique": false,
             "persistent": true,
@@ -2310,7 +2310,7 @@
             "customClass": "",
             "suffix": "",
             "multiple": true,
-            "defaultValue": null,
+            "defaultValue": [],
             "protected": false,
             "unique": false,
             "persistent": true,
@@ -2479,7 +2479,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
@@ -2563,7 +2563,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "registration": {
                 "attribute": ""
             },
