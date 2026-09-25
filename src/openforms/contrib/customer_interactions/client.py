@@ -176,6 +176,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         is_preferred: bool,
         betrokkene_uuid: str,
         party_uuid="",
+        verification_date: str | None = None,
     ) -> DigitaalAdres:
         party_data: ForeignKeyRef | None = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
@@ -186,17 +187,32 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             verstrektDoorPartij=party_data,
             omschrijving="",
         )
+
+        # the verification date is only relevant/supported for email addresses
+        if verification_date:
+            data["verificatieDatum"] = verification_date
+
         return self.digitaal_adres.create(data=data)
 
     def update_digital_address_for_party(
-        self, address: str, party_uuid: str, is_preferred: bool
+        self,
+        address: str,
+        party_uuid: str,
+        is_preferred: bool,
+        verification_date: str | None = None,
     ) -> DigitaalAdres:
         """
-        find an address for the party and update its preference
+        Find an address for the party and update its preference and verification date for
+        email addresses.
         """
         digital_address = self.get_digital_address_for_party(address, party_uuid)
 
         data = DigitaalAdresPartialUpdateData(isStandaardAdres=is_preferred)
+
+        # the verification date is only relevant/supported for email addresses
+        if verification_date:
+            data["verificatieDatum"] = verification_date
+
         return self.digitaal_adres.partial_update(
             uuid=digital_address["uuid"], data=data
         )
