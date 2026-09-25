@@ -1268,6 +1268,8 @@ class DigitalAddressSerializer(serializers.Serializer):
         help_text=_("Indicates if it is a one-off address or not."),
     )
 
+    component_key: str | None
+
     class Meta:
         list_serializer_class = ProfileValueSerializer
 
@@ -1275,6 +1277,7 @@ class DigitalAddressSerializer(serializers.Serializer):
         self.digital_address_types: list[SupportedChannels] = kwargs.pop(
             "digital_address_types", []
         )
+        self.component_key = kwargs.pop("component_key", None)
         super().__init__(**kwargs)
 
     def get_fields(self):
@@ -1299,9 +1302,10 @@ class DigitalAddressSerializer(serializers.Serializer):
             match type:
                 case "email":
                     validate_email(address)
-                    if component_key := self.context.get("component_key"):
+
+                    if self.component_key:
                         verification_validator = EmailVerificationValidator(
-                            component_key
+                            self.component_key
                         )
                         verification_validator(address, self.fields["address"])
 
@@ -1317,10 +1321,8 @@ class DigitalAddressSerializer(serializers.Serializer):
         except DjangoValidationError as exc:
             detail = get_error_detail(exc)
             raise serializers.ValidationError({"address": detail})
-        # branch below is uncovered because *so far* we only use plain Django validators
-        except serializers.ValidationError as exc:  # pragma: no cover
-            detail = serializers.as_serializer_error(exc)
-            raise serializers.ValidationError({"address": detail})
+        except serializers.ValidationError as exc:
+            raise serializers.ValidationError({"address": exc.detail})
 
         return attrs
 
@@ -1336,11 +1338,11 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     ) -> DigitalAddressSerializer:
         required = component.get("validate", {}).get("required", False)
         return DigitalAddressSerializer(
+            component_key=component["key"],
             many=True,
             digital_address_types=component["digitalAddressTypes"],
             required=required,
             allow_null=not required,
-            context={"component_key": component["key"]},
         )
 
     @staticmethod
