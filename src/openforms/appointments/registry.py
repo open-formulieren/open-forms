@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
 
 from openforms.forms.constants import FormTypeChoices
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
 
-if TYPE_CHECKING:
-    from .base import BasePlugin
+from .base import BasePlugin
 
 
-class Registry(BaseRegistry["BasePlugin"]):
+class Registry(BaseRegistry[BasePlugin]):
     """
     A registry for appointments module plugins.
     """
@@ -38,7 +36,11 @@ class Registry(BaseRegistry["BasePlugin"]):
             else:
                 vendor = plugin.identifier
 
-            yield plugin, num_appointment_forms if in_use else 0, {"openforms.plugin.vendor_hint": vendor}
+            yield (
+                plugin,
+                num_appointment_forms if in_use else 0,
+                {VENDOR_HINT_METRIC_LABEL: vendor},
+            )
 
 
 register = Registry()

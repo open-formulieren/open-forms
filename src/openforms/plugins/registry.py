@@ -21,8 +21,7 @@ VENDOR_HINT_METRIC_LABEL = "openforms.plugin.vendor_hint"
 
 type MetricLabels = Mapping[str, AttributeValue]
 type PluginUsageReport = (
-    tuple[AbstractBasePlugin, int]
-    | tuple[AbstractBasePlugin, int, MetricLabels]
+    tuple[AbstractBasePlugin, int] | tuple[AbstractBasePlugin, int, MetricLabels]
 )
 
 

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Iterable
 
-from django.db.models import Count, F
-
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
 
 from .base import BasePlugin
 
@@ -29,11 +28,13 @@ class Registry(BaseRegistry[BasePlugin]):
 
         for form in Form.objects.live().prefetch_related("registration_backends"):
             for backend in form.registration_backends.all():
-                plugin = self.get(backend.backend)
-                if not plugin:
+                if backend.backend not in self:
                     continue
+                plugin = self[backend.backend]
 
-                options = getattr(backend, "configuration", getattr(backend, "options", {}))
+                options = getattr(
+                    backend, "configuration", getattr(backend, "options", {})
+                )
 
                 vendor_hint = plugin.get_vendor_hint(options)
 
@@ -46,7 +47,9 @@ class Registry(BaseRegistry[BasePlugin]):
                 yield plugin, 0, {}
             else:
                 for (p, vendor_hint), count in plugin_usages.items():
-                    tags = {"openforms.plugin.vendor_hint": vendor_hint} if vendor_hint else {}
+                    tags = (
+                        {VENDOR_HINT_METRIC_LABEL: vendor_hint} if vendor_hint else {}
+                    )
                     yield p, count, tags
 
 
