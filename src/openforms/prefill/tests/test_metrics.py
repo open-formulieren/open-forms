@@ -52,10 +52,12 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
         }
 
-        self.assertEqual(result, {"demo": 2})
+        self.assertEqual(result["demo"][0], 2)
+        self.assertEqual(result["demo"][1], {})
 
     def test_includes_user_defined_variables(self):
         FormVariableFactory.create(
@@ -75,7 +77,25 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
         }
 
-        self.assertEqual(result, {"demo": 1})
+        self.assertEqual(result["demo"][0], 1)
+        self.assertEqual(result["demo"][1], {})
+
+    def test_unregistered_prefill_plugin_is_ignored(self):
+        FormVariableFactory.create(
+            user_defined=True,
+            prefill_plugin="non_existent_plugin",
+            prefill_attribute="random_number",
+        )
+
+        result = {
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
+        }
+
+        self.assertEqual(result["demo"][0], 0)
+        self.assertEqual(result["demo"][1], {})
+        self.assertNotIn("non_existent_plugin", result)
