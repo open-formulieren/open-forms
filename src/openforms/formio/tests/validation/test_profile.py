@@ -1,7 +1,10 @@
 from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    EmailVerificationFactory,
+    SubmissionFactory,
+)
 
 from ...typing.custom import CustomerProfileComponent
 from .helpers import extract_error, validate_formio_data
@@ -24,6 +27,12 @@ class ProfileValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
         )
         valid_values = {
             "profile": [
@@ -49,7 +58,7 @@ class ProfileValidationTests(TestCase):
             "type": "customerProfile",
             "digitalAddressTypes": ["email", "phoneNumber"],
             "shouldUpdateCustomerData": True,
-            "validate": {},
+            "validate": {"required": False},
         }
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -204,6 +213,18 @@ class ProfileValidationTests(TestCase):
                 ]
             },
         )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="another@email.org",
+            verified=True,
+        )
         values = {
             "profile": [
                 {
@@ -230,4 +251,44 @@ class ProfileValidationTests(TestCase):
             _(
                 "You cannot submit multiple digital addresses for the type '{type}'."
             ).format(type="email"),
+        )
+
+    def test_unverified_email(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": True,
+        }
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    component,
+                ]
+            },
+        )
+        values = {
+            "profile": [
+                {
+                    "address": "john@smith.org",
+                    "type": "email",
+                },
+                {
+                    "address": "0812345678",
+                    "type": "phoneNumber",
+                },
+            ]
+        }
+
+        is_valid, errors = validate_formio_data(component, values, submission)
+        error = extract_error(errors["profile"][0], "address")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(
+            error,
+            _("The email address {value} has not been verified yet.").format(
+                value="john@smith.org"
+            ),
         )

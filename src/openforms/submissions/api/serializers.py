@@ -42,12 +42,14 @@ from openforms.forms.validators import validate_not_deleted
 from openforms.typing import VariableValue
 from openforms.utils.json_logic import partially_evaluate_json_logic
 from openforms.utils.urls import build_absolute_uri
+from openforms.variables.service import resolve_key
 
 from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..json_logic import add_data_type_information
 from ..models import EmailVerification, Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
+from ..typing import EMAIL_VERIFICATION_COMPONENT_TYPES
 from ..utils import get_report_download_url
 from .fields import (
     NestedRelatedField,
@@ -836,13 +838,19 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     def validate(self, attrs: EmailVerificationData) -> EmailVerificationData:
         # validate that the component key is present in the submissoin form *and* points
         # to an email component
-        config_wrapper = attrs["submission"].total_configuration_wrapper
+        submission = attrs["submission"]
         key = attrs["component_key"]
-        try:
-            component = config_wrapper.component_map[key]
-            key_valid = component["type"] == "email"
-        except KeyError:
-            key_valid = False
+        resolved_key = resolve_key(key, submission.form.all_form_variable_keys)
+        component = (
+            submission.total_configuration_wrapper.component_map[resolved_key]
+            if resolved_key
+            else None
+        )
+        key_valid = (
+            resolved_key
+            and component
+            and component["type"] in EMAIL_VERIFICATION_COMPONENT_TYPES
+        )
         if not key_valid:
             raise serializers.ValidationError(
                 {
