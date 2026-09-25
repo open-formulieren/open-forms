@@ -17,7 +17,7 @@ class Registry(BaseRegistry["BasePlugin"]):
 
     module = "appointments"
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, dict[str, str]]]:
         from openforms.forms.models import Form
 
         from .models import AppointmentsConfig
@@ -28,7 +28,17 @@ class Registry(BaseRegistry["BasePlugin"]):
         )
         for plugin in self:
             in_use = num_appointment_forms > 0 and config.plugin == plugin.identifier
-            yield plugin, num_appointment_forms if in_use else 0
+
+            if "jcc" in plugin.identifier.lower():
+                vendor = "jcc_rest"
+            elif "qmatic" in plugin.identifier.lower():
+                vendor = "qmatic"
+            elif "demo" in plugin.identifier.lower():
+                vendor = "demo"
+            else:
+                vendor = plugin.identifier
+
+            yield plugin, num_appointment_forms if in_use else 0, {"openforms.plugin.vendor_hint": vendor}
 
 
 register = Registry()
