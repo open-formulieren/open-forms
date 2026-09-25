@@ -1,8 +1,8 @@
 {% extends "admin/base_site.html" %}
-{% load static i18n django_admin_index %}
+{% load static i18n django_admin_index django_vite %}
 
 {% block extrastyle %}
-    <link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
+    <link rel="stylesheet" href="{% vite_asset_url 'src/openforms/scss/screen.scss' %}">
     <link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
     {{ block.super }}
 {% endblock %}

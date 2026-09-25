@@ -1,8 +1,8 @@
 {% extends 'admin/object_history.html' %}
-{% load i18n admin_urls static %}
+{% load i18n admin_urls static django_vite %}
 
 {% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
+<link rel="stylesheet" href="{% vite_asset_url 'src/openforms/scss/screen.scss' %}">
 {{ block.super }}
 {% endblock %}
 
@@ -20,5 +20,5 @@
     </div>
 </div>
 
-<script type="module" src="{% static 'bundles/core-js.js' %}"></script>
+{% vite_asset 'src/openforms/js/index.js' %}
 {% endblock %}

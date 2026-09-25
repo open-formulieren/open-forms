@@ -1,11 +1,12 @@
 from typing import Any
 
-from django.forms import Script, Textarea
+from django.forms import Textarea
 
 from flags.state import flag_enabled
 
 from openforms.appointments.registry import register as appointments_register
 from openforms.authentication.registry import register as auth_register
+from openforms.media_assets import get_custom_assets
 from openforms.payments.registry import register as payments_register
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.registry import register as registrations_register
@@ -22,11 +23,9 @@ PLUGIN_REGISTERS = [
 class PluginConfigurationTextAreaReact(Textarea):
     template_name = "config/forms/plugin_config_react.html"
 
-    class Media:
-        css = {
-            "all": ("bundles/core-css.css",),
-        }
-        js = (Script("bundles/core-js.js", type="module"),)
+    @property
+    def media(self):
+        return get_custom_assets()
 
     def get_context(self, name: str, value, attrs: dict) -> dict[str, Any]:
         context = super().get_context(name, value, attrs)
@@ -58,8 +57,6 @@ class DesignTokenValuesTextareaReact(Textarea):
         kwargs["attrs"]["class"] = f"{clsname} react-design-token-values".strip()
         super().__init__(*args, **kwargs)
 
-    class Media:
-        css = {
-            "all": ("bundles/core-css.css",),
-        }
-        js = (Script("bundles/core-js.js", type="module"),)
+    @property
+    def media(self):
+        return get_custom_assets()

@@ -22,8 +22,8 @@ Prerequisites
 You need the following libraries and/or programs:
 
 * `Python`_ 3.12
-* Python `Virtualenv`_ and `Pip`_
-* `PostgreSQL`_ 12 or above
+* `uv`_ or similar virtualenv tooling
+* `PostgreSQL`_ 14 or newer
 * `Redis`_ for `Celery`_ to work
 * `Node.js`_, see ``.nvmrc`` for the exact version. Using nvm_ is recommended.
 * `npm`_
@@ -41,6 +41,7 @@ You will also need the following operating-system libraries:
 * libpq-dev
 
 .. _Python: https://www.python.org/
+.. _uv: https://docs.astral.sh/uv/
 .. _Django framework: https://www.djangoproject.com/
 .. _Virtualenv: https://virtualenv.pypa.io/en/stable/
 .. _Pip: https://pip.pypa.io/en/stable/installation/
@@ -57,8 +58,8 @@ You will also need the following operating-system libraries:
 Getting started
 ===============
 
-Developers can follow the following steps to set up the project on their local
-development machine.
+Developers can follow the steps below to set up the project on their local development
+machine.
 
 1. Navigate to the location where you want to place your project.
 
@@ -73,16 +74,17 @@ development machine.
 
    .. code-block:: bash
 
-       $ virtualenv env
+       $ uv venv env --python 3.12
        $ source env/bin/activate
-       $ pip install -r requirements/dev.txt
+       $ uv pip install -r requirements/dev.txt
 
 
-Optionally, if you would like to have complete LSP support in your IDE, you can install the type checking dependencies:
+Optionally, if you would like to have complete LSP support in your IDE, you can install
+the type checking dependencies:
 
    .. code-block:: bash
 
-       $ pip install -r requirements/type-checking.txt
+       $ uv pip install -r requirements/type-checking.txt
 
 
 4. Install and build the frontend libraries:
@@ -145,13 +147,19 @@ For a one-off build:
 
     npm run build
 
-However, while developing on frontend code, it's recommended to start a watch process
-that performs incremental builds:
+However, while developing on frontend code, it's recommended to start the development
+server:
 
 .. code-block:: bash
 
     npm start
 
+This starts the Vite dev server. After starting the frontend dev server, restart the
+backend server to activate the backend Vite dev mode, which gives you:
+
+* incremental builds
+* hot module replacement
+* auto-refresh on code changes
 
 Using the SDK in the Open Forms backend
 =======================================

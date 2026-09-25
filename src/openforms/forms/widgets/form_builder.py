@@ -1,14 +1,11 @@
-from django.forms import Script, Widget
+from django.forms import Widget
+
+from openforms.media_assets import get_custom_assets
 
 
 class FormBuilderWidget(Widget):
     template_name = "forms/widgets/form_builder.html"
 
-    class Media:
-        css = {
-            "all": (
-                "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
-                "bundles/core-css.css",
-            ),
-        }
-        js = (Script("bundles/core-js.js", type="module"),)
+    @property
+    def media(self):
+        return get_custom_assets(include_bootstrap=True)
