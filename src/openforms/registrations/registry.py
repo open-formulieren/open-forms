@@ -22,18 +22,32 @@ class Registry(BaseRegistry[BasePlugin]):
                 "Please specify 'configuration_options' attribute for plugin class."
             )
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, dict[str, str]]]:
         from openforms.forms.models import Form
 
-        qs = (
-            Form.objects.live()
-            .values(plugin=F("registration_backends__backend"))
-            .values("plugin")
-            .annotate(count=Count("*"))
-        )
-        usage_counts: dict[str, int] = {item["plugin"]: item["count"] for item in qs}
+        usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)
+
+        for form in Form.objects.live().prefetch_related("registration_backends"):
+            for backend in form.registration_backends.all():
+                plugin = self.get(backend.backend)
+                if not plugin:
+                    continue
+
+                options = getattr(backend, "configuration", getattr(backend, "options", {}))
+
+                vendor_hint = plugin.get_vendor_hint(options)
+
+                usage_counts[(plugin, vendor_hint)] += 1
+
         for plugin in self:
-            yield plugin, usage_counts.get(plugin.identifier, 0)
+            plugin_usages = {k: v for k, v in usage_counts.items() if k[0] == plugin}
+
+            if not plugin_usages:
+                yield plugin, 0, {}
+            else:
+                for (p, vendor_hint), count in plugin_usages.items():
+                    tags = {"openforms.plugin.vendor_hint": vendor_hint} if vendor_hint else {}
+                    yield p, count, tags
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

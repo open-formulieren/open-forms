@@ -127,3 +127,10 @@ class BasePlugin[OptionsT: Options](ABC, AbstractBasePlugin):
     def allows_json_schema_generation(options: OptionsT) -> bool:
         """Indicate whether the plugin allows generating a JSON schema."""
         return False
+
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        """
+        Extract the vendor hint (e.g., api root, service URL or SOAP endpoint)
+        from the plugin options.
+        """
+        return None
