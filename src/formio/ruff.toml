@@ -1,0 +1,8 @@
+extend = "../../pyproject.toml"
+
+# [lint.flake8-tidy-imports.extend-banned-api]  # needs a newer Ruff version
+[lint.flake8-tidy-imports.banned-api]
+"django".msg = "The formio tooling must be pure python."
+"logging".msg = "Use `structlog.stdlib.get_logger(__name__)` instead of the stdlib logging module."
+"typing.cast".msg = "Casting is an anti-pattern, use `assert isinstance(...)` instead, or suppress the error."
+"openforms".msg = "Open Forms uses the formio package, not the other way around."
