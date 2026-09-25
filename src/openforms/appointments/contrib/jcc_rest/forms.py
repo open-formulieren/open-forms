@@ -1,7 +1,7 @@
 from typing import Any
 
 from django import forms
-from django.forms import Widget
+from django.forms import Script, Widget
 from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.validators import validate_formio_js_schema
@@ -20,7 +20,7 @@ class FormBuilderWidget(Widget):
                 "bundles/core-css.css",
             ),
         }
-        js = ("bundles/core-js.js",)
+        js = (Script("bundles/core-js.js", type="module"),)
 
 
 class JccRestConfigForm(forms.ModelForm):
