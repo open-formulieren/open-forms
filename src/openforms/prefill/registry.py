@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 
 from openforms.forms.models import Form, FormVariable
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
 
 from .base import BasePlugin
 
@@ -24,10 +24,10 @@ class Registry(BaseRegistry[BasePlugin]):
         )
 
         for form_variable in active_form_variables:
-            plugin = self.get(form_variable.prefill_plugin)
-
-            if not plugin:
+            if form_variable.prefill_plugin not in self:
                 continue
+
+            plugin = self[form_variable.prefill_plugin]
 
             options = getattr(form_variable, "prefill_options", {})
 
@@ -42,7 +42,9 @@ class Registry(BaseRegistry[BasePlugin]):
                 yield plugin, 0, {}
             else:
                 for (p, vendor_hint), count in plugin_usages.items():
-                    tags = {"openforms.plugin.vendor_hint": vendor_hint} if vendor_hint else {}
+                    tags = (
+                        {VENDOR_HINT_METRIC_LABEL: vendor_hint} if vendor_hint else {}
+                    )
                     yield p, count, tags
 
 

@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Literal, TypedDict
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -11,12 +13,14 @@ from rest_framework import serializers
 
 from openforms.formio.typing import Component
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.submissions.models import Submission
 from openforms.typing import JSONPrimitive
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.urls import build_absolute_uri
 
 from .tokens import submission_appointment_token_generator
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):

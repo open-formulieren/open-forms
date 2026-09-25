@@ -1,19 +1,18 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
-
-from django.db.models import Count, F
 
 import structlog
 from rest_framework.request import Request
 
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
 
 if TYPE_CHECKING:
     from openforms.forms.models import Form
 
-    from .base import BasePlugin, LoginInfo  # noqa: F401
+    from .base import BasePlugin, LoginInfo
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -42,9 +41,8 @@ class Registry(BaseRegistry["BasePlugin"]):
         options: list[LoginInfo] = []
 
         # return empty list for forms without cosign
-        if is_for_cosign:
-            if not form or not form.has_cosign_enabled:
-                return []
+        if is_for_cosign and (not form or not form.has_cosign_enabled):
+            return []
 
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:
@@ -59,18 +57,38 @@ class Registry(BaseRegistry["BasePlugin"]):
             options.append(info)
         return options
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, dict[str, str]]]:
         from openforms.forms.models import Form
 
-        qs = (
-            Form.objects.live()
-            .values(plugin=F("auth_backends__backend"))
-            .values("plugin")
-            .annotate(count=Count("*"))
-        )
-        usage_counts: dict[str, int] = {item["plugin"]: item["count"] for item in qs}
+        usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)
+
+        active_forms = Form.objects.live().prefetch_related("auth_backends")
+
+        for form in active_forms:
+            for auth_backend in form.auth_backends.all():
+                if auth_backend.backend not in self:
+                    continue
+                plugin = self[auth_backend.backend]
+
+                options = getattr(
+                    auth_backend, "configuration", getattr(auth_backend, "options", {})
+                )
+
+                vendor_hint = plugin.get_vendor_hint(options)
+
+                usage_counts[(plugin, vendor_hint)] += 1
+
         for plugin in self:
-            yield plugin, usage_counts.get(plugin.identifier, 0)
+            plugin_usages = {k: v for k, v in usage_counts.items() if k[0] == plugin}
+
+            if not plugin_usages:
+                yield plugin, 0, {}
+            else:
+                for (p, vendor_hint), count in plugin_usages.items():
+                    tags = (
+                        {VENDOR_HINT_METRIC_LABEL: vendor_hint} if vendor_hint else {}
+                    )
+                    yield p, count, tags
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

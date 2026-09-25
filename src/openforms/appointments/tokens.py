@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from django.utils import timezone
 
-from openforms.submissions.models import Submission
 from openforms.tokens import BaseTokenGenerator
 
-from .models import AppointmentInfo
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 
 class SubmissionAppointmentTokenGenerator(BaseTokenGenerator):
@@ -19,6 +22,8 @@ class SubmissionAppointmentTokenGenerator(BaseTokenGenerator):
         """
         Tokens are always invalid if the appointment time is in the past.
         """
+        from .models import AppointmentInfo
+
         try:
             info = submission.appointment_info
         except AppointmentInfo.DoesNotExist:
