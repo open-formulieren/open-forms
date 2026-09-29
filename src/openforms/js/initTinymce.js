@@ -69,6 +69,15 @@ import getTinyMCEAppearance from './tinymce_appearance';
     Array.from(element.querySelectorAll('.tinymce')).forEach(area => initTinyMCE(area));
   }
 
+  function handleThemes() {
+    appearance = getTinyMCEAppearance(currentTheme.getValue());
+
+    currentTheme.subscribe(newTheme => {
+      appearance = getTinyMCEAppearance(newTheme);
+      document.querySelectorAll('.tinymce').forEach(resetEditor);
+    });
+  }
+
   ready(function () {
     // this module is loaded as part of a larger bundle, even on pages intended to not
     // load the tinymce library.
@@ -100,14 +109,5 @@ import getTinyMCEAppearance from './tinymce_appearance';
     const editor = window.tinyMCE.get(el.id);
     editor.remove();
     initTinyMCE(el);
-  };
-
-  const handleThemes = () => {
-    appearance = getTinyMCEAppearance(currentTheme.getValue());
-
-    currentTheme.subscribe(newTheme => {
-      appearance = getTinyMCEAppearance(newTheme);
-      document.querySelectorAll('.tinymce').forEach(resetEditor);
-    });
   };
 }

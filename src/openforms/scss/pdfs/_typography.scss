@@ -1,3 +1,6 @@
+// hack to prevent Vite from trying to resolve the font assets
+$font-base-path: '../fonts';
+
 .title {
   color: #000;
   font-family: 'Fira Sans', Calibri, sans-serif;
@@ -28,36 +31,36 @@
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('../fonts/fira-sans-v11-latin-regular.eot');
+  src: url('#{$font-base-path}/fira-sans-v11-latin-regular.eot');
   src:
     local(''),
-    url('../fonts/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
-    url('../fonts/fira-sans-v11-latin-regular.ttf') format('truetype'),
-    url('../fonts/fira-sans-v11-latin-regular.woff') format('woff');
+    url('#{$font-base-path}/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
+    url('#{$font-base-path}/fira-sans-v11-latin-regular.ttf') format('truetype'),
+    url('#{$font-base-path}/fira-sans-v11-latin-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('../fonts/fira-sans-v11-latin-700.eot');
+  src: url('#{$font-base-path}/fira-sans-v11-latin-700.eot');
   src:
     local(''),
-    url('../fonts/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
-    url('../fonts/fira-sans-v11-latin-700.ttf') format('truetype'),
-    url('../fonts/fira-sans-v11-latin-700.woff') format('woff');
+    url('#{$font-base-path}/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
+    url('#{$font-base-path}/fira-sans-v11-latin-700.ttf') format('truetype'),
+    url('#{$font-base-path}/fira-sans-v11-latin-700.woff') format('woff');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Fira Sans';
-  src: url('../fonts/fira-sans-v11-latin-italic.eot');
+  src: url('#{$font-base-path}/fira-sans-v11-latin-italic.eot');
   src:
     local(''),
-    url('../fonts/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
-    url('../fonts/fira-sans-v11-latin-italic.ttf') format('truetype'),
-    url('../fonts/fira-sans-v11-latin-italic.woff') format('woff');
+    url('#{$font-base-path}/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
+    url('#{$font-base-path}/fira-sans-v11-latin-italic.ttf') format('truetype'),
+    url('#{$font-base-path}/fira-sans-v11-latin-italic.woff') format('woff');
   font-weight: normal;
   font-style: italic;
 }

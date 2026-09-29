@@ -1,5 +1,6 @@
 # ruff: noqa: F405
 import os
+import socket
 import sys
 import warnings
 
@@ -22,6 +23,18 @@ os.environ.setdefault("DB_PASSWORD", "openforms")
 
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("NUM_PROXIES", "0")
+# allow Vite dev server
+os.environ.setdefault(
+    "CSP_EXTRA_DEFAULT_SRC",
+    "http://localhost:5173/,ws://localhost:5173/",
+)
+
+try:  # pragma: no cover
+    socket.create_connection(("127.0.0.1", 5173), timeout=2)
+    vite_dev_server_up = True
+except Exception:  # noqa: BLE001
+    vite_dev_server_up = False
+os.environ.setdefault("DJANGO_VITE_DEBUG_MODE", "yes" if vite_dev_server_up else "no")
 
 os.environ.setdefault("RELEASE", "dev")
 os.environ.setdefault("SDK_RELEASE", "latest")
