@@ -1,6 +1,5 @@
 from collections import Counter
 from collections.abc import Collection
-from uuid import UUID
 
 from django.db.models import Count, Prefetch, Q
 
@@ -60,8 +59,7 @@ def count_component_usage(
     used in a form. Some derived aggregations also provide insights into absolute
     usage statistics of components.
     """
-    counter = Counter[tuple[UUID, str]]()  # [form uuid, component_type] key
-    uuid_to_name_map: dict[UUID, str] = {}
+    counter = Counter[str]()  # component_type key
     forms = (
         Form.objects.live()
         .exclude(type=FormTypeChoices.appointment)
@@ -74,22 +72,19 @@ def count_component_usage(
     )
 
     for form in forms:
-        uuid_to_name_map[form.uuid] = form.name
         for step in form.formstep_set.all():
             for component in step.iter_components(recursive=True):
-                counter[(form.uuid, component["type"])] += 1
+                counter[component["type"]] += 1
 
     return [
         metrics.Observation(
             amount,
             attributes={
                 "scope": "global",
-                "openforms.form.uuid": str(form_uuid),
-                "openforms.form.name": uuid_to_name_map[form_uuid],
                 "openforms.component.type": component_type,
             },
         )
-        for (form_uuid, component_type), amount in counter.items()
+        for component_type, amount in counter.items()
     ]
 
 
