@@ -1,6 +1,6 @@
 from django.test import TestCase, tag
 
-import time_machine
+from freezegun import freeze_time
 
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
 from openforms.forms.tests.factories import FormVariableFactory
@@ -19,7 +19,7 @@ from .mixins import CustomerInteractionsMixin
 from .typing import ExpectedDigitalAddress
 
 
-@time_machine.travel("2026-08-21T12:30:12+02:00", tick=False)
+@freeze_time("2026-08-21T12:30:12+02:00")
 class UpdateCustomerInteractionDataTests(
     CustomerInteractionsMixin, OFVCRMixin, TestCase
 ):
