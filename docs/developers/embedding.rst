@@ -154,7 +154,7 @@ Minimal example
         <!-- Load an Open Forms form and render it -->
         <div
             id="openforms-root"
-            data-base-url="https://openforms.example.com/api/v1/"
+            data-base-url="https://openforms.example.com/api/v2/"
             data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
             data-base-path="/some-cms-page"
         ></div>
@@ -188,7 +188,7 @@ Advanced example
         <!-- Load an Open Forms form and render it -->
         <div
             id="openforms-root"
-            data-base-url="https://openforms.example.com/api/v1/"
+            data-base-url="https://openforms.example.com/api/v2/"
             data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
             data-base-path="/some-cms-page"
             data-csp-nonce="OSUzOHNqqL9HzWU0CVSC/w\u003D\u003D"
