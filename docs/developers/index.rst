@@ -28,7 +28,6 @@ familiarize yourself with the design principles.
    embedding
    sdk/index
    extensions
-   checklists
    i18n
    ui-components
    csp
