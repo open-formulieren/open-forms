@@ -13,7 +13,7 @@ The following events happen during that process:
 
 - The user adds a file to the component:
 
-  - A ``POST`` request is made to ``/api/v1/formio/fileupload`` with the content of the
+  - A ``POST`` request is made to ``/api/v2/formio/fileupload`` with the content of the
     file.
   - If configured, the file is scanned for viruses (more details
     :ref:`here<configuration_general_virus_scan>`). In case a virus is found, the file
@@ -21,7 +21,7 @@ The following events happen during that process:
     the file.
   - An instance of the :class:`openforms.submissions.models.TemporaryFileUpload` model
     is created. It is related to the submission currently in the session.
-  - The endpoint returns the url of the file ``/api/v1/submissions/files/<uuid>``, the
+  - The endpoint returns the url of the file ``/api/v2/submissions/files/<uuid>``, the
     file name and size. This information is added to the Formio submission step data.
   - The content of the file is saved to the disk. The file is placed in the private
     media directory (configured through the ``STORAGES`` setting), within the
