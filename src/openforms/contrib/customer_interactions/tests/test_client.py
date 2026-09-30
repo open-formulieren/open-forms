@@ -63,8 +63,14 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
                 "isStandaardAdres": False,
                 "verificatieDatum": None,
             },
+            {
+                "adres": "verified@email.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": "2025-09-09",
+            },
         ]
-        self.assertEqual(len(data), 8)
+        self.assertEqual(len(data), 9)
 
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):
