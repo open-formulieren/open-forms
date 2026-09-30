@@ -354,6 +354,21 @@
     }
 },
 {
+    "model": "klantinteracties.digitaaladres",
+    "pk": 13,
+    "fields": {
+      "uuid": "f80bbbef-4d8f-4909-9957-8174521023e6",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "email",
+      "is_standaard_adres": false,
+      "adres": "verified@email.com",
+      "omschrijving": "",
+      "referentie": "",
+      "verificatie_datum": "2025-09-09"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
