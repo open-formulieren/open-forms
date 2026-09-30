@@ -4,7 +4,7 @@ from datetime import timedelta
 from uuid import UUID, uuid4
 
 from django.db import connections
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import get_text_list
@@ -5298,6 +5298,59 @@ class FormEndpointLogicRulesTests(APITestCase):
         response = self.client.put(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @tag("gh-6723")
+    def test_clear_logic_rules(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_definition = form.formstep_set.get().form_definition
+        FormLogicFactory.create(form=form)
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "translations": {
+                "nl": {"name": "Update form"},
+                "en": {"name": "Update form"},
+            },
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition.uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "test-key",
+                                    "label": "TextField",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration",
+                                "internalName": "Form configuration",
+                            },
+                            "nl": {
+                                "name": "Form configuratie",
+                                "internalName": "Form configuratie",
+                            },
+                        },
+                    },
+                },
+            ],
+            "logic_rules": [],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertFalse(form.formlogic_set.exists())
 
 
 @override_settings(LANGUAGE_CODE="en")
