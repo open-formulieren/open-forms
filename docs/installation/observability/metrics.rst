@@ -107,14 +107,17 @@ see the :ref:`Submission <installation_observability_metrics_submissions>` metri
       forms in the trash are excluded.
 
 ``openforms.form_component_count``
-    Keeps track of how often a Formio component type is used in a form. This is only
-    reported for live, non-appointment forms. Additional attributes are:
+    Keeps track of how often a Formio component type is used. This is only reported for
+    live, non-appointment forms. Additional attributes are:
 
     - ``scope`` - fixed, set to ``global`` to enable de-duplication.
-    - ``openforms.form.uuid`` - the unique database ID of the form.
-    - ``openforms.form.name`` - the name of the form.
     - ``openforms.component.type`` - the Formio component type, e.g. ``textfield``, ``email``,
       ``selectboxes``...
+
+    .. versionchanged:: 4.1.0
+
+        The form name and form UUID attributes are no longer emitted as they resulted in
+        excessive metric cardinality.
 
 .. _installation_observability_metrics_submissions:
 

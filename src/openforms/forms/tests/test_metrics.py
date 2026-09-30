@@ -115,15 +115,6 @@ class FormComponentCountMetricTests(MetricsAssertMixin, TestCase):
 
         self.assertMarkedGlobal(result)
 
-        with self.subTest("counts by form"):
-            counts_by_form = self._group_observations_by(result, "openforms.form.name")
-
-            expected = {
-                form_1.name: 4 + 1,  # components of fd1 and fd2
-                form_2.name: 1,  # only the component of fd2
-            }
-            self.assertEqual(counts_by_form, expected)
-
         with self.subTest("counts by type"):
             counts_by_type = self._group_observations_by(
                 result, "openforms.component.type"
