@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
+from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.authentication.constants import AuthAttribute
@@ -104,6 +105,89 @@ class FormAdminImportExportTests(WebTest):
 
         form_steps = json.loads(zf.read("formSteps.json"))
         self.assertEqual(len(form_steps), 0)
+
+    def test_form_admin_export_without_unknown_export_options(self):
+        self.client.force_login(self.user)
+
+        product = ProductFactory.create()
+        form = FormFactory.create(
+            internal_remarks="Some internal remark that should be removed",
+            product=product,
+            registration_backend="demo",
+        )
+        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
+
+        response = self.client.post(
+            admin_url,
+            data={
+                "_export": "Export",
+                "export_options": json.dumps(
+                    {
+                        "unknown-option": True,
+                        "another-unknown-option": "some-value",
+                    }
+                ),
+            },
+        )
+
+        # When passing unknown export options, the export should still work
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["content-type"], "application/zip")
+
+        zf = ZipFile(BytesIO(response.content))
+        self.assertEqual(
+            zf.namelist(),
+            [
+                "forms.json",
+                "formSteps.json",
+                "formDefinitions.json",
+                "formLogic.json",
+                "formVariables.json",
+                f"{EXPORT_META_KEY}.json",
+            ],
+        )
+
+        forms = json.loads(zf.read("forms.json"))
+
+        self.assertEqual(len(forms), 1)
+
+        # We fall back to the default export options, so sensitive data should be removed
+        self.assertNotIn("internal_remarks", forms[0])
+
+        # The regular form configuration should be kept
+        self.assertEqual(len(forms[0]["registration_backends"]), 1)
+        self.assertEqual(forms[0]["registration_backends"][0]["backend"], "demo")
+
+        # Additional form configuration should be removed
+        self.assertEqual(forms[0]["product"], None)
+
+    def test_form_admin_export_with_broken_export_options(self):
+        self.client.force_login(self.user)
+
+        product = ProductFactory.create()
+        form = FormFactory.create(
+            internal_remarks="Some internal remark that should be removed",
+            product=product,
+            registration_backend="demo",
+        )
+        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
+
+        with self.assertRaises(ValidationError) as exc:
+            self.client.post(
+                admin_url,
+                data={
+                    "_export": "Export",
+                    "export_options": json.dumps(
+                        {
+                            # The value of the "remove_sensitive_content" option should be a boolean
+                            "remove_sensitive_content": "some unexpected value",
+                        }
+                    ),
+                },
+            )
+
+        error_detail = exc.exception.detail["remove_sensitive_content"][0]
+        self.assertEqual(error_detail.code, "invalid")
 
     def test_form_admin_export_remove_all_sensitive_data(self):
         self.client.force_login(self.user)

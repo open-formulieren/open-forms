@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _, ngettext
 
 from modeltranslation.manager import get_translatable_fields_for_model
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+from rest_framework import serializers
 
 from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
@@ -18,6 +19,7 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
 
+from ..api.serializers.form import FormAPIExportRequestSerializer
 from ..import_export.export_form import export_form
 from ..models import Category, Form, FormDefinition, FormStep
 from ..models.form import FormsExport
@@ -302,6 +304,13 @@ class FormAdmin(
             )
         if "_export" in request.POST:
             export_options = json.loads(request.POST.get("export_options", "{}"))
+            serializer = FormAPIExportRequestSerializer(data=export_options)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except serializers.ValidationError as e:
+                # Add a message to the user about the error and re-raise the exception
+                self.message_user(request, e.detail, level=messages.ERROR)
+                raise e
 
             # Clear messages
             storage = messages.get_messages(request)
@@ -313,17 +322,7 @@ class FormAdmin(
             export_form(
                 obj.pk,
                 response=response,
-                export_options=FormExportOptions(
-                    **{
-                        field_name: export_options[field_name]
-                        for field_name in (
-                            "remove_sensitive_content",
-                            "form_configuration",
-                            "additional_form_configuration",
-                        )
-                        if field_name in export_options
-                    },
-                ),
+                export_options=serializer.as_export_options(),
             )
 
             response["Content-Length"] = len(response.content)
