@@ -555,15 +555,16 @@ class FormSerializer(serializers.ModelSerializer):
         FormVariable.objects.bulk_create(form_variables)
 
         # 6. logic rules
-        logic_rules_raw = validated_data.get("formlogic_set", [])
-        # We have to do these steps in the create method instead of the ideal/proper
-        # choice to do that inside the validate method. The form instance is important
-        # to have been created at the time that we do these validations, as the related
-        # nested fields are needed (have to be saved and available to access). Adding
-        # that to the validate method would require a huge refactor as a lot of our
-        # current implementation depends on the (saved) form instance.
-        self._validate_actions(instance, logic_rules_raw)
-        self._validate_and_process_logic_rules(instance, logic_rules_raw)
+        if instance.type != FormTypeChoices.appointment:
+            logic_rules_raw = validated_data.get("formlogic_set", [])
+            # We have to do these steps in the create method instead of the ideal/proper
+            # choice to do that inside the validate method. The form instance is important
+            # to have been created at the time that we do these validations, as the related
+            # nested fields are needed (have to be saved and available to access). Adding
+            # that to the validate method would require a huge refactor as a lot of our
+            # current implementation depends on the (saved) form instance.
+            self._validate_actions(instance, logic_rules_raw)
+            self._validate_and_process_logic_rules(instance, logic_rules_raw)
 
         # 7. Advanced configuration
         if (

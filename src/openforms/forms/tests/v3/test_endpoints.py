@@ -5352,6 +5352,33 @@ class FormEndpointLogicRulesTests(APITestCase):
         form.refresh_from_db()
         self.assertFalse(form.formlogic_set.exists())
 
+    def test_update_appointment_form(self):
+        # regression test for the gh-6723 fix
+        config = AppointmentsConfig.get_solo()
+        config.plugin = "demo"
+        config.save()
+        self.addCleanup(AppointmentsConfig.clear_cache)
+        form = FormFactory.create(is_appointment_form=True)
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+
+        data = {
+            "translations": {
+                "nl": {"name": "Appiontment form"},
+                "en": {"name": "Appiontment form"},
+            },
+            "slug": "appointment-form",
+            "type": FormTypeChoices.appointment,
+            "steps": [],
+            "logic_rules": [],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 @override_settings(LANGUAGE_CODE="en")
 class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
