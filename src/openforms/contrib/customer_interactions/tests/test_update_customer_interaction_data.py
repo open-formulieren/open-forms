@@ -1,19 +1,25 @@
 from django.test import TestCase, tag
 
+import time_machine
+
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.prefill.contrib.customer_interactions.plugin import PLUGIN_IDENTIFIER
 from openforms.prefill.service import prefill_variables
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    EmailVerificationFactory,
+    SubmissionFactory,
+)
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..client import get_customer_interactions_client
-from ..update import update_customer_interaction_data
+from ..update import EmailNotVerifiedException, update_customer_interaction_data
 from .mixins import CustomerInteractionsMixin
 from .typing import ExpectedDigitalAddress
 
 
+@time_machine.travel("2026-08-21T12:30:12+02:00", tick=False)
 class UpdateCustomerInteractionDataTests(
     CustomerInteractionsMixin, OFVCRMixin, TestCase
 ):
@@ -49,6 +55,15 @@ class UpdateCustomerInteractionDataTests(
                 "customer_interactions_api_group": self.config.identifier,
                 "profile_form_variable": "profile",
             },
+        )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated. Anonymous users should always verify the email address.
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
         )
 
         result = update_customer_interaction_data(submission, "profile")
@@ -87,6 +102,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0612345678",
@@ -97,6 +113,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": None,
             },
         ]
 
@@ -107,6 +124,43 @@ class UpdateCustomerInteractionDataTests(
                 )
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_non_auth_user_with_unverified_email_address(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {"address": "unverified@email.com", "type": "email"},
+            {"address": "0612345678", "type": "phoneNumber"},
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12345",
+            form__name="With profile",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        with self.assertRaises(EmailNotVerifiedException):
+            update_customer_interaction_data(submission, "profile")
 
     def test_auth_with_bsn_user_not_known_in_openklant(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -149,6 +203,15 @@ class UpdateCustomerInteractionDataTests(
                 "customer_interactions_api_group": self.config.identifier,
                 "profile_form_variable": "profile",
             },
+        )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
         )
 
         result = update_customer_interaction_data(submission, "profile")
@@ -194,6 +257,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0612345678",
@@ -204,6 +268,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": {"url": party["url"], "uuid": partij_uuid},
+                "verificatieDatum": None,
             },
         ]
         for expected_address in expected_addresses:
@@ -213,6 +278,52 @@ class UpdateCustomerInteractionDataTests(
                 )
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_authenticated_user_with_unverified_email_address(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "unverified@email.com",
+                "type": "email",
+                "preferenceUpdate": "useOnlyOnce",
+            },
+            {
+                "address": "0612345678",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="108915864",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        with self.assertRaises(EmailNotVerifiedException):
+            update_customer_interaction_data(submission, "profile")
 
     def test_auth_with_bsn_user_known_in_openklant_new_address(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -256,6 +367,16 @@ class UpdateCustomerInteractionDataTests(
                 "profile_form_variable": "profile",
             },
         )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
+        )
+
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
@@ -302,6 +423,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0611111111",
@@ -315,6 +437,7 @@ class UpdateCustomerInteractionDataTests(
                     "url": party["url"],
                     "uuid": partij_uuid,
                 },
+                "verificatieDatum": None,
             },
         ]
         for expected_address in expected_addresses:
@@ -334,7 +457,7 @@ class UpdateCustomerInteractionDataTests(
                 "type": "email",
             },
             {
-                "address": "0612345678",  # default
+                "address": "0612345678",  # not default
                 "type": "phoneNumber",
             },
         ]
@@ -366,6 +489,16 @@ class UpdateCustomerInteractionDataTests(
                 "profile_form_variable": "profile",
             },
         )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="someemail@example.org",
+            verified=True,
+        )
+
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
@@ -401,27 +534,29 @@ class UpdateCustomerInteractionDataTests(
             {"url": party["url"], "uuid": partij_uuid},
         )
 
-        # not default address is created for betrokkene
-        self.assertEqual(len(digital_addresses["created"]), 1)
-        expected_address: ExpectedDigitalAddress = {
+        self.assertEqual(len(digital_addresses["created"]), 0)
+        self.assertEqual(len(digital_addresses["updated"]), 1)
+
+        expected_updated_address: ExpectedDigitalAddress = {
             "adres": "someemail@example.org",
             "soortDigitaalAdres": "email",
             "isStandaardAdres": False,
-            "verstrektDoorPartij": None,
-            "verstrektDoorBetrokkene": {
-                "url": betrokkene["url"],
-                "uuid": betrokkene["uuid"],
+            "verstrektDoorBetrokkene": None,
+            "verstrektDoorPartij": {
+                "url": party["url"],
+                "uuid": partij_uuid,
             },
+            "verificatieDatum": "2026-08-21",
         }
-        self.assertAddressPresent(digital_addresses["created"], expected_address)
-        self.assertEqual(digital_addresses["updated"], [])
+
+        # email address is updated because of the verification date
+        self.assertAddressPresent(
+            digital_addresses["updated"], expected_updated_address
+        )
 
     def test_auth_with_bsn_user_known_in_openklant_known_addresses_with_different_preference(
         self,
     ):
-        """
-        even if we change the preference for the known address - we don't update it
-        """
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         # both addresses are known in the Open Klant and both are not preferred
         profile_data: list[DigitalAddress] = [
@@ -464,6 +599,16 @@ class UpdateCustomerInteractionDataTests(
                 "profile_form_variable": "profile",
             },
         )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="devilkiller@example.org",
+            verified=True,
+        )
+
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
@@ -512,6 +657,7 @@ class UpdateCustomerInteractionDataTests(
                     "url": party["url"],
                     "uuid": partij_uuid,
                 },
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0687654321",
@@ -521,6 +667,7 @@ class UpdateCustomerInteractionDataTests(
                     "url": party["url"],
                     "uuid": partij_uuid,
                 },
+                "verificatieDatum": None,
             },
         ]
         for expected_address in expected_addresses:
@@ -572,6 +719,15 @@ class UpdateCustomerInteractionDataTests(
             },
         )
 
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
+        )
+
         result = update_customer_interaction_data(submission, "profile")
         assert result is not None
 
@@ -615,6 +771,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0612345678",
@@ -625,6 +782,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": {"url": party["url"], "uuid": partij_uuid},
+                "verificatieDatum": None,
             },
         ]
         for expected_address in expected_addresses:
@@ -677,6 +835,16 @@ class UpdateCustomerInteractionDataTests(
                 "profile_form_variable": "profile",
             },
         )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
+        )
+
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
@@ -723,6 +891,7 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": None,
+                "verificatieDatum": "2026-08-21",
             },
             {
                 "adres": "0611111111",
@@ -736,6 +905,7 @@ class UpdateCustomerInteractionDataTests(
                     "url": party["url"],
                     "uuid": partij_uuid,
                 },
+                "verificatieDatum": None,
             },
         ]
         for expected_address in expected_addresses:
@@ -808,6 +978,15 @@ class UpdateCustomerInteractionDataTests(
             },
         )
 
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="some@email.com",
+            verified=True,
+        )
+
         result = update_customer_interaction_data(submission, "profile")
         assert result is not None
 
@@ -843,8 +1022,110 @@ class UpdateCustomerInteractionDataTests(
                 "uuid": betrokkene["uuid"],
             },
             "verstrektDoorPartij": None,
+            "verificatieDatum": "2026-08-21",
         }
 
         self.assertAddressPresent(digital_addresses["created"], expected_address)
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_email_verification_in_openforms_does_not_overwrite_openklant(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        # the email address is already verified in Open Klant
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "verified@email.com",
+                "type": "email",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="123456782",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        # this is only added for testing purposes, the regular verification flow will
+        # not trigger email verification in Open Forms (already verified in Open Klant)
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="verified@email.com",
+            verified=True,
+        )
+
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        klantcontact = result["klantcontact"]
+        betrokkene = result["betrokkene"]
+        onderwerpobject = result["onderwerpobject"]
+        digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
+
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("123456782")
+
+        assert party is not None
+        self.assertEqual(party["uuid"], partij_uuid)
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12346",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
+
+        self.assertEqual(
+            betrokkene["wasPartij"],
+            {"url": party["url"], "uuid": partij_uuid},
+        )
+
+        # new address is added
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        # no address is updated
+        self.assertEqual(len(digital_addresses["updated"]), 0)
+
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "verified@email.com",
+            "soortDigitaalAdres": "email",
+            "isStandaardAdres": False,
+            "verificatieDatum": None,
+            "verstrektDoorPartij": None,
+            "verstrektDoorBetrokkene": {
+                "url": betrokkene["url"],
+                "uuid": betrokkene["uuid"],
+            },
+        }
+
+        self.assertAddressPresent(digital_addresses["created"], expected_address)
