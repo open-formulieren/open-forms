@@ -17,13 +17,17 @@ from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
 )
 from openforms.prefill.registry import register as prefill_registry
-from openforms.submissions.models import Submission
+from openforms.submissions.models import EmailVerification, Submission
 
 from .client import get_customer_interactions_client
 from .constants import ADDRESS_TYPES_TO_CHANNELS
 from .typing import CommunicationChannel
 
 logger = structlog.stdlib.get_logger(__name__)
+
+
+class EmailNotVerifiedException(Exception):
+    pass
 
 
 class DigitalAddressResults(TypedDict):
@@ -78,7 +82,8 @@ def update_customer_interaction_data(
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the found ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
-        If the address is submitted as ``isNewPreferred``, then it's also linked to the ``partij``
+        If the address is submitted as ``isNewPreferred`` or is verified via Open Forms email
+        verification flow, then it's also linked to the ``partij``
 
     5. User is authenticated, known in the API and submits existing addresses with the changed preference:
 
@@ -168,15 +173,63 @@ def update_customer_interaction_data(
             )
             is_preferred_address: bool = bool(address_value == prefill_preferred)
 
-            # if address is already a default - we don't create/update digital addresses
-            if is_preferred_address:
+            # address verification is only supported for email addresses. Check if the email
+            # address is already verified in Open Klant (we already have the prefill data),
+            # otherwise grab the verification date from our db (the verification has been
+            # done by Open Forms).
+            is_already_verified = False
+            verification_date = None
+
+            if address_channel == "email":
+                if prefill_value and prefill_communication_channel:
+                    is_already_verified = any(
+                        option["address"] == address_value
+                        and option["verification_date"]
+                        for option in prefill_communication_channel["options"]
+                    )
+
+                if not is_already_verified:
+                    verification = (
+                        EmailVerification.objects.filter(
+                            submission=submission,
+                            component_key=profile_key,
+                            email=address_value,
+                            verified_on__isnull=False,
+                        )
+                        .order_by("-verified_on")
+                        .first()
+                    )
+
+                    if not verification:
+                        logger.warning(
+                            "email_unverified",
+                            component=profile_key,
+                            submission_uuid=str(submission.uuid),
+                        )
+                        raise EmailNotVerifiedException()
+
+                    verification_date = verification.verified_on.date().isoformat()
+
+            # if address is already a default for phone numbers or already the default
+            # and verified in Open Klant - we don't create/update digital addresses
+            if (is_preferred_address and address_channel == "phoneNumber") or (
+                is_preferred_address
+                and address_channel == "email"
+                and is_already_verified
+            ):
                 continue
 
             if address_value in prefill_channel_options:
-                # flow 5. we update it only if it's marked as "isNewPreferred"
-                if is_address_new_preferred:
+                # flow 5. we update it only if it's marked as "isNewPreferred" or it's now
+                # verified via Open Forms
+                if verification_date or is_address_new_preferred:
                     updated_address = client.update_digital_address_for_party(
-                        address=address_value, party_uuid=party_uuid, is_preferred=True
+                        address=address_value,
+                        party_uuid=party_uuid,
+                        is_preferred=is_address_new_preferred,
+                        verification_date=verification_date
+                        if not is_already_verified
+                        else None,
                     )
                     updated_addresses.append(updated_address)
 
@@ -187,9 +240,11 @@ def update_customer_interaction_data(
                         address_type=channels_to_address_types[address_channel],
                         betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                         is_preferred=False,
+                        verification_date=verification_date
+                        if not is_already_verified
+                        else None,
                     )
                     created_addresses.append(created_address)
-
             else:
                 # flows 1,2 4: we create a new address and link it to betrokkene
                 # flows 2,4: we link a new address to partij if it's marked as "isNewPreferred"
@@ -199,6 +254,9 @@ def update_customer_interaction_data(
                     betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                     party_uuid=party_uuid if is_address_new_preferred else "",
                     is_preferred=is_address_new_preferred,
+                    verification_date=verification_date
+                    if not is_already_verified
+                    else None,
                 )
                 created_addresses.append(created_address)
 
