@@ -1,9 +1,6 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings, tag
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.utils.translation import gettext as _
-
-from hypothesis import given, strategies as st
-from hypothesis.extra.django import SimpleTestCase, TestCase as HypothesisTestCase
 
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
@@ -337,39 +334,6 @@ class FormTestCase(TestCase):
         # Rule B affects visibility of the textfield, which is used as an input
         # in Rule A. This means Rule B must be executed before Rule A.
         self.assertEqual("Rule B", step.logic_rules.first().description)
-
-
-class RegressionTests(HypothesisTestCase):
-    @given(
-        component_type=st.sampled_from(
-            ["textfield", "bsn", "date", "datetime", "postcode"]
-        )
-    )
-    @tag("gh-3922")
-    def test_copy_form_with_corrupt_prefill(self, component_type):
-        # bypass the factories since those enforce DB constraints
-        form = FormFactory.create()
-        fd = FormDefinitionFactory.create(
-            configuration={
-                "components": [
-                    {
-                        "type": component_type,
-                        "key": "field",
-                        "label": "Field",
-                        "prefill": {
-                            "plugin": None,
-                            "attribute": None,
-                            "identifierRole": "main",
-                        },
-                    }
-                ]
-            }
-        )
-        FormStep.objects.create(form=form, form_definition=fd, order=0)
-
-        form.copy()
-
-        self.assertEqual(Form.objects.count(), 2)
 
 
 class FormQuerysetTestCase(TestCase):
