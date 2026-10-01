@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src/openforms/js",
+    "module": "esnext",
+    "target": "ES2021",
+    "jsx": "react-jsx",
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "noErrorTruncation": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@/sb-decorators": ["./components/admin/form_design/story-decorators.js"]
+    },
+    "types": ["vite/client"],
+  },
+  "include": [
+    "src/openforms/js/**/*",
+    ".storybook/**/*",
+    "vitest-*.setup.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
