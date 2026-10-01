@@ -1,9 +1,12 @@
 from ...api.serializers import FormLogicSerializer
 from ...models import FormLogic
+from ..typing import FormLogicExportRepresentation
 from .base import BaseExportSerializer
 
 
-class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer[FormLogic]):
+class FormLogicExportSerializer(
+    FormLogicSerializer, BaseExportSerializer[FormLogic, FormLogicExportRepresentation]
+):
     safe_export_fields = (
         "uuid",
         "url",
@@ -16,7 +19,9 @@ class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer[FormLo
         "form_steps",
     )
 
-    def remove_sensitive_content(self, instance, representation):
+    def remove_sensitive_content(
+        self, instance: FormLogic, representation: FormLogicExportRepresentation
+    ) -> FormLogicExportRepresentation:
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form
 

@@ -1,9 +1,12 @@
 from ...api.serializers import FormStepSerializer
 from ...models import FormStep
+from ..typing import FormStepExportRepresentation
 from .base import BaseExportSerializer
 
 
-class FormStepExportSerializer(FormStepSerializer, BaseExportSerializer[FormStep]):
+class FormStepExportSerializer(
+    FormStepSerializer, BaseExportSerializer[FormStep, FormStepExportRepresentation]
+):
     safe_export_fields = (
         "uuid",
         "index",

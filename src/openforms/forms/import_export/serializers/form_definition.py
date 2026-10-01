@@ -1,6 +1,5 @@
 from openforms.formio.typing import MapComponent
 from openforms.formio.utils import iter_components
-from openforms.typing import JSONObject
 
 from ...api.serializers import FormDefinitionSerializer
 from ...models import FormDefinition
@@ -9,11 +8,12 @@ from ..typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
+    FormDefinitionExportRepresentation,
 )
 from .base import BaseExportSerializer
 
 
-def clear_wms_tile_layers(representation: JSONObject):
+def clear_wms_tile_layers(representation: FormDefinitionExportRepresentation):
     from typing import cast  # noqa: TID251
 
     for component in iter_components(representation.get("configuration", {})):
@@ -27,7 +27,7 @@ def clear_wms_tile_layers(representation: JSONObject):
             overlay["layers"] = []
 
 
-def clear_wmts_tile_layers(representation: JSONObject):
+def clear_wmts_tile_layers(representation: FormDefinitionExportRepresentation):
     from typing import cast  # noqa: TID251
 
     for component in iter_components(representation.get("configuration", {})):
@@ -39,7 +39,9 @@ def clear_wmts_tile_layers(representation: JSONObject):
         component["tileLayerIdentifier"] = ""
 
 
-def remove_prefill_from_component_configuration(representation: JSONObject):
+def remove_prefill_from_component_configuration(
+    representation: FormDefinitionExportRepresentation,
+):
     for component in iter_components(representation.get("configuration", {})):
         if "prefill" not in component:
             return
@@ -48,20 +50,21 @@ def remove_prefill_from_component_configuration(representation: JSONObject):
 
 
 class FormDefinitionExportSerializer(
-    FormDefinitionSerializer, BaseExportSerializer[FormDefinition]
+    FormDefinitionSerializer,
+    BaseExportSerializer[FormDefinition, FormDefinitionExportRepresentation],
 ):
     excluded_additional_form_configuration_cleanup = (
-        AdditionalFormConfigurationCleanup(
+        AdditionalFormConfigurationCleanup[FormDefinitionExportRepresentation](
             option=AdditionalFormConfigurationOptions.wms_tile_layers,
             cleanup=clear_wms_tile_layers,
         ),
-        AdditionalFormConfigurationCleanup(
+        AdditionalFormConfigurationCleanup[FormDefinitionExportRepresentation](
             option=AdditionalFormConfigurationOptions.wmts_tile_layers,
             cleanup=clear_wmts_tile_layers,
         ),
     )
     excluded_form_configuration_cleanup = (
-        FormConfigurationCleanup(
+        FormConfigurationCleanup[FormDefinitionExportRepresentation](
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_component_configuration,
         ),
@@ -78,7 +81,11 @@ class FormDefinitionExportSerializer(
         "translations",
     )
 
-    def remove_sensitive_content(self, instance, representation):
+    def remove_sensitive_content(
+        self,
+        instance: FormDefinition,
+        representation: FormDefinitionExportRepresentation,
+    ) -> FormDefinitionExportRepresentation:
         representation = super().remove_sensitive_content(instance, representation)
 
         if (form := self.context.get("form", None)) is None:

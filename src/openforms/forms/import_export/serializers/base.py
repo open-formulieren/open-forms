@@ -1,11 +1,9 @@
 from collections.abc import Sequence
-from typing import ClassVar
+from typing import ClassVar, TypedDict
 
 from django.db.models import Model
 
 from rest_framework import serializers
-
-from openforms.typing import JSONObject
 
 from ..typing import (
     AdditionalFormConfigurationCleanup,
@@ -14,9 +12,9 @@ from ..typing import (
 )
 
 
-class BaseExportSerializer[MT: Model](serializers.Serializer):
+class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serializer):
     excluded_form_configuration_cleanup: ClassVar[
-        Sequence[FormConfigurationCleanup]
+        Sequence[FormConfigurationCleanup[object]]
     ] = ()
     """
     Clean-up functions for form configuration.
@@ -26,7 +24,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
     the form data.
     """
     excluded_additional_form_configuration_cleanup: ClassVar[
-        Sequence[AdditionalFormConfigurationCleanup]
+        Sequence[AdditionalFormConfigurationCleanup[object]]
     ] = ()
     """
     Clean-up functions for additional form configuration.
@@ -56,9 +54,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
 
         return representation
 
-    def remove_sensitive_content(
-        self, instance: MT, representation: JSONObject
-    ) -> JSONObject:
+    def remove_sensitive_content(self, instance: MT, representation: RT) -> RT:
         """
         Remove all fields that are not in the safe_export_fields list.
         """
@@ -68,9 +64,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
             if key in self.safe_export_fields
         }
 
-    def remove_excluded_form_configuration(
-        self, representation: JSONObject
-    ) -> JSONObject:
+    def remove_excluded_form_configuration(self, representation: RT) -> RT:
         options_to_keep = set(self.get_export_options.form_configuration)
 
         for config in self.excluded_form_configuration_cleanup:
@@ -79,9 +73,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
 
         return representation
 
-    def remove_excluded_additional_form_configuration(
-        self, representation: JSONObject
-    ) -> JSONObject:
+    def remove_excluded_additional_form_configuration(self, representation: RT) -> RT:
         options_to_keep = set(self.get_export_options.additional_form_configuration)
 
         for config in self.excluded_additional_form_configuration_cleanup:
