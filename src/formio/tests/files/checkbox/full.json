@@ -1,0 +1,57 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "defaultValue": false,
+  "description": "",
+  "errors": {
+    "required": "Geef checkbox."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someCheckbox",
+  "label": "Some checkbox",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Geef checkbox."
+    }
+  },
+  "type": "checkbox",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
