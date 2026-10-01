@@ -146,7 +146,7 @@ coverage==7.13.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==50.0.0
+cryptography==50.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -713,7 +713,7 @@ o365==2.1.9
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-o365mail
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -955,7 +955,7 @@ pygments==2.20.0
     #   rich
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.13.0
+pyjwt==2.15.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1039,7 +1039,7 @@ referencing==0.37.0
     #   -r requirements/ci.txt
     #   jsonschema
     #   jsonschema-specifications
-requests==2.33.0
+requests==2.34.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1269,7 +1269,7 @@ tinyhtml5==2.0.0
     #   weasyprint
 tomlkit==0.14.0
     # via bump-my-version
-tornado==6.5.8
+tornado==6.5.10
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1338,7 +1338,7 @@ uritemplate==4.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

@@ -121,7 +121,7 @@ click-repl==0.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-cryptography==50.0.0
+cryptography==50.0.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -614,7 +614,7 @@ o365==2.1.9
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-o365mail
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -842,7 +842,7 @@ pygments==2.20.0
     #   -r requirements/base.txt
     #   django-log-outgoing-requests
     #   rich
-pyjwt==2.13.0
+pyjwt==2.15.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -918,7 +918,7 @@ referencing==0.37.0
     #   -r requirements/base.txt
     #   jsonschema
     #   jsonschema-specifications
-requests==2.33.0
+requests==2.34.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1045,7 +1045,7 @@ tinyhtml5==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-tornado==6.5.8
+tornado==6.5.10
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1103,7 +1103,7 @@ uritemplate==4.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

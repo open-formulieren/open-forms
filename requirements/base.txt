@@ -71,7 +71,7 @@ click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
-cryptography==50.0.0
+cryptography==50.0.2
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -380,7 +380,7 @@ o365==2.1.9
     # via
     #   -r requirements/base.in
     #   django-o365mail
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via requests-oauthlib
 onlinepayments-sdk-python3==7.1.0
     # via -r requirements/base.in
@@ -512,7 +512,7 @@ pygments==2.20.0
     # via
     #   django-log-outgoing-requests
     #   rich
-pyjwt==2.13.0
+pyjwt==2.15.1
     # via
     #   msal
     #   zgw-consumers
@@ -562,7 +562,7 @@ referencing==0.37.0
     #   -r requirements/base.in
     #   jsonschema
     #   jsonschema-specifications
-requests==2.33.0
+requests==2.34.2
     # via
     #   ape-pie
     #   django-camunda
@@ -640,7 +640,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.5.8
+tornado==6.5.10
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
@@ -681,7 +681,7 @@ tzlocal==5.3.1
     #   o365
 uritemplate==4.2.0
     # via drf-spectacular
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   requests
     #   sentry-sdk
