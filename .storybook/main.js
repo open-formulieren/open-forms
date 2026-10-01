@@ -12,9 +12,7 @@ const config = {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
   },
-
   stories: ['../src/openforms/js/**/*.mdx', '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)'],
-
   staticDirs: [
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
@@ -26,78 +24,16 @@ const config = {
     {from: '../static/img', to: 'img'},
     {from: '../public', to: ''},
   ],
-
-  addons: [
-    '@storybook/addon-links',
-    'storybook-react-intl',
-    '@storybook/addon-webpack5-compiler-babel',
-    '@storybook/addon-docs',
-  ],
-
-  features: {
-    interactionsDebugger: true,
-    buildStoriesJson: true,
-  },
-
+  addons: ['@storybook/addon-links', 'storybook-react-intl', '@storybook/addon-docs'],
   framework: {
-    name: '@storybook/react-webpack5',
+    name: '@storybook/react-vite',
     options: {},
   },
-
   env: config => ({
     ...config,
     API_BASE_URL: process.env.API_BASE_URL || '',
   }),
-
-  webpackFinal: async (config, {configType}) => {
-    const isEnvProduction = configType === 'PRODUCTION';
-
-    config.resolve.modules = [
-      ...(config.resolve.modules || []),
-      'node_modules',
-      path.resolve(__dirname, '../src/openforms/js'),
-    ];
-
-    config.plugins.push(new webpack.DefinePlugin({STATIC_URL: JSON.stringify('./static/')}));
-
-    if (isEnvProduction) {
-      config.plugins.push(new MiniCssExtractPlugin({filename: 'static/bundles/[name].css'}));
-    }
-
-    config.module.rules.push(
-      // .scss
-      {
-        test: /\.scss$/,
-        use: [
-          !isEnvProduction && {loader: 'style-loader'},
-          // Writes css files.
-          isEnvProduction && MiniCssExtractPlugin.loader,
-          // Loads CSS files.
-          {
-            loader: 'css-loader',
-            options: {
-              url: false,
-            },
-          },
-          // Compiles .scss to .css.
-          {
-            loader: 'sass-loader',
-            options: {
-              sassOptions: {
-                comments: false,
-                style: 'compressed',
-              },
-              // sourceMap: argv.sourcemap,
-            },
-          },
-        ].filter(Boolean),
-      }
-    );
-    return config;
-  },
-
   docs: {},
-
   typescript: {
     reactDocgen: 'react-docgen-typescript',
   },
