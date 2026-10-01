@@ -10,6 +10,7 @@
     "test": "jest",
     "test:storybook": "test-storybook",
     "build": "vite build",
+    "build:typecheck": "tsc --noEmit",
     "start": "vite dev",
     "makemessages": "formatjs extract",
     "compilemessages": "formatjs compile",
