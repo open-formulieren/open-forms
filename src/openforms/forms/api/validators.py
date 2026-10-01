@@ -9,14 +9,11 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.utils import get_plugin
 from openforms.formio.typing import FormioConfiguration
-from openforms.formio.utils import iter_components
 from openforms.formio.variables import get_configuration_template_syntax_errors
-from openforms.typing import JSONObject
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.service import get_static_variables
 
 from ..constants import FormTypeChoices
-from ..validation.registry import register as formio_validators_registry
 
 
 class JsonLogicTriggerValidator(JsonLogicValidator):
@@ -151,27 +148,6 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                         ),
                     }
                 )
-
-
-class FormIOComponentsValidator:
-    """
-    Run validation on all components in a FormIO JSON schema.
-
-    This invokes a registry of lower-level validators and lets the errors bubble
-    up for a pluggable interface.
-    """
-
-    def __call__(self, configuration: JSONObject) -> None:
-        for component in iter_components(configuration=configuration, recursive=True):
-            if not (component_type := component.get("type")):
-                continue
-
-            if component_type not in formio_validators_registry:
-                continue
-
-            validator = formio_validators_registry[component_type]
-            # may raise a :class:`django.core.exceptions.ValidationError`
-            validator(component)
 
 
 class FormStepIsApplicableIfFirstValidator:

@@ -14,7 +14,7 @@ from ...validators import (
     validate_form_definition_is_reusable,
     validate_no_duplicate_keys,
 )
-from ..validators import FormIOComponentsValidator, validate_template_expressions
+from ..validators import validate_template_expressions
 
 
 class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
@@ -69,7 +69,6 @@ class FormDefinitionSerializer(
         label=_("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
         validators=[
-            FormIOComponentsValidator(),
             validate_template_expressions,
             validate_no_duplicate_keys,
         ],

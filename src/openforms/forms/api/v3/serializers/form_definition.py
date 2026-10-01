@@ -11,7 +11,6 @@ from ....validators import (
     validate_form_definition_is_reusable,
     validate_template_expressions,
 )
-from ...validators import FormIOComponentsValidator
 from ..typing import FormDefinitionData
 
 
@@ -28,10 +27,7 @@ class FormDefinitionSerializer(serializers.ModelSerializer[FormDefinition]):
     configuration = FormDefinitionConfigurationSerializer(
         label=_("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
-        validators=[
-            FormIOComponentsValidator(),
-            validate_template_expressions,
-        ],
+        validators=[validate_template_expressions],
     )
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
