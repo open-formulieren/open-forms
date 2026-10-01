@@ -26,6 +26,7 @@ from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.api.fields import FormioDataField
+from openforms.formio.components.constants import EMAIL_VERIFICATION_COMPONENT_TYPES
 from openforms.formio.service import (
     FormioData,
     build_serializer,
@@ -830,15 +831,25 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         return fields
 
     def validate(self, attrs: EmailVerificationData) -> EmailVerificationData:
-        # validate that the component key is present in the submissoin form *and* points
+        # validate that the component key is present in the submission form *and* points
         # to an email component
-        config_wrapper = attrs["submission"].total_configuration_wrapper
+        submission = attrs["submission"]
+        component_variables = submission.variables_state.component_variables
         key = attrs["component_key"]
+
         try:
-            component = config_wrapper.component_map[key]
-            key_valid = component["type"] == "email"
+            form_variable = component_variables[key].form_variable
+            component = (
+                submission.total_configuration_wrapper.component_map[form_variable.key]
+                if form_variable
+                else None
+            )
+            key_valid = (
+                component and component["type"] in EMAIL_VERIFICATION_COMPONENT_TYPES
+            )
         except KeyError:
             key_valid = False
+
         if not key_valid:
             raise serializers.ValidationError(
                 {
