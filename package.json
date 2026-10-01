@@ -72,11 +72,6 @@
       "\\.pnp\\.[^\\/]+$"
     ]
   },
-  "browserslist": [
-    ">0.5%",
-    "not dead",
-    "not op_mini all"
-  ],
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/preset-env": "^7.12.16",
@@ -99,7 +94,6 @@
     "@vitejs/plugin-react": "^6.1.1",
     "babel-plugin-formatjs": "^10.5.1",
     "bootstrap": "~4.6.0",
-    "browserslist": "^4.21.5",
     "css-loader": "^5.0.2",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
