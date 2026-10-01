@@ -112,6 +112,15 @@ class SubmissionValueVariablesState:
         }
         return self._static_variables
 
+    @property
+    def component_variables(self) -> dict[str, SubmissionValueVariable]:
+        return {
+            variable.key: variable
+            for variable in self.variables.values()
+            if variable.form_variable
+            and variable.form_variable.source == FormVariableSources.component
+        }
+
     def get_data(
         self,
         *,
