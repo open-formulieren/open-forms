@@ -18,7 +18,8 @@ Endpoints
 
 The following endpoint(s) process file-uploads:
 
-- ``/api/v1/submissions/files/upload``
+- ``/api/v2/formio/fileupload``
+- ``/admin/forms/form/import/``
 
 We recommend specifying upload limits specifically for these endpoints, as allowing
 large requests bodies poses a Denial-of-Service (DOS) risk.
@@ -27,7 +28,7 @@ For example:
 
 .. code-block:: nginx
 
-    location = /api/v1/submissions/files/upload {
+    location = /api/v2/formio/fileupload {
         client_max_body_size 50M;
 
         // usual proxy directives...
