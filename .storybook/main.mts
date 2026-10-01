@@ -1,13 +1,6 @@
-// This file has been automatically migrated to valid ESM format by Storybook.
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import {fileURLToPath} from 'node:url';
-import path, {dirname} from 'path';
-import webpack from 'webpack';
+import type {StorybookConfig} from '@storybook/react-vite';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const config = {
+const config: StorybookConfig = {
   core: {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
