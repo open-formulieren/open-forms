@@ -32,8 +32,10 @@ from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTil
 from openforms.contrib.customer_interactions.update import (
     update_customer_interaction_data,
 )
-from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
+from openforms.prefill.contrib.customer_interactions.variables import (
+    fetch_user_variable_from_profile_component,
+)
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
@@ -70,10 +72,12 @@ from ..typing import (
     MapComponent,
 )
 from ..typing.custom import DigitalAddress, SupportedChannels
+from ..typing.map import Overlay
 from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 from .utils import _normalize_pattern, salt_location_message
+from .validators import EmailVerificationValidator
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -1267,6 +1271,8 @@ class DigitalAddressSerializer(serializers.Serializer):
         help_text=_("Indicates if it is a one-off address or not."),
     )
 
+    component_key: str | None
+
     class Meta:
         list_serializer_class = ProfileValueSerializer
 
@@ -1274,6 +1280,7 @@ class DigitalAddressSerializer(serializers.Serializer):
         self.digital_address_types: list[SupportedChannels] = kwargs.pop(
             "digital_address_types", []
         )
+        self.component_key = kwargs.pop("component_key", None)
         super().__init__(**kwargs)
 
     def get_fields(self):
@@ -1283,6 +1290,35 @@ class DigitalAddressSerializer(serializers.Serializer):
         # narrow down choices to the configured in the admin
         fields["type"].choices = self.digital_address_types
         return fields
+
+    def _validate_email_verification(self, address: str, component_key: str) -> None:
+        """
+        Validate email verification.
+
+        We perform a validation concerning the submitted email address and its verification.
+        If the email address is already verified we skip extra validation on our end.
+        """
+        is_verified = False
+        submission = self.context["submission"]
+        state = submission.variables_state
+        prefill_form_variable = fetch_user_variable_from_profile_component(
+            submission, component_key
+        )
+
+        if prefill_form_variable:
+            state = submission.variables_state
+            addresses = state.get_data().get(prefill_form_variable.key, [])
+
+            is_verified = any(
+                email["address"] == address and email["verification_date"]
+                for item in addresses
+                if item["type"] == "email"
+                for email in item["options"]
+            )
+
+        if not is_verified:
+            verification_validator = EmailVerificationValidator(component_key)
+            verification_validator(address, self.fields["address"])
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -1299,6 +1335,8 @@ class DigitalAddressSerializer(serializers.Serializer):
                 case "email":
                     validate_email(address)
 
+                    if self.component_key:
+                        self._validate_email_verification(address, self.component_key)
                 case "phoneNumber":
                     # replicate client-side validation in formio-renderer (buildPhoneNumberValidationSchema)
                     RegexValidator(
@@ -1311,10 +1349,8 @@ class DigitalAddressSerializer(serializers.Serializer):
         except DjangoValidationError as exc:
             detail = get_error_detail(exc)
             raise serializers.ValidationError({"address": detail})
-        # branch below is uncovered because *so far* we only use plain Django validators
-        except serializers.ValidationError as exc:  # pragma: no cover
-            detail = serializers.as_serializer_error(exc)
-            raise serializers.ValidationError({"address": detail})
+        except serializers.ValidationError as exc:
+            raise serializers.ValidationError({"address": exc.detail})
 
         return attrs
 
@@ -1328,10 +1364,9 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     def build_serializer_field(
         self, component: CustomerProfileComponent
     ) -> DigitalAddressSerializer:
-
         required = component.get("validate", {}).get("required", False)
-
         return DigitalAddressSerializer(
+            component_key=component["key"],
             many=True,
             digital_address_types=component["digitalAddressTypes"],
             required=required,
