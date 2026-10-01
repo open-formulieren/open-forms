@@ -1,5 +1,4 @@
 from openforms.formio.utils import iter_components
-from openforms.typing import JSONObject
 
 from ...api.serializers import FormDefinitionSerializer
 from ...models import FormDefinition
@@ -8,11 +7,12 @@ from ..typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
+    FormDefinitionExportRepresentation,
 )
 from .base import BaseExportSerializer
 
 
-def clear_wms_tile_layers(representation: JSONObject):
+def clear_wms_tile_layers(representation: FormDefinitionExportRepresentation):
     for component in iter_components(representation.get("configuration", {})):
         if component["type"] != "map":
             continue
@@ -22,7 +22,7 @@ def clear_wms_tile_layers(representation: JSONObject):
             overlay["layers"] = []
 
 
-def clear_wmts_tile_layers(representation: JSONObject):
+def clear_wmts_tile_layers(representation: FormDefinitionExportRepresentation):
     for component in iter_components(representation.get("configuration", {})):
         if component["type"] != "map" or "tileLayerIdentifier" not in component:
             continue
@@ -30,7 +30,9 @@ def clear_wmts_tile_layers(representation: JSONObject):
         component["tileLayerIdentifier"] = ""
 
 
-def remove_prefill_from_component_configuration(representation: JSONObject):
+def remove_prefill_from_component_configuration(
+    representation: FormDefinitionExportRepresentation,
+):
     for component in iter_components(representation.get("configuration", {})):
         if "prefill" not in component:
             return
@@ -39,7 +41,8 @@ def remove_prefill_from_component_configuration(representation: JSONObject):
 
 
 class FormDefinitionExportSerializer(
-    FormDefinitionSerializer, BaseExportSerializer[FormDefinition]
+    FormDefinitionSerializer,
+    BaseExportSerializer[FormDefinition, FormDefinitionExportRepresentation],
 ):
     excluded_additional_form_configuration_cleanup = (
         AdditionalFormConfigurationCleanup(

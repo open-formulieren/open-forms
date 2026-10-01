@@ -1,21 +1,19 @@
-from openforms.prefill.constants import IdentifierRoles
-from openforms.typing import JSONObject
-
 from ...api.serializers import FormVariableSerializer
 from ...models import FormVariable
 from ..constants import FormConfigurationOptions
-from ..typing import FormConfigurationCleanup
+from ..typing import FormConfigurationCleanup, FormVariableExportRepresentation
 from .base import BaseExportSerializer
 
 
-def remove_prefill_from_variable(representation: JSONObject):
+def remove_prefill_from_variable(representation: FormVariableExportRepresentation):
     representation["prefill_plugin"] = ""
     representation["prefill_attribute"] = ""
     representation["prefill_options"] = {}
 
 
 class FormVariableExportSerializer(
-    FormVariableSerializer, BaseExportSerializer[FormVariable]
+    FormVariableSerializer,
+    BaseExportSerializer[FormVariable, FormVariableExportRepresentation],
 ):
     excluded_form_configuration_cleanup = (
         FormConfigurationCleanup(

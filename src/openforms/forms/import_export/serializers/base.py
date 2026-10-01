@@ -1,11 +1,9 @@
 from collections.abc import Sequence
-from typing import ClassVar
+from typing import ClassVar, TypedDict
 
 from django.db.models import Model
 
 from rest_framework import serializers
-
-from openforms.typing import JSONObject
 
 from ..typing import (
     AdditionalFormConfigurationCleanup,
@@ -14,7 +12,7 @@ from ..typing import (
 )
 
 
-class BaseExportSerializer[MT: Model](serializers.Serializer):
+class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serializer):
     excluded_form_configuration_cleanup: ClassVar[
         Sequence[FormConfigurationCleanup]
     ] = ()
@@ -58,9 +56,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
 
         return representation
 
-    def remove_sensitive_content(
-        self, instance: MT, representation: JSONObject
-    ) -> JSONObject:
+    def remove_sensitive_content(self, instance: MT, representation: RT) -> RT:
         """
         Remove all fields that are not in the safe_export_fields list.
         """
@@ -70,9 +66,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
             if key in self.safe_export_fields
         }
 
-    def remove_excluded_form_configuration(
-        self, representation: JSONObject
-    ) -> JSONObject:
+    def remove_excluded_form_configuration(self, representation: RT) -> RT:
         options_to_keep = (
             set(export_options.form_configuration)
             if (export_options := self.get_export_options()) is not None
@@ -85,9 +79,7 @@ class BaseExportSerializer[MT: Model](serializers.Serializer):
 
         return representation
 
-    def remove_excluded_additional_form_configuration(
-        self, representation: JSONObject
-    ) -> JSONObject:
+    def remove_excluded_additional_form_configuration(self, representation: RT) -> RT:
         options_to_keep = (
             set(export_options.additional_form_configuration)
             if (export_options := self.get_export_options()) is not None

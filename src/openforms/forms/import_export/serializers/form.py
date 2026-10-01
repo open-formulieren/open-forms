@@ -1,5 +1,3 @@
-from openforms.typing import JSONObject
-
 from ...api.serializers import FormSerializer
 from ...api.serializers.form import FormRegistrationBackendSerializer
 from ...models import Form, FormRegistrationBackend
@@ -7,35 +5,38 @@ from ..constants import AdditionalFormConfigurationOptions, FormConfigurationOpt
 from ..typing import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
+    FormExportRepresentation,
+    FormRegistrationExportRepresentation,
 )
 from .base import BaseExportSerializer
 
 
-def clear_product(representation: JSONObject):
+def clear_product(representation: FormExportRepresentation):
     representation["product"] = None
 
 
-def clear_yivi_attribute_groups(representation: JSONObject):
+def clear_yivi_attribute_groups(representation: FormExportRepresentation):
     for auth in representation.get("auth_backends", []):
         if auth["backend"] == "yivi_oidc":
             auth["options"]["additional_attributes_groups"] = []
 
 
-def exclude_registration_backends(representation: JSONObject):
+def exclude_registration_backends(representation: FormExportRepresentation):
     representation["registration_backends"] = []
 
 
-def exclude_payment_backend(representation: JSONObject):
+def exclude_payment_backend(representation: FormExportRepresentation):
     representation["payment_backend"] = ""
     representation["payment_backend_options"] = {}
 
 
-def exclude_auth_backends(representation: JSONObject):
+def exclude_auth_backends(representation: FormExportRepresentation):
     representation["auth_backends"] = []
 
 
 class FormRegistrationBackendExportSerializer(
-    FormRegistrationBackendSerializer, BaseExportSerializer[FormRegistrationBackend]
+    FormRegistrationBackendSerializer,
+    BaseExportSerializer[FormRegistrationBackend, FormRegistrationExportRepresentation],
 ):
     safe_export_fields = (
         "key",
@@ -54,7 +55,9 @@ class FormRegistrationBackendExportSerializer(
         return representation
 
 
-class FormExportSerializer(FormSerializer, BaseExportSerializer[Form]):
+class FormExportSerializer(
+    FormSerializer, BaseExportSerializer[Form, FormExportRepresentation]
+):
     excluded_additional_form_configuration_cleanup = (
         AdditionalFormConfigurationCleanup(
             option=AdditionalFormConfigurationOptions.product,
