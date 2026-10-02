@@ -148,6 +148,10 @@ class FormExportSerializer(
         "brp_personen_request_options",
     )
 
+    def prepare_for_export(self, instance: Form) -> None:
+        # Reset the submission counter
+        instance.submission_counter = 0
+
     def get_fields(self):
         fields = super().get_fields()
         # for export we want to use the list of plugin-id's instead of detailed info objects

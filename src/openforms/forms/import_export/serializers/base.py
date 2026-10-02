@@ -41,7 +41,16 @@ class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serialize
     will be exported.
     """
 
+    def prepare_for_export(self, instance: MT):
+        """
+        A hook that is executed at the beginning of the export process.
+
+        This hook can be used to prepare individual instances for export.
+        """
+        pass
+
     def to_representation(self, instance: MT):
+        self.prepare_for_export(instance)
         representation = super().to_representation(instance)
 
         if self.get_export_options.remove_sensitive_content:
