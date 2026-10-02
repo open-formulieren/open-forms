@@ -19,6 +19,12 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
 
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
+                "adres": "0612332143",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": False,
+                "referentie": "portaalvoorkeur",
+            },
+            {
                 "adres": "0612345678",
                 "soortDigitaalAdres": "telefoonnummer",
                 "isStandaardAdres": False,
@@ -32,6 +38,19 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
                 "adres": "0687654321",
                 "soortDigitaalAdres": "telefoonnummer",
                 "isStandaardAdres": False,
+            },
+            {
+                "adres": "portaalvoorkeur-2@example.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": None,
+            },
+            {
+                "adres": "portaalvoorkeur-1@example.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verificatieDatum": None,
+                "referentie": "portaalvoorkeur",
             },
             {
                 "adres": "devilkiller@example.org",
@@ -70,7 +89,7 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
                 "verificatieDatum": "2025-09-09",
             },
         ]
-        self.assertEqual(len(data), 9)
+        self.assertEqual(len(data), 12)
 
         for expected_address in expected_addresses:
             with self.subTest(expected_address["adres"]):

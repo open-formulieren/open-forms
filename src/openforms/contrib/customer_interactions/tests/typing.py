@@ -15,3 +15,4 @@ class ExpectedDigitalAddress(TypedDict):
     verstrektDoorBetrokkene: NotRequired[FullForeigKeyRef | None]
     verstrektDoorPartij: NotRequired[FullForeigKeyRef | None]
     verificatieDatum: NotRequired[str | None]
+    referentie: NotRequired[str]

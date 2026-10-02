@@ -125,16 +125,37 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             case _:  # pragma: no cover
                 assert_never(auth_attribute)
 
+    def get_unique_digital_address(
+        self, party_uuid: str, channel: SoortDigitaalAdres, reference: str
+    ) -> DigitaalAdres | None:
+        """
+        Get a unique address based on specific parameters.
+
+        Based on the unique constraint that Open Klant has, we retrieve an address based
+        on the fields ``partij``, ``referentie``, ``soort_digitaal_adres`` and only when
+        ``referentie`` is not an empty string and we do have a ``partij``.
+        """
+        params: ListDigitaalAdresParams = {
+            "verstrektDoorPartij__uuid": party_uuid,
+            "soortDigitaalAdres": channel,
+            "referentie": reference,
+        }
+
+        response = self.digitaal_adres.list_iter(params=params)
+        digitaal_adres = next(response, None)
+
+        return digitaal_adres
+
     def get_digital_address_for_party(
         self, address: str, party_uuid: str
-    ) -> DigitaalAdres:
+    ) -> DigitaalAdres | None:
         params: ListDigitaalAdresParams = {
             "verstrektDoorPartij__uuid": party_uuid,
             "adres": address,
         }
         response = self.digitaal_adres.list_iter(params=params)
 
-        digitaal_adres = next(response)
+        digitaal_adres = next(response, None)
         return digitaal_adres
 
     def create_customer_contact(
@@ -177,6 +198,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         betrokkene_uuid: str,
         party_uuid="",
         verification_date: str | None = None,
+        reference: str | None = None,
     ) -> DigitaalAdres:
         party_data: ForeignKeyRef | None = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
@@ -193,31 +215,50 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         if verification_date:
             data["verificatieDatum"] = verification_date
 
+        # the empty string is also relevant when we want to update an existing preferred
+        # address (need to empty the value for ``portaalvoorkeur``)
+        if reference or reference == "":
+            data["referentie"] = reference
+
         return self.digitaal_adres.create(data=data)
 
     def update_digital_address_for_party(
         self,
         address: str,
         party_uuid: str,
-        is_preferred: bool,
+        is_preferred: bool | None,
         verification_date: str | None = None,
-    ) -> DigitaalAdres:
+        reference: str | None = None,
+        address_uuid: str | None = None,
+    ) -> DigitaalAdres | None:
         """
-        Find an address for the party and update its preference and verification date for
-        email addresses.
+        Find or use an address for the party and update its preference, verification date
+        and reference.
         """
-        digital_address = self.get_digital_address_for_party(address, party_uuid)
+        if address_uuid:
+            digital_address_uuid = address_uuid
+        else:
+            digital_address = self.get_digital_address_for_party(address, party_uuid)
+            digital_address_uuid = digital_address["uuid"] if digital_address else ""
 
-        data = DigitaalAdresPartialUpdateData(isStandaardAdres=is_preferred)
+        assert isinstance(digital_address_uuid, str)
+
+        data = DigitaalAdresPartialUpdateData()
+
+        if is_preferred:
+            data["isStandaardAdres"] = is_preferred
 
         # the verification date is only relevant/supported for email addresses and only
         # when it has been verified via Open Forms
         if verification_date:
             data["verificatieDatum"] = verification_date
 
-        return self.digitaal_adres.partial_update(
-            uuid=digital_address["uuid"], data=data
-        )
+        # the empty string is also relevant when we want to update an existing preferred
+        # address (need to empty the value for ``portaalvoorkeur``)
+        if reference or reference == "":
+            data["referentie"] = reference
+
+        return self.digitaal_adres.partial_update(uuid=digital_address_uuid, data=data)
 
     def find_party_for_bsn(self, bsn: str) -> Partij | None:
         """
