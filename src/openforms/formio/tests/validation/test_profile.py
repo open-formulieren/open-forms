@@ -1,7 +1,15 @@
+from unittest.mock import patch
+
 from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.formio.service import FormioData
+from openforms.forms.tests.factories import FormVariableFactory
+from openforms.submissions.tests.factories import (
+    EmailVerificationFactory,
+    SubmissionFactory,
+)
+from openforms.variables.constants import FormVariableDataTypes
 
 from ...typing.custom import CustomerProfileComponent
 from .helpers import extract_error, validate_formio_data
@@ -24,6 +32,12 @@ class ProfileValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
         )
         valid_values = {
             "profile": [
@@ -49,7 +63,7 @@ class ProfileValidationTests(TestCase):
             "type": "customerProfile",
             "digitalAddressTypes": ["email", "phoneNumber"],
             "shouldUpdateCustomerData": True,
-            "validate": {},
+            "validate": {"required": False},
         }
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -204,6 +218,18 @@ class ProfileValidationTests(TestCase):
                 ]
             },
         )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="john@smith.org",
+            verified=True,
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="another@email.org",
+            verified=True,
+        )
         values = {
             "profile": [
                 {
@@ -231,3 +257,154 @@ class ProfileValidationTests(TestCase):
                 "You cannot submit multiple digital addresses for the type '{type}'."
             ).format(type="email"),
         )
+
+    def test_unverified_email(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": True,
+        }
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    component,
+                ]
+            },
+        )
+        values = {
+            "profile": [
+                {
+                    "address": "john@smith.org",
+                    "type": "email",
+                },
+                {
+                    "address": "0812345678",
+                    "type": "phoneNumber",
+                },
+            ]
+        }
+
+        is_valid, errors = validate_formio_data(component, values, submission)
+        error = extract_error(errors["profile"][0], "address")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(
+            error,
+            _("The email address {value} has not been verified yet.").format(
+                value="john@smith.org"
+            ),
+        )
+
+    def test_verified_email_does_not_trigger_validation(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": True,
+        }
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    component,
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="communication_preferences",
+            prefill_options={
+                "customer_interactions_api_group": "customer_interactions",
+                "profile_form_variable": "profile",
+            },
+        )
+        # override the prefill data with mocked for testing purposes
+        submission.variables_state.save_prefill_data(
+            FormioData(
+                {
+                    "communication-preferences": [
+                        {
+                            "type": "email",
+                            "options": [
+                                {
+                                    "address": "john@smith.org",
+                                    "verification_date": "2026-09-09",
+                                },
+                                {
+                                    "address": "someemail@example.org",
+                                    "verification_date": None,
+                                },
+                            ],
+                            "preferred": "john.smith@gmail.com",
+                        }
+                    ]
+                },
+            )
+        )
+        values = {
+            "profile": [
+                {
+                    "address": "john@smith.org",
+                    "type": "email",
+                },
+            ]
+        }
+
+        with patch(
+            "openforms.formio.components.custom.EmailVerificationValidator"
+        ) as mocked_validator:
+            is_valid, _ = validate_formio_data(component, values, submission)
+
+        self.assertTrue(is_valid)
+        mocked_validator.assert_not_called()
+
+    def test_validation_is_triggered_when_no_prefill_data_exists(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": True,
+        }
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    component,
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="communication_preferences",
+            prefill_options={
+                "customer_interactions_api_group": "customer_interactions",
+                "profile_form_variable": "profile",
+            },
+        )
+        values = {
+            "profile": [
+                {
+                    "address": "john@smith.org",
+                    "type": "email",
+                },
+            ]
+        }
+
+        with patch(
+            "openforms.formio.components.custom.EmailVerificationValidator"
+        ) as mocked_validator:
+            is_valid, _ = validate_formio_data(component, values, submission)
+
+        self.assertTrue(is_valid)
+        mocked_validator.assert_called_once()
