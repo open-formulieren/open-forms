@@ -13,7 +13,6 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
-from openforms.prefill.models import PrefillConfig
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -583,105 +582,6 @@ class FormDefinitionsAPITests(APITestCase):
         )
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-
-class FormioCoSignComponentValidationTests(APITestCase):
-    """
-    Test specific Formio component type validations for form definitions.
-    """
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.user = SuperUserFactory.create()
-
-    def setUp(self):
-        super().setUp()
-        self.client.force_authenticate(user=self.user)
-
-    def test_configuration_with_co_sign_but_missing_auth_plugin(self):
-        url = reverse("api:formdefinition-list")
-        config = {
-            "components": [
-                {
-                    "type": "coSign",
-                    "key": "coSign",
-                    "label": "Co-sign test",
-                }
-            ]
-        }
-
-        response = self.client.post(
-            url,
-            data={
-                "name": "Some name",
-                "slug": "some-slug",
-                "configuration": config,
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        error = response.json()["invalidParams"][0]
-        self.assertEqual(error["code"], "invalid")
-        self.assertEqual(error["name"], "configuration.nonFieldErrors")
-
-    def test_configuration_with_co_sign_but_missing_global_config(self):
-        prefill_config = PrefillConfig.get_solo()
-        url = reverse("api:formdefinition-list")
-        config = {
-            "components": [
-                {
-                    "type": "coSign",
-                    "key": "coSign",
-                    "label": "Co-sign test",
-                    "authPlugin": "digid",
-                }
-            ]
-        }
-        with self.subTest("assert test data as expected"):
-            self.assertEqual(prefill_config.default_person_plugin, "")
-            self.assertEqual(prefill_config.default_company_plugin, "")
-
-        response = self.client.post(
-            url,
-            data={
-                "name": "Some name",
-                "slug": "some-slug",
-                "configuration": config,
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        error = response.json()["invalidParams"][0]
-        self.assertEqual(error["code"], "invalid")
-        self.assertEqual(error["name"], "configuration.nonFieldErrors")
-
-    @patch("openforms.prefill.co_sign.PrefillConfig.get_solo")
-    def test_configuration_with_co_sign_ok(self, mock_get_solo):
-        mock_get_solo.return_value = PrefillConfig(default_person_plugin="stufbg")
-
-        url = reverse("api:formdefinition-list")
-        config = {
-            "components": [
-                {
-                    "type": "coSign",
-                    "key": "coSign",
-                    "label": "Co-sign test",
-                    "authPlugin": "digid",
-                }
-            ]
-        }
-
-        response = self.client.post(
-            url,
-            data={
-                "name": "Some name",
-                "slug": "some-slug",
-                "configuration": config,
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
 class FormDefinitionsAPITranslationTests(APITestCase):

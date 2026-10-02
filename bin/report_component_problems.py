@@ -193,6 +193,10 @@ def check_component(component: Component) -> Iterator[str]:
                             f"{language_code}."
                         )
 
+    match component:
+        case {"prefill": {"plugin": None} | {"attribute": None}}:
+            yield "null value(s) found in prefill config"
+
 
 def check_component_html_usage(component: Component) -> list[str]:
     messages = []
