@@ -458,12 +458,14 @@ export const DisabledProperty = {
     const componentDropdown = canvas.getByRole('combobox', {name: 'Selecteer component'});
     await userEvent.selectOptions(componentDropdown, 'fieldset');
 
-    const propertyDropdown = canvas.getByRole('combobox', {name: 'Selecteer actie-eigenschap'});
-    const propertyOptions = within(propertyDropdown).getAllByRole('option');
-    expect(propertyOptions).toHaveLength(3);
-    expect(propertyOptions[0]).toHaveValue('');
-    expect(propertyOptions[1]).toHaveValue('validate.required');
-    expect(propertyOptions[2]).toHaveValue('hidden');
+    await waitFor(() => {
+      const propertyDropdown = canvas.getByRole('combobox', {name: 'Selecteer actie-eigenschap'});
+      const propertyOptions = within(propertyDropdown).getAllByRole('option');
+      expect(propertyOptions).toHaveLength(3);
+      expect(propertyOptions[0]).toHaveValue('');
+      expect(propertyOptions[1]).toHaveValue('validate.required');
+      expect(propertyOptions[2]).toHaveValue('hidden');
+    });
   },
 };
 

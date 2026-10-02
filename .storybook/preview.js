@@ -5,6 +5,8 @@ import {withModalDecorator, withReactSelectDecorator, TinyMceDecorator} from 'co
 import {initialize, mswLoader} from 'msw-storybook-addon';
 import {reactIntl} from './reactIntl.js';
 import ReactModal from 'react-modal';
+import * as L from 'leaflet';
+import 'proj4leaflet';
 
 initialize({
   onUnhandledRequest: 'bypass',
