@@ -91,7 +91,20 @@ class TestExportFormsView(WebTest):
         self.assertRedirects(
             submission_response, reverse("admin:forms_form_changelist")
         )
-        m.assert_called_with(forms_uuids=[form.uuid], user_id=user.id)
+        m.assert_called_with(
+            forms_uuids=[form.uuid],
+            user_id=user.id,
+            export_options={
+                "remove_sensitive_content": True,
+                "form_configuration": [
+                    "registrationBackends",
+                    "prefill",
+                    "paymentBackend",
+                    "authBackends",
+                ],
+                "additional_form_configuration": [],
+            },
+        )
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))
@@ -225,6 +238,7 @@ class TestImportView(WebTest):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options={},
         )
 
         form_export = FormsExport.objects.get()

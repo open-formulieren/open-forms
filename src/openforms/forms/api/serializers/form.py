@@ -42,6 +42,11 @@ from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import RegistrationBackendKey
 
 from ...constants import HelpCalloutPageDisplayChoices, StatementCheckboxChoices
+from ...import_export.constants import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+)
+from ...import_export.typing import FormExportOptions
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from ..validators import RequireAppointmentsPlugin
 from .button_text import ButtonTextSerializer
@@ -737,15 +742,39 @@ FormSerializer.__doc__ = FormSerializer.__doc__.format(
 )
 
 
-class FormExportSerializer(FormSerializer):
-    def get_fields(self):
-        fields = super().get_fields()
-        # for export we want to use the list of plugin-id's instead of detailed info objects
-        if "login_options" in fields:
-            del fields["login_options"]
-        if "payment_options" in fields:
-            del fields["payment_options"]
-        return fields
+class FormAPIExportRequestSerializer(serializers.Serializer):
+    remove_sensitive_content = serializers.BooleanField(
+        required=False,
+        help_text=_(
+            "Whether sensative form configuration should be anonymized during exporting."
+        ),
+        default=True,
+    )
+    form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=FormConfigurationOptions.choices,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+        default=[option.value for option in FormConfigurationOptions],
+    )
+    additional_form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file content."
+        ),
+        default=[],
+    )
+
+    def as_export_options(self) -> FormExportOptions:
+        return FormExportOptions(
+            remove_sensitive_content=self.validated_data["remove_sensitive_content"],
+            form_configuration=self.validated_data["form_configuration"],
+            additional_form_configuration=self.validated_data[
+                "additional_form_configuration"
+            ],
+        )
 
 
 class FormImportSerializer(serializers.Serializer):
