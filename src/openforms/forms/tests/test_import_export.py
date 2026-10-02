@@ -260,6 +260,24 @@ class ImportExportTests(TempdirMixin, TestCase):
                 form_definition.configuration,
             )
 
+    def test_export_resets_submission_counter(self):
+        form = FormFactory.create(submission_counter=10)
+
+        self.assertEqual(form.submission_counter, 10)
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            self.assertEqual(len(forms), 1)
+
+            # Submission counter should be reset to 0
+            self.assertEqual(forms[0]["submission_counter"], 0)
+
     def test_export_without_anonymize_option_keeps_all_sensitive_data(self):
         # Setting up a form with sensitive data in:
         # - form internal remarks

@@ -48,16 +48,10 @@ def export_form(
 
 def form_to_json(form_id: int, export_options: FormExportOptions) -> dict[str, str]:
     form = Form.objects.get(pk=form_id)
-
-    # Reset the submission counter
-    form.submission_counter = 0
-
     form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
         "form_definition"
     )
-
     form_definitions = [form_step.form_definition for form_step in form_steps]
-
     form_logic = FormLogic.objects.filter(form=form)
 
     # Export only user defined variables
