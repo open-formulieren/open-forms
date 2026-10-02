@@ -70,24 +70,44 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 "type": "email",
                 "options": [
                     {
+                        "address": "portaalvoorkeur-2@example.com",
+                        "verification_date": None,
+                        "reference": "",
+                    },
+                    {
+                        "address": "portaalvoorkeur-1@example.com",
+                        "verification_date": None,
+                        "reference": "portaalvoorkeur",
+                    },
+                    {
+                        "address": "verified@email.com",
+                        "verification_date": "2025-09-09",
+                        "reference": "",
+                    },
+                    {
                         "address": "john.smith@gmail.com",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "john.smith@gmail.com",
                         "verification_date": "2026-09-09",
+                        "reference": "",
                     },
                     {
                         "address": "someemail@example.org",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "devilkiller@example.org",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "john.smith@gmail.com",
                         "verification_date": None,
+                        "reference": "",
                     },
                 ],
                 "preferred": "john.smith@gmail.com",
@@ -96,16 +116,24 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 "type": "phoneNumber",
                 "options": [
                     {
+                        "address": "0612332143",
+                        "verification_date": None,
+                        "reference": "portaalvoorkeur",
+                    },
+                    {
                         "address": "0612345678",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "0687654321",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "0612345678",
                         "verification_date": None,
+                        "reference": "",
                     },
                 ],
                 "preferred": "0612345678",
@@ -196,6 +224,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                     {
                         "address": "maykinmail@test.com",
                         "verification_date": None,
+                        "reference": "",
                     }
                 ],
                 "preferred": "maykinmail@test.com",
@@ -206,6 +235,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                     {
                         "address": "0612345678",
                         "verification_date": None,
+                        "reference": "",
                     },
                 ],
                 "preferred": "0612345678",
@@ -329,24 +359,44 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 "type": "email",
                 "options": [
                     {
+                        "address": "portaalvoorkeur-2@example.com",
+                        "verification_date": None,
+                        "reference": "",
+                    },
+                    {
+                        "address": "portaalvoorkeur-1@example.com",
+                        "verification_date": None,
+                        "reference": "portaalvoorkeur",
+                    },
+                    {
+                        "address": "verified@email.com",
+                        "verification_date": "2025-09-09",
+                        "reference": "",
+                    },
+                    {
                         "address": "john.smith@gmail.com",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "john.smith@gmail.com",
                         "verification_date": "2026-09-09",
+                        "reference": "",
                     },
                     {
                         "address": "someemail@example.org",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "devilkiller@example.org",
                         "verification_date": None,
+                        "reference": "",
                     },
                     {
                         "address": "john.smith@gmail.com",
                         "verification_date": None,
+                        "reference": "",
                     },
                 ],
                 "preferred": "john.smith@gmail.com",
@@ -395,9 +445,26 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             {
                 "type": "phoneNumber",
                 "options": [
-                    {"address": "0612345678", "verification_date": None},
-                    {"address": "0687654321", "verification_date": None},
-                    {"address": "0612345678", "verification_date": None},
+                    {
+                        "address": "0612332143",
+                        "verification_date": None,
+                        "reference": "portaalvoorkeur",
+                    },
+                    {
+                        "address": "0612345678",
+                        "verification_date": None,
+                        "reference": "",
+                    },
+                    {
+                        "address": "0687654321",
+                        "verification_date": None,
+                        "reference": "",
+                    },
+                    {
+                        "address": "0612345678",
+                        "verification_date": None,
+                        "reference": "",
+                    },
                 ],
                 "preferred": "0612345678",
             }

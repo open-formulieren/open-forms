@@ -8,6 +8,7 @@ from openforms.formio.typing.custom import SupportedChannels
 class CommunicationChannelOptions(TypedDict):
     address: str
     verification_date: str | None
+    reference: str
 
 
 class CommunicationChannel(TypedDict):
