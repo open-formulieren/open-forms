@@ -79,8 +79,6 @@ const config = {
               url: false,
             },
           },
-          // Runs postcss configuration (postcss.config.js).
-          {loader: 'postcss-loader'},
           // Compiles .scss to .css.
           {
             loader: 'sass-loader',
