@@ -760,26 +760,72 @@ class SubmissionResumeViewVCRTests(
                 {
                     "type": "email",
                     "options": [
-                        {"address": "john.smith@gmail.com", "verification_date": None},
                         {
-                            "address": "john.smith@gmail.com",
-                            "verification_date": "2026-09-09",
-                        },
-                        {"address": "someemail@example.org", "verification_date": None},
-                        {
-                            "address": "devilkiller@example.org",
+                            "address": "portaalvoorkeur-2@example.com",
+                            "reference": "",
                             "verification_date": None,
                         },
-                        {"address": "john.smith@gmail.com", "verification_date": None},
+                        {
+                            "address": "portaalvoorkeur-1@example.com",
+                            "reference": "portaalvoorkeur",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "verified@email.com",
+                            "reference": "",
+                            "verification_date": "2025-09-09",
+                        },
+                        {
+                            "address": "john.smith@gmail.com",
+                            "reference": "",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "john.smith@gmail.com",
+                            "reference": "",
+                            "verification_date": "2026-09-09",
+                        },
+                        {
+                            "address": "someemail@example.org",
+                            "reference": "",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "devilkiller@example.org",
+                            "reference": "",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "john.smith@gmail.com",
+                            "reference": "",
+                            "verification_date": None,
+                        },
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
                     "options": [
-                        {"address": "0612345678", "verification_date": None},
-                        {"address": "0687654321", "verification_date": None},
-                        {"address": "0612345678", "verification_date": None},
+                        {
+                            "address": "0612332143",
+                            "reference": "portaalvoorkeur",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "0612345678",
+                            "reference": "",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "0687654321",
+                            "reference": "",
+                            "verification_date": None,
+                        },
+                        {
+                            "address": "0612345678",
+                            "reference": "",
+                            "verification_date": None,
+                        },
                     ],
                     "preferred": "0612345678",
                 },

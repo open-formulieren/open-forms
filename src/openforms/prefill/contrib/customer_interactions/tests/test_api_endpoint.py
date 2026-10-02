@@ -1,5 +1,7 @@
 import uuid
 
+from django.test import override_settings
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -80,31 +82,26 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                     "type": "email",
                     "options": [
                         {
-                            "address": "john.smith@gmail.com",
-                            "isVerified": True,
-                        },
-                        {
-                            "address": "someemail@example.org",
+                            "address": "portaalvoorkeur-2@example.com",
                             "isVerified": False,
                         },
                         {
-                            "address": "devilkiller@example.org",
+                            "address": "portaalvoorkeur-1@example.com",
                             "isVerified": False,
                         },
+                        {"address": "verified@email.com", "isVerified": True},
+                        {"address": "john.smith@gmail.com", "isVerified": True},
+                        {"address": "someemail@example.org", "isVerified": False},
+                        {"address": "devilkiller@example.org", "isVerified": False},
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
                     "options": [
-                        {
-                            "address": "0612345678",
-                            "isVerified": False,
-                        },
-                        {
-                            "address": "0687654321",
-                            "isVerified": False,
-                        },
+                        {"address": "0612332143", "isVerified": False},
+                        {"address": "0612345678", "isVerified": False},
+                        {"address": "0687654321", "isVerified": False},
                     ],
                     "preferred": "0612345678",
                 },
@@ -337,17 +334,17 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                     "type": "email",
                     "options": [
                         {
-                            "address": "john.smith@gmail.com",
-                            "isVerified": True,
-                        },
-                        {
-                            "address": "someemail@example.org",
+                            "address": "portaalvoorkeur-2@example.com",
                             "isVerified": False,
                         },
                         {
-                            "address": "devilkiller@example.org",
+                            "address": "portaalvoorkeur-1@example.com",
                             "isVerified": False,
                         },
+                        {"address": "verified@email.com", "isVerified": True},
+                        {"address": "john.smith@gmail.com", "isVerified": True},
+                        {"address": "someemail@example.org", "isVerified": False},
+                        {"address": "devilkiller@example.org", "isVerified": False},
                     ],
                     "preferred": "john.smith@gmail.com",
                 }
@@ -451,33 +448,108 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                     "type": "email",
                     "options": [
                         {
-                            "address": "john.smith@gmail.com",
-                            "isVerified": True,
-                        },
-                        {
-                            "address": "someemail@example.org",
+                            "address": "portaalvoorkeur-2@example.com",
                             "isVerified": False,
                         },
                         {
-                            "address": "devilkiller@example.org",
+                            "address": "portaalvoorkeur-1@example.com",
                             "isVerified": False,
                         },
+                        {"address": "verified@email.com", "isVerified": True},
+                        {"address": "john.smith@gmail.com", "isVerified": True},
+                        {"address": "someemail@example.org", "isVerified": False},
+                        {"address": "devilkiller@example.org", "isVerified": False},
                     ],
                     "preferred": "john.smith@gmail.com",
                 },
                 {
                     "type": "phoneNumber",
                     "options": [
-                        {
-                            "address": "0612345678",
-                            "isVerified": False,
-                        },
-                        {
-                            "address": "0687654321",
-                            "isVerified": False,
-                        },
+                        {"address": "0612332143", "isVerified": False},
+                        {"address": "0612345678", "isVerified": False},
+                        {"address": "0687654321", "isVerified": False},
                     ],
                     "preferred": "0612345678",
+                },
+            ],
+        )
+
+    @override_settings(CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS=True)
+    def test_api_endpoint_when_addresses_preferred_from_reference(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        submission = SubmissionFactory.create(
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            form=form,
+        )
+        self._add_submission_to_session(submission)
+        prefill_variables(submission=submission)
+
+        url = reverse(
+            "api:prefill_customer_interactions:communication-preferences",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "profile_component": "profile",
+            },
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "type": "email",
+                    "options": [
+                        {
+                            "address": "portaalvoorkeur-2@example.com",
+                            "isVerified": False,
+                        },
+                        {
+                            "address": "portaalvoorkeur-1@example.com",
+                            "isVerified": False,
+                        },
+                        {"address": "verified@email.com", "isVerified": True},
+                        {"address": "john.smith@gmail.com", "isVerified": True},
+                        {"address": "someemail@example.org", "isVerified": False},
+                        {"address": "devilkiller@example.org", "isVerified": False},
+                    ],
+                    "preferred": "portaalvoorkeur-1@example.com",
+                },
+                {
+                    "type": "phoneNumber",
+                    "options": [
+                        {"address": "0612332143", "isVerified": False},
+                        {"address": "0612345678", "isVerified": False},
+                        {"address": "0687654321", "isVerified": False},
+                    ],
+                    "preferred": "0612332143",
                 },
             ],
         )

@@ -732,6 +732,18 @@ USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
     default=False,
 )
 
+#
+# Open Klant (customer interactions)
+#
+# DeprecationWarning - remove in Open Forms 5.0
+# Workaround for legacy users of Open Klant that don't use isStandaardAddress, but instead
+# use a magic value for the 'referentie' attribute. This is deliberately undocumented.
+CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS = config(
+    "CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS",
+    default=False,
+)
+
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #

@@ -72,6 +72,10 @@ class CommunicationPreferencesView(
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
 
-        unique_addresses = prepare_addresses_for_frontend(value)  # pyright: ignore[reportArgumentType]
+        unique_addresses = prepare_addresses_for_frontend(
+            value,  # pyright: ignore[reportArgumentType]
+            submission,
+            form_variable.key,
+        )
 
         return unique_addresses
