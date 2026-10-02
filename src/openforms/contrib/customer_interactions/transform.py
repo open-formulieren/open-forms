@@ -2,6 +2,8 @@ from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from itertools import groupby
 
+from django.conf import settings
+
 import structlog
 from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
@@ -9,8 +11,12 @@ from openklant_client.types.resources.digitaal_adres import (
 )
 
 from openforms.formio.typing.custom import SupportedChannels
+from openforms.submissions.models import Submission
 
-from .constants import ADDRESS_TYPES_TO_CHANNELS
+from .constants import (
+    ADDRESS_TYPES_TO_CHANNELS,
+    USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG,
+)
 from .typing import (
     CommunicationChannel,
     CommunicationChannelReturn,
@@ -49,11 +55,23 @@ def transform_digital_addresses(
                 {
                     "address": address["adres"],
                     "verification_date": address.get("verificatieDatum"),
+                    "reference": address.get("referentie", ""),
                 }
                 for address in group
             ],
             "preferred": next(
-                (address["adres"] for address in group if address["isStandaardAdres"]),
+                (
+                    address["adres"]
+                    for address in group
+                    if (
+                        address["isStandaardAdres"]
+                        and not settings.CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS
+                    )
+                    or (
+                        address["referentie"] == USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG
+                        and settings.CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS
+                    )
+                ),
                 None,
             ),
         }
@@ -61,15 +79,27 @@ def transform_digital_addresses(
     return result
 
 
-# TODO
-# Check if we need to choose which address to keep in the case of duplicates (based on
-# another key like isStandaardAdres and referentie for example)
 def prepare_addresses_for_frontend(
     initial_addresses: Sequence[CommunicationChannel],
+    submission: Submission,
+    form_variable_key: str,
 ) -> Sequence[CommunicationChannelReturn]:
     """
     De-duplicate addresses and mark their verification status.
     """
+    # when no data is retrieved from Open Klant we end up with initial_addresses having
+    # the default value of the data type of the variable. In case we misconfigure the
+    # variable and we declare it as string for example we have a wrong type here too.
+    # This is coming from the `to_python` method that we use for the data types.
+    if not isinstance(initial_addresses, list):
+        logger.warning(
+            "invalid_customer_interactions_data_type_received",
+            type_received=str(type(initial_addresses)),
+            submission=str(submission.uuid),
+            form_variable=form_variable_key,
+        )
+        return []
+
     channels: list[CommunicationChannelReturn] = []
     for communication_channel in initial_addresses:
         # map of address to verification status

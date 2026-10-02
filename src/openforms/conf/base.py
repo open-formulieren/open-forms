@@ -725,6 +725,18 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
+#
+# Open Klant (customer interactions)
+#
+# DeprecationWarning - remove in Open Forms 5.0
+# Workaround for legacy users of Open Klant that don't use isStandaardAddress, but instead
+# use a magic value for the 'referentie' attribute. This is deliberately undocumented.
+CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS = config(
+    "CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS",
+    default=False,
+)
+
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #

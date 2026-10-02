@@ -369,6 +369,51 @@
     }
 },
 {
+    "model": "klantinteracties.digitaaladres",
+    "pk": 14,
+    "fields": {
+      "uuid": "e4108fee-1f51-478d-9f69-76aba91b1918",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "email",
+      "is_standaard_adres": false,
+      "adres": "portaalvoorkeur-1@example.com",
+      "omschrijving": "",
+      "referentie": "portaalvoorkeur",
+      "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 15,
+    "fields": {
+      "uuid": "e9669802-3420-4276-8b0d-40bd4c309022",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "email",
+      "is_standaard_adres": false,
+      "adres": "portaalvoorkeur-2@example.com",
+      "omschrijving": "",
+      "referentie": "",
+      "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 16,
+    "fields": {
+      "uuid": "3262e10f-efa6-408f-b4a6-86fdd40385e4",
+      "partij": 1,
+      "betrokkene": null,
+      "soort_digitaal_adres": "telefoonnummer",
+      "is_standaard_adres": false,
+      "adres": "0612332143",
+      "omschrijving": "",
+      "referentie": "portaalvoorkeur",
+      "verificatie_datum": null
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {

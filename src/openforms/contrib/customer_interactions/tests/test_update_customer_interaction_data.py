@@ -1,4 +1,4 @@
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
 
@@ -584,7 +584,7 @@ class UpdateCustomerInteractionDataTests(
             submitted_data={
                 "profile": profile_data,
             },
-            public_registration_reference="OF-12346",
+            public_registration_reference="OF-12345",
             form__name="With profile",
             bsn="123456782",
         )
@@ -632,7 +632,7 @@ class UpdateCustomerInteractionDataTests(
         self.assertEqual(
             onderwerpobject["onderwerpobjectidentificator"],
             {
-                "objectId": "OF-12346",
+                "objectId": "OF-12345",
                 "codeObjecttype": "formulierinzending",
                 "codeRegister": "Open Formulieren",
                 "codeSoortObjectId": "public_registration_reference",
@@ -1129,3 +1129,164 @@ class UpdateCustomerInteractionDataTests(
         }
 
         self.assertAddressPresent(digital_addresses["created"], expected_address)
+
+    @override_settings(CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS=True)
+    def test_auth_with_bsn_user_known_in_openklant_new_preferred_address_and_referentie(
+        self,
+    ):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            # there is an existing email address with referentie, this should be updated
+            # (remove referentie) and the new one is the preferred one (with referentie=portaalvoorkeur)
+            {
+                "address": "portaalvoorkeur-2@example.com",
+                "type": "email",
+                "preferenceUpdate": "isNewPreferred",
+            },
+            # there is an existing email address with referentie, this should be updated
+            # (remove referentie) and the new one is the preferred one (with referentie=portaalvoorkeur)
+            {
+                "address": "0612312300",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="123456782",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        # adhere to the normal flow-at this point the address should be verified and the
+        # db updated
+        EmailVerificationFactory.create(
+            submission=submission,
+            component_key="profile",
+            email="portaalvoorkeur-2@example.com",
+            verified=True,
+        )
+
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
+
+        klantcontact = result["klantcontact"]
+        betrokkene = result["betrokkene"]
+        onderwerpobject = result["onderwerpobject"]
+        digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
+
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("123456782")
+
+        assert party is not None
+        self.assertEqual(party["uuid"], partij_uuid)
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12346",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
+
+        self.assertEqual(
+            betrokkene["wasPartij"],
+            {"url": party["url"], "uuid": partij_uuid},
+        )
+
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        self.assertEqual(len(digital_addresses["updated"]), 3)
+
+        expected_created_address: ExpectedDigitalAddress = {
+            "adres": "0612312300",
+            "soortDigitaalAdres": "telefoonnummer",
+            "isStandaardAdres": False,
+            "verstrektDoorBetrokkene": {
+                "url": betrokkene["url"],
+                "uuid": betrokkene["uuid"],
+            },
+            "verstrektDoorPartij": {
+                "url": party["url"],
+                "uuid": partij_uuid,
+            },
+            "verificatieDatum": None,
+            "referentie": "portaalvoorkeur",
+        }
+
+        expected_updated_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "portaalvoorkeur-1@example.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verstrektDoorBetrokkene": None,
+                "verstrektDoorPartij": {
+                    "url": party["url"],
+                    "uuid": partij_uuid,
+                },
+                "verificatieDatum": None,
+                "referentie": "",
+            },
+            {
+                "adres": "portaalvoorkeur-2@example.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verstrektDoorBetrokkene": None,
+                "verstrektDoorPartij": {
+                    "url": party["url"],
+                    "uuid": partij_uuid,
+                },
+                "verificatieDatum": "2026-08-21",
+                "referentie": "portaalvoorkeur",
+            },
+            {
+                "adres": "0612332143",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": False,
+                "verstrektDoorBetrokkene": None,
+                "verstrektDoorPartij": {
+                    "url": party["url"],
+                    "uuid": partij_uuid,
+                },
+                "verificatieDatum": None,
+                "referentie": "",
+            },
+        ]
+
+        self.assertAddressPresent(
+            digital_addresses["created"], expected_created_address
+        )
+        for expected_address in expected_updated_addresses:
+            with self.subTest(expected_address):
+                self.assertAddressPresent(
+                    digital_addresses["updated"], expected_address
+                )

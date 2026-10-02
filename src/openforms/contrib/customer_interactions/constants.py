@@ -8,3 +8,5 @@ ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
     "email": "email",
     "telefoonnummer": "phoneNumber",
 }
+
+USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG = "portaalvoorkeur"

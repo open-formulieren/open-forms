@@ -1,5 +1,8 @@
+import warnings
 from collections.abc import Mapping
 from typing import TypedDict
+
+from django.conf import settings
 
 import structlog
 from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
@@ -19,8 +22,11 @@ from openforms.prefill.contrib.customer_interactions.variables import (
 from openforms.prefill.registry import register as prefill_registry
 from openforms.submissions.models import EmailVerification, Submission
 
-from .client import get_customer_interactions_client
-from .constants import ADDRESS_TYPES_TO_CHANNELS
+from .client import CustomerInteractionsClient, get_customer_interactions_client
+from .constants import (
+    ADDRESS_TYPES_TO_CHANNELS,
+    USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG,
+)
 from .typing import CommunicationChannel
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -44,7 +50,47 @@ class UpdateCustomerInteractionsResult(TypedDict):
 
 
 # TODO
-# make sure that the duplicate addresses are properly handled according to the referentie?
+# This is a workaround needed because Open Klant does not support these checks regarding
+# the referentie. This has an expiry date (upper bound: Open Forms 5.0).
+def clear_existing_standard_address_reference(
+    client: CustomerInteractionsClient,
+    party_uuid: str,
+    reference: str,
+    channel: SoortDigitaalAdres,
+) -> DigitaalAdres | None:
+    """
+    Update the address regarding the `referentie` attribute.
+
+    Open Klant has a unique constraint regarding the fields ``partij``, ``referentie``,
+    ``soort_digitaal_adres`` (combined). This means that each time we need to add a new
+    preferred address with ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS="referentie"``
+    we have to make sure any existing address with the same referentie (portaalvoorkeur)
+    is updated.
+    """
+    if reference != USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG:
+        return
+
+    if existing_address_with_reference := client.get_unique_digital_address(
+        party_uuid,
+        channel,
+        reference,
+    ):
+        warnings.warn(
+            "Using reference as isStandaardAdres alternative will be removed in Open Forms 5.0",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        updated_existing_address = client.update_digital_address_for_party(
+            address=existing_address_with_reference["adres"],
+            party_uuid=party_uuid,
+            is_preferred=False,
+            reference="",
+            address_uuid=existing_address_with_reference["uuid"],
+        )
+        if updated_existing_address:
+            assert updated_existing_address["referentie"] == ""
+
+        return updated_existing_address
 
 
 def update_customer_interaction_data(
@@ -67,7 +113,11 @@ def update_customer_interaction_data(
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the created ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene``. If the address is
-        submitted as ``isNewPreferred``, then it's also linked to the created ``partij``
+        submitted as ``isNewPreferred``, then it's also linked to the created ``partij``.
+        We also update it either with ``isStandaardAdres`` = True or
+        ``referentie ==  USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG``,
+        based on the setting ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS``, never
+        both at the same time.
 
     3. User is authenticated, known in the API and uses pre-filled data:
 
@@ -83,7 +133,9 @@ def update_customer_interaction_data(
         to the found ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
         If the address is submitted as ``isNewPreferred`` or is verified via Open Forms email
-        verification flow, then it's also linked to the ``partij``
+        verification flow, then it's also linked to the ``partij``. We also update it with
+        ``isStandaardAdres`` = True or ``referentie ==  USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG``,
+        based on the env variable ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS``
 
     5. User is authenticated, known in the API and submits existing addresses with the changed preference:
 
@@ -92,9 +144,18 @@ def update_customer_interaction_data(
         to the found ``partij``
       * if the address is submitted as ``useOnlyOnce``, then we don't update it
       * if the address is submitted as ``isNewPreferred``, and the existing address is not
-        preferred (``isStandaardAdres`` == False) then we update it with ``isStandaardAdres`` = True
+        preferred (``isStandaardAdres`` == False or ``referentie`` == "") then we update
+        it with ``isStandaardAdres`` = True or
+        ``referentie ==  USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG``, based on the env variable
+        ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS``
 
     """
+    # check if `referentie` or `isStandaardAdres` needs to be used for preferred address,
+    # isStandaardAdres is the default one
+    should_use_reference_for_standard_address = (
+        settings.CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS
+    )
+    open_forms_reference = submission.public_registration_reference
 
     # submission profile data
     state = submission.variables_state
@@ -219,19 +280,46 @@ def update_customer_interaction_data(
             ):
                 continue
 
+            reference = (
+                USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG
+                if should_use_reference_for_standard_address
+                and is_address_new_preferred
+                else open_forms_reference
+            )
+
             if address_value in prefill_channel_options:
                 # flow 5. we update it only if it's marked as "isNewPreferred" or it's now
                 # verified via Open Forms
                 if verification_date or is_address_new_preferred:
+                    # check for possible duplicate addresses
+                    updated_existing_address = (
+                        clear_existing_standard_address_reference(
+                            client,
+                            party_uuid,
+                            reference,
+                            channels_to_address_types[address_channel],
+                        )
+                    )
+                    if updated_existing_address:
+                        updated_addresses.append(updated_existing_address)
+
+                    # now it's safe to update the address
                     updated_address = client.update_digital_address_for_party(
                         address=address_value,
                         party_uuid=party_uuid,
-                        is_preferred=is_address_new_preferred,
+                        is_preferred=(
+                            None
+                            if should_use_reference_for_standard_address
+                            and reference == USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG
+                            else is_address_new_preferred
+                        ),
                         verification_date=verification_date
                         if not is_already_verified
                         else None,
+                        reference=reference,
                     )
-                    updated_addresses.append(updated_address)
+                    if updated_address:
+                        updated_addresses.append(updated_address)
 
                 # flow 3. we create a new address and link it to betrokkene
                 else:
@@ -240,23 +328,42 @@ def update_customer_interaction_data(
                         address_type=channels_to_address_types[address_channel],
                         betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                         is_preferred=False,
-                        verification_date=verification_date
-                        if not is_already_verified
-                        else None,
+                        verification_date=(
+                            verification_date if not is_already_verified else None
+                        ),
+                        reference=open_forms_reference,
                     )
                     created_addresses.append(created_address)
             else:
                 # flows 1,2 4: we create a new address and link it to betrokkene
                 # flows 2,4: we link a new address to partij if it's marked as "isNewPreferred"
+
+                # check for possible duplicate addresses
+                updated_existing_address = clear_existing_standard_address_reference(
+                    client,
+                    party_uuid,
+                    reference,
+                    channels_to_address_types[address_channel],
+                )
+                if updated_existing_address:
+                    updated_addresses.append(updated_existing_address)
+
+                # now it's safe to create the address
                 created_address = client.create_digital_address(
                     address=address_value,
                     address_type=channels_to_address_types[address_channel],
                     betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
                     party_uuid=party_uuid if is_address_new_preferred else "",
-                    is_preferred=is_address_new_preferred,
-                    verification_date=verification_date
-                    if not is_already_verified
-                    else None,
+                    is_preferred=(
+                        False
+                        if should_use_reference_for_standard_address
+                        and reference == USE_REFERENCE_FOR_STANDARD_ADDRESS_FLAG
+                        else is_address_new_preferred
+                    ),
+                    verification_date=(
+                        verification_date if not is_already_verified else None
+                    ),
+                    reference=reference,
                 )
                 created_addresses.append(created_address)
 
