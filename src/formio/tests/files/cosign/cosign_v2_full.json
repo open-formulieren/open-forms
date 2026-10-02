@@ -1,0 +1,60 @@
+{
+  "autocomplete": "email",
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "defaultValue": "",
+  "description": "A description",
+  "errors": {
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someCoSign",
+  "label": "Some cosign",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo",
+        "tooltip": "baz"
+      }
+    }
+  },
+  "registration": {
+    "attribute": "foo"
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "cosign",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
