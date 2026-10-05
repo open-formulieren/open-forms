@@ -82,6 +82,7 @@ type DateValidatorKeys = Literal["required", "minDate", "maxDate", "invalid_date
 
 class DateValidate(FormioStruct):
     required: bool = False
+    plugins: Sequence[str] = []
     # min and max date are specified through the date picker config
     # min_date: date | None = None
     # max_date: date | None = None
@@ -96,7 +97,8 @@ class DatePickerConfig(FormioStruct):
 
 
 class Date(Component, tag="date"):
-    autocomplete: str = ""  # used in appointments
+    # # used in appointments, but not yet used by builder / renderer
+    # autocomplete: str = ""
     clear_on_hide: bool = True
     conditional: Conditional | None = None
     date_picker: DatePickerConfig | None = None
@@ -110,7 +112,6 @@ class Date(Component, tag="date"):
     label: str
     multiple: bool = False
     open_forms: DateExtensions | None = None
-    placeholder: str = ""
     prefill: Prefill | None = None
     registration: Registration | None = None
     show_in_email: bool = False
@@ -163,7 +164,6 @@ class Date(Component, tag="date"):
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)
         self.description = do_render(self.description)
-        self.placeholder = do_render(self.placeholder)
         self.tooltip = do_render(self.tooltip)
         # we don't support templating default_value - this may have worked in the past,
         # but our builder has been active since 3.x which doesn't allow configuring
@@ -173,5 +173,4 @@ class Date(Component, tag="date"):
     def test_templates(self, test_with_trace: TestWithTrace) -> None:
         test_with_trace(self.label, attribute="label")
         test_with_trace(self.description, attribute="description")
-        test_with_trace(self.placeholder, attribute="placeholder")
         test_with_trace(self.tooltip, attribute="tooltip")
