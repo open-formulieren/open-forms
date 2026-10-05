@@ -1,21 +1,26 @@
+import type {Preview} from '@storybook/react-vite';
 import 'bootstrap/dist/css/bootstrap.css';
-import '../src/openforms/scss/screen.scss';
-import '../src/openforms/scss/admin/admin_overrides.scss';
-import {withModalDecorator, withReactSelectDecorator, TinyMceDecorator} from 'components/admin/form_design/story-decorators';
+import 'leaflet';
 import {initialize, mswLoader} from 'msw-storybook-addon';
-import {reactIntl} from './reactIntl.js';
-import ReactModal from 'react-modal';
-import * as L from 'leaflet';
 import 'proj4leaflet';
+
+import {
+  TinyMceDecorator,
+  withModalDecorator,
+  withReactSelectDecorator,
+} from 'components/admin/form_design/story-decorators';
+
+import '../src/openforms/scss/admin/admin_overrides.scss';
+import '../src/openforms/scss/screen.scss';
+import {reactIntl} from './reactIntl.js';
 
 initialize({
   onUnhandledRequest: 'bypass',
   serviceWorker: {
     url: './mockServiceWorker.js',
   },
+  quiet: true, // don't output logs
 });
-
-ReactModal.setAppElement(document.getElementById('storybook-root'));
 
 export default {
   decorators: [withModalDecorator, withReactSelectDecorator, TinyMceDecorator],
@@ -36,4 +41,4 @@ export default {
       en: 'English',
     },
   },
-};
+} satisfies Preview;
