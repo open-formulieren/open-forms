@@ -156,7 +156,7 @@ export default defineConfig(({mode}) => {
           'src/openforms/js/utils/storybookTestHelpers.js',
           ...coverageConfigDefaults.exclude,
         ],
-        reporter: ['text', 'cobertura', 'html'],
+        reporter: ['text'], // 'cobertura', 'html'],
       },
 
       browser: {
