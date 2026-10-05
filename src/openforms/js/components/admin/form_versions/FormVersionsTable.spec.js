@@ -1,3 +1,5 @@
+import {expect, test} from 'vitest';
+
 import {checkVersionsCompatible} from './FormVersionsTable';
 
 // showing a warning depends on the combination of the app and the current release
