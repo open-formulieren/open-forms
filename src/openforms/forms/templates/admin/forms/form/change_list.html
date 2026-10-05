@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load i18n static admin_urls admin_list forms_admin_list django_vite %}
+{% load i18n l10n static admin_urls admin_list forms_admin_list django_vite %}
 
 {% block extrastyle %}
 <link rel="stylesheet" href="{% vite_asset_url 'src/openforms/scss/screen.scss' %}">
@@ -56,7 +56,7 @@
                 <tbody>
                     <tr
                         class="form-category {% if not category.is_leaf or category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %}"
-                        data-id="{{ category.id }}"
+                        data-id="{{ category.id|unlocalize }}"
                         data-parent-id="{{ category.get_parent.id }}"
                         data-depth="{{ category.get_depth }}">
                         {# span action checkbox + first column #}
