@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "TZ=Europe/Amsterdam vitest --project=unit",
-    "test:storybook": "test-storybook",
+    "test:storybook": "TZ=Europe/Amsterdam vitest --project=storybook",
     "build": "vite build",
     "build:typecheck": "tsc --noEmit",
     "start": "vite dev",

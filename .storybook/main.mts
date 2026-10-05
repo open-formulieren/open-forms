@@ -17,7 +17,12 @@ const config: StorybookConfig = {
     {from: '../static/img', to: 'img'},
     {from: '../public', to: ''},
   ],
-  addons: ['@storybook/addon-links', 'storybook-react-intl', '@storybook/addon-docs'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-docs',
+    'storybook-react-intl',
+    '@storybook/addon-vitest',
+  ],
   framework: {
     name: '@storybook/react-vite',
     options: {},

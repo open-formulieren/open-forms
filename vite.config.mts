@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import babel from '@rolldown/plugin-babel';
+import {storybookTest} from '@storybook/addon-vitest/vitest-plugin';
 import react from '@vitejs/plugin-react';
 import {playwright} from '@vitest/browser-playwright';
 import {createRequire} from 'node:module';
@@ -180,6 +181,18 @@ export default defineConfig(({mode}) => {
             name: 'unit',
             setupFiles: ['./vitest-unit.setup.ts'],
             include: ['src/openforms/js/**/*.spec.{js,ts,tsx}'],
+          },
+        },
+        {
+          extends: true,
+          plugins: [
+            // The plugin will run tests for the stories defined in your Storybook config
+            // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+            storybookTest({configDir: resolve(import.meta.dirname, '.storybook')}),
+          ],
+          test: {
+            name: 'storybook',
+            setupFiles: ['./vitest-storybook.setup.ts'],
           },
         },
       ],
