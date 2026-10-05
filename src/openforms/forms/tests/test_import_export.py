@@ -221,8 +221,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                     {
                         "type": "file",
                         "key": "test-key",
+                        "url": "http://testserver/api/v2/formio/fileupload",
                         "label": "test-key",
-                        "file": {"type": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "filePattern": "",
                     }
                 ]
@@ -1586,8 +1587,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                     {
                         "type": "file",
                         "key": "test-key",
+                        "url": "http://testserver/api/v2/formio/fileupload",
                         "label": "test-key",
-                        "file": {"type": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "filePattern": "",
                     }
                 ]
@@ -2252,7 +2254,14 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)
 
-    def test_import_applies_converters_map_component_interactions(self):
+    @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
+    def test_import_applies_converters_map_component_interactions(self, m_solo):
+        m_solo.return_value = GlobalConfiguration(
+            form_map_default_zoom_level=8,
+            form_map_default_latitude=55.123,
+            form_map_default_longitude=56.456,
+        )
+
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -2293,6 +2302,11 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "type": "map",
                     "label": "Map",
                     "useConfigDefaultMapSettings": True,
+                    "defaultZoom": 8,
+                    "initialCenter": {
+                        "lat": 55.123,
+                        "lng": 56.456,
+                    },
                     "interactions": {
                         "marker": True,
                         "polygon": False,
@@ -2304,6 +2318,11 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "type": "map",
                     "label": "Map",
                     "useConfigDefaultMapSettings": True,
+                    "defaultZoom": 8,
+                    "initialCenter": {
+                        "lat": 55.123,
+                        "lng": 56.456,
+                    },
                     "interactions": {
                         "marker": False,
                         "polygon": True,
