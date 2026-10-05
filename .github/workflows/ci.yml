@@ -112,7 +112,9 @@ jobs:
           CELERY_ONCE_REDIS_URL: 'redis://localhost:6379/0'
 
       - name: Run JS tests
-        run: npm test
+        run: |
+          npx playwright install --with-deps chromium
+          npm test -- --coverage
 
       - name: Run frontend type checks
         run: npm run build:typecheck
