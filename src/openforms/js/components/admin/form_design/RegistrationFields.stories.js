@@ -794,7 +794,7 @@ export const ObjectsAPI = {
       await userEvent.click(fieldsetTitle);
 
       const catalogueSelect = modal.getByLabelText('Catalogus');
-      await rsSelect(catalogueSelect, 'Catalogus 2');
+      await rsSelect(catalogueSelect, 'Catalogus 2', canvasElement);
     });
 
     await step(

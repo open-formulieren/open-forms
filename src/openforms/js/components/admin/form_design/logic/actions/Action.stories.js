@@ -1,7 +1,7 @@
 import {produce} from 'immer';
 import set from 'lodash/set';
-import {useArgs} from 'storybook/preview-api';
-import {expect, userEvent, waitFor, within} from 'storybook/test';
+import {useState} from 'react';
+import {expect, fn, userEvent, waitFor, within} from 'storybook/test';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -15,7 +15,9 @@ export default {
   title: 'Form design/FormLogic/Action',
   decorators: [FormDecorator, FormLogicDecorator],
   component: Action,
-  argTypes: {},
+  args: {
+    onDelete: fn(),
+  },
 };
 
 const AVAILABLE_SERVICES = [
@@ -65,14 +67,15 @@ const SERVICE_FETCH_CONFIGURATIONS = [
   },
 ];
 
-const render = ({prefixText, errors, onDelete}) => {
-  const [{action}, updateArgs] = useArgs();
+const render = ({action: initialAction, prefixText, errors, onDelete}) => {
+  const [action, setAction] = useState(initialAction);
+
   const onChange = event => {
     const {name, value} = event.target;
     const newAction = produce(action, draft => {
       set(draft, name, value);
     });
-    updateArgs({action: newAction});
+    setAction(newAction);
   };
   return (
     <Action
@@ -290,6 +293,11 @@ export const EvaluateDMNWithInitialErrors = {
 
         expect(errorMessages.length).toBe(2);
       });
+
+      // wait for network requests to settle beforing moving on to other tests
+      expect(
+        await within(pluginDropdown).findByRole('option', {name: 'Some other engine'})
+      ).toBeInTheDocument();
     });
   },
 };

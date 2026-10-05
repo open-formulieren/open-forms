@@ -1435,7 +1435,11 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(copyButton).toBeDisabled();
       const copyDropdown = await modal.findByLabelText('Registratie-instellingen overnemen');
       expect(copyDropdown).toBeVisible();
-      await rsSelect(copyDropdown, 'Other Objects API registration with a long name');
+      await rsSelect(
+        copyDropdown,
+        'Other Objects API registration with a long name',
+        canvasElement
+      );
 
       expect(copyButton).toBeVisible();
       expect(copyButton).not.toBeDisabled();
@@ -1969,7 +1973,7 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
       await targetSelectMenu.findByRole('option', {name: 'other > path'});
       expect(targetSelectMenu.getAllByRole('option')).toHaveLength(1);
 
-      await rsSelect(targetPathDropdown, 'other > path');
+      await rsSelect(targetPathDropdown, 'other > path', canvasElement);
     });
 
     await step('Map specific subfields', async () => {
@@ -2000,8 +2004,8 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
       const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
       expect(streetNameSelect).toBeDisabled();
 
-      await rsSelect(postcodeSelect, 'path > to.the > target (verplicht)');
-      await rsSelect(houseNumberSelect, 'number > target (verplicht)');
+      await rsSelect(postcodeSelect, 'path > to.the > target (verplicht)', canvasElement);
+      await rsSelect(houseNumberSelect, 'number > target (verplicht)', canvasElement);
     });
   },
 };
@@ -2445,7 +2449,7 @@ export const ConfigurePrefillCommunicationPreferences = {
       expect(apiGroupOptions).toHaveLength(2);
       expect(apiGroupOptions[0], {name: 'Group 1'}).toBeVisible();
       expect(apiGroupOptions[0], {name: 'Group 2'}).toBeVisible();
-      await rsSelect(apiGroupDropdown, 'Group 1');
+      await rsSelect(apiGroupDropdown, 'Group 1', canvasElement);
 
       // check Profile form variable
       const profileVariableDropdown = await canvas.findByLabelText('Profielformuliervariabele');
@@ -2457,7 +2461,7 @@ export const ConfigurePrefillCommunicationPreferences = {
       // Expect only the profile component form variable to be available
       expect(profileVariableOptions).toHaveLength(1);
       expect(profileVariableOptions[0], {name: 'Profile'}).toBeVisible();
-      await rsSelect(profileVariableDropdown, 'Profile');
+      await rsSelect(profileVariableDropdown, 'Profile', canvasElement);
     });
   },
 };

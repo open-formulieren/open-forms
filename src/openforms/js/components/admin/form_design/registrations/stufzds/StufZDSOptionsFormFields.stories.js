@@ -235,11 +235,11 @@ export const VariablesMappingWithCSVSerialize = {
     await userEvent.click(addVariableButton);
 
     const formVarSelect1 = canvas.getByLabelText('Formuliervariabele');
-    await rsSelect(formVarSelect1, 'Payment public order IDs');
+    await rsSelect(formVarSelect1, 'Payment public order IDs', canvasElement);
 
     await userEvent.click(addVariableButton);
     const formVarSelect2 = canvas.getAllByLabelText('Formuliervariabele')[1];
-    await rsSelect(formVarSelect2, 'Payment completed');
+    await rsSelect(formVarSelect2, 'Payment completed', canvasElement);
 
     expect(await canvas.findAllByRole('checkbox')).toHaveLength(1);
   },

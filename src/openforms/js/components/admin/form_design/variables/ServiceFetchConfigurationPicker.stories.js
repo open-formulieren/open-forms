@@ -1,3 +1,5 @@
+import {fn} from 'storybook/test';
+
 import {FormLogicDecorator} from '../story-decorators';
 import ServiceFetchConfigurationPicker from './ServiceFetchConfigurationPicker';
 
@@ -5,6 +7,11 @@ export default {
   title: 'Form design/Service Fetch/ServiceFetchConfigurationPicker',
   decorators: [FormLogicDecorator],
   component: ServiceFetchConfigurationPicker,
+  args: {
+    variableName: 'serviceFetch',
+    onChange: fn(),
+    onFormSave: fn(),
+  },
 };
 
 export const Blank = {

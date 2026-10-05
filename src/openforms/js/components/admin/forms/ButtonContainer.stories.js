@@ -1,3 +1,5 @@
+import {fn} from 'storybook/test';
+
 import ButtonContainer from './ButtonContainer';
 
 export default {
@@ -5,6 +7,7 @@ export default {
   component: ButtonContainer,
   args: {
     children: 'Add',
+    onClick: fn(),
   },
 };
 

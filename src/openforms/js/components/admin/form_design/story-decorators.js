@@ -141,11 +141,11 @@ export const FormikDecorator = (Story, context) => {
   );
 };
 
-export const withModalDecorator = Story => (
+export const withModalDecorator = (Story, context) => (
   <ModalContext.Provider
     value={{
       // only for storybook integration, do not use this in real apps!
-      parentSelector: () => document.getElementById('storybook-root'),
+      parentSelector: () => context.canvasElement,
       ariaHideApp: false,
     }}
   >
@@ -153,11 +153,11 @@ export const withModalDecorator = Story => (
   </ModalContext.Provider>
 );
 
-export const withReactSelectDecorator = Story => (
+export const withReactSelectDecorator = (Story, context) => (
   <ReactSelectContext.Provider
     value={{
       // only for storybook integration, do not use this in real apps!
-      parentSelector: () => document.getElementById('storybook-root'),
+      parentSelector: () => context.canvasElement,
     }}
   >
     <Story />
