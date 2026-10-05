@@ -18,7 +18,7 @@ def get_custom_assets(*, include_bootstrap: bool = False):
         css={"all": css},
         js=(  # pyright: ignore[reportArgumentType]
             Script(
-                vite.generate_vite_asset_url("src/openforms/js/index.js"),
+                vite.generate_vite_asset_url("src/openforms/js/index.ts"),
                 type="module",
             ),
         ),

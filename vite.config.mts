@@ -92,6 +92,7 @@ export default defineConfig(({mode}) => {
     },
     // TODO: migrate to @/ prefix like the other TS/JS projects
     resolve: {
+      tsconfigPaths: true,
       alias: {
         'compiled-lang': resolve(jsRoot, 'compiled-lang'),
         components: resolve(jsRoot, 'components'),
