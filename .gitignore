@@ -26,6 +26,9 @@ __pycache__
 .coverage*
 .pytest_cache
 .hypothesis
+.vitest/
+__screenshots__/
+coverage/
 
 # Environment
 local.py
