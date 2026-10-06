@@ -1,0 +1,5 @@
+{
+  "type": "iban",
+  "key": "iban",
+  "label": "IBAN"
+}
