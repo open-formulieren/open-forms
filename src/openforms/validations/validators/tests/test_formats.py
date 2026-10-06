@@ -17,9 +17,11 @@ class ValidatorTestBase(TestCase):
                 validator(value)
 
         for value in invalid:
-            with self.subTest(f"invalid '{value}'"):
-                with self.assertRaisesMessage(ValidationError, message):
-                    validator(value)
+            with (
+                self.subTest(f"invalid '{value}'"),
+                self.assertRaisesMessage(ValidationError, message),
+            ):
+                validator(value)
 
 
 @override_settings(LANGUAGE_CODE="en")

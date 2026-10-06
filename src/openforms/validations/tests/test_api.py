@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.test import tag
 from django.urls import reverse
 
 from rest_framework import status
@@ -9,9 +10,11 @@ from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.validations.base import StringValueSerializer
-from openforms.validations.registry import Registry
-from openforms.validations.tests.test_registry import DjangoValidator, DRFValidator
+
+from ..base import StringValueSerializer
+from ..registry import Registry
+from ..validators.formats import DutchPhoneNumberValidator
+from .test_registry import DjangoValidator, DRFValidator
 
 
 class ValidationsAPITests(SubmissionsMixin, APITestCase):
@@ -19,11 +22,11 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
         self.user = StaffUserFactory()
         self.client.force_login(self.user)
 
-        register = Registry()
-        register("django")(DjangoValidator)
-        register("drf")(DRFValidator)
+        self.register = Registry()
+        self.register("django")(DjangoValidator)
+        self.register("drf")(DRFValidator)
 
-        patcher = patch("openforms.validations.api.views.register", new=register)
+        patcher = patch("openforms.validations.api.views.register", new=self.register)
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -125,7 +128,7 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
 
     def test_default_string_serializer(self):
         self.assertTrue(StringValueSerializer(data={"value": "foo"}).is_valid())
-        self.assertFalse(StringValueSerializer(data={"value": ""}).is_valid())
+        self.assertTrue(StringValueSerializer(data={"value": ""}).is_valid())
         self.assertFalse(StringValueSerializer(data={"value": None}).is_valid())
         self.assertFalse(StringValueSerializer(data={"bazz": "buzz"}).is_valid())
 
@@ -166,3 +169,19 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
         }
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, expected)
+
+    @tag("gh-6751")
+    def test_validation_phonenumber_with_spaces_only_value(self):
+        self.register("phonenumber-nl")(DutchPhoneNumberValidator)
+        submission = SubmissionFactory.create()
+        submission_uuid = str(submission.uuid)
+        url = reverse("api:validate-value", kwargs={"validator": "phonenumber-nl"})
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            url,
+            {"value": "      ", "submission_uuid": submission_uuid},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["isValid"], False)
