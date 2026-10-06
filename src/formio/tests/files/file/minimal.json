@@ -1,0 +1,7 @@
+{
+  "type": "file",
+  "key": "file",
+  "label": "File",
+  "file": {"type": []},
+  "filePattern": ""
+}
