@@ -34,6 +34,7 @@ class LicensePlateValidate(FormioStruct):
     pattern: Literal[r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"] = (
         r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"
     )
+    plugins: Sequence[str] = []
 
 
 class LicensePlate(Component, tag="licenseplate"):
