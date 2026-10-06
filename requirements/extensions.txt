@@ -563,7 +563,7 @@ maykin-common==0.21.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-maykin-json-logic-py==0.16.0
+maykin-json-logic-py==0.16.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
