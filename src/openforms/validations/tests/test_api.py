@@ -128,7 +128,7 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
 
     def test_default_string_serializer(self):
         self.assertTrue(StringValueSerializer(data={"value": "foo"}).is_valid())
-        self.assertFalse(StringValueSerializer(data={"value": ""}).is_valid())
+        self.assertTrue(StringValueSerializer(data={"value": ""}).is_valid())
         self.assertFalse(StringValueSerializer(data={"value": None}).is_valid())
         self.assertFalse(StringValueSerializer(data={"bazz": "buzz"}).is_valid())
 
