@@ -1,3 +1,5 @@
+import {fn} from 'storybook/test';
+
 import ArrayInput from './ArrayInput';
 
 export default {
@@ -7,6 +9,7 @@ export default {
     name: 'field',
     inputType: 'text',
     values: ['foo', 'bar'],
+    onChange: fn(),
     deleteConfirmationMessage: 'Are you sure you want to delete this?',
     addButtonMessage: 'Add more',
   },

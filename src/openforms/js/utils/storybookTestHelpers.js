@@ -5,8 +5,8 @@ const SB_ROOT = document.getElementById('storybook-root');
 /**
  * Wrapper around selectEvent.select to ensure the portal option is used.
  */
-const rsSelect = async (input, optionOrOptions) => {
-  await selectEvent.select(input, optionOrOptions, {container: SB_ROOT});
+const rsSelect = async (input, optionOrOptions, sbRoot = SB_ROOT) => {
+  await selectEvent.select(input, optionOrOptions, {container: sbRoot});
 };
 
 /**

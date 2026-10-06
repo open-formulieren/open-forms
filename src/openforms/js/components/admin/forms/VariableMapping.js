@@ -322,7 +322,7 @@ VariableMapping.propTypes = {
    *
    * This is the form variable to which the property will be mapped.
    */
-  variableName: PropTypes.string.isRequired,
+  variableName: PropTypes.string,
 
   /**
    * Name of the property nested inside each mapping item.

@@ -100,7 +100,7 @@ export const DynamicOptionsBasedOnAuthenticationOptions = {
     const authenticationOptionsSelect = canvas.getAllByRole('combobox')[0];
     expect(authenticationOptionsSelect).toHaveValue('');
 
-    await rsSelect(authenticationOptionsSelect, 'BSN');
+    await rsSelect(authenticationOptionsSelect, 'BSN', canvasElement);
     const bsnOptionsFieldset = canvas.getByRole('heading', {
       name: 'Yivi-pluginopties voor bsn',
     });
@@ -108,7 +108,7 @@ export const DynamicOptionsBasedOnAuthenticationOptions = {
       expect(bsnOptionsFieldset).toBeVisible();
     });
 
-    await rsSelect(authenticationOptionsSelect, 'KvK number');
+    await rsSelect(authenticationOptionsSelect, 'KvK number', canvasElement);
     const kvkOptionsFieldset = canvas.getByRole('heading', {
       name: 'Yivi-pluginopties voor kvk',
     });

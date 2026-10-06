@@ -195,31 +195,31 @@ export const SelectCaseTypeAndDocumentType = {
 
     await step('Select catalogue', async () => {
       const catalogueSelect = canvas.getByLabelText('Catalogus');
-      await rsSelect(catalogueSelect, 'Catalogus 1');
+      await rsSelect(catalogueSelect, 'Catalogus 1', canvasElement);
     });
 
     await step('Select case type', async () => {
       const caseTypeSelect = canvas.getByLabelText('Zaaktype', {
         selector: '#id_caseTypeIdentification',
       });
-      await rsSelect(caseTypeSelect, 'Request passport');
+      await rsSelect(caseTypeSelect, 'Request passport', canvasElement);
     });
 
     await step('Select document type', async () => {
       const documentTypeSelect = canvas.getByLabelText('Documenttype', {
         selector: '#id_documentTypeDescription',
       });
-      await rsSelect(documentTypeSelect, 'Attachment');
+      await rsSelect(documentTypeSelect, 'Attachment', canvasElement);
     });
 
     await step('Select employee role type', async () => {
       const roleTypeSelect = canvas.getByLabelText('Medewerkerroltype');
-      await rsSelect(roleTypeSelect, 'Baliemedewerker');
+      await rsSelect(roleTypeSelect, 'Baliemedewerker', canvasElement);
     });
 
     await step('Select product', async () => {
       const productSelect = canvas.getByLabelText('Product');
-      await rsSelect(productSelect, 'Product 1423');
+      await rsSelect(productSelect, 'Product 1423', canvasElement);
     });
   },
 };

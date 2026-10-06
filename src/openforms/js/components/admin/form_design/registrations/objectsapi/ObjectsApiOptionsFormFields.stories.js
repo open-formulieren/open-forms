@@ -112,19 +112,19 @@ export const SwitchToV2Empty = {
     expect(v2Tab).toHaveAttribute('aria-selected', 'true');
 
     const groupSelect = canvas.getByLabelText('API-groep');
-    await rsSelect(groupSelect, 'Objects API group 1');
+    await rsSelect(groupSelect, 'Objects API group 1', canvasElement);
 
     const objectTypeSelect = canvas.getByLabelText('Objecttype');
     await waitFor(() => {
       expect(objectTypeSelect).toBeVisible();
     });
-    await rsSelect(objectTypeSelect, 'Tree (open)');
+    await rsSelect(objectTypeSelect, 'Tree (open)', canvasElement);
 
     const objectTypeVersionSelect = canvas.getByLabelText('Versie');
     await waitFor(() => {
       expect(objectTypeVersionSelect).toBeVisible();
     });
-    await rsSelect(objectTypeVersionSelect, '2 (draft)');
+    await rsSelect(objectTypeVersionSelect, '2 (draft)', canvasElement);
 
     const testForm = await canvas.findByTestId('test-form');
     expect(testForm).toHaveFormValues({
@@ -223,7 +223,7 @@ export const APIFetchError = {
 
     await step('Retrieving object types', async () => {
       const groupSelect = canvas.getByLabelText('API-groep');
-      await rsSelect(groupSelect, 'Objects API group 1');
+      await rsSelect(groupSelect, 'Objects API group 1', canvasElement);
 
       const errorMessage = await canvas.findByText(
         'Er ging iets fout bij het ophalen van de objecttypes.'
@@ -297,9 +297,9 @@ export const SelectDocumentType = {
     await userEvent.click(fieldsetTitle);
 
     const catalogueSelect = canvas.getByLabelText('Catalogus');
-    await rsSelect(catalogueSelect, 'Catalogus 1');
+    await rsSelect(catalogueSelect, 'Catalogus 1', canvasElement);
     const pdfSelect = canvas.getAllByLabelText('Informatieobjecttype inzendings-PDF')[0];
-    await rsSelect(pdfSelect, 'Test PDF');
+    await rsSelect(pdfSelect, 'Test PDF', canvasElement);
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
@@ -310,7 +310,7 @@ export const SelectDocumentType = {
       });
     });
 
-    await rsSelect(catalogueSelect, 'Catalogus 2');
+    await rsSelect(catalogueSelect, 'Catalogus 2', canvasElement);
     await waitFor(() => {
       expect(testForm).toHaveFormValues({
         iotSubmissionReport: '',

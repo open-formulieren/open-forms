@@ -1,3 +1,5 @@
+import {expect, test} from 'vitest';
+
 import {EMPTY_VARIABLE} from 'components/admin/form_design/variables/constants';
 
 import {asJsonSchema} from './utils';

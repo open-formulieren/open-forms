@@ -1,3 +1,5 @@
+import {fn} from 'storybook/test';
+
 import {FormDecorator} from '../story-decorators';
 import LiteralValueInput from './LiteralValueInput';
 
@@ -9,6 +11,7 @@ export default {
     name: 'aValue',
     type: 'string',
     value: undefined,
+    onChange: fn(),
   },
 };
 

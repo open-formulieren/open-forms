@@ -1,9 +1,13 @@
+/// <reference types="vitest/config" />
 import babel from '@rolldown/plugin-babel';
+import {storybookTest} from '@storybook/addon-vitest/vitest-plugin';
 import react from '@vitejs/plugin-react';
+import {playwright} from '@vitest/browser-playwright';
 import {createRequire} from 'node:module';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {defineConfig} from 'vite';
+import {coverageConfigDefaults} from 'vitest/config';
 
 const require = createRequire(import.meta.url);
 
@@ -136,6 +140,62 @@ export default defineConfig(({mode}) => {
           },
         },
       },
+    },
+    test: {
+      environment: 'node',
+
+      coverage: {
+        provider: 'v8',
+        include: ['src/openforms/js/**/*.{js,jsx,ts,tsx}'],
+        exclude: [
+          'src/openforms/js/**/*.d.ts',
+          'src/openforms/js/**/*.stories.{ts,tsx}',
+          'src/openforms/js/api-mocks/*',
+          'src/openforms/js/**/mocks.ts',
+          'src/openforms/js/components/admin/form_design/story-decorators.js',
+          'src/openforms/js/utils/storybookTestHelpers.js',
+          ...coverageConfigDefaults.exclude,
+        ],
+        reporter: ['text'], // 'cobertura', 'html'],
+      },
+
+      browser: {
+        enabled: true,
+        headless: true,
+        provider: playwright({}),
+        instances: [
+          {
+            browser: 'chromium',
+            viewport: {
+              width: 1600,
+              height: 1200,
+            },
+          },
+        ],
+      },
+
+      projects: [
+        {
+          extends: true,
+          test: {
+            name: 'unit',
+            setupFiles: ['./vitest-unit.setup.ts'],
+            include: ['src/openforms/js/**/*.spec.{js,ts,tsx}'],
+          },
+        },
+        {
+          extends: true,
+          plugins: [
+            // The plugin will run tests for the stories defined in your Storybook config
+            // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+            storybookTest({configDir: resolve(import.meta.dirname, '.storybook')}),
+          ],
+          test: {
+            name: 'storybook',
+            setupFiles: ['./vitest-storybook.setup.ts'],
+          },
+        },
+      ],
     },
   };
 });

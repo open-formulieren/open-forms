@@ -231,7 +231,7 @@ export const Empty = {
 
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
-      await rsSelect(formVarsDropdowns, 'Name');
+      await rsSelect(formVarsDropdowns, 'Name', canvasElement);
       // this is super flaky for some reason on both Chromium and Firefox :/
       await waitFor(async () => {
         await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');

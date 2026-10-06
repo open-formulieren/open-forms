@@ -13,6 +13,7 @@ export default {
       uuid: '',
       internalName: '',
       slug: 'my-form',
+      internalRemarks: '',
       showProgressIndicator: true,
       showSummaryProgress: false,
       active: true,
@@ -32,6 +33,7 @@ export default {
       authBackends: [],
       helpCalloutPage: {display: 'never', content: ''},
     },
+    formStepsAmount: 1,
     onChange: fn(),
     availableAuthPlugins: [
       {
@@ -96,7 +98,26 @@ export const Default = {};
 export const RegularFormExample = {
   args: {
     form: {
+      uuid: '',
+      internalName: '',
+      slug: 'my-form',
+      internalRemarks: '',
+      showProgressIndicator: true,
+      showSummaryProgress: false,
+      active: true,
+      category: '',
+      theme: '',
       type: 'regular',
+      isDeleted: false,
+      activateOn: null,
+      deactivateOn: null,
+      maintenanceMode: false,
+      translationEnabled: false,
+      submissionAllowed: 'yes',
+      suspensionAllowed: true,
+      askPrivacyConsent: 'global_setting',
+      askStatementOfTruth: 'global_setting',
+      appointmentOptions: null,
       authBackends: [
         {
           backend: 'digid',
@@ -120,7 +141,28 @@ export const RegularFormExample = {
 export const AppointmentFormExample = {
   args: {
     form: {
+      uuid: '',
+      internalName: '',
+      slug: 'my-form',
+      internalRemarks: '',
+      showProgressIndicator: true,
+      showSummaryProgress: false,
+      active: true,
+      category: '',
+      theme: '',
       type: 'appointment',
+      isDeleted: false,
+      activateOn: null,
+      deactivateOn: null,
+      maintenanceMode: false,
+      translationEnabled: false,
+      submissionAllowed: 'yes',
+      suspensionAllowed: true,
+      askPrivacyConsent: 'global_setting',
+      askStatementOfTruth: 'global_setting',
+      appointmentOptions: null,
+      authBackends: [],
+      helpCalloutPage: {display: 'never', content: ''},
     },
   },
   play: async ({canvasElement}) => {
@@ -134,7 +176,28 @@ export const AppointmentFormExample = {
 export const SingleStepFormExample = {
   args: {
     form: {
+      uuid: '',
+      internalName: '',
+      slug: 'my-form',
+      internalRemarks: '',
+      showProgressIndicator: true,
+      showSummaryProgress: false,
+      active: true,
+      category: '',
+      theme: '',
       type: 'single_step',
+      isDeleted: false,
+      activateOn: null,
+      deactivateOn: null,
+      maintenanceMode: false,
+      translationEnabled: false,
+      submissionAllowed: 'yes',
+      suspensionAllowed: true,
+      askPrivacyConsent: 'global_setting',
+      askStatementOfTruth: 'global_setting',
+      appointmentOptions: null,
+      authBackends: [],
+      helpCalloutPage: {display: 'never', content: ''},
     },
   },
   play: async ({canvasElement}) => {
@@ -148,7 +211,26 @@ export const SingleStepFormExample = {
 export const AuthenticationPluginWithOptionsModal = {
   args: {
     form: {
+      uuid: '',
+      internalName: '',
+      slug: 'my-form',
+      internalRemarks: '',
+      showProgressIndicator: true,
+      showSummaryProgress: false,
+      active: true,
+      category: '',
+      theme: '',
       type: 'regular',
+      isDeleted: false,
+      activateOn: null,
+      deactivateOn: null,
+      maintenanceMode: false,
+      translationEnabled: false,
+      submissionAllowed: 'yes',
+      suspensionAllowed: true,
+      askPrivacyConsent: 'global_setting',
+      askStatementOfTruth: 'global_setting',
+      appointmentOptions: null,
       authBackends: [
         {
           backend: 'digid',

@@ -125,7 +125,7 @@ ZGWFormFields.propTypes = {
   summaryDocumentChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
-  objectTypeChoices: PropTypes.arrayOf(
+  caseObjectTypeChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
 };
