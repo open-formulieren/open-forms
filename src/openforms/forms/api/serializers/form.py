@@ -546,9 +546,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                     to_identifier=api_group_slug,
                 )
 
-    def to_internal_value(self, attrs):
-        self.convert_objects_api_group(attrs)
-        return super().to_internal_value(attrs)
+    def to_internal_value(self, data):
+        self.convert_objects_api_group(data)
+        return super().to_internal_value(data)
 
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do

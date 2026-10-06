@@ -12,9 +12,13 @@ from ..typing import (
 )
 
 
-class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serializer):
+class Representation(TypedDict):
+    pass
+
+
+class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer):
     excluded_form_configuration_cleanup: ClassVar[
-        Sequence[FormConfigurationCleanup[object]]
+        Sequence[FormConfigurationCleanup]
     ] = ()
     """
     Clean-up functions for form configuration.
@@ -24,7 +28,7 @@ class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serialize
     the form data.
     """
     excluded_additional_form_configuration_cleanup: ClassVar[
-        Sequence[AdditionalFormConfigurationCleanup[object]]
+        Sequence[AdditionalFormConfigurationCleanup]
     ] = ()
     """
     Clean-up functions for additional form configuration.
@@ -41,7 +45,7 @@ class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serialize
     will be exported.
     """
 
-    def prepare_for_export(self, instance: MT):
+    def prepare_for_export(self, instance: MT) -> None:
         """
         A hook that is executed at the beginning of the export process.
 
@@ -49,9 +53,13 @@ class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serialize
         """
         pass
 
-    def to_representation(self, instance: MT):
+    def to_representation(self, instance: MT) -> RT:  # pyright: ignore[reportIncompatibleMethodOverride]
         self.prepare_for_export(instance)
-        representation = super().to_representation(instance)
+        from typing import cast  # noqa: TID251
+
+        # DRF upstream types (dict[str, Any]) are not compatible with TypedDict, this is
+        # a valid exception to get some grip on type safety
+        representation = cast(RT, super().to_representation(instance))
 
         if self.get_export_options.remove_sensitive_content:
             representation = self.remove_sensitive_content(instance, representation)
@@ -67,11 +75,11 @@ class BaseExportSerializer[MT: Model, RT: type[TypedDict]](serializers.Serialize
         """
         Remove all fields that are not in the safe_export_fields list.
         """
-        return {
-            key: field
-            for key, field in representation.items()
-            if key in self.safe_export_fields
-        }
+        cleaned_representation: RT = representation.copy()
+        for key in list(cleaned_representation):
+            if key not in self.safe_export_fields:
+                del cleaned_representation[key]
+        return cleaned_representation
 
     def remove_excluded_form_configuration(self, representation: RT) -> RT:
         options_to_keep = set(self.get_export_options.form_configuration)
