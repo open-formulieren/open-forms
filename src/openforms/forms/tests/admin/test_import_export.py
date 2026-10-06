@@ -177,6 +177,27 @@ class FormAdminExportTests(WebTest):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_form_admin_export_with_broken_export_options_invalid_json(self):
+        self.client.force_login(self.user)
+
+        product = ProductFactory.create()
+        form = FormFactory.create(
+            internal_remarks="Some internal remark that should be removed",
+            product=product,
+            registration_backend="demo",
+        )
+        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
+
+        response = self.client.post(
+            admin_url,
+            data={
+                "_export": "Export",
+                "export_options": '{"broken',
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+
     def test_form_admin_export_remove_all_sensitive_data(self):
         self.client.force_login(self.user)
 
