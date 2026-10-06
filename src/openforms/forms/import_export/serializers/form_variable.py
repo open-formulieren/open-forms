@@ -2,22 +2,28 @@ from ...api.serializers import FormVariableSerializer
 from ...models import FormVariable
 from ..constants import FormConfigurationOptions
 from ..datastructures import FormConfigurationCleanup
-from ..typing import FormVariableExportRepresentation
-from .base import BaseExportSerializer
+from ..typing import FormVariableData
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
-def remove_prefill_from_variable(representation: FormVariableExportRepresentation):
-    representation["prefill_plugin"] = ""
-    representation["prefill_attribute"] = ""
-    representation["prefill_options"] = {}
+def remove_prefill_from_variable(data: FormVariableData):
+    """
+    Remove prefill data from the variable.
+
+    :param data: FormVariableData The Form variable data as dict. This could be either
+    the representation of data to be exported or data to be imported.
+    """
+    data["prefill_plugin"] = ""
+    data["prefill_attribute"] = ""
+    data["prefill_options"] = {}
 
 
 class FormVariableExportSerializer(
     FormVariableSerializer,
-    BaseExportSerializer[FormVariable, FormVariableExportRepresentation],
+    BaseExportSerializer[FormVariable, FormVariableData],
 ):
     excluded_form_configuration_cleanup = (
-        FormConfigurationCleanup[FormVariableExportRepresentation](
+        FormConfigurationCleanup[FormVariableData](
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_variable,
         ),
@@ -40,8 +46,8 @@ class FormVariableExportSerializer(
     )
 
     def remove_sensitive_content(
-        self, instance: FormVariable, representation: FormVariableExportRepresentation
-    ) -> FormVariableExportRepresentation:
+        self, instance: FormVariable, representation: FormVariableData
+    ) -> FormVariableData:
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form
 
@@ -56,3 +62,9 @@ class FormVariableExportSerializer(
                 return representation
 
         return representation
+
+
+class FormVariableImportSerializer(
+    FormVariableSerializer, BaseImportSerializer[FormVariableData]
+):
+    pass
