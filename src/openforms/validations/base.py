@@ -11,7 +11,7 @@ from openforms.typing import JSONValue
 class StringValueSerializer(serializers.Serializer):
     """A default serializer that accepts ``value`` as a string."""
 
-    value = serializers.CharField()
+    value = serializers.CharField(trim_whitespace=False, allow_blank=True)
 
 
 class BasePlugin[T: JSONValue](ABC, AbstractBasePlugin):
