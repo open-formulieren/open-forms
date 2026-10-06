@@ -102,3 +102,9 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
     @property
     def get_export_options(self) -> FormExportOptions:
         return self.context["export_options"]
+
+
+class BaseImportSerializer[RT: Representation](serializers.Serializer):
+    def to_internal_value(self, instance: RT) -> RT:
+        value = instance.copy()
+        return super().to_internal_value(value)

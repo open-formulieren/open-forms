@@ -18,14 +18,14 @@ class FormExportOptionsData(TypedDict, total=False):
     additional_form_configuration: Sequence[AdditionalFormConfigurationOptions]
 
 
-class FormRegistrationExportRepresentation(TypedDict, total=False):
+class FormRegistrationDataRepresentation(TypedDict, total=False):
     key: str
     name: str
     backend: str
     options: JSONObject
 
 
-class FormLogicExportRepresentation(TypedDict, total=False):
+class FormLogicDataRepresentation(TypedDict, total=False):
     uuid: str
     url: str
     form: str
@@ -36,7 +36,7 @@ class FormLogicExportRepresentation(TypedDict, total=False):
     is_advanced: bool
 
 
-class FormVariableExportRepresentation(TypedDict, total=False):
+class FormVariableDataRepresentation(TypedDict, total=False):
     form: str
     form_definition: str
     name: str
@@ -53,7 +53,7 @@ class FormVariableExportRepresentation(TypedDict, total=False):
     initial_value: JSONObject
 
 
-class FormStepExportRepresentation(TypedDict, total=False):
+class FormStepDataRepresentation(TypedDict, total=False):
     uuid: str
     index: int
     slug: str
@@ -68,7 +68,7 @@ class FormStepExportRepresentation(TypedDict, total=False):
     translations: JSONObject
 
 
-class FormDefinitionExportRepresentation(TypedDict, total=False):
+class FormDefinitionDataRepresentation(TypedDict, total=False):
     url: str
     uuid: str
     name: str
@@ -80,7 +80,7 @@ class FormDefinitionExportRepresentation(TypedDict, total=False):
     translations: JSONObject
 
 
-class FormExportRepresentation(TypedDict, total=False):
+class FormDataRepresentation(TypedDict, total=False):
     uuid: str
     name: str
     internal_name: str
@@ -90,7 +90,7 @@ class FormExportRepresentation(TypedDict, total=False):
     login_required: bool
     translations_enabled: bool
 
-    registration_backends: list[FormRegistrationExportRepresentation]
+    registration_backends: list[FormRegistrationDataRepresentation]
     auth_backends: list[JSONObject]
     auto_login_authentication_backend: str
     payment_required: bool
@@ -103,7 +103,7 @@ class FormExportRepresentation(TypedDict, total=False):
     type: FormTypeChoices
     category: str
     theme: str
-    steps: list[FormStepExportRepresentation]
+    steps: list[FormStepDataRepresentation]
     show_progress_indicator: bool
     show_summary_progress: bool
     maintenance_mode: bool

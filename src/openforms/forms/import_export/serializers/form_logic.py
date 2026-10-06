@@ -1,11 +1,11 @@
 from ...api.serializers import FormLogicSerializer
 from ...models import FormLogic
-from ..typing import FormLogicExportRepresentation
-from .base import BaseExportSerializer
+from ..typing import FormLogicDataRepresentation
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 class FormLogicExportSerializer(
-    FormLogicSerializer, BaseExportSerializer[FormLogic, FormLogicExportRepresentation]
+    FormLogicSerializer, BaseExportSerializer[FormLogic, FormLogicDataRepresentation]
 ):
     safe_export_fields = (
         "uuid",
@@ -20,8 +20,8 @@ class FormLogicExportSerializer(
     )
 
     def remove_sensitive_content(
-        self, instance: FormLogic, representation: FormLogicExportRepresentation
-    ) -> FormLogicExportRepresentation:
+        self, instance: FormLogic, representation: FormLogicDataRepresentation
+    ) -> FormLogicDataRepresentation:
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form
 
@@ -42,3 +42,9 @@ class FormLogicExportSerializer(
                 action["action"]["value"] = ""
 
         return representation
+
+
+class FormLogicImportSerializer(
+    FormLogicSerializer, BaseImportSerializer[FormLogicDataRepresentation]
+):
+    pass
