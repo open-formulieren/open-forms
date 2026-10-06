@@ -608,7 +608,7 @@ maykin-common==0.22.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   -r requirements/test-tools.in
-maykin-json-logic-py==0.16.0
+maykin-json-logic-py==0.16.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
