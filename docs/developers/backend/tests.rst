@@ -52,17 +52,13 @@ Frontend tests
 ==============
 
 There is (a limited) set of tests for the frontend code used in the backend. Tests are
-run with Jest.
+run with Vitest.
 
 .. code-block:: bash
 
-    npm run test
+    npm test
 
-You can also run jest in watch mode or pass any other flags:
-
-.. code-block:: bash
-
-    npm run test -- --watch
+The Vitest runner starts in watch mode by default.
 
 .. _developers_backend_tests_e2e:
 
