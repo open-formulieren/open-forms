@@ -1,0 +1,72 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "description": "A description",
+  "errors": {
+    "required": "Je moet een bestand toevoegen!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "file": {
+    "allowedTypesLabels": [".png", ".pdf"],
+    "name": "prefix_{{ fileName }}",
+    "type": ["image/png", "application/pdf"]
+  },
+  "fileMaxSize": "10MB",
+  "filePattern": "image/png,application/pdf",
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someFile",
+  "label": "Attachment",
+  "maxNumberOfFiles": null,
+  "multiple": false,
+  "of": {
+    "image": {
+      "resize": {
+        "apply": true,
+        "height": 2000,
+        "width": 2000
+      }
+    }
+  },
+  "openForms": {
+    "softRequired": true,
+    "translations": {
+      "nl": {
+        "label": "Bestand toevoegen"
+      }
+    }
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Je moet een bestand toevoegen!!!"
+    }
+  },
+  "type": "file",
+  "useConfigFiletypes": false,
+  "validate": {
+    "required": false
+  }
+}
