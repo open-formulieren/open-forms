@@ -87,6 +87,37 @@ class ProfileValidationTests(TestCase):
 
         self.assertTrue(is_valid)
 
+    def test_validate_profile_fill_out_one_address_type_only_valid(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": False,
+            "validate": {"required": True},
+        }
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": [component]},
+        )
+        valid_values = {
+            "profile": [
+                {
+                    "address": "",
+                    "type": "email",
+                    "preferenceUpdate": "useOnlyOnce",
+                },
+                {
+                    "address": "020 123 456",
+                    "type": "phoneNumber",
+                    "preferenceUpdate": "useOnlyOnce",
+                },
+            ]
+        }
+        is_valid, _ = validate_formio_data(component, valid_values, submission)
+
+        self.assertTrue(is_valid)
+
     def test_validate_profile_wrong_data_format(self):
         component: CustomerProfileComponent = {
             "key": "profile",
