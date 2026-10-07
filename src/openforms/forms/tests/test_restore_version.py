@@ -7,6 +7,7 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 
 import time_machine
+from unittest_parametrize import ParametrizedTestCase, parametrize
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
@@ -21,7 +22,7 @@ from .factories import (
 from .utils import EXPORT_BLOB
 
 
-class RestoreVersionTest(TestCase):
+class RestoreVersionTest(ParametrizedTestCase, TestCase):
     def test_restoring_version(self):
         form_definition = FormDefinitionFactory.create(
             name="Test Definition 2",
@@ -324,6 +325,29 @@ class RestoreVersionTest(TestCase):
             },
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)
+
+    @parametrize("initial_active_state", [True, False])
+    def test_form_restore_active_state_is_correctly_kept(self, initial_active_state):
+        with self.subTest(data=initial_active_state):
+            form = FormFactory.create(
+                generate_minimal_setup=True, active=initial_active_state
+            )
+
+            version = FormVersionFactory.create(form=form)
+            assert version.export_blob
+
+            # Change active state after version was made
+            form.active = not initial_active_state
+            form.save()
+
+            # Restore the previous version
+            form.restore_old_version(version.uuid)
+
+            # refresh DB records
+            form.refresh_from_db()
+
+            # Assert active state equals the initial active state
+            self.assertEqual(form.active, initial_active_state)
 
 
 FORM_STEP = [
