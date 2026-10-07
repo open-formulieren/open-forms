@@ -1110,10 +1110,10 @@ class LicensePlate(BasePlugin):
 
 class ProfileValueSerializer(serializers.ListSerializer):
     def validate(self, attrs):
-        attrs: list[DigitalAddress] = super().validate(attrs)
+        values: list[DigitalAddress] = super().validate(attrs)
 
         existing_types: list[SupportedChannels] = []
-        for address_data in attrs:
+        for address_data in values:
             type = address_data["type"]
             if type in existing_types:
                 raise serializers.ValidationError(
@@ -1124,12 +1124,20 @@ class ProfileValueSerializer(serializers.ListSerializer):
 
             existing_types.append(type)
 
-        return attrs
+        # if the field is required and no addresses are filled out, that's a paddling
+        if self.required and not any(address["address"] for address in values):
+            raise serializers.ValidationError(
+                _("This field is required."), code="required"
+            )
+
+        return values
 
 
 class DigitalAddressSerializer(serializers.Serializer):
     address = serializers.CharField(
-        label=_("address"), help_text=_("The digital address value.")
+        label=_("address"),
+        help_text=_("The digital address value."),
+        allow_blank=True,
     )
     type = serializers.ChoiceField(
         label=_("type"),
@@ -1158,7 +1166,6 @@ class DigitalAddressSerializer(serializers.Serializer):
     def get_fields(self):
         fields = super().get_fields()  # type: ignore
 
-        fields["address"].allow_blank = not self.required
         # narrow down choices to the configured in the admin
         fields["type"].choices = self.digital_address_types
         return fields
