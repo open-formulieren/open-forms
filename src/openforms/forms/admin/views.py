@@ -29,9 +29,9 @@ from ..forms.form import FormImportForm
 from ..import_export.service import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
+    import_form,
 )
 from ..models import Form, FormsExport, FormSubmissionStatistics
-from ..utils import import_form
 from .tasks import process_forms_export, process_forms_import
 
 
