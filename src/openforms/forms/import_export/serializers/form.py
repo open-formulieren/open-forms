@@ -190,4 +190,7 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer[Form, FormData])
 
 
 class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
-    pass
+    def prepare_for_import(self, data: FormData) -> FormData:
+        # When importing a form, it should be non-active by default
+        data["active"] = False
+        return data
