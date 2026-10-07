@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from typing import ClassVar, TypedDict
+from uuid import uuid4
 
 from django.db.models import Model
 
@@ -104,7 +105,22 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return self.context["export_options"]
 
 
-class BaseImportSerializer[RT: Representation](serializers.Serializer):
-    def to_internal_value(self, instance: RT) -> RT:
-        value = instance.copy()
-        return super().to_internal_value(value)
+class ImportData(TypedDict):
+    pass
+
+
+class BaseImportSerializer[DT: ImportData](serializers.Serializer):
+    def to_internal_value(self, data: DT) -> DT:
+        from typing import cast  # noqa: TID251
+
+        # DRF upstream types (dict[str, Any]) are not compatible with TypedDict, this is
+        # a valid exception to get some grip on type safety
+        data_copy = cast(DT, data.copy())
+
+        # When importing an existing instance, we should not overwrite the uuid.
+        # Furthermore, some model types don't have an uuid field, so we should only set
+        # the uuid if the model has the expected field.
+        if not self.instance:
+            data_copy["uuid"] = str(uuid4())
+
+        return super().to_internal_value(data_copy)
