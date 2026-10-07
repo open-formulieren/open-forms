@@ -3,6 +3,7 @@ from collections.abc import Mapping
 from openforms.typing import JSONObject
 
 from ..models import Form
+from .datastructures import FormExportOptions
 from .resources import (
     BaseResource,
     ProductResource,
@@ -10,7 +11,7 @@ from .resources import (
     WMTSTileLayerResource,
     YiviAttributeGroupResource,
 )
-from .typing import AdditionalFormConfigurationOptions, FormExportOptions
+from .typing import AdditionalFormConfigurationOptions
 
 type ExportResourceConfig = tuple[type[BaseResource], str]
 

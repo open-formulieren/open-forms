@@ -14,6 +14,7 @@ from openforms.variables.constants import FormVariableSources
 
 from ..models import Form, FormLogic, FormStep
 from .constants import EXPORT_META_KEY
+from .datastructures import FormExportOptions
 from .export_resources import get_additional_form_configuration_data
 from .serializers import (
     FormDefinitionExportSerializer,
@@ -22,7 +23,6 @@ from .serializers import (
     FormStepExportSerializer,
     FormVariableExportSerializer,
 )
-from .typing import FormExportOptions
 
 
 def _get_mock_request():

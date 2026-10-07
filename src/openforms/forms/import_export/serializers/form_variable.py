@@ -1,7 +1,8 @@
 from ...api.serializers import FormVariableSerializer
 from ...models import FormVariable
 from ..constants import FormConfigurationOptions
-from ..typing import FormConfigurationCleanup, FormVariableExportRepresentation
+from ..datastructures import FormConfigurationCleanup
+from ..typing import FormVariableExportRepresentation
 from .base import BaseExportSerializer
 
 

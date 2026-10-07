@@ -2,9 +2,11 @@ from ...api.serializers import FormSerializer
 from ...api.serializers.form import FormRegistrationBackendSerializer
 from ...models import Form, FormRegistrationBackend
 from ..constants import AdditionalFormConfigurationOptions, FormConfigurationOptions
-from ..typing import (
+from ..datastructures import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
+)
+from ..typing import (
     FormExportRepresentation,
     FormRegistrationExportRepresentation,
 )

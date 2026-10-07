@@ -3,10 +3,12 @@ from openforms.formio.utils import iter_components
 
 from ...api.serializers import FormDefinitionSerializer
 from ...models import FormDefinition
-from ..typing import (
+from ..datastructures import (
     AdditionalFormConfigurationCleanup,
-    AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
+)
+from ..typing import (
+    AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
     FormDefinitionExportRepresentation,
 )
