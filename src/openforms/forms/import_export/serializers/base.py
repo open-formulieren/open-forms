@@ -113,6 +113,8 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
     def to_internal_value(self, data: DT) -> DT:
         data_copy = data.copy()
 
+        self.prepare_for_import(data_copy)
+
         # When importing an existing instance, we should not overwrite the uuid.
         # Furthermore, some model types don't have an uuid field, so we should only set
         # the uuid if the model has the expected field.
@@ -121,3 +123,11 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
             data_copy["uuid"] = str(uuid4())
 
         return super().to_internal_value(data_copy)
+
+    def prepare_for_import(self, data: DT) -> None:
+        """
+        A hook that is executed at the beginning of the import process.
+
+        This hook can be used to prepare individual instances for import.
+        """
+        pass

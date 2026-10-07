@@ -190,4 +190,6 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer[Form, FormData])
 
 
 class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
-    pass
+    def prepare_for_import(self, data: FormData) -> None:
+        if self.context.get("deactivate_form"):
+            data["active"] = False

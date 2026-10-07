@@ -34,8 +34,6 @@ from ..constants import FormTypeChoices, LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
-    FormLogic,
-    FormStep,
     FormVariable,
 )
 from .serializers import (
@@ -83,7 +81,7 @@ def import_form(import_file: Path, existing_form_instance=None) -> Form | None:
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(import_data, existing_form_instance)
+    return import_form_data(import_data, existing_form_instance, deactivate_form=True)
 
 
 @transaction.atomic
@@ -91,26 +89,12 @@ def import_form(import_file: Path, existing_form_instance=None) -> Form | None:
 def import_form_data(
     import_data: dict[str, str],
     existing_form_instance: Form | None = None,
+    deactivate_form: bool = False,
 ) -> Form | None:
     uuid_mapping: dict[str, str] = {}
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
-
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
 
     context = {
         "request": request,
@@ -123,6 +107,7 @@ def import_form_data(
             uuid_mapping=uuid_mapping,
             context=context,
             existing_form_instance=existing_form_instance,
+            deactivate_form=deactivate_form,
         )
 
     assert imported_form is not None, "No form data has been imported"
@@ -166,60 +151,61 @@ def _import_form_resource(
     uuid_mapping: dict[str, str],
     context: dict[str, Any],
     existing_form_instance: Form | None,
+    deactivate_form: bool,
 ) -> Form | None:
-    imported_form: Form | None = None
     data = update_uuids(data, uuid_mapping)
 
-    for entry in json.loads(data):
-        entry: FormData = entry
-        old_uuid: str | None = entry.get("uuid")
+    forms = json.loads(data)
+    assert len(forms) == 1, "expected exactly one form in the import data"
 
-        # we can only extract a category UUID from the URL here, but that requires
-        # an exact match and we currently don't provide import/export functionality
-        # for categories. Relying on ID/Name is not much better than guesswork either,
-        # so we always import forms with NO category at all to prevent import errors.
-        # See #1774 for one such example of an error.
-        entry["category"] = ""
-        # theme overrides cannot be imported, since the theme records/FKs have to
-        # exist in the target environment. Importing/exporting themes is also not
-        # possible at this time, so we reset the theme and admins need to update
-        # the imported form.
-        entry["theme"] = ""
+    form: FormData = forms[0]
+    old_uuid: str | None = form.get("uuid")
 
-        # forms before v4.0 do not have the type field so in case we import an
-        # old appointment form we have to make sure that the form has the right
-        # type configured (by default is regular)
-        if appointment_options := entry.get("appointment_options"):
-            if appointment_options.get("is_appointment"):
-                entry["type"] = FormTypeChoices.appointment
+    # we can only extract a category UUID from the URL here, but that requires
+    # an exact match and we currently don't provide import/export functionality
+    # for categories. Relying on ID/Name is not much better than guesswork either,
+    # so we always import forms with NO category at all to prevent import errors.
+    # See #1774 for one such example of an error.
+    form["category"] = ""
+    # theme overrides cannot be imported, since the theme records/FKs have to
+    # exist in the target environment. Importing/exporting themes is also not
+    # possible at this time, so we reset the theme and admins need to update
+    # the imported form.
+    form["theme"] = ""
 
-        if not existing_form_instance:
-            entry["active"] = False
+    # forms before v4.0 do not have the type field so in case we import an
+    # old appointment form we have to make sure that the form has the right
+    # type configured (by default is regular)
+    if appointment_options := form.get("appointment_options"):
+        if appointment_options.get("is_appointment"):
+            form["type"] = FormTypeChoices.appointment
 
-        # If there is a slug, make sure that it's unique
-        if (form_slug := entry.get("slug")) and Form.objects.filter(
-            slug=form_slug
-        ).first() is not None:
-            entry["slug"] = (
-                f"{form_slug}-{''.join(random.choices(string.hexdigits, k=6))}"
-            )
-
-        deserialized = FormImportSerializer(
-            data=entry, context=context, instance=existing_form_instance
+    # If there is a slug, make sure that it's unique
+    if (form_slug := form.get("slug")) and Form.objects.filter(
+        slug=form_slug
+    ).first() is not None:
+        form["slug"] = (
+            f"{form_slug}-{''.join(random.choices(string.hexdigits, k=6))}"
         )
 
-        try:
-            deserialized.is_valid(raise_exception=True)
-            imported_form = deserialized.save()
+    deserialized = FormImportSerializer(
+        data=form,
+        context={**context, "deactivate_form": deactivate_form},
+        instance=existing_form_instance,
+    )
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
-        except ValidationError as e:
-            raise e
+    try:
+        deserialized.is_valid(raise_exception=True)
+        imported_form: Form = deserialized.save()
+
+        if (
+            old_uuid
+            and deserialized.instance
+            and hasattr(deserialized.instance, "uuid")
+        ):
+            uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+    except ValidationError as e:
+        raise e
 
     return imported_form
 
