@@ -48,6 +48,7 @@ include = [
     "src/openforms/forms/import_export/datastructures.py",
     "src/openforms/forms/import_export/export_form.py",
     "src/openforms/forms/import_export/export_resources.py",
+    "src/openforms/forms/import_export/import_form.py",
     "src/openforms/forms/import_export/resources.py",
     "src/openforms/forms/import_export/typing.py",
     # Payments
