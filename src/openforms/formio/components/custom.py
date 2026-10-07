@@ -1284,7 +1284,8 @@ class DigitalAddressSerializer(serializers.Serializer):
         super().__init__(**kwargs)
 
     def get_fields(self):
-        fields = super().get_fields()  # type: ignore
+        fields = super().get_fields()
+        assert isinstance(fields["type"], serializers.ChoiceField)
 
         fields["address"].allow_blank = not self.required
         # narrow down choices to the configured in the admin
