@@ -34,8 +34,8 @@ class ProductResource(BaseResource):
     def export_for_form(self, form: Form):
         products = (
             Product.objects.none()
-            if not form.product_id
-            else Product.objects.filter(pk=form.product_id)
+            if not form.product_id  # pyright: ignore[reportAttributeAccessIssue]
+            else Product.objects.filter(pk=form.product_id)  # pyright: ignore[reportAttributeAccessIssue]
         )
         return self.export(queryset=products)
 

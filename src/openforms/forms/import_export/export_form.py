@@ -47,7 +47,7 @@ def export_form(
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
 
-    with zipfile.ZipFile(outfile, "w") as zip_file:
+    with zipfile.ZipFile(outfile, "w") as zip_file:  # pyright: ignore[reportArgumentType, reportCallIssue]
         for name, data in resources.items():
             zip_file.writestr(f"{name}.json", data)
     return outfile
