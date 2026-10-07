@@ -34,8 +34,6 @@ from ..constants import FormTypeChoices, LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
-    FormLogic,
-    FormStep,
     FormVariable,
 )
 from .serializers import (
@@ -96,21 +94,6 @@ def import_form_data(
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
-
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
 
     context = {
         "request": request,
@@ -192,9 +175,6 @@ def _import_form_resource(
         if appointment_options := entry.get("appointment_options"):
             if appointment_options.get("is_appointment"):
                 entry["type"] = FormTypeChoices.appointment
-
-        if not existing_form_instance:
-            entry["active"] = False
 
         # If there is a slug, make sure that it's unique
         if (form_slug := entry.get("slug")) and Form.objects.filter(

@@ -113,11 +113,21 @@ class BaseImportSerializer[RT: Representation](serializers.Serializer):
         # a valid exception to get some grip on type safety
         instance_copy = cast(RT, instance.copy())
 
+        instance_copy = self.prepare_for_import(instance_copy)
+
         # When importing an existing instance, we should not overwrite the uuid
         if not self.instance:
             instance_copy = self.set_new_uuid(instance_copy)
 
         return super().to_internal_value(instance_copy)
+
+    def prepare_for_import(self, instance: RT) -> RT:
+        """
+        A hook that is executed at the beginning of the import process.
+
+        This hook can be used to prepare individual instances for import.
+        """
+        return instance
 
     @staticmethod
     def set_new_uuid(instance: RT) -> RT:

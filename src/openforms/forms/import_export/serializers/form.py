@@ -164,4 +164,9 @@ class FormExportSerializer(
 class FormImportSerializer(
     FormSerializer, BaseImportSerializer[FormDataRepresentation]
 ):
-    pass
+    def prepare_for_import(
+        self, instance: FormDataRepresentation
+    ) -> FormDataRepresentation:
+        # When importing a form, it should be non-active by default
+        instance["active"] = False
+        return instance
