@@ -54,7 +54,8 @@ tracer = trace.get_tracer("openforms.appointments.api.views")
 
 PRODUCT_QUERY_PARAMETER = OpenApiParameter(
     name="product_id",
-    type=build_array_type(build_basic_type(str), min_length=1),
+    # see https://github.com/tfranzel/drf-spectacular/issues/1533 for the dict juggling reason
+    type={**build_array_type(build_basic_type(str)), "minItems": 1},
     location=OpenApiParameter.QUERY,
     description=_("ID of the product, repeat for multiple products."),
     required=True,
@@ -269,7 +270,8 @@ class TimesListView(ListMixin, APIView):
     parameters=[PRODUCT_QUERY_PARAMETER],
     responses={
         200: OpenApiResponse(
-            response=build_array_type(FORMIO_COMPONENT_SCHEMA, min_length=1),
+            # see https://github.com/tfranzel/drf-spectacular/issues/1533 for the dict juggling reason
+            response={**build_array_type(FORMIO_COMPONENT_SCHEMA), "minItems": 1},
             description=_("Customer fields list as Form.io components."),
         ),
         400: OpenApiResponse(

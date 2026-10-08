@@ -224,7 +224,7 @@ paths:
           type: array
           items:
             type: string
-          minLength: 1
+          minItems: 1
         description: ID of the product, repeat for multiple products.
         required: true
         explode: true
@@ -253,7 +253,7 @@ paths:
                       description: Form field label
                   additionalProperties: {}
                   title: Form.io component
-                minLength: 1
+                minItems: 1
           description: Customer fields list as Form.io components.
           headers:
             X-Session-Expires-In:
@@ -316,7 +316,7 @@ paths:
           type: array
           items:
             type: string
-          minLength: 1
+          minItems: 1
         description: ID of the product, repeat for multiple products.
         required: true
         explode: true
@@ -357,7 +357,7 @@ paths:
           type: array
           items:
             type: string
-          minLength: 1
+          minItems: 1
         description: ID of the product, repeat for multiple products.
         required: true
         explode: true
@@ -394,7 +394,7 @@ paths:
           type: array
           items:
             type: string
-          minLength: 1
+          minItems: 1
         description: ID of the product, repeat for multiple products.
         explode: true
         style: form
@@ -447,7 +447,7 @@ paths:
           type: array
           items:
             type: string
-          minLength: 1
+          minItems: 1
         description: ID of the product, repeat for multiple products.
         required: true
         explode: true
