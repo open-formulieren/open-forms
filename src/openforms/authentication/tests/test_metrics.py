@@ -50,3 +50,21 @@ class ReportPluginUsageTests(TestCase):
         self.assertEqual(results["bsn"][0], 0)
         self.assertEqual(results["kvk"][0], 0)
         self.assertNotIn("missing_auth_plugin", results)
+
+    def test_vendor_hint_included_in_metrics(self):
+        class DummyPlugin(DemoBSNAuthentication):
+            def get_vendor_hint(self, options):
+                return "https://idp.example.com/metadata"
+
+        custom_register = Registry()
+        custom_register("dummy")(DummyPlugin)
+        FormFactory.create(authentication_backend="dummy")
+
+        reports = list(custom_register.report_plugin_usage())
+        self.assertEqual(len(reports), 1)
+        _plugin, count, tags = reports[0]
+        self.assertEqual(count, 1)
+        self.assertEqual(
+            tags,
+            {"openforms.plugin.vendor_hint": "https://idp.example.com/metadata"},
+        )

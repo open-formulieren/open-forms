@@ -3,6 +3,7 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext, gettext_lazy as _
 
+from mozilla_django_oidc_db.models import OIDCProvider
 from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
 from openforms.accounts.models import User
@@ -109,6 +110,17 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
         serializer = self.configuration_options(data=authentication_backend.options)
         serializer.is_valid(raise_exception=True)
         return serializer.data["visible"]
+
+    def get_vendor_hint(self, options: OIDCOptions) -> str | None:
+        try:
+            return (
+                OIDCProvider.objects.get(
+                    identifier=self.oidc_plugin_identifier
+                ).authorization_endpoint
+                or None
+            )
+        except OIDCProvider.DoesNotExist:
+            return None
 
 
 assert len(OIDCAuthentication.provides_auth) == 1

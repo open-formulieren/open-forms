@@ -12,7 +12,7 @@ from openforms.contrib.digid_eherkenning.utils import (
 )
 from openforms.forms.models import Form
 
-from ...base import BasePlugin, CosignSlice, LoginLogo
+from ...base import BasePlugin, CosignSlice, LoginLogo, Options
 from ...constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
@@ -36,6 +36,10 @@ def loa_order(loa: str) -> int:
 
 class AuthenticationBasePlugin(BasePlugin):
     session_key: str
+
+    def get_vendor_hint(self, options: Options) -> str | None:
+        config = EherkenningConfiguration.get_solo()
+        return config.metadata_file_source or None
 
     def _get_attr_consuming_service_index(self) -> str:
         config = EherkenningConfiguration.get_solo()
