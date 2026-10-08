@@ -14,6 +14,42 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.2 (2026-10-08)
+==================
+
+Bugix and feature backport release.
+
+.. warning:: Normally we don't backport features. Due to external factors we backported
+   the email verification feature in the ``customerProfile`` component. If you use this
+   component, we recommend that you extensively test these forms before updating
+   production.
+
+* [:backend:`6649`] Fixed newlines of textarea components being stripped out in the
+  confirmation PDF.
+* Fixed an upload race condition in e2e tests.
+* [Sentry#461713] Fixed some logs not being saved to the database during prefill.
+* [:backend:`6650`] Fixed the form theme not being used on resume pages and confirmation
+  emails.
+* [:backend:`6426`] Backported the email verification feature in the ``customerProfile``
+  component.
+* [:backend:`6418`] Fixed legacy Open Klant mechanism to send the ``referentie`` when
+  updating customer profile preferences. Note that you need to set the (undocumented)
+  ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS=True``  environment variable
+  to opt-in to this behaviour. This feature flag will be removed in Open Forms 5.0.
+* [:backend:`6698`] Fixed file upload components from old form versions not always
+  containing the ``allowedTypesLabels`` labels, which would crash the new renderer.
+* [:backend:`6760`] Fixed a logic evaluation crash for logic rules targetting ``date``
+  or ``datetime`` variables that may have incomplete input.
+* [:backend:`6751`] Fixed the phone number validation plugin trimming user input and not
+  allowing blank inputs as validator input data.
+* [:backend:`6755`] Fixed the customer profile component validation incorrectly
+  requiring an address for all available address types when the component is required.
+* Upgraded dependencies to their latest security releases:
+
+  - Django
+  - soupsieve
+  - Dompurify
+
 4.0.1 (2026-09-14)
 ==================
 
