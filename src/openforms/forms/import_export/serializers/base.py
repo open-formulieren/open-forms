@@ -113,6 +113,7 @@ class BaseImportSerializer[RT: Representation](serializers.Serializer):
         # a valid exception to get some grip on type safety
         instance_copy = cast(RT, instance.copy())
 
+        instance_copy = self.apply_backwards_compatibility(instance_copy)
         instance_copy = self.prepare_for_import(instance_copy)
 
         # When importing an existing instance, we should not overwrite the uuid
@@ -123,9 +124,17 @@ class BaseImportSerializer[RT: Representation](serializers.Serializer):
 
     def prepare_for_import(self, instance: RT) -> RT:
         """
-        A hook that is executed at the beginning of the import process.
-
         This hook can be used to prepare individual instances for import.
+
+        Any backwards compatibility code should be applied through
+        apply_backwards_compatibility() to keep it separated from the core import code.
+        """
+        return instance
+
+    def apply_backwards_compatibility(self, instance: RT) -> RT:
+        """
+        This hook should be used to apply backwards compatibility fixes to the individual
+        instances.
         """
         return instance
 
