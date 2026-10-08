@@ -1,6 +1,7 @@
 import {produce} from 'immer';
 import set from 'lodash/set';
 import {useState} from 'react';
+import selectEvent from 'react-select-event';
 import {expect, fn, userEvent, waitFor, within} from 'storybook/test';
 
 import {
@@ -8,7 +9,9 @@ import {
   mockDMNDecisionDefinitionsGet,
 } from 'components/admin/form_design/mocks';
 import {FormDecorator, FormLogicDecorator} from 'components/admin/form_design/story-decorators';
+import {rsSelect} from 'utils/storybookTestHelpers';
 
+import {VARIABLE_SOURCES} from '../../variables/constants';
 import Action from './Action';
 
 export default {
@@ -67,9 +70,8 @@ const SERVICE_FETCH_CONFIGURATIONS = [
   },
 ];
 
-const render = ({action: initialAction, prefixText, errors, onDelete}) => {
+const render = ({action: initialAction, prefixText, errors, problems, onDelete}) => {
   const [action, setAction] = useState(initialAction);
-
   const onChange = event => {
     const {name, value} = event.target;
     const newAction = produce(action, draft => {
@@ -82,6 +84,7 @@ const render = ({action: initialAction, prefixText, errors, onDelete}) => {
       prefixText={prefixText}
       action={action}
       errors={errors}
+      problems={problems}
       onChange={onChange}
       onDelete={onDelete}
     />
@@ -148,6 +151,72 @@ export const ServiceFetch = {
         key: 'bar',
       },
     ],
+  },
+};
+
+export const ServiceFetchWithoutVariable = {
+  render,
+  name: 'Service fetch without selected variable',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: '',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        type: 'fetch-from-service',
+        value: '',
+      },
+    },
+    errors: {},
+    problems: ['No service fetch variable is selected'],
+    availableDMNPlugins: [],
+    availableFormVariables: [
+      {type: 'textfield', key: 'name', name: 'Name'},
+      {type: 'textfield', key: 'surname', name: 'Surname'},
+      {type: 'number', key: 'income', name: 'Income'},
+      {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
+      {
+        key: 'user_defined',
+        name: 'Created by user',
+        source: VARIABLE_SOURCES.userDefined,
+      },
+    ],
+  },
+  decorators: [FormDecorator],
+
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    step('Verify that the configure button is disabled', () => {
+      const warningIcon = canvas.getByRole('generic', {
+        name: 'Er zijn problemen in deze actie: No service fetch variable is selected.',
+      });
+      expect(warningIcon).toBeVisible();
+
+      const configureButton = canvas.getByRole('button', {name: 'Instellen'});
+      expect(configureButton).toHaveAttribute('disabled');
+    });
+
+    await step(
+      'Assert that the configure button is not disabled after selecting a variable',
+      async () => {
+        const variableSelectDropdown = canvas.getByRole('combobox', {description: 'Select...'});
+        selectEvent.openMenu(variableSelectDropdown);
+        await rsSelect(variableSelectDropdown, 'Created by user');
+
+        const configureButton = canvas.getByRole('button', {name: 'Instellen'});
+        expect(configureButton).not.toHaveAttribute('disabled');
+
+        const warningIcon = canvas.queryByRole('generic', {
+          name: 'Er zijn problemen in deze actie: No service fetch variable is selected.',
+        });
+        expect(warningIcon).toBeNull();
+      }
+    );
   },
 };
 

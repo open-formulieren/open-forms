@@ -54,7 +54,12 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             />
           </DSLEditorNode>
 
-          <ActionComponent action={action} errors={errors} onChange={onChange} />
+          <ActionComponent
+            action={action}
+            errors={errors}
+            problems={problems}
+            onChange={onChange}
+          />
         </div>
       );
       break;
