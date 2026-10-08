@@ -28,7 +28,6 @@ from ..constants import LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
-    FormVariable,
 )
 from .serializers import (
     FormDefinitionImportSerializer,
@@ -216,17 +215,12 @@ def _import_form_step_resources(
     for entry in json.loads(data):
         entry: FormStepDataRepresentation = entry
         old_uuid: str | None = entry.get("uuid")
-        form: Form = context["form"]
 
         deserialized = FormStepImportSerializer(data=entry, context=context)
 
         try:
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
-
-            # Once the form steps have been created, we create the component FormVariables
-            # based on the form definition configurations.
-            FormVariable.objects.create_for_form(form)
 
             if (
                 old_uuid

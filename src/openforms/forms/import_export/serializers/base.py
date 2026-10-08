@@ -105,7 +105,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return self.context["export_options"]
 
 
-class BaseImportSerializer[RT: Representation](serializers.Serializer):
+class BaseImportSerializer[MT: Model, RT: Representation](serializers.Serializer):
     def to_internal_value(self, instance: RT) -> RT:
         from typing import cast  # noqa: TID251
 
@@ -122,12 +122,25 @@ class BaseImportSerializer[RT: Representation](serializers.Serializer):
 
         return super().to_internal_value(instance_copy)
 
+    def save(self, *args, **kwargs):
+        instance: MT = super().save(*args, **kwargs)
+
+        instance = self.after_import(instance)
+
+        return instance
+
     def prepare_for_import(self, instance: RT) -> RT:
         """
         This hook can be used to prepare individual instances for import.
 
         Any backwards compatibility code should be applied through
         apply_backwards_compatibility() to keep it separated from the core import code.
+        """
+        return instance
+
+    def after_import(self, instance: MT) -> MT:
+        """
+        This hook can be used to handle any post-import actions.
         """
         return instance
 

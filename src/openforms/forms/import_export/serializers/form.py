@@ -175,7 +175,7 @@ class FormExportSerializer(
 
 
 class FormImportSerializer(
-    FormSerializer, BaseImportSerializer[FormDataRepresentation]
+    FormSerializer, BaseImportSerializer[Form, FormDataRepresentation]
 ):
     def prepare_for_import(
         self, instance: FormDataRepresentation
