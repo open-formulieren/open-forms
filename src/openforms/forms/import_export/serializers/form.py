@@ -1,15 +1,26 @@
 from django.utils.crypto import get_random_string
 
+import structlog
+from typing_extensions import deprecated
+
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
 from ...api.serializers import FormSerializer
-from ...api.serializers.form import FormRegistrationBackendSerializer
+from ...api.serializers.form import (
+    FormAuthenticationBackendSerializer,
+    FormRegistrationBackendSerializer,
+)
+from ...constants import FormTypeChoices
 from ...models import Form, FormRegistrationBackend
 from ..constants import AdditionalFormConfigurationOptions, FormConfigurationOptions
 from ..datastructures import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
 )
-from ..typing import FormData, FormRegistrationData
+from ..typing import AuthBackendData, FormData, FormRegistrationData
 from .base import BaseExportSerializer, BaseImportSerializer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def clear_product(data: FormData):
@@ -238,3 +249,102 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
         if Form.objects.filter(slug=slug).exists():
             suffix = get_random_string(length=6)
             data["slug"] = f"{slug}-{suffix}"
+
+    def apply_backwards_compatibility(self, data: FormData) -> None:
+        self.apply_backwards_compatibility_appointment_type(data)
+        self.apply_backwards_compatibility_authentication_backends(data)
+        self.apply_backwards_compatibility_convert_objects_api_group(data)
+
+    @deprecated("To be removed in Open Forms 5.0.")
+    def apply_backwards_compatibility_appointment_type(self, data: FormData) -> None:
+        """
+        Backwards compatibility for using old appointment form configuration.
+
+        Forms before v4.0 do not have the ``type`` field, so in case we import an old
+        appointment form, we have to make sure that the form has the right ``type``
+        configured (the default is ``regular``).
+
+        Original commit d8b1d4ea9d31772f059a388347e8a4688be5d717
+        """
+        if appointment_options := data.get("appointment_options"):
+            if appointment_options.get("is_appointment"):
+                data["type"] = FormTypeChoices.appointment
+
+    @deprecated("To be removed in Open Forms 5.0.")
+    def apply_backwards_compatibility_authentication_backends(
+        self, data: FormData
+    ) -> None:
+        """
+        Backwards compatibility for using old ``authentication_backends`` and
+        ``authentication_backend_options`` configuration.
+
+        In v3.2 the ``authentication_backends`` and ``authentication_backend_options``
+        fields were replaced with ``auth_backends``. This converter ensures that pre-v3.2
+        forms are converted correctly. See #5140
+
+        Original commit d08281dad2e426e2655d87f67cefec9b58c5c810
+        """
+        if (
+            "authentication_backends" not in data
+            and "authentication_backend_options" not in data
+        ):
+            return
+
+        # Make sure `auth_backends` exists
+        data["auth_backends"] = data.get("auth_backends", [])
+        auth_backends_map: dict[str, AuthBackendData] = {}
+
+        # Pre-fill the map with the `auth_backends` values
+        for auth_backend in data["auth_backends"]:
+            auth_backends_map[auth_backend["backend"]] = auth_backend
+
+        # Collect all the backends that should be transformed to `auth_backends`
+        for plugin in data.get("authentication_backends", []):
+            # Add the plugin if it's not already in the map
+            auth_backends_map.setdefault(plugin, {"backend": plugin, "options": None})
+
+        for plugin, options in data.get("authentication_backend_options", {}).items():
+            # Add the plugin with its options if it's not already in the map
+            auth_backends_map.setdefault(
+                plugin, {"backend": plugin, "options": options}
+            )
+
+            # Add any missing options
+            if auth_backends_map[plugin]["options"] is None:
+                auth_backends_map[plugin]["options"] = options
+
+        # Add all auth backends to the form configuration
+        data["auth_backends"] = [
+            FormAuthenticationBackendSerializer().validate(config)
+            for config in auth_backends_map.values()
+        ]
+
+    @deprecated("To be removed in Open Forms 5.0.")
+    def apply_backwards_compatibility_convert_objects_api_group(
+        self, data: FormData
+    ) -> None:
+        """
+        Backwards compatibility for using ``objects_api_group`` as pk in the form
+        registration backends see GH issue #5384.
+
+        Original commit db494a19544f196e54821d2d390f78c5e419bdd8
+        """
+        if "registration_backends" not in data:
+            return
+
+        objects_api_pk_to_slug = {
+            group.pk: group.identifier for group in ObjectsAPIGroupConfig.objects.all()
+        }
+        for plugin in data["registration_backends"]:
+            options = plugin.get("options", {})
+            if not (api_group_id := options.get("objects_api_group")):
+                continue
+
+            if isinstance(api_group_id, int):
+                api_group_slug = objects_api_pk_to_slug[api_group_id]
+                options["objects_api_group"] = api_group_slug
+                logger.info(
+                    "objects_api_group_reference_converted",
+                    from_pk=api_group_id,
+                    to_identifier=api_group_slug,
+                )

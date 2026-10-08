@@ -28,7 +28,7 @@ from openforms.registrations.contrib.zgw_apis.plugin import (
 from openforms.typing import JSONObject
 
 from ..api.datastructures import FormVariableWrapper
-from ..constants import FormTypeChoices, LogicActionTypes
+from ..constants import LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
@@ -158,13 +158,6 @@ def _import_form_resource(
 
     form: FormData = forms[0]
     old_uuid: str | None = form.get("uuid")
-
-    # forms before v4.0 do not have the type field so in case we import an
-    # old appointment form we have to make sure that the form has the right
-    # type configured (by default is regular)
-    if appointment_options := form.get("appointment_options"):
-        if appointment_options.get("is_appointment"):
-            form["type"] = FormTypeChoices.appointment
 
     deserialized = FormImportSerializer(
         data=form,
