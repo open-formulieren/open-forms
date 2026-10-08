@@ -5,9 +5,9 @@ If you want to contribute, we ask you to follow these guidelines.
 ## Reporting bugs
 
 If you have encountered a bug in this project, please check if an issue already exists in the list
-of existing [issues][issues]. If such an issue does not exist, you can create a 
-[new issue][new_issue]. When writing the bug report, try to add a clear example that shows
-how to reproduce said bug.
+of existing [issues][issues]. If such an issue does not exist, you can create a [new
+issue][new_issue]. When writing the bug report, try to add a clear example that shows how to
+reproduce said bug.
 
 ## Adding new features
 
@@ -47,9 +47,9 @@ On your local machine, create a new branch, and name it like:
 Once you have made changes or additions to the code, you can commit them (try to keep the commit
 message descriptive but short). If an issue already exists in the list of existing [issues][issues]
 for the changes you made, be sure to format your commit message like
-`:gitmoji: Fixes #<issue_id> -- description of changes made`, where `<issue_id>` corresponds to the
-number of the issue on GitHub. To demonstrate that the changes implement the new feature/fix the
-issue, make sure to also add tests to the existing Django testsuite.
+`:gitmoji: [#<issue_id>] Description of changes made`, where `<issue_id>` corresponds to the number
+of the issue on GitHub. To demonstrate that the changes implement the new feature/fix the issue,
+make sure to also add tests to the existing Django testsuite.
 
 #### Refactoring
 
