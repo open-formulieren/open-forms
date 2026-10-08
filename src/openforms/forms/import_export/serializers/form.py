@@ -1,3 +1,6 @@
+import random
+import string
+
 from ...api.serializers import FormSerializer
 from ...api.serializers.form import FormRegistrationBackendSerializer
 from ...models import Form, FormRegistrationBackend
@@ -169,4 +172,49 @@ class FormImportSerializer(
     ) -> FormDataRepresentation:
         # When importing a form, it should be non-active by default
         instance["active"] = False
+
+        self.set_category(instance)
+        self.set_theme(instance)
+
+        # If there is a slug, make sure that it's unique
+        if form_slug := instance.get("slug"):
+            self.uniquify_slug(instance, form_slug)
+
         return instance
+
+    def set_theme(self, instance: FormDataRepresentation) -> None:
+        """
+        Make sure that the imported form does not have an unknown theme set.
+
+        This helps prevent common import errors.
+        """
+        # theme overrides cannot be imported, since the theme records/FKs have to
+        # exist in the target environment. Importing/exporting themes is also not
+        # possible at this time, so we reset the theme and admins need to update
+        # the imported form.
+        instance["theme"] = ""
+
+    def set_category(self, instance: FormDataRepresentation) -> None:
+        """
+        Make sure that the imported form does not have an unknown category set.
+
+        This helps prevent common import errors.
+        """
+        # we can only extract a category UUID from the URL here, but that requires
+        # an exact match and we currently don't provide import/export functionality
+        # for categories. Relying on ID/Name is not much better than guesswork either,
+        # so we always import forms with NO category at all to prevent import errors.
+        # See #1774 for one such example of an error.
+        instance["category"] = ""
+
+    @staticmethod
+    def uniquify_slug(instance: FormDataRepresentation, slug: str) -> None:
+        """
+        Make sure that the imported form uses a unique slug before we import it.
+
+        This helps prevent common import errors.
+        """
+        if Form.objects.filter(slug=slug).first() is not None:
+            instance["slug"] = (
+                f"{slug}-{''.join(random.choices(string.hexdigits, k=6))}"
+            )

@@ -1,6 +1,4 @@
 import json
-import random
-import string
 import zipfile
 from collections.abc import Collection
 from pathlib import Path
@@ -157,32 +155,12 @@ def _import_form_resource(
         entry: FormDataRepresentation = entry
         old_uuid: str | None = entry.get("uuid")
 
-        # we can only extract a category UUID from the URL here, but that requires
-        # an exact match and we currently don't provide import/export functionality
-        # for categories. Relying on ID/Name is not much better than guesswork either,
-        # so we always import forms with NO category at all to prevent import errors.
-        # See #1774 for one such example of an error.
-        entry["category"] = ""
-        # theme overrides cannot be imported, since the theme records/FKs have to
-        # exist in the target environment. Importing/exporting themes is also not
-        # possible at this time, so we reset the theme and admins need to update
-        # the imported form.
-        entry["theme"] = ""
-
         # forms before v4.0 do not have the type field so in case we import an
         # old appointment form we have to make sure that the form has the right
         # type configured (by default is regular)
         if appointment_options := entry.get("appointment_options"):
             if appointment_options.get("is_appointment"):
                 entry["type"] = FormTypeChoices.appointment
-
-        # If there is a slug, make sure that it's unique
-        if (form_slug := entry.get("slug")) and Form.objects.filter(
-            slug=form_slug
-        ).first() is not None:
-            entry["slug"] = (
-                f"{form_slug}-{''.join(random.choices(string.hexdigits, k=6))}"
-            )
 
         deserialized = FormImportSerializer(
             data=entry, context=context, instance=existing_form_instance
