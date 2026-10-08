@@ -1,18 +1,24 @@
+import structlog
+
+from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.typing import MapComponent
 from openforms.formio.utils import iter_components
+from openforms.typing import JSONObject
 
 from ...api.serializers import FormDefinitionSerializer
 from ...models import FormDefinition
+from ..constants import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+)
 from ..datastructures import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
 )
-from ..typing import (
-    AdditionalFormConfigurationOptions,
-    FormConfigurationOptions,
-    FormDefinitionData,
-)
+from ..typing import FormDefinitionData
 from .base import BaseExportSerializer, BaseImportSerializer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def clear_wms_tile_layers(data: FormDefinitionData):
@@ -127,4 +133,33 @@ class FormDefinitionImportSerializer(
     FormDefinitionSerializer,
     BaseImportSerializer[FormDefinition, FormDefinitionData],
 ):
-    pass
+    def prepare_for_import(self, data: FormDefinitionData) -> FormDefinitionData:
+        if configuration := data.get("configuration"):
+            self.apply_component_conversions(configuration)
+            self.apply_definition_conversions(configuration)
+
+        return data
+
+    @staticmethod
+    def apply_component_conversions(configuration: JSONObject) -> None:
+        """
+        Apply the known formio component conversions to the entire form definition.
+        """
+        log = logger.bind(action="forms.apply_component_conversions")
+        for component in iter_components(configuration):
+            if not (component_type := component.get("type")):  # pragma: no cover
+                continue
+            if not (converters := CONVERTERS.get(component_type)):
+                continue
+            for identifier, apply_converter in converters.items():
+                log.debug(
+                    "apply_converter",
+                    component_type=component_type,
+                    identifier=identifier,
+                )
+                apply_converter(component)
+
+    @staticmethod
+    def apply_definition_conversions(configuration: JSONObject) -> None:
+        for converter in DEFINITION_CONVERTERS:
+            converter(configuration)

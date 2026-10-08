@@ -9,13 +9,10 @@ from django.db import transaction
 from django.http.request import HttpRequest
 from django.utils.translation import override
 
-import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.typing import FileComponent
-from openforms.formio.utils import iter_components
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -25,7 +22,6 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
-from openforms.typing import JSONObject
 
 from ..api.datastructures import FormVariableWrapper
 from ..constants import LogicActionTypes
@@ -56,8 +52,6 @@ EXPECTED_RESOURCES = (
     "formVariables",
     "formLogic",
 )
-
-logger = structlog.stdlib.get_logger(__name__)
 
 
 def _get_mock_request() -> HttpRequest:
@@ -198,10 +192,6 @@ def _import_form_definition_resources(
 
         try:
             deserialized.is_valid(raise_exception=True)
-
-            apply_component_conversions(deserialized.validated_data["configuration"])
-            apply_definition_conversions(deserialized.validated_data["configuration"])
-
             form_definitions.append(deserialized.save())
 
             if (
@@ -214,28 +204,6 @@ def _import_form_definition_resources(
             raise e
 
     return form_definitions
-
-
-def apply_component_conversions(configuration: JSONObject) -> None:
-    """
-    Apply the known formio component conversions to the entire form definition.
-    """
-    log = logger.bind(action="forms.apply_component_conversions")
-    for component in iter_components(configuration):
-        if not (component_type := component.get("type")):  # pragma: no cover
-            continue
-        if not (converters := CONVERTERS.get(component_type)):
-            continue
-        for identifier, apply_converter in converters.items():
-            log.debug(
-                "apply_converter", component_type=component_type, identifier=identifier
-            )
-            apply_converter(component)
-
-
-def apply_definition_conversions(configuration: JSONObject) -> None:
-    for converter in DEFINITION_CONVERTERS:
-        converter(configuration)
 
 
 def _import_form_step_resources(
