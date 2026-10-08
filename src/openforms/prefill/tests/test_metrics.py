@@ -99,3 +99,27 @@ class ReportPluginUsageTests(TestCase):
         self.assertEqual(result["demo"][0], 0)
         self.assertEqual(result["demo"][1], {})
         self.assertNotIn("non_existent_plugin", result)
+
+    def test_vendor_hint_included_in_metrics(self):
+        from ..base import BasePlugin
+        from ..registry import Registry
+
+        class DummyPlugin(BasePlugin):
+            def get_vendor_hint(self, options):
+                return options.get("url")
+
+        custom_register = Registry()
+        custom_register("dummy")(DummyPlugin)
+        FormVariableFactory.create(
+            user_defined=True,
+            prefill_plugin="dummy",
+            prefill_options={"url": "https://api.example.com"},
+        )
+
+        reports = list(custom_register.report_plugin_usage())
+        self.assertEqual(len(reports), 1)
+        _plugin, count, tags = reports[0]
+        self.assertEqual(count, 1)
+        self.assertEqual(
+            tags, {"openforms.plugin.vendor_hint": "https://api.example.com"}
+        )
