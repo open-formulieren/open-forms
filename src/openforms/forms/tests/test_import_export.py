@@ -1992,7 +1992,8 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         converters = {"textfield": {"add_foo": add_foo}}
         with patch(
-            "openforms.forms.import_export.import_form.CONVERTERS", new=converters
+            "openforms.forms.import_export.serializers.form_definition.CONVERTERS",
+            new=converters,
         ):
             import_form(import_file=self.filepath)
 
