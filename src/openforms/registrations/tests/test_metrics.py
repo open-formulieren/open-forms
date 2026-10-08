@@ -50,3 +50,27 @@ class ReportPluginUsageTests(TestCase):
         self.assertEqual(result["demo1"][0], 0)
         self.assertEqual(result["demo2"][0], 0)
         self.assertNotIn("missing_registration_plugin", result)
+
+    def test_vendor_hint_included_in_metrics(self):
+        from openforms.forms.tests.factories import FormRegistrationBackendFactory
+
+        class DummyPlugin(DemoRegistration):
+            def get_vendor_hint(self, options):
+                return options.get("url")
+
+        custom_register = Registry()
+        custom_register("dummy")(DummyPlugin)
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="dummy",
+            options={"url": "https://api.example.com"},
+        )
+
+        reports = list(custom_register.report_plugin_usage())
+        self.assertEqual(len(reports), 1)
+        _plugin, count, tags = reports[0]
+        self.assertEqual(count, 1)
+        self.assertEqual(
+            tags, {"openforms.plugin.vendor_hint": "https://api.example.com"}
+        )
