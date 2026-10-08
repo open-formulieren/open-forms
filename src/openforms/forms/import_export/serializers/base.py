@@ -125,6 +125,13 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
 
         return super().to_internal_value(data_copy)
 
+    def save(self, *args, **kwargs):
+        instance: MT = super().save(*args, **kwargs)
+
+        instance = self.after_import(instance)
+
+        return instance
+
     def prepare_for_import(self, data: DT) -> DT:
         """
         This hook can be used to prepare individual instances for import.
@@ -133,6 +140,12 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
         apply_backwards_compatibility() to keep it separated from the core import code.
         """
         return data
+
+    def after_import(self, instance: MT) -> MT:
+        """
+        This hook can be used to handle any post-import actions.
+        """
+        return instance
 
     def apply_backwards_compatibility(self, data: DT) -> DT:
         """
