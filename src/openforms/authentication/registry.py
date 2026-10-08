@@ -7,7 +7,11 @@ from typing import TYPE_CHECKING
 import structlog
 from rest_framework.request import Request
 
-from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
+from openforms.plugins.registry import (
+    VENDOR_HINT_METRIC_LABEL,
+    BaseRegistry,
+    PluginUsageReport,
+)
 
 if TYPE_CHECKING:
     from openforms.forms.models import Form
@@ -57,7 +61,7 @@ class Registry(BaseRegistry["BasePlugin"]):
             options.append(info)
         return options
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, dict[str, str]]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form
 
         usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)

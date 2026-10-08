@@ -3,7 +3,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from openforms.forms.constants import FormTypeChoices
-from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL, BaseRegistry
+from openforms.plugins.registry import (
+    VENDOR_HINT_METRIC_LABEL,
+    BaseRegistry,
+    PluginUsageReport,
+)
 
 from .base import BasePlugin
 
@@ -15,7 +19,7 @@ class Registry(BaseRegistry[BasePlugin]):
 
     module = "appointments"
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, dict[str, str]]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form
 
         from .models import AppointmentsConfig

@@ -50,6 +50,21 @@ class PluginRegistryMetricTests(MetricsAssertMixin, TestCase):
 
         self.assertEqual(len(list(result)), 0)
 
+    def test_vendor_hint_is_exported_as_metric_attribute(self):
+        result = list(record_plugin_usage(CallbackOptions()))
+
+        appointment_demo = next(
+            observation
+            for observation in result
+            if observation.attributes
+            and observation.attributes["openforms.plugin.module"] == "appointments"
+            and observation.attributes["openforms.plugin.identifier"] == "demo"
+        )
+
+        self.assertEqual(
+            appointment_demo.attributes["openforms.plugin.vendor_hint"], "demo"
+        )
+
     def test_cannot_set_another_register_instance_as_metrics_reporter(self):
         class BadRegistry(BaseRegistry):
             module = "appointments"
