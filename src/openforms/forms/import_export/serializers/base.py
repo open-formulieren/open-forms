@@ -113,6 +113,7 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
     def to_internal_value(self, data: DT) -> DT:
         data_copy = data.copy()
 
+        data_copy = self.apply_backwards_compatibility(data_copy)
         data_copy = self.prepare_for_import(data_copy)
 
         # When importing an existing instance, we should not overwrite the uuid.
@@ -126,8 +127,16 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
 
     def prepare_for_import(self, data: DT) -> DT:
         """
-        A hook that is executed at the beginning of the import process.
-
         This hook can be used to prepare individual instances for import.
+
+        Any backwards compatibility code should be applied through
+        apply_backwards_compatibility() to keep it separated from the core import code.
+        """
+        return data
+
+    def apply_backwards_compatibility(self, data: DT) -> DT:
+        """
+        This hook should be used to apply backwards compatibility fixes to the individual
+        instances.
         """
         return data
