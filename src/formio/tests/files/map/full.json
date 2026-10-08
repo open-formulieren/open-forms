@@ -1,0 +1,79 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "defaultZoom": 10,
+  "description": "A description",
+  "errors": {
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "initialCenter": {
+    "lat": 52.37403,
+    "lng": 4.88969
+  },
+  "interactions": {
+    "marker": true,
+    "polygon": true,
+    "polyline": false
+  },
+  "isSensitiveData": false,
+  "key": "someMap",
+  "label": "Some map",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "overlays": [
+    {
+      "label": "BAG pand and verblijfsobject layer",
+      "layers": ["pand", "verblijfsobject"],
+      "type": "wms",
+      "url": "https://service.pdok.nl/lv/bag/wms/v2_0",
+      "uuid": "623d703f-3d75-4720-bb9b-13c5fd783fcb"
+    }
+  ],
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tileLayerIdentifier": "some-wmts-layer",
+  "tileLayerUrl": "https//service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:28992/{z}/{x}/{y}.png",
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "map",
+  "useConfigDefaultMapSettings": false,
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
