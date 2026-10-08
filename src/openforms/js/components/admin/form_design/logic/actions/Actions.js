@@ -23,7 +23,7 @@ import Modal from 'components/admin/modals/Modal';
 import DMNActionConfig from './dmn/DMNActionConfig';
 import {detectMappingProblems as detectDMNMappingProblems} from './dmn/utils';
 import {SynchronizeVariablesActionConfig} from './synchronize_variable/SynchronizeVariablesConfigModal';
-import {ActionError, Action as ActionType} from './types';
+import {ActionError, Action as ActionType, Problems} from './types';
 
 // frontend counterpart of formio.service.holds_submission_data
 const holdsSubmissionDataTypes = ['columns', 'fieldset', 'softRequiredErrors', 'coSign', 'content'];
@@ -218,7 +218,7 @@ const ActionSynchronizeVariables = ({action, errors, onChange}) => {
   );
 };
 
-const ActionFetchFromService = ({action, errors, onChange}) => {
+const ActionFetchFromService = ({action, errors, problems, onChange}) => {
   const intl = useIntl();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -290,6 +290,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
             description: 'Button to open service fetch configuration modal',
             defaultMessage: 'Configure',
           })}
+          disabled={!!problems.length}
         />
       </DSLEditorNode>
 
@@ -448,7 +449,7 @@ const ActionDisableStep = ({action, errors, onChange}) => {
   );
 };
 
-const ActionComponent = ({action, errors, onChange}) => {
+const ActionComponent = ({action, errors, problems, onChange}) => {
   let Component;
   switch (action.action.type) {
     case 'property': {
@@ -494,7 +495,7 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
   }
 
-  return <Component action={action} errors={errors} onChange={onChange} />;
+  return <Component action={action} errors={errors} problems={problems} onChange={onChange} />;
 };
 
 ActionComponent.propTypes =
@@ -506,6 +507,7 @@ ActionComponent.propTypes =
     {
       action: ActionType.isRequired,
       errors: ActionError,
+      problems: Problems,
       onChange: PropTypes.func.isRequired,
     };
 
@@ -536,6 +538,20 @@ export const detectProblems = (action, intl) => {
           })
         );
       }
+      return problems;
+    }
+    case 'fetch-from-service': {
+      const problems = [];
+
+      if (!action.variable) {
+        problems.push(
+          intl.formatMessage({
+            description: 'Warning message: Service fetch variable problem detected',
+            defaultMessage: 'No service fetch variable is selected',
+          })
+        );
+      }
+
       return problems;
     }
   }

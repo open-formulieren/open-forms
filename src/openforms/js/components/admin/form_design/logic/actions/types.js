@@ -56,4 +56,6 @@ const ActionError = PropTypes.shape({
   formStepUuid: PropTypes.string,
 });
 
-export {jsonLogicVar, Action, ActionError, ActionConfigError};
+const Problems = PropTypes.arrayOf(PropTypes.string);
+
+export {jsonLogicVar, Action, ActionError, ActionConfigError, Problems};

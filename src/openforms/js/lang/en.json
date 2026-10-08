@@ -1849,6 +1849,11 @@
     "description": "Session expiry notice",
     "originalDefault": "Session expires {expiresToday, select, true {{relativeTimeToExpiry}} other {on {expiryDate} at {expiryTime}}}"
   },
+  "SD4Opw": {
+    "defaultMessage": "No service fetch variable is selected",
+    "description": "Warning message: Service fetch variable problem detected",
+    "originalDefault": "No service fetch variable is selected"
+  },
   "SX2HTA": {
     "defaultMessage": "change a property of a component.",
     "description": "action type \"property\" label",
