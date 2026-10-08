@@ -460,7 +460,10 @@ class WebhookReturnTests(TestCase):
 
         webhook_url = self.plugin.get_webhook_url(base_request)
 
-        with self.captureOnCommitCallbacks(execute=True):
+        with (
+            self.captureOnCommitCallbacks(execute=True),
+            self.assertLogs("openforms_audit", level="DEBUG") as logger_context_manager,
+        ):
             with patch(
                 "openforms.payments.views.on_post_submission_event"
             ) as m_on_post_submission_event:
@@ -468,6 +471,11 @@ class WebhookReturnTests(TestCase):
                     webhook_url, data={"orderID": payment.public_order_id}
                 )
 
+        assert len(logger_context_manager.output) == 1
+        log_line = logger_context_manager.output[0]
+        self.assertIn("payment_flow_webhook", log_line)
+        self.assertIn("status", log_line)
+        self.assertIn(PaymentStatus.completed, log_line)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Payment was successful, so 'transaction.on_commit' is called and triggers the on_post_submission_event
         m_on_post_submission_event.assert_called_once_with(

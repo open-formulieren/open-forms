@@ -402,6 +402,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
                 submission_uuid=str(payment.submission.uuid),
                 plugin=plugin,
                 payment_uuid=str(payment.uuid),
+                status=payment.status,
             )
             if payment.status == PaymentStatus.completed:
                 transaction.on_commit(
