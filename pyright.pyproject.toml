@@ -43,6 +43,13 @@ include = [
     "src/openforms/forms/logic_analysis.py",
     "src/openforms/forms/tests/test_logic_analysis.py",
     "src/openforms/forms/validators.py",
+    # Form import/export
+    "src/openforms/forms/import_export/constants.py",
+    "src/openforms/forms/import_export/datastructures.py",
+    "src/openforms/forms/import_export/export_form.py",
+    "src/openforms/forms/import_export/export_resources.py",
+    "src/openforms/forms/import_export/resources.py",
+    "src/openforms/forms/import_export/typing.py",
     # Payments
     "src/openforms/payments/",
     # Interaction with the outside world

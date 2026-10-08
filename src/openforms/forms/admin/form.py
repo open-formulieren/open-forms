@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import result_headers
 from django.db.models import BooleanField, Case, Count, F, Value, When
@@ -9,6 +11,7 @@ from django.utils.translation import gettext_lazy as _, ngettext
 
 from modeltranslation.manager import get_translatable_fields_for_model
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
+from rest_framework import serializers
 
 from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
@@ -16,9 +19,10 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
 
+from ..api.serializers.form import FormAPIExportRequestSerializer
+from ..import_export.service import export_form
 from ..models import Category, Form, FormDefinition, FormStep
 from ..models.form import FormsExport
-from ..utils import export_form
 from .mixins import FormioConfigMixin
 from .views import (
     DownloadExportedFormsView,
@@ -304,9 +308,29 @@ class FormAdmin(
             for _msg in storage:
                 pass
 
+            try:
+                export_options = json.loads(request.POST.get("export_options", "{}"))
+                serializer = FormAPIExportRequestSerializer(data=export_options)
+                serializer.is_valid(raise_exception=True)
+            except (json.JSONDecodeError, serializers.ValidationError) as exc:
+                self.message_user(
+                    request,
+                    _("Something went wrong while exporting form {}: {}").format(
+                        obj, exc
+                    ),
+                    level=messages.ERROR,
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:forms_form_change", args=(obj.pk,))
+                )
+
             response = HttpResponse(content_type="application/zip")
             response["Content-Disposition"] = f"attachment;filename={obj.slug}.zip"
-            export_form(obj.pk, response=response)
+            export_form(
+                obj.pk,
+                response=response,
+                export_options=serializer.as_export_options(),
+            )
 
             response["Content-Length"] = len(response.content)
 
