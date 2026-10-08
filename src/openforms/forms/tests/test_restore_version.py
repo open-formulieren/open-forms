@@ -325,6 +325,29 @@ class RestoreVersionTest(TestCase):
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)
 
+    def test_form_restore_active_state_is_correctly_kept(self):
+        for initial_active_state in (True, False):
+            with self.subTest(data=initial_active_state):
+                form = FormFactory.create(
+                    generate_minimal_setup=True, active=initial_active_state
+                )
+
+                version = FormVersionFactory.create(form=form)
+                self.assertNotEqual(version.export_blob, {})
+
+                # Change active state after version was made
+                form.active = not initial_active_state
+                form.save()
+
+                # Restore the previous version
+                form.restore_old_version(version.uuid)
+
+                # refresh DB records
+                form.refresh_from_db()
+
+                # Assert active state equals the initial active state
+                self.assertEqual(form.active, initial_active_state)
+
 
 FORM_STEP = [
     {

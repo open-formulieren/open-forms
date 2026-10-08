@@ -1,6 +1,4 @@
 import json
-import random
-import string
 import zipfile
 from collections.abc import Collection
 from pathlib import Path
@@ -11,13 +9,10 @@ from django.db import transaction
 from django.http.request import HttpRequest
 from django.utils.translation import override
 
-import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.typing import FileComponent
-from openforms.formio.utils import iter_components
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -27,16 +22,12 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
-from openforms.typing import JSONObject
 
 from ..api.datastructures import FormVariableWrapper
-from ..constants import FormTypeChoices, LogicActionTypes
+from ..constants import LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
-    FormLogic,
-    FormStep,
-    FormVariable,
 )
 from .serializers import (
     FormDefinitionImportSerializer,
@@ -60,8 +51,6 @@ EXPECTED_RESOURCES = (
     "formVariables",
     "formLogic",
 )
-
-logger = structlog.stdlib.get_logger(__name__)
 
 
 def _get_mock_request() -> HttpRequest:
@@ -96,21 +85,6 @@ def import_form_data(
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
-
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
 
     context = {
         "request": request,
@@ -174,36 +148,6 @@ def _import_form_resource(
         entry: FormDataRepresentation = entry
         old_uuid: str | None = entry.get("uuid")
 
-        # we can only extract a category UUID from the URL here, but that requires
-        # an exact match and we currently don't provide import/export functionality
-        # for categories. Relying on ID/Name is not much better than guesswork either,
-        # so we always import forms with NO category at all to prevent import errors.
-        # See #1774 for one such example of an error.
-        entry["category"] = ""
-        # theme overrides cannot be imported, since the theme records/FKs have to
-        # exist in the target environment. Importing/exporting themes is also not
-        # possible at this time, so we reset the theme and admins need to update
-        # the imported form.
-        entry["theme"] = ""
-
-        # forms before v4.0 do not have the type field so in case we import an
-        # old appointment form we have to make sure that the form has the right
-        # type configured (by default is regular)
-        if appointment_options := entry.get("appointment_options"):
-            if appointment_options.get("is_appointment"):
-                entry["type"] = FormTypeChoices.appointment
-
-        if not existing_form_instance:
-            entry["active"] = False
-
-        # If there is a slug, make sure that it's unique
-        if (form_slug := entry.get("slug")) and Form.objects.filter(
-            slug=form_slug
-        ).first() is not None:
-            entry["slug"] = (
-                f"{form_slug}-{''.join(random.choices(string.hexdigits, k=6))}"
-            )
-
         deserialized = FormImportSerializer(
             data=entry, context=context, instance=existing_form_instance
         )
@@ -247,10 +191,6 @@ def _import_form_definition_resources(
 
         try:
             deserialized.is_valid(raise_exception=True)
-
-            apply_component_conversions(deserialized.validated_data["configuration"])
-            apply_definition_conversions(deserialized.validated_data["configuration"])
-
             form_definitions.append(deserialized.save())
 
             if (
@@ -265,28 +205,6 @@ def _import_form_definition_resources(
     return form_definitions
 
 
-def apply_component_conversions(configuration: JSONObject) -> None:
-    """
-    Apply the known formio component conversions to the entire form definition.
-    """
-    log = logger.bind(action="forms.apply_component_conversions")
-    for component in iter_components(configuration):
-        if not (component_type := component.get("type")):  # pragma: no cover
-            continue
-        if not (converters := CONVERTERS.get(component_type)):
-            continue
-        for identifier, apply_converter in converters.items():
-            log.debug(
-                "apply_converter", component_type=component_type, identifier=identifier
-            )
-            apply_converter(component)
-
-
-def apply_definition_conversions(configuration: JSONObject) -> None:
-    for converter in DEFINITION_CONVERTERS:
-        converter(configuration)
-
-
 def _import_form_step_resources(
     data: str,
     uuid_mapping: dict[str, str],
@@ -297,17 +215,12 @@ def _import_form_step_resources(
     for entry in json.loads(data):
         entry: FormStepDataRepresentation = entry
         old_uuid: str | None = entry.get("uuid")
-        form: Form = context["form"]
 
         deserialized = FormStepImportSerializer(data=entry, context=context)
 
         try:
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
-
-            # Once the form steps have been created, we create the component FormVariables
-            # based on the form definition configurations.
-            FormVariable.objects.create_for_form(form)
 
             if (
                 old_uuid

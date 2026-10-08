@@ -140,3 +140,6 @@ class FormDataRepresentation(TypedDict, total=False):
     submission_statements_configuration: JSONObject
     submission_report_download_link_title: str
     brp_personen_request_options: JSONObject
+
+    authentication_backends: list[JSONObject]  # Deprecated
+    authentication_backend_options: JSONObject  # Deprecated

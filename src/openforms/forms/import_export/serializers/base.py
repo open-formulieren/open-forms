@@ -105,7 +105,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return self.context["export_options"]
 
 
-class BaseImportSerializer[RT: Representation](serializers.Serializer):
+class BaseImportSerializer[MT: Model, RT: Representation](serializers.Serializer):
     def to_internal_value(self, instance: RT) -> RT:
         from typing import cast  # noqa: TID251
 
@@ -113,11 +113,43 @@ class BaseImportSerializer[RT: Representation](serializers.Serializer):
         # a valid exception to get some grip on type safety
         instance_copy = cast(RT, instance.copy())
 
+        instance_copy = self.apply_backwards_compatibility(instance_copy)
+        instance_copy = self.prepare_for_import(instance_copy)
+
         # When importing an existing instance, we should not overwrite the uuid
         if not self.instance:
             instance_copy = self.set_new_uuid(instance_copy)
 
         return super().to_internal_value(instance_copy)
+
+    def save(self, *args, **kwargs):
+        instance: MT = super().save(*args, **kwargs)
+
+        instance = self.after_import(instance)
+
+        return instance
+
+    def prepare_for_import(self, instance: RT) -> RT:
+        """
+        This hook can be used to prepare individual instances for import.
+
+        Any backwards compatibility code should be applied through
+        apply_backwards_compatibility() to keep it separated from the core import code.
+        """
+        return instance
+
+    def after_import(self, instance: MT) -> MT:
+        """
+        This hook can be used to handle any post-import actions.
+        """
+        return instance
+
+    def apply_backwards_compatibility(self, instance: RT) -> RT:
+        """
+        This hook should be used to apply backwards compatibility fixes to the individual
+        instances.
+        """
+        return instance
 
     @staticmethod
     def set_new_uuid(instance: RT) -> RT:

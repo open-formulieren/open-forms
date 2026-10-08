@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
-import structlog
 from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema_field
@@ -32,7 +31,6 @@ from openforms.contrib.haal_centraal.api.serializers import (
     BRPPersonenRequestOptionsSerializer,
 )
 from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
-from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
@@ -57,8 +55,6 @@ from .form_step import MinimalFormStepSerializer
 
 if TYPE_CHECKING:
     from ...import_export.service import FormExportOptions
-
-logger = structlog.stdlib.get_logger(__name__)
 
 
 class SubmissionsRemovalOptionsSerializer(serializers.ModelSerializer):
@@ -518,93 +514,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
         return fields
 
-    def convert_objects_api_group(self, attrs) -> None:
-        """
-        backwards compatibility for using objects_api_group as pk in the form registration backends
-        see GH issue #5384
-        """
-        if not self.context.get("is_import", False):
-            return
-
-        if "registration_backends" not in attrs:
-            return
-
-        objects_api_pk_to_slug = {
-            group.pk: group.identifier for group in ObjectsAPIGroupConfig.objects.all()
-        }
-        for plugin in attrs["registration_backends"]:
-            options = plugin["options"]
-            if not (api_group_id := options.get("objects_api_group")):
-                continue
-
-            if isinstance(api_group_id, int):
-                api_group_slug = objects_api_pk_to_slug[api_group_id]
-                options["objects_api_group"] = api_group_slug
-                logger.info(
-                    "objects_api_group_reference_converted",
-                    from_pk=api_group_id,
-                    to_identifier=api_group_slug,
-                )
-
-    def to_internal_value(self, data):
-        self.convert_objects_api_group(data)
-        return super().to_internal_value(data)
-
-    def _handle_import(self, attrs) -> None:
-        # we're not importing, nothing to do
-        if not self.context.get("is_import", False) or not hasattr(
-            self, "initial_data"
-        ):
-            return
-
-        if (
-            "authentication_backends" not in self.initial_data
-            and "authentication_backend_options" not in self.initial_data
-        ):
-            return
-
-        # Make sure `auth_backends` exists
-        attrs["auth_backends"] = attrs.get("auth_backends", [])
-        auth_backends_map = {}
-
-        # Pre-fill the map with the `auth_backends` values
-        for auth_backend in attrs["auth_backends"]:
-            auth_backends_map[auth_backend["backend"]] = auth_backend
-
-        # Collect all the backends that should be transformed to `auth_backends`
-        if "authentication_backends" in self.initial_data:
-            for plugin in self.initial_data["authentication_backends"]:
-                # Add plugin if it's not already in the map
-                if plugin not in auth_backends_map:
-                    auth_backends_map[plugin] = {
-                        "backend": plugin,
-                        "options": None,
-                    }
-
-        if "authentication_backend_options" in self.initial_data:
-            for plugin, options in self.initial_data[
-                "authentication_backend_options"
-            ].items():
-                if plugin not in auth_backends_map:
-                    auth_backends_map[plugin] = {
-                        "backend": plugin,
-                        "options": options,
-                    }
-                    continue
-
-                if auth_backends_map[plugin]["options"] is None:
-                    auth_backends_map[plugin]["options"] = options
-
-        validated_auth_backends = []
-        for config in auth_backends_map.values():
-            validated_auth_backends.append(
-                FormAuthenticationBackendSerializer().validate(config)
-            )
-        attrs["auth_backends"] = validated_auth_backends
-
     def validate(self, attrs):
         super().validate(attrs)
-        self._handle_import(attrs)
 
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register

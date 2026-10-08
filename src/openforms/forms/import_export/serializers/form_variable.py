@@ -59,6 +59,7 @@ class FormVariableExportSerializer(
 
 
 class FormVariableImportSerializer(
-    FormVariableSerializer, BaseImportSerializer[FormVariableDataRepresentation]
+    FormVariableSerializer,
+    BaseImportSerializer[FormVariable, FormVariableDataRepresentation],
 ):
     pass
