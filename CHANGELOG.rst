@@ -14,23 +14,27 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.10 (2026-xx-xx)
+3.5.10 (2026-10-08)
 ===================
+
+Bugix and feature backport release.
 
 .. warning::
 
-    In 3.5.2, we introduced migration tooling to convert forms to the new logic evalution in bulk.
+    In 3.5.2, we introduced migration tooling to convert forms to the new logic
+    evalution in bulk.
 
-    Unfortunately, there is a chance that the rules were assigned an incorrect order. If you have
-    used this command to convert forms, the solution is to manually save the forms in the admin once,
-    which will re-trigger the logic rule analysis and assign the correct order.
+    Unfortunately, there is a chance that the rules were assigned an incorrect order. If
+    you have used this command to convert forms, the solution is to manually save the
+    forms in the admin once, which will re-trigger the logic rule analysis and assign
+    the correct order.
 
-    If you have not used this command or if the forms have already been saved afterwards, you don't
-    have to do anything.
+    If you have not used this command or if the forms have already been saved
+    afterwards, you don't have to do anything.
 
-    The root cause is fixed in this patch, so it can be safely used now. It will report all forms
-    that were converted to the new logic evaluation, as well as forms for which problems occurred during
-    conversion.
+    The root cause is fixed in this patch, so it can be safely used now. It will report
+    all forms that were converted to the new logic evaluation, as well as forms for
+    which problems occurred during conversion.
 
     In an app container, execute:
 
@@ -41,6 +45,40 @@ Changelog
         python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
         # pass the --no-dry-run argument to make changes:
         # python /app/src/manage.py enable_new_logic_evaluation_for_all_forms --no-dry-run
+
+.. warning:: Normally we don't backport features. Due to external factors we backported
+   the email verification feature in the ``customerProfile`` component. If you use this
+   component, we recommend that you extensively test these forms before updating
+   production.
+
+* [:backend:`6426`] Backported the email verification feature in the ``customerProfile``
+  component.
+* [:backend:`6418`] Fixed legacy Open Klant mechanism to send the ``referentie`` when
+  updating customer profile preferences. Note that you need to set the (undocumented)
+  ``CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS=True``  environment variable
+  to opt-in to this behaviour. This feature flag will be removed in Open Forms 5.0.
+
+* Migration tooling (to 4.0) improvements:
+
+  - [:backend:`6668`] Improved the check script for the deprecated ``clearOnHide`` (and
+    more) behaviour.
+  - [:backend:`6710`] Improved the management command to convert forms to the new logic
+    evaluation.
+  - [:backend:`6275`] Fixed logic analysis sometimes assigning the wrong logic rule
+    order during logic analysis.
+
+* [:backend:`6698`] Fixed file upload components from old form versions not always
+  containing the ``allowedTypesLabels`` labels, which would crash the new renderer.
+* [:backend:`6760`] Fixed a logic evaluation crash for logic rules targetting ``date``
+  or ``datetime`` variables that may have incomplete input.
+* [:backend:`6751`] Fixed the phone number validation plugin trimming user input and not
+  allowing blank inputs as validator input data.
+* [:backend:`6755`] Fixed the customer profile component validation incorrectly
+  requiring an address for all available address types when the component is required.
+* Upgraded dependencies to their latest security releases:
+
+  - Django
+  - soupsieve
 
 3.5.9 (2026-09-18)
 ===================
