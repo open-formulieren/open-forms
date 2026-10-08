@@ -1393,7 +1393,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         # check we imported a new form
         self.assertNotEqual(form.pk, imported_form.pk)
         # check we added random hex chars
-        self.assertRegex(imported_form.slug, r"^my-slug-[0-9a-f]{6}$")
+        self.assertRegex(imported_form.slug, r"^my-slug-[0-9a-z]{6}$")
         # check uuid mapping still works
         self.assertEqual(imported_form_definition.uuid, form_definition.uuid)
 

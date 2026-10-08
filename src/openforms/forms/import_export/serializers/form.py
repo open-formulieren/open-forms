@@ -1,3 +1,5 @@
+from django.utils.crypto import get_random_string
+
 from ...api.serializers import FormSerializer
 from ...api.serializers.form import FormRegistrationBackendSerializer
 from ...models import Form, FormRegistrationBackend
@@ -193,3 +195,46 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
     def prepare_for_import(self, data: FormData) -> None:
         if self.context.get("deactivate_form"):
             data["active"] = False
+
+        self.set_category(data)
+        self.set_theme(data)
+
+        # If there is a slug, make sure that it's unique
+        if form_slug := data.get("slug"):
+            self.uniquify_slug(data, form_slug)
+
+    def set_theme(self, data: FormData) -> None:
+        """
+        Make sure that the imported form does not have an unknown theme set.
+
+        This helps prevent common import errors.
+        """
+        # theme overrides cannot be imported, since the theme records/FKs have to
+        # exist in the target environment. Importing/exporting themes is also not
+        # possible at this time, so we reset the theme and admins need to update
+        # the imported form.
+        data["theme"] = ""
+
+    def set_category(self, data: FormData) -> None:
+        """
+        Make sure that the imported form does not have an unknown category set.
+
+        This helps prevent common import errors.
+        """
+        # we can only extract a category UUID from the URL here, but that requires
+        # an exact match and we currently don't provide import/export functionality
+        # for categories. Relying on ID/Name is not much better than guesswork either,
+        # so we always import forms with NO category at all to prevent import errors.
+        # See #1774 for one such example of an error.
+        data["category"] = ""
+
+    @staticmethod
+    def uniquify_slug(data: FormData, slug: str) -> None:
+        """
+        Make sure that the imported form uses a unique slug before we import it.
+
+        This helps prevent common import errors.
+        """
+        if Form.objects.filter(slug=slug).exists():
+            suffix = get_random_string(length=6)
+            data["slug"] = f"{slug}-{suffix}"
