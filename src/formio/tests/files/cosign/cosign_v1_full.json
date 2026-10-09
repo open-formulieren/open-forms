@@ -1,0 +1,17 @@
+{
+  "authPlugin": "oidc-digid",
+  "description": "A description",
+  "hidden": false,
+  "id": "yejak",
+  "key": "someCoSign",
+  "label": "Some cosign",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "type": "coSign"
+}

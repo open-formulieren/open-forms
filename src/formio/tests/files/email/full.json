@@ -1,0 +1,61 @@
+{
+  "autocomplete": "email",
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "confirmationRecipient": false,
+  "defaultValue": "",
+  "description": "",
+  "errors": {
+    "required": "Geef email."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someEmail",
+  "label": "Some email",
+  "multiple": false,
+  "openForms": {
+    "requireVerification": true,
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Geef email."
+    }
+  },
+  "type": "email",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}

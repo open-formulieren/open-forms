@@ -1,0 +1,58 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "defaultValue": "",
+  "description": "",
+  "errors": {
+    "required": "Geef IBAN."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someIban",
+  "label": "Some IBAN",
+  "multiple": false,
+  "openForms": {
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Geef IBAN."
+    }
+  },
+  "type": "iban",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
