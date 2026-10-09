@@ -29,6 +29,85 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.1.0-alpha.1 (2026-10-09)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+You have to be on at least 4.0 before you can upgrade to 4.1.
+
+New features
+------------
+
+* [:backend:`6429`] Updated/improved form export functionality and the UX. You can
+  now control which aspects of a form are included, and include additional form-related
+  configuration like map tile layers, products...
+* [:backend:`6418`] Added support for the ``referentie`` attribute in Open Klant and the
+  customer interactions.
+* [:backend:`6695`] Added a new ``registrator`` registration variable in the Objects API
+  plugin.
+* Updated ``date``, ``datetime`` and ``time`` components to have ``null`` / ``None`` as
+  an empty value.
+* [:backend:`6426`] Introduced mandatory email verification in the ``customerProfile``
+  component.
+* [:backend:`6652`] Added support for Silktide anlytics.
+
+Bugfixes
+--------
+
+* [:backend:`6755`] Fixed the customer profile component validation incorrectly
+  requiring an address for all available address types when the component is required.
+* Fixed category IDs not being parsed by Django.
+* [:backend:`6751`] Fixed the phone number validation plugin trimming user input and not
+  allowing blank inputs as validator input data.
+* [:backend:`6723`] Fixed logic rules not being removed when they are cleared in v3 API.
+* [:backend:`6698`] Fixed file upload components from old form versions not always
+  containing the ``allowedTypesLabels`` labels, which would crash the new renderer.
+* [:backend:`6648`] Fixed price logic being ignored in the v3 API form endpoint.
+* [:backend:`6651`, :backend:`6650`] Fixed missing form theme in resume pages and
+  registration emails.
+* Fixed missing submission reference in logs during prefill.
+* Fixed error in template node parsing.
+* [:backend:`6661`] Fixed contrast of buttons in dark mode.
+* Fixed incomplete logic rule analysis in the v3 API form endpoint.
+* [:backend:`6649`] Fixed newlines of textarea components being stripped out in the
+  confirmation PDF.
+
+Project maintenance
+-------------------
+
+* [:backend:`6688`] Replaced Jest-based unit tests with Vitest.
+* [:backend:`6690`] Converted ``BooleanIcons`` component to Typescript.
+* [:backend:`6687`] Switched Storybook to Vite setup rather than Webpack.
+* [:backend:`6689`] Added Typescript support.
+* Updated our security docs in terms of responsibilities per role and common findings.
+* [:backend:`6564`] Removed formio component validator machinery. This will be updated
+  with the ``msgspec`` struct definitions.
+* Reduced metric cardinality regarding the amount of the components.
+* Removed stale developer docs.
+* Replaced ``webpack`` based build toolchain with ``ViteJS``.
+* Removed obsoleted check/report scripts.
+* Updated existing tests to use ``time-machine`` instead of ``freezegun``.
+* Updated logging by leveraging structured logging utilities.
+* Updated dependencies to their latest security/feature releases:
+
+  - maykin-json-logic-py
+  - storybook
+  - cryptography
+  - oauthlib
+  - pyjwt
+  - requests
+  - tornado
+  - urllib3
+  - dompurify
+  - anyio
+  - soupsieve
+  - @open-formulieren/monaco-json-editor
+  - @open-formulieren/formio-builder
+
 4.0.2 (2026-10-08)
 ==================
 

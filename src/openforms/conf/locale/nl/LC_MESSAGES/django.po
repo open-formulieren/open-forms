@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 11:35+0200\n"
-"PO-Revision-Date: 2026-09-11 10:24+0200\n"
+"POT-Creation-Date: 2026-10-09 11:57+0200\n"
+"PO-Revision-Date: 2026-10-09 11:57+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -104,7 +104,7 @@ msgstr "datum toegetreden"
 
 #: openforms/accounts/models.py:67
 msgid "raw OIDC claims"
-msgstr ""
+msgstr "ruwe OIDC-claims"
 
 #: openforms/accounts/models.py:70
 msgid ""
@@ -112,6 +112,9 @@ msgid ""
 "of) the claims listed on https://openid.net/specs/openid-connect-"
 "core-1_0.html#StandardClaims."
 msgstr ""
+"De OIDC-claims verkregen via de meest recente OpenID Connect-login. Bevat "
+"(een deel van) de claims die opgelijst zijn op https://openid.net/specs/"
+"openid-connect-core-1_0.html#StandardClaims."
 
 #: openforms/accounts/models.py:78
 msgid "UI language"
@@ -188,10 +191,8 @@ msgid "Analytics: SiteImprove"
 msgstr "Analytics: SiteImprove"
 
 #: openforms/analytics_tools/admin.py:47
-#, fuzzy
-#| msgid "Analytics: Piwik"
 msgid "Analytics: Silktide"
-msgstr "Analytics: Piwik"
+msgstr "Analytics: Silktide"
 
 #: openforms/analytics_tools/admin.py:53
 msgid "Analytics: Piwik"
@@ -366,37 +367,26 @@ msgid "Enabling this installs SiteImprove"
 msgstr "Door dit in te schakelen activeert u SiteImprove"
 
 #: openforms/analytics_tools/models.py:241
-#, fuzzy
-#| msgid "Piwik site ID"
 msgid "Silktide site ID"
-msgstr "Piwik site-ID"
+msgstr "Silktide site-ID"
 
 #: openforms/analytics_tools/models.py:245
-#, fuzzy
-#| msgid ""
-#| "Your SiteImprove ID - you can find this from the embed snippet example, "
-#| "which should contain a URL like '//siteimproveanalytics.com/js/"
-#| "siteanalyze_XXXXX.js'. The XXXXX is your ID."
 msgid ""
 "Your Silktide site ID - you can find this from the embed snippet example, "
 "which should contain a URL like 'https://analytics.silktide.com/XXXXX.js'. "
 "The XXXXX is your site ID."
 msgstr ""
-"Uw SiteImprove ID - deze waarde kan je terugvinden in het embed-voorbeeld. "
-"Deze bevat normaal een URL zoals '//siteimproveanalytics.com/js/"
-"siteanalyze_XXXXX.js'. De XXXXX is uw ID."
+"Uw Silktide ID - deze waarde kan je terugvinden in het embed-voorbeeld. Deze "
+"bevat normaal een URL zoals 'https://analytics.silktide.com/XXXXX.js'. De "
+"XXXXX is uw ID."
 
 #: openforms/analytics_tools/models.py:251
-#, fuzzy
-#| msgid "enable piwik site analytics"
 msgid "enable Silktide analytics"
-msgstr "Piwik inschakelen"
+msgstr "Silktide inschakelen"
 
 #: openforms/analytics_tools/models.py:253
-#, fuzzy
-#| msgid "Enabling this installs Piwik"
 msgid "Enabling this installs Silktide"
-msgstr "Vink dit aan om de Piwik-integratie in te schakelen"
+msgstr "Vink dit aan om de Silktide-integratie in te schakelen"
 
 #: openforms/analytics_tools/models.py:256
 msgid "GovMetric source ID form aborted"
@@ -1766,10 +1756,8 @@ msgid "Employee ID"
 msgstr "Medewerker-ID"
 
 #: openforms/authentication/constants.py:19
-#, fuzzy
-#| msgid "Locatieserver API"
 msgid "Local user ID"
-msgstr "Locatieserver API"
+msgstr "Locale gebruikers-ID"
 
 #: openforms/authentication/constants.py:23
 msgid "Dark"
@@ -5076,7 +5064,7 @@ msgstr "Je kan niet meerdere digitale adressen van het type '{type}' insturen."
 
 #: openforms/formio/components/custom.py:1258
 msgid "This field is required."
-msgstr ""
+msgstr "Dit veld is verplicht."
 
 #: openforms/formio/components/custom.py:1267
 msgid "The digital address value."
@@ -5374,10 +5362,9 @@ msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
 #: openforms/forms/admin/form.py:318
-#, fuzzy, python-brace-format
-#| msgid "Something went wrong while importing form: {}"
+#, python-brace-format
 msgid "Something went wrong while exporting form {}: {}"
-msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
+msgstr "Er is iets foutgegaan bij het exporteren van het formulier {}: {}"
 
 #: openforms/forms/admin/form.py:339
 #, python-brace-format
@@ -5467,40 +5454,36 @@ msgid "Forms export ready"
 msgstr "Export formulieren gereed"
 
 #: openforms/forms/admin/views.py:41
-#, fuzzy
-#| msgid "Form.io configuration"
 msgid "Anonymize form configuration"
-msgstr "Form.io configuratie"
+msgstr "Formulierconfiguratie anonimiseren"
 
 #: openforms/forms/admin/views.py:45
 msgid ""
 "Whether sensative/internal form configuration should be anonymized during "
 "exporting."
 msgstr ""
+"Geeft aan of gevoelige/interne formulierconfiguratie geanonimiseerd moet "
+"worden tijdens het exporteren."
 
 #: openforms/forms/admin/views.py:49
-#, fuzzy
-#| msgid "Form.io configuration"
 msgid "Form configuration"
-msgstr "Form.io configuratie"
+msgstr "Formulierconfiguratie"
 
 #: openforms/forms/admin/views.py:60
 #: openforms/forms/api/serializers/form.py:763
 msgid "Which form configuration should be included in the export file content."
-msgstr ""
+msgstr "Welke onderdelen in het exportbestand moeten komen."
 
 #: openforms/forms/admin/views.py:64
-#, fuzzy
-#| msgid "Help dialog configuration"
 msgid "Additional form configuration"
-msgstr "Hulpdialoogvensterconfiguratie"
+msgstr "Ondersteunende configuratie"
 
 #: openforms/forms/admin/views.py:70
 #: openforms/forms/api/serializers/form.py:771
 msgid ""
 "Which additional form configuration should be included in the export file "
 "content."
-msgstr ""
+msgstr "Welke ondersteunende configuratie in het exportbestand moeten komen."
 
 #: openforms/forms/admin/views.py:76
 msgid "Invalid form uuids."
@@ -5710,13 +5693,11 @@ msgstr ""
 "`auth_backends` zijn."
 
 #: openforms/forms/api/serializers/form.py:755
-#, fuzzy
-#| msgid "Whether the step progression should be displayed in the UI or not."
 msgid ""
 "Whether sensative form configuration should be anonymized during exporting."
 msgstr ""
-"Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker "
-"getoond."
+"Geeft aan of gevoelige/interne formulierconfiguratie geanonimiseerd moet "
+"worden tijdens het exporteren."
 
 #: openforms/forms/api/serializers/form.py:790
 msgid "The file that contains the form, form definitions and form steps."
@@ -6273,11 +6254,11 @@ msgstr "De servicebevragingconfiguratie ontbreekt."
 
 #: openforms/forms/api/v3/validation.py:255
 msgid "The price variable must have a numeric data type."
-msgstr ""
+msgstr "De prijsvariabele moet een getal-gegevenstype hebben."
 
 #: openforms/forms/api/v3/validation.py:261
 msgid "The price variable must have a numeric initial value."
-msgstr ""
+msgstr "De prijsvariabele moet een getal als startwaarde hebben."
 
 #: openforms/forms/api/v3/viewsets.py:30
 msgid "Create or update all details of a form"
@@ -6772,10 +6753,8 @@ msgstr ""
 "meerdere opties te selecteren."
 
 #: openforms/forms/import_export/constants.py:8
-#, fuzzy
-#| msgid "Registration backend"
 msgid "Registration backends"
-msgstr "Registratiebackend"
+msgstr "Registratiebackends"
 
 #: openforms/forms/import_export/constants.py:9 openforms/prefill/apps.py:7
 #: openforms/submissions/constants.py:52
@@ -6788,10 +6767,8 @@ msgid "Payment backend"
 msgstr "Betaalprovider backend"
 
 #: openforms/forms/import_export/constants.py:11
-#, fuzzy
-#| msgid "authentication backends"
 msgid "Authentication backends"
-msgstr "authenticatie-backends"
+msgstr "Authenticatiebackends"
 
 #: openforms/forms/import_export/constants.py:15
 #: openforms/products/models/product.py:43
@@ -6799,20 +6776,14 @@ msgid "Product"
 msgstr "Product"
 
 #: openforms/forms/import_export/constants.py:16
-#, fuzzy
-#| msgid "WMS layers"
 msgid "WMS-tile layers"
 msgstr "WMS-kaartlagen"
 
 #: openforms/forms/import_export/constants.py:17
-#, fuzzy
-#| msgid "Background tasks"
 msgid "Background tile layers"
-msgstr "Achtergrondtaken"
+msgstr "Achtergrondkaartlagen"
 
 #: openforms/forms/import_export/constants.py:18
-#, fuzzy
-#| msgid "yivi attribute groups"
 msgid "Yivi attribute groups"
 msgstr "Yivi-attribuutgroepen"
 
@@ -7835,6 +7806,16 @@ msgid ""
 "admin profile) containing a link where you can download a zip file with all "
 "the exported forms. </p>"
 msgstr ""
+"<p>Geef hier aan hoe de geselecteerde formulieren geëxporteerd worden. Met "
+"deze instellingen kan je gevoelige/interne informatie weghalen, bepaalde "
+"formulieronderdelen uitsluiten en/of andere ondersteunende configuratie "
+"opnemen in de exports.</p>\n"
+"<p>Deze exportopties worden toegepast op elke formulier dat geëxporteerd "
+"wordt.</p>\n"
+"<p> Na het aanklikken van de \"Exporteer\"-knop zullen de formulieren op de "
+"achtergrond geëxporteerd worden.<br> Wanneer dit voltooid is, dan zal je een "
+"e-mail ontvangen (op het e-mailadres van je gebruikersaccount) met een link "
+"waar je het ZIP-bestand kan downloaden die de formulierexports bevat.</p>"
 
 #: openforms/forms/templates/admin/forms/form/export.html:72
 #: openforms/forms/templates/admin/forms/formsubmissionstatistics/export_form.html:62
@@ -9176,19 +9157,15 @@ msgstr "Gemachtigde"
 
 #: openforms/prefill/contrib/customer_interactions/api/serializers.py:16
 msgid "An address value for the supported communication channels."
-msgstr ""
+msgstr "Een adreswaarde voor de ondersteunde communicatiekanalen."
 
 #: openforms/prefill/contrib/customer_interactions/api/serializers.py:19
-#, fuzzy
-#| msgid "is verified"
 msgid "Is address verified"
-msgstr "is geverifieerd"
+msgstr "Is adres geverifieerd"
 
 #: openforms/prefill/contrib/customer_interactions/api/serializers.py:21
-#, fuzzy
-#| msgid "Whether accepting this statement is required or not."
 msgid "Whether the address is verified or not."
-msgstr "Indicatie of de verklaring verplicht is."
+msgstr "Indicatie of het adres al geverifieerd is of niet."
 
 #: openforms/prefill/contrib/customer_interactions/api/serializers.py:29
 msgid "Communication channel type"
@@ -10943,7 +10920,7 @@ msgstr ""
 #: openforms/registrations/contrib/generic_json/config.py:83
 #: openforms/registrations/contrib/objects_api/config.py:297
 msgid "Use empty string for empty date, datetime and time values"
-msgstr ""
+msgstr "Gebruik een lege string voor lege datum-, datum-tijd- en tijd-waarden."
 
 #: openforms/registrations/contrib/generic_json/config.py:87
 #: openforms/registrations/contrib/objects_api/config.py:301
@@ -10952,6 +10929,9 @@ msgid ""
 "components as empty string instead of 'null'. This option will be removed in "
 "Open Forms 5.0."
 msgstr ""
+"Compatibiliteitsinstelling - indien aangevinkt, dan worden lege waarden als "
+"lege string gestuurd in plaats van 'null'. Deze optie zal in Open "
+"Formulieren 5.0 verwijderd worden."
 
 #: openforms/registrations/contrib/generic_json/registration_variables.py:41
 msgid "Form version"
@@ -11489,10 +11469,8 @@ msgid "Co-sign pseudo"
 msgstr "PseudoID mede-ondertekenaar"
 
 #: openforms/registrations/contrib/objects_api/registration_variables.py:201
-#, fuzzy
-#| msgid "Registration"
 msgid "Registrator"
-msgstr "Registratie"
+msgstr "Registrator"
 
 #: openforms/registrations/contrib/stuf_zds/options.py:35
 msgid "The name of the form variable to be mapped"
@@ -12927,12 +12905,12 @@ msgid "The submission during which the email verification was initiated."
 msgstr "De inzending waarbinnen de e-mailverificatie gestart was."
 
 #: openforms/submissions/models/email_verification.py:55
-#, fuzzy
-#| msgid "Key of the email component in the submission's form."
 msgid ""
 "Key of the component in the submission's form. The supported component types "
 "are Email and Profile."
-msgstr "Sleutel van de e-mailcomponent in de formulierdefinitie."
+msgstr ""
+"Sleutel van de component in het formulier van de inzending. De ondersteunde "
+"componenttypes zijn \"E-mail\" en \"Profiel\"."
 
 #: openforms/submissions/models/email_verification.py:62
 msgid "The email address that is being verified."
@@ -12955,10 +12933,8 @@ msgid "email verifications"
 msgstr "e-mailverificaties"
 
 #: openforms/submissions/models/email_verification.py:84
-#, fuzzy
-#| msgid "You must specify a variable."
 msgid "You must specify an non-empty email address."
-msgstr "Je moet een formuliervariabele opgeven."
+msgstr "Je moet een (niet-leeg) e-mailadres opgeven."
 
 #: openforms/submissions/models/email_verification.py:90
 #, python-brace-format
@@ -16527,41 +16503,3 @@ msgstr ""
 #: openforms/config/templatetags/privacy_policy.py:19
 msgid "privacy policy"
 msgstr "privacybeleid"
-
-#~ msgid ""
-#~ "\n"
-#~ "            Once your request has been processed, you will be sent an "
-#~ "email (at the address configured in your admin\n"
-#~ "            profile) containing a link where you can download a zip file "
-#~ "with all the exported forms.\n"
-#~ "            "
-#~ msgstr ""
-#~ "\n"
-#~ "Zodra uw verzoek verwerkt is, ontvangt u een e-mail met een link naar het "
-#~ "ZIP-bestand dat alle geëxporteerde formulieren bevat."
-
-#, python-brace-format
-#~ msgid "FormIO '{type}' component validator"
-#~ msgstr "FormIO '{type}' component validatie"
-
-#~ msgid "List of available address options for this channel"
-#~ msgstr "Lijst van beschikbare addressen voor dit kanaal"
-
-#~ msgid "The co-sign component is missing the authPlugin configuration option"
-#~ msgstr "Het mede-ondertekencomponent mist de autorisatie-configuratieoptie"
-
-#~ msgid "You may only select plugins that provide a single auth attribute."
-#~ msgstr ""
-#~ "Je kunt alleen plugins selecteren die slechts één authenticatie-attribuut "
-#~ "verstrekken."
-
-#, python-brace-format
-#~ msgid ""
-#~ "The co-sign component requires the '{field_label}' "
-#~ "({config_verbose_name}) to be configured."
-#~ msgstr ""
-#~ "Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
-#~ "({config_verbose_name})."
-
-#~ msgid "Analytics cookies group"
-#~ msgstr "Cookiegroep analytics"
