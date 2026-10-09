@@ -1,0 +1,8 @@
+{
+  "type": "selectboxes",
+  "key": "selectboxes",
+  "label": "Selectboxes",
+  "openForms": {
+    "dataSrc": "variable"
+  }
+}
