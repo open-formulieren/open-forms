@@ -1,3 +1,6 @@
 [submodule "org-dotgithub"]
 	path = org-dotgithub
 	url = git@github.com:open-formulieren/.github.git
+[submodule "open-product-api-client"]
+	path = open-product-api-client
+	url = git@github.com:maykinmedia/open-product-api-client.git
