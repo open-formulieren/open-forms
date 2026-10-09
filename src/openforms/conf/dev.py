@@ -30,7 +30,7 @@ os.environ.setdefault(
 )
 
 try:  # pragma: no cover
-    socket.create_connection(("127.0.0.1", 5173), timeout=2)
+    socket.create_connection(("localhost", 5173), timeout=2)
     vite_dev_server_up = True
 except Exception:  # noqa: BLE001
     vite_dev_server_up = False
