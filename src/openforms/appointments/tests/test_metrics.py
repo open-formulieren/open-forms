@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from openforms.forms.constants import FormTypeChoices
 from openforms.forms.tests.factories import FormFactory
+from openforms.plugins.registry import VENDOR_HINT_METRIC_LABEL
 
 from ..models import AppointmentsConfig
 from ..registry import register
@@ -31,13 +32,14 @@ class ReportPluginUsageTests(TestCase):
         FormFactory.create(type=FormTypeChoices.regular, active=True, deleted_=False)
 
         result = {
-            plugin.identifier: amount
-            for plugin, amount in register.report_plugin_usage()
+            plugin.identifier: (amount, tags)
+            for plugin, amount, tags in register.report_plugin_usage()
         }
 
-        self.assertEqual(result["demo"], 3)
+        self.assertEqual(result["demo"][0], 3)
+        self.assertEqual(result["demo"][1], {VENDOR_HINT_METRIC_LABEL: "demo"})
 
-        for key, value in result.items():
+        for key, (value, _tags) in result.items():
             if key == "demo":
                 continue
             with self.subTest(plugin=key):
@@ -53,20 +55,45 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: amount
-            for plugin, amount in register.report_plugin_usage()
+            plugin.identifier: (amount, tags)
+            for plugin, amount, tags in register.report_plugin_usage()
         }
 
-        for key, value in result.items():
+        for key, (value, _tags) in result.items():
             with self.subTest(plugin=key):
                 self.assertEqual(value, 0)
 
     def test_plugin_configured_but_no_appointment_forms_present(self):
         result = {
-            plugin.identifier: amount
-            for plugin, amount in register.report_plugin_usage()
+            plugin.identifier: (amount, tags)
+            for plugin, amount, tags in register.report_plugin_usage()
         }
 
-        for key, value in result.items():
+        for key, (value, _tags) in result.items():
             with self.subTest(plugin=key):
                 self.assertEqual(value, 0)
+
+    def test_vendor_hints_coverage(self):
+        from ..registry import Registry
+
+        test_registry = Registry()
+
+        class DummyPlugin:
+            def __init__(self, identifier, **kwargs):
+                self.identifier = identifier
+
+        test_registry("jcc_mock")(DummyPlugin)
+        test_registry("qmatic_mock")(DummyPlugin)
+        test_registry("demo_mock")(DummyPlugin)
+        test_registry("custom_mock")(DummyPlugin)
+
+        for plugin, _amount, tags in test_registry.report_plugin_usage():
+            identifier_lower = plugin.identifier.lower()
+            if "jcc" in identifier_lower:
+                self.assertEqual(tags.get(VENDOR_HINT_METRIC_LABEL), "jcc_rest")
+            elif "qmatic" in identifier_lower:
+                self.assertEqual(tags.get(VENDOR_HINT_METRIC_LABEL), "qmatic")
+            elif "demo" in identifier_lower:
+                self.assertEqual(tags.get(VENDOR_HINT_METRIC_LABEL), "demo")
+            else:
+                self.assertEqual(tags.get(VENDOR_HINT_METRIC_LABEL), plugin.identifier)

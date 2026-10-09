@@ -9,6 +9,7 @@ from django.http import (
     HttpResponseRedirect,
 )
 
+from mozilla_django_oidc_db.models import OIDCProvider
 from mozilla_django_oidc_db.registry import register as oidc_registry
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import (
@@ -41,6 +42,17 @@ class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: ClassVar[Sequence[AuthAttribute]]
     oidc_plugin_identifier: ClassVar[str]
+
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        try:
+            return (
+                OIDCProvider.objects.get(
+                    identifier=self.oidc_plugin_identifier
+                ).authorization_endpoint
+                or None
+            )
+        except OIDCProvider.DoesNotExist:
+            return None
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: OptionsT

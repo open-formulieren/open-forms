@@ -36,6 +36,16 @@ class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
 
+    def get_vendor_hint(self, options: GenericJSONOptions) -> str | None:
+        service = options.get("service") if isinstance(options, dict) else None
+        if isinstance(service, int):
+            from zgw_consumers.models import Service
+
+            service = Service.objects.filter(pk=service).first()
+        if service and getattr(service, "api_root", None):
+            return service.api_root
+        return None
+
     # TODO: add GenericJSONResult typed dict to properly indicate return value
     def register_submission(
         self, submission: Submission, options: GenericJSONOptions

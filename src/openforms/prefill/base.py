@@ -192,3 +192,12 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     @classmethod
     def configuration_context(cls) -> JSONObject | None:
         return None
+
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        """
+        Extract the vendor hint (e.g., api root, service URL or SOAP endpoint)
+        from the prefill options.
+
+        To be overridden in specific plugins (e.g., Haal Centraal, DigiD, etc.).
+        """
+        return None
