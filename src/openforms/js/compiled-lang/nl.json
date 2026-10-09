@@ -1306,7 +1306,7 @@
   "7/0umK": [
     {
       "type": 0,
-      "value": "Use empty string for empty date, datetime and time values"
+      "value": "Gebruik een lege string voor lege datum-, datumtijd- en tijd-waarden"
     }
   ],
   "7/Bhpw": [
@@ -3031,7 +3031,7 @@
   "GJYjE8": [
     {
       "type": 0,
-      "value": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of "
+      "value": "Compatibiliteitsinstelling - indien aangevinkt, dan worden lege waarden als lege string gestuurd in plaats van "
     },
     {
       "children": [
@@ -3045,7 +3045,7 @@
     },
     {
       "type": 0,
-      "value": ". This option will be removed in Open Forms 5.0."
+      "value": ". Deze optie zal in Open Formulieren 5.0 verwijderd worden."
     }
   ],
   "GO9yud": [
@@ -4167,7 +4167,7 @@
   "O9LxJQ": [
     {
       "type": 0,
-      "value": "Legacy options"
+      "value": "Compatibiliteitsinstellingen"
     }
   ],
   "OB48En": [
@@ -5988,7 +5988,7 @@
   "Zku2Mw": [
     {
       "type": 0,
-      "value": "Legacy compatibility option - send empty values for date, datetime and time components as empty string instead of "
+      "value": "Compatibiliteitsinstelling - indien aangevinkt, dan worden lege waarden als lege string gestuurd in plaats van "
     },
     {
       "children": [
@@ -6002,7 +6002,7 @@
     },
     {
       "type": 0,
-      "value": ". This option will be removed in Open Forms 5.0."
+      "value": ". Deze optie zal in Open Formulieren 5.0 verwijderd worden."
     }
   ],
   "ZzjFxE": [
@@ -7706,7 +7706,7 @@
   "jb9aE2": [
     {
       "type": 0,
-      "value": "Use empty string for empty date, datetime and time values"
+      "value": "Gebruik een lege string voor lege datum-, datumtijd- en tijd-waarden"
     }
   ],
   "jitewC": [
