@@ -1,11 +1,17 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import {IconNo, IconUnknown, IconYes} from 'components/admin/BooleanIcons';
-import {getBEMClassName} from 'utils/bem';
 
 const ChangelistTableWrapper = ({headColumns, children: body, extraModifiers = []}) => (
-  <div className={getBEMClassName('changelist', ['react', ...extraModifiers])}>
+  <div
+    className={classNames(
+      'changelist',
+      'changelist--react',
+      extraModifiers.map(mod => `changelist--${mod}`)
+    )}
+  >
     <div className="results">
       <table>
         <thead>

@@ -9,7 +9,6 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {NumberInput} from 'components/admin/forms/Inputs';
-import {FormException} from 'utils/exception';
 import {patch} from 'utils/fetch';
 
 import useConfirm from './useConfirm';
@@ -36,10 +35,7 @@ export const SubmissionLimitFields = ({submissionLimit, formUuid, onChange}) => 
         true
       );
       if (!resetResult.ok) {
-        throw new FormException(
-          'An error occurred while trying to reset the counter.',
-          resetResult.data
-        );
+        throw new Error('An error occurred while trying to reset the counter.');
       }
       return resetResult.data;
     } catch (e) {
