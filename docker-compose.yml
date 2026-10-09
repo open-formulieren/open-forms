@@ -156,6 +156,7 @@ services:
 
   web-init:
     build: .
+    image: openformulieren/open-forms:${TAG:-latest}
     environment: *x-app-env
     command: /setup_configuration.sh
     volumes: *x-app-volumes
