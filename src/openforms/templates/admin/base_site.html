@@ -6,7 +6,7 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'maykin_common/css/env-info.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% vite_asset_url 'src/openforms/scss/admin/admin_overrides.scss' %}">
 
     <link href="{% static 'maykin_common/ico/favicon.svg' %}" sizes="any" rel="icon" type="image/svg+xml" />
     <link href="{% static 'maykin_common/ico/favicon-96x96.png' %}" sizes="96x96" rel="icon" type="image/png" />
