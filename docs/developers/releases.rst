@@ -25,6 +25,24 @@ See also the :ref:`developers_versioning`.
 Preparing a release
 -------------------
 
+.. note::
+
+    The first step in the release flow is to prepare the SDK release. This consists of 
+    some steps that are also defined in the github `prepare-release` template. Note that
+    the SDK does not have a check for the docs so we can do that by leveraging the backend
+    with a symlink: 
+
+    .. code-block:: bash
+
+        ln -s /path/to/the/sdk/CHANGELOG.rst docs/sdk-changelog-for-testing.rst
+    
+    Then, inside the `docs` directory of the backend we can test the file for warnings:
+
+    .. code-block:: bash
+
+        make html
+
+
 For new releases, a release branch is created, named: ``release/<new-version>``.
 For minor and major releases, checkout from ``main``. For patch releases, checkout
 from ``stable/<major>.<minor>.x``. All release-related actions are concentrated in this branch.

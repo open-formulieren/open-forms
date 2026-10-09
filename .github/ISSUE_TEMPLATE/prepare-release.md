@@ -84,10 +84,12 @@ assignees: sergei-maertens
     - [ ] `openforms.submissions.tests.test_single_step_form`
     - [ ] `openforms.submissions.tests.test_resume_form_view`
 
-- [ ] Release new SDK version
+- [ ] SDK
+  - [ ] Check docs (see the `docs/developers/releases.rst`)
+  - [ ] Check translations
+  - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
-  - [ ] SDK
   - [ ] Backend
   - [ ] Frontend
 - [ ] Bump API version number
