@@ -123,7 +123,7 @@
     "trailingComma": "es5",
     "useTabs": false,
     "importOrder": [
-      "^((components|hooks|utils)/(.*))$",
+      "^((components|hooks|utils)/(.*))|(errors)$",
       "^[./]"
     ],
     "importOrderSeparation": true,

@@ -15,7 +15,7 @@ import Loader from 'components/admin/Loader';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import {WarningIcon} from 'components/admin/icons';
-import {APIError, NotAuthenticatedError} from 'utils/exception';
+import {APIError, NotAuthenticated} from 'errors';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
 
@@ -1123,7 +1123,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     } catch (e) {
       // handle HTTP 401 errors, in case the session was expired. This results in a
       // state update AND we abort the rest of the flow.
-      if (e instanceof NotAuthenticatedError) {
+      if (e instanceof NotAuthenticated) {
         dispatch({type: 'AUTH_FAILURE'});
         return;
       }
