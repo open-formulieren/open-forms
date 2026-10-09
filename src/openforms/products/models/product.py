@@ -27,6 +27,8 @@ class Product(models.Model):
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0.01"))],
+        blank=True,
+        null=True,
     )
 
     information = CSPPostProcessedWYSIWYGField(
@@ -39,9 +41,35 @@ class Product(models.Model):
         ),
     )
 
+    #
+    # Open Product related fields
+    #
+    producttype = models.UUIDField(
+        _("Producttype"),
+        help_text=_("Open Product producttype UUID"),
+        blank=True,
+        null=True,
+    )
+
     class Meta:
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
+        constraints = [
+            # Price field may only be blank when producttype is set
+            models.CheckConstraint(
+                name="price_not_blank_without_producttype",
+                check=(
+                    models.Q(producttype__isnull=True, price__isnull=False)
+                    | models.Q(
+                        producttype__isnull=False,
+                        price__isnull=True,
+                    )
+                ),
+                violation_error_message=_(
+                    "Price cannot be blank without a producttype."
+                ),
+            ),
+        ]
 
     def __str__(self):
         return self.name
