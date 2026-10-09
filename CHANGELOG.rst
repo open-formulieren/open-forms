@@ -14,6 +14,21 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.1.0 (2027-01-??)
+==================
+
+Upgrade procedure
+-----------------
+
+To upgrade to 4.1, please:
+
+* ⚠️ Ensure you are currently on Open Forms 4.0.1 or newer.
+* ⚠️ Review the :ref:`detailed release notes <installation_upgrade_410>` in the
+  documentation under **Installation** > **Upgrade details to Open Forms 4.1.0** and
+  prepare accordingly.
+
+.. todo:: Rest of the release notes in due time.
+
 4.1.0-alpha.1 (2026-10-09)
 ==========================
 
@@ -27,39 +42,45 @@ You have to be on at least 4.0 before you can upgrade to 4.1.
 New features
 ------------
 
-* [:backend:`6429`] Updated/improved form export functionality and the UX. It's now
-  possible to define specific options regarding the data we want to include in the export. 
+* [:backend:`6429`] Updated/improved form export functionality and the UX. You can
+  now control which aspects of a form are included, and include additional form-related
+  configuration like map tile layers, products...
 * [:backend:`6418`] Added support for the ``referentie`` attribute in Open Klant and the
   customer interactions.
-* [:backend:`6695`] Added suport for ``registrator`` variable in Objects API.
-* [:backend:`6426`] Introduced email verification for the ``Profile`` component. The users
-  now cannot proceed to the next step if an email is provided and it's not verified.
+* [:backend:`6695`] Added a new ``registrator`` registration variable in the Objects API
+  plugin.
+* Updated ``date``, ``datetime`` and ``time`` components to have ``null`` / ``None`` as
+  an empty value.
+* [:backend:`6426`] Introduced mandatory email verification in the ``customerProfile``
+  component.
 * [:backend:`6652`] Added support for Silktide anlytics.
 
 Bugfixes
 --------
 
-* [:backend:`6755`] Fixed ``Profile`` component when multiple address types are available
-  and a blank value was submitted for one of them.
+* [:backend:`6755`] Fixed the customer profile component validation incorrectly
+  requiring an address for all available address types when the component is required.
 * Fixed category IDs not being parsed by Django.
-* [:backend:`6751`] Fixed crash when whitespaces are included in form fields' values.
-* [:backend:`6723`] Fixed logic rules not removed when they are cleared in v3 API.
-* [:backend:`6698`] Fixed missing ``allowedTypesLabels`` when importing a form with an
-  old file component.
-* [:backend:`6648`] Fixed missing price logic from the new v3 API form endpoint.
+* [:backend:`6751`] Fixed the phone number validation plugin trimming user input and not
+  allowing blank inputs as validator input data.
+* [:backend:`6723`] Fixed logic rules not being removed when they are cleared in v3 API.
+* [:backend:`6698`] Fixed file upload components from old form versions not always
+  containing the ``allowedTypesLabels`` labels, which would crash the new renderer.
+* [:backend:`6648`] Fixed price logic being ignored in the v3 API form endpoint.
 * [:backend:`6651`, :backend:`6650`] Fixed missing form theme in resume pages and
   registration emails.
 * Fixed missing submission reference in logs during prefill.
 * Fixed error in template node parsing.
 * [:backend:`6661`] Fixed contrast of buttons in dark mode.
-* Fixed incomplete logic rule analysis in the new v3 API form endpoint.
-* [:backend:`6649`] Fixed new lines not converted to linebreaks in ``TextArea`` component.
+* Fixed incomplete logic rule analysis in the v3 API form endpoint.
+* [:backend:`6649`] Fixed newlines of textarea components being stripped out in the
+  confirmation PDF.
 
 Project maintenance
 -------------------
 
 * [:backend:`6688`] Replaced Jest-based unit tests with Vitest.
-* [:backend:`6690`] Converted BooleanIcons component to Typescript
+* [:backend:`6690`] Converted ``BooleanIcons`` component to Typescript.
 * [:backend:`6687`] Switched Storybook to Vite setup rather than Webpack.
 * [:backend:`6689`] Added Typescript support.
 * Updated our security docs in terms of responsibilities per role and common findings.
@@ -71,8 +92,6 @@ Project maintenance
 * Removed obsoleted check/report scripts.
 * Updated existing tests to use ``time-machine`` instead of ``freezegun``.
 * Updated logging by leveraging structured logging utilities.
-* Updated ``date``, ``datetime`` and ``time`` components to have ``null`` / ``None`` as
-  an empty value.
 * Updated dependencies to their latest security/feature releases:
 
   - maykin-json-logic-py
@@ -88,22 +107,6 @@ Project maintenance
   - soupsieve
   - @open-formulieren/monaco-json-editor
   - @open-formulieren/formio-builder
-  - django
-  
-4.1.0 (2027-01-??)
-==================
-
-Upgrade procedure
------------------
-
-To upgrade to 4.1, please:
-
-* ⚠️ Ensure you are currently on Open Forms 4.0.1 or newer.
-* ⚠️ Review the :ref:`detailed release notes <installation_upgrade_410>` in the
-  documentation under **Installation** > **Upgrade details to Open Forms 4.1.0** and
-  prepare accordingly.
-
-.. todo:: Rest of the release notes in due time.
 
 4.0.2 (2026-10-08)
 ==================
@@ -1591,7 +1594,7 @@ Open Forms 3.5.0 is a feature release.
 .. epigraph::
 
    Kjeld Nuis is a Dutch speed skater who broke the 100kph barrier on natural ice in
-   1.    It took us `just a bit longer` to break speed records with Open Forms,
+   2022. It took us `just a bit longer` to break speed records with Open Forms,
    but finally we completed our logic engine rework in the planned timeline and met
    our goals.
 
