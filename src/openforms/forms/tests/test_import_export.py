@@ -71,6 +71,7 @@ from ..import_export.service import (
     FormExportOptions,
     export_form,
     form_to_json,
+    import_form,
 )
 from ..models import (
     Form,
@@ -81,7 +82,6 @@ from ..models import (
     FormStep,
     FormVariable,
 )
-from ..utils import import_form
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -1991,7 +1991,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
         converters = {"textfield": {"add_foo": add_foo}}
-        with patch("openforms.forms.utils.CONVERTERS", new=converters):
+        with patch(
+            "openforms.forms.import_export.import_form.CONVERTERS", new=converters
+        ):
             import_form(import_file=self.filepath)
 
         imported_form = Form.objects.exclude(pk=form.pk).get()

@@ -2,11 +2,11 @@ from ...api.serializers import FormVariableSerializer
 from ...models import FormVariable
 from ..constants import FormConfigurationOptions
 from ..datastructures import FormConfigurationCleanup
-from ..typing import FormVariableExportRepresentation
-from .base import BaseExportSerializer
+from ..typing import FormVariableDataRepresentation
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
-def remove_prefill_from_variable(representation: FormVariableExportRepresentation):
+def remove_prefill_from_variable(representation: FormVariableDataRepresentation):
     representation["prefill_plugin"] = ""
     representation["prefill_attribute"] = ""
     representation["prefill_options"] = {}
@@ -14,10 +14,10 @@ def remove_prefill_from_variable(representation: FormVariableExportRepresentatio
 
 class FormVariableExportSerializer(
     FormVariableSerializer,
-    BaseExportSerializer[FormVariable, FormVariableExportRepresentation],
+    BaseExportSerializer[FormVariable, FormVariableDataRepresentation],
 ):
     excluded_form_configuration_cleanup = (
-        FormConfigurationCleanup[FormVariableExportRepresentation](
+        FormConfigurationCleanup[FormVariableDataRepresentation](
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_variable,
         ),
@@ -40,8 +40,8 @@ class FormVariableExportSerializer(
     )
 
     def remove_sensitive_content(
-        self, instance: FormVariable, representation: FormVariableExportRepresentation
-    ) -> FormVariableExportRepresentation:
+        self, instance: FormVariable, representation: FormVariableDataRepresentation
+    ) -> FormVariableDataRepresentation:
         representation = super().remove_sensitive_content(instance, representation)
         form = instance.form
 
@@ -56,3 +56,9 @@ class FormVariableExportSerializer(
                 return representation
 
         return representation
+
+
+class FormVariableImportSerializer(
+    FormVariableSerializer, BaseImportSerializer[FormVariableDataRepresentation]
+):
+    pass

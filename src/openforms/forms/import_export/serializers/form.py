@@ -6,39 +6,36 @@ from ..datastructures import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
 )
-from ..typing import (
-    FormExportRepresentation,
-    FormRegistrationExportRepresentation,
-)
-from .base import BaseExportSerializer
+from ..typing import FormDataRepresentation, FormRegistrationDataRepresentation
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
-def clear_product(representation: FormExportRepresentation):
+def clear_product(representation: FormDataRepresentation):
     representation["product"] = ""
 
 
-def clear_yivi_attribute_groups(representation: FormExportRepresentation):
+def clear_yivi_attribute_groups(representation: FormDataRepresentation):
     for auth in representation.get("auth_backends", []):
         if auth["backend"] == "yivi_oidc":
             auth["options"]["additional_attributes_groups"] = []
 
 
-def exclude_registration_backends(representation: FormExportRepresentation):
+def exclude_registration_backends(representation: FormDataRepresentation):
     representation["registration_backends"] = []
 
 
-def exclude_payment_backend(representation: FormExportRepresentation):
+def exclude_payment_backend(representation: FormDataRepresentation):
     representation["payment_backend"] = ""
     representation["payment_backend_options"] = {}
 
 
-def exclude_auth_backends(representation: FormExportRepresentation):
+def exclude_auth_backends(representation: FormDataRepresentation):
     representation["auth_backends"] = []
 
 
 class FormRegistrationBackendExportSerializer(
     FormRegistrationBackendSerializer,
-    BaseExportSerializer[FormRegistrationBackend, FormRegistrationExportRepresentation],
+    BaseExportSerializer[FormRegistrationBackend, FormRegistrationDataRepresentation],
 ):
     safe_export_fields = (
         "key",
@@ -60,28 +57,28 @@ class FormRegistrationBackendExportSerializer(
 
 
 class FormExportSerializer(
-    FormSerializer, BaseExportSerializer[Form, FormExportRepresentation]
+    FormSerializer, BaseExportSerializer[Form, FormDataRepresentation]
 ):
     excluded_additional_form_configuration_cleanup = (
-        AdditionalFormConfigurationCleanup[FormExportRepresentation](
+        AdditionalFormConfigurationCleanup[FormDataRepresentation](
             option=AdditionalFormConfigurationOptions.product,
             cleanup=clear_product,
         ),
-        AdditionalFormConfigurationCleanup[FormExportRepresentation](
+        AdditionalFormConfigurationCleanup[FormDataRepresentation](
             option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
             cleanup=clear_yivi_attribute_groups,
         ),
     )
     excluded_form_configuration_cleanup = (
-        FormConfigurationCleanup[FormExportRepresentation](
+        FormConfigurationCleanup[FormDataRepresentation](
             option=FormConfigurationOptions.registration_backends,
             cleanup=exclude_registration_backends,
         ),
-        FormConfigurationCleanup[FormExportRepresentation](
+        FormConfigurationCleanup[FormDataRepresentation](
             option=FormConfigurationOptions.payment_backend,
             cleanup=exclude_payment_backend,
         ),
-        FormConfigurationCleanup[FormExportRepresentation](
+        FormConfigurationCleanup[FormDataRepresentation](
             option=FormConfigurationOptions.auth_backends,
             cleanup=exclude_auth_backends,
         ),
@@ -162,3 +159,9 @@ class FormExportSerializer(
         if "payment_options" in fields:
             del fields["payment_options"]
         return fields
+
+
+class FormImportSerializer(
+    FormSerializer, BaseImportSerializer[FormDataRepresentation]
+):
+    pass
