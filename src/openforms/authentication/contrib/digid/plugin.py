@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import DigiDAssuranceLevels
+from digid_eherkenning.models import DigidConfiguration
 from furl import furl
 from rest_framework.reverse import reverse
 
@@ -106,3 +107,6 @@ class DigidAuthentication(BasePlugin[DigidOptions]):
     def logout(self, request: HttpRequest):
         if DIGID_AUTH_SESSION_KEY in request.session:
             del request.session[DIGID_AUTH_SESSION_KEY]
+
+    def get_vendor_hint(self, options: DigidOptions) -> str | None:
+        return DigidConfiguration.get_solo().metadata_file_source or None
