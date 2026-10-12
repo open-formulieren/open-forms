@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from django.db.models import Count
 from django.http import HttpRequest
 
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import BaseRegistry, PluginUsageReport
 
 from .base import APIInfo, BasePlugin
 
@@ -49,7 +49,7 @@ class Registry(BaseRegistry[BasePlugin]):
             options.append(info)
         return options
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form
 
         qs = (
@@ -62,7 +62,7 @@ class Registry(BaseRegistry[BasePlugin]):
             item["payment_backend"]: item["count"] for item in qs
         }
         for plugin in self:
-            yield plugin, plugin_usages.get(plugin.identifier, 0)
+            yield plugin, plugin_usages.get(plugin.identifier, 0), {}
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

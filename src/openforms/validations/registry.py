@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 
 from openforms.forms.models import Form, FormDefinition
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import BaseRegistry, PluginUsageReport
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 
@@ -109,7 +109,7 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
         else:
             return ValidationResult(True)
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         usage_counts = defaultdict[str, int](lambda: 0)
         qs = FormDefinition.objects.filter(formstep__form__in=Form.objects.live())
         for fd in qs:
@@ -122,7 +122,7 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
                     usage_counts[plugin] += 1
 
         for plugin in self:
-            yield plugin, usage_counts[plugin.identifier]
+            yield plugin, usage_counts[plugin.identifier], {}
 
 
 # Sentinel to provide the default registry. You an easily instantiate another
