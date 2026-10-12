@@ -36,6 +36,12 @@ class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
 
+    def get_vendor_hint(self, options: GenericJSONOptions) -> str | None:
+        try:
+            return options["service"].api_root
+        except (KeyError, AttributeError):
+            return None
+
     # TODO: add GenericJSONResult typed dict to properly indicate return value
     def register_submission(
         self, submission: Submission, options: GenericJSONOptions

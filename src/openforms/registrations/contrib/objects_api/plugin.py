@@ -44,6 +44,12 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
+    def get_vendor_hint(self, options: RegistrationOptions) -> str | None:
+        try:
+            return options["objects_api_group"].objects_service.api_root
+        except (KeyError, AttributeError):
+            return None
+
     @staticmethod
     def set_defaults(options: RegistrationOptions) -> None:
         config_group = options["objects_api_group"]

@@ -236,6 +236,12 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
 
+    def get_vendor_hint(self, options: RegistrationOptions) -> str | None:
+        try:
+            return options["zgw_api_group"].zrc_service.api_root
+        except (KeyError, AttributeError):
+            return None
+
     rol_mapping = {
         # Initiator
         # Natuurlijk Persoon
