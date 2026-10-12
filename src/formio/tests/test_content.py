@@ -42,10 +42,3 @@ class ContentTests(ComponentAssertions, TestCase):
         component.test_templates_with_trace(do_parse)
 
         self.assertEqual(attributes, {"html"})
-
-    def test_set_default_value_noop(self):
-        component = Content(key="content", html="<p>Hello there</p>")
-
-        component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))

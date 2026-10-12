@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Annotated, Literal
+from typing import Annotated, Literal, override
 
 import msgspec
 import structlog
@@ -58,18 +58,14 @@ class Currency(Component, tag="currency"):
     translated_errors: TranslatedErrors[CurrencyValidatorKeys] | None = None
     validate: CurrencyValidate = msgspec.field(default_factory=CurrencyValidate)
 
-    def set_default_value(self, value: ComponentValue) -> None:
-        match value:
-            case float() | int():
-                self.default_value = value
-            case None:
-                self.default_value = None
-            case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                )
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> int | float | None:
+        if not strict:
+            raise NotImplementedError("currency does not support prefill")
+        assert isinstance(value, int | float | None)
+        return value
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

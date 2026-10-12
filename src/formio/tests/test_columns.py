@@ -43,13 +43,6 @@ class ColumnsTests(ComponentAssertions, TestCase):
 
         self.assertEqual(attributes, set())
 
-    def test_set_default_value_noop(self):
-        component = Columns(key="Columns", columns=[])
-
-        component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))
-
     def test_iter_children_recurses_into_columns(self):
         component = Columns(
             key="columns",

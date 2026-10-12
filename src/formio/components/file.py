@@ -18,7 +18,6 @@ from ..base_component import (
     TranslatedErrors,
 )
 from ..templating import TestWithTrace
-from ..typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -86,9 +85,6 @@ class File(Component, tag="file"):
     translated_errors: TranslatedErrors[FileValidatorKeys] | None = None
     use_config_filetypes: bool = False
     validate: FileValidate = msgspec.field(default_factory=FileValidate)
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("file does not support prefill")
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
 
@@ -87,3 +88,35 @@ class PostcodeTests(ComponentAssertions, TestCase):
         component.set_default_value(new_default_value)
 
         self.assertEqual(component.default_value, new_default_value)
+
+    @given(multiple=..., value=...)
+    def test_set_default_value_empty(self, multiple: bool, value: str):
+        component = Postcode(
+            key="postcode",
+            label="Postcode",
+            multiple=multiple,
+            default_value=[value] if multiple else value,
+        )
+
+        component.set_default_value(None)
+
+        self.assertEqual(component.default_value, [] if multiple else "")
+
+    @given(multiple=..., value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        multiple: bool,
+        value: None | date | datetime | time | int | bool,
+    ):
+        original_default_value = [] if multiple else ""
+        component = Postcode(
+            key="postcode",
+            label="Postcode",
+            multiple=multiple,
+            default_value=original_default_value,
+        )
+        new_default_value = [value] if multiple else value
+
+        component.set_default_value(new_default_value)
+
+        self.assertEqual(component.default_value, original_default_value)

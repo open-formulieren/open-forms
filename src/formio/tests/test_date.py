@@ -1,9 +1,9 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
 from zoneinfo import ZoneInfo
 
-from hypothesis import given, strategies as st
+from hypothesis import given, settings, strategies as st
 
 from .. import Date, get_template_trace_context, supports_multiple
 from .helpers import ComponentAssertions, load_json
@@ -68,6 +68,7 @@ class DateTests(ComponentAssertions, TestCase):
 
         self.assertEqual(attributes, {"label", "description", "tooltip"})
 
+    @settings(deadline=None)
     @given(
         multiple=...,
         value=st.one_of(
@@ -96,3 +97,22 @@ class DateTests(ComponentAssertions, TestCase):
         component.set_default_value(new_default_value)
 
         self.assertEqual(component.default_value, expected_default_value)
+
+    @given(multiple=..., value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        multiple: bool,
+        value: str | None | time | int | bool,
+    ):
+        original_default_value = [] if multiple else None
+        component = Date(
+            key="date",
+            label="Date",
+            multiple=multiple,
+            default_value=original_default_value,
+        )
+        new_default_value = [value] if multiple else value
+
+        component.set_default_value(new_default_value)
+
+        self.assertEqual(component.default_value, original_default_value)

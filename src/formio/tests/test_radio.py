@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
 
@@ -90,3 +91,22 @@ class RadioTests(ComponentAssertions, TestCase):
         component.set_default_value(value)
 
         self.assertEqual(component.default_value, value)
+
+    @given(value=...)
+    def test_set_default_value_empty(self, value: str):
+        component = Radio(key="radio", label="Radio", default_value=value)
+
+        component.set_default_value(None)
+
+        self.assertEqual(component.default_value, "")
+
+    @given(value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        value: None | date | datetime | time | int | bool,
+    ):
+        component = Radio(key="radio", label="Radio", default_value="")
+
+        component.set_default_value(value)
+
+        self.assertEqual(component.default_value, "")

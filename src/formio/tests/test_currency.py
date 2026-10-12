@@ -62,9 +62,9 @@ class CurrencyTests(ComponentAssertions, TestCase):
             st.integers(), st.floats(allow_nan=False, allow_infinity=False), st.none()
         ),
     )
-    def test_set_default_value(self, number: int | float):
+    def test_set_default_value(self, number: int | float | None):  # noqa: PYI041
         component = Currency(key="currency", label="Currency", default_value=None)
 
-        component.set_default_value(number)
-
-        self.assertEqual(component.default_value, number)
+        # prefill (and thus set_default_value) is not supported for currency components
+        with self.assertRaises(NotImplementedError):
+            component.set_default_value(number)

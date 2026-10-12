@@ -54,9 +54,3 @@ class PartnersTests(ComponentAssertions, TestCase):
         component.test_templates_with_trace(do_parse)
 
         self.assertEqual(attributes, {"label", "description", "tooltip"})
-
-    def test_set_default_value(self):
-        component = Partners(key="partners", label="Partners")
-
-        with self.assertRaises(NotImplementedError):
-            component.set_default_value(None)

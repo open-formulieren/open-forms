@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Literal
+from typing import Literal, override
 
 import msgspec
 import structlog
@@ -53,15 +53,14 @@ class Checkbox(Component, tag="checkbox"):
     translated_errors: TranslatedErrors[CheckboxValidatorKeys] | None = None
     validate: CheckboxValidate = msgspec.field(default_factory=CheckboxValidate)
 
-    def set_default_value(self, value: ComponentValue) -> None:
-        if isinstance(value, bool):
-            self.default_value = value
-        else:
-            logger.warning(
-                "received_invalid_default_value",
-                component=str(type(self)),
-                value=value,
-            )
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> bool:
+        if not strict:
+            raise NotImplementedError("checkbox does not support prefill")
+        assert isinstance(value, bool)
+        return value
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

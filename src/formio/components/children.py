@@ -13,7 +13,6 @@ from ..base_component import (
     Registration,
 )
 from ..templating import TestWithTrace
-from ..typing import ComponentValue
 
 type ChildrenTranslatableProperties = Literal["label", "description", "tooltip"]
 
@@ -38,9 +37,6 @@ class Children(Component, tag="children"):
     open_forms: ChildrenExtensions | None = None
     registration: Registration | None = None
     tooltip: str = ""
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("children does not support prefill")
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

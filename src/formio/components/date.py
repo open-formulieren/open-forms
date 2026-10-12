@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, override
 
 import msgspec
 import structlog
@@ -18,7 +18,9 @@ from ..base_component import (
     Key,
     Prefill,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -121,28 +123,21 @@ class Date(Component, tag="date"):
     translated_errors: TranslatedErrors[DateValidatorKeys] | None = None
     validate: DateValidate = msgspec.field(default_factory=DateValidate)
 
-    def __post_init__(self):
-        match (self.multiple, self.default_value):
-            case True, date() | None:
-                raise ValueError("You must pass a list of values when multiple=True")
-            case False, date():
-                pass
-            case False, Sequence():
-                raise ValueError(
-                    "You must pass a date default_value when multiple=False"
-                )
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        match value:
-            case date() if not self.multiple:
-                date_only = (
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> date | None | Sequence[date | None] | Sentinel:
+        match (self.multiple, value):
+            case False, date() | datetime():
+                return (
                     datetime_in_amsterdam(value).date()
                     if isinstance(value, datetime)
                     else value
                 )
-                self.default_value = date_only
-            case Sequence() if self.multiple:
-                self.default_value = [
+            case True, date() | None if strict:
+                raise ValueError("You must pass a list of values when multiple=True")
+            case True, Sequence():
+                return [
                     (
                         datetime_in_amsterdam(item).date()
                         if isinstance(item, datetime)
@@ -151,15 +146,13 @@ class Date(Component, tag="date"):
                     for item in value
                     if isinstance(item, date)
                 ]
-            case None if not self.multiple:
-                self.default_value = None
-            case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                    multiple=self.multiple,
+            case False, Sequence() if strict:
+                raise ValueError(
+                    "You must pass a date default_value when multiple=False"
                 )
+            case _, None:
+                return [] if self.multiple else None
+        return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

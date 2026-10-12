@@ -55,13 +55,6 @@ class FieldsetTests(ComponentAssertions, TestCase):
 
         self.assertEqual(attributes, {"label", "tooltip"})
 
-    def test_set_default_value_noop(self):
-        component = Fieldset(key="fieldset", label="Fieldset", components=[])
-
-        component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))
-
     def test_iter_children_recurses_into_Fieldset(self):
         component = Fieldset(
             key="fieldset",

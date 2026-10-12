@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Literal
+from typing import Literal, override
 
 import msgspec
 import structlog
@@ -15,7 +15,9 @@ from ..base_component import (
     FAQItem,
     FormioStruct,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -80,18 +82,17 @@ class CosignV2(Component, tag="cosign"):
     translated_errors: TranslatedErrors[CosignV2ValidatorKeys] | None = None
     validate: CosignV2Validate = msgspec.field(default_factory=CosignV2Validate)
 
-    def set_default_value(self, value: ComponentValue) -> None:
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> str | Sequence[str] | Sentinel:
         match value:
             case str():
-                self.default_value = value
+                return value
             case None:
-                self.default_value = ""
-            case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                )
+                assert strict is False  # enforced at the type level by msgspec
+                return ""
+        return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

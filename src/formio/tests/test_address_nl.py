@@ -54,10 +54,3 @@ class AddressNLTests(ComponentAssertions, TestCase):
         component.test_templates_with_trace(do_parse)
 
         self.assertEqual(attributes, {"label", "description", "tooltip"})
-
-    def test_set_default_value_noop(self):
-        component = AddressNL(key="address", label="Address")
-
-        component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))

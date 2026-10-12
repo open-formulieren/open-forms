@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Literal, assert_never
+from typing import Literal, assert_never, override
 
 import msgspec
 import structlog
@@ -15,7 +15,9 @@ from ..base_component import (
     FormioStruct,
     Prefill,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -56,33 +58,26 @@ class BSN(Component, tag="bsn"):
     translated_errors: TranslatedErrors[BSNValidatorKeys] | None = None
     validate: BSNValidate = msgspec.field(default_factory=BSNValidate)
 
-    def __post_init__(self):
-        match (self.multiple, self.default_value):
-            case True, str():
-                raise ValueError("You must pass a list of values when multiple=True")
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> str | Sequence[str] | Sentinel:
+        match (self.multiple, value):
             case False, str():
-                pass
-            case False, Sequence():
+                return value
+            case True, str() if strict:
+                raise ValueError("You must pass a list of values when multiple=True")
+            case True, Sequence():
+                string_values = [x for x in value if isinstance(x, str)]
+                return string_values
+            case False, Sequence() if strict:
                 raise ValueError(
                     "You must pass a string default_value when multiple=False"
                 )
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        match value:
-            case str() if not self.multiple:
-                self.default_value = value
-            case Sequence() if self.multiple:
-                string_values = [x for x in value if isinstance(x, str)]
-                self.default_value = string_values
-            case None:
-                self.default_value = [] if self.multiple else ""
-            case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                    multiple=self.multiple,
-                )
+            case _, None:
+                assert strict is False  # enforced at the type level by msgspec
+                return [] if self.multiple else ""
+        return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

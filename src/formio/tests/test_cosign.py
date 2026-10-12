@@ -1,5 +1,8 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
+
+from hypothesis import given, strategies as st
 
 from .. import CosignV1, CosignV2, get_template_trace_context, supports_multiple
 from .helpers import ComponentAssertions, load_json
@@ -106,19 +109,30 @@ class CosignV2Tests(ComponentAssertions, TestCase):
             attributes, {"label", "description", "tooltip", "default_value"}
         )
 
-    def test_set_default_value(self):
-        with self.subTest("string value"):
-            component = CosignV2(key="cosignV2", label="Cosign V2", default_value="")
+    @given(value=st.emails(domains=st.just("example.com")))
+    def test_set_default_value(self, value: str):
+        component = CosignV2(key="cosignV2", label="Cosign V2", default_value="")
 
-            component.set_default_value("info@example.com")
+        component.set_default_value(value)
 
-            self.assertEqual(component.default_value, "info@example.com")
+        self.assertEqual(component.default_value, value)
 
-        with self.subTest("empty value"):
-            component = CosignV2(
-                key="cosignV2", label="Cosign V2", default_value="info@example.com"
-            )
+    def test_set_default_value_empty(self):
+        component = CosignV2(
+            key="cosignV2", label="Cosign V2", default_value="info@example.com"
+        )
 
-            component.set_default_value(None)
+        component.set_default_value(None)
 
-            self.assertEqual(component.default_value, "")
+        self.assertEqual(component.default_value, "")
+
+    @given(value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        value: None | date | datetime | time | int | bool,
+    ):
+        component = CosignV2(key="cosignV2", label="Cosign V2", default_value="")
+
+        component.set_default_value(value)
+
+        self.assertEqual(component.default_value, "")

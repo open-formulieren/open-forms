@@ -54,9 +54,3 @@ class ChildrenTests(ComponentAssertions, TestCase):
         component.test_templates_with_trace(do_parse)
 
         self.assertEqual(attributes, {"label", "description", "tooltip"})
-
-    def test_set_default_value_noop(self):
-        component = Children(key="children", label="Children")
-
-        with self.assertRaises(NotImplementedError):
-            component.set_default_value(None)

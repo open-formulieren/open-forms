@@ -61,16 +61,6 @@ class EditGridTests(ComponentAssertions, TestCase):
 
         self.assertEqual(attributes, {"label", "description", "tooltip", "group_label"})
 
-    def test_set_default_value_noop(self):
-        component = EditGrid(
-            key="editgrid", label="Repeating group", group_label="Item", components=[]
-        )
-
-        with self.assertRaises(NotImplementedError):
-            component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))
-
     def test_iter_children_recurses_into_EditGrid(self):
         component = EditGrid(
             key="editgrid",

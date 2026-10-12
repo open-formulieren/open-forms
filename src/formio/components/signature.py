@@ -17,7 +17,6 @@ from ..base_component import (
     TranslatedErrors,
 )
 from ..templating import TestWithTrace
-from ..typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -53,9 +52,6 @@ class Signature(Component, tag="signature"):
     tooltip: str = ""
     translated_errors: TranslatedErrors[SignatureValidatorKeys] | None = None
     validate: SignatureValidate = msgspec.field(default_factory=SignatureValidate)
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("signature does not support prefill")
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

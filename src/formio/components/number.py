@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Annotated, Literal
+from typing import Annotated, Literal, override
 
 import msgspec
 import structlog
@@ -16,7 +16,9 @@ from ..base_component import (
     FormioStruct,
     Prefill,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -61,16 +63,16 @@ class Number(Component, tag="number"):
     translated_errors: TranslatedErrors[NumberValidatorKeys] | None = None
     validate: NumberValidate = msgspec.field(default_factory=NumberValidate)
 
-    def set_default_value(self, value: ComponentValue) -> None:
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> float | int | None | Sentinel:
         match value:
             case float() | int() | None:
-                self.default_value = value
+                return value
             case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                )
+                assert not strict
+                return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

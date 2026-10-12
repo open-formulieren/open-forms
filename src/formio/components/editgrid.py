@@ -14,7 +14,6 @@ from ..base_component import (
     SupportedLanguage,
 )
 from ..templating import TestWithTrace
-from ..typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -72,9 +71,6 @@ class EditGrid(Component, tag="editgrid"):
     save_row: str = ""
     tooltip: str = ""
     validate: EditGridValidate = msgspec.field(default_factory=EditGridValidate)
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("editgrid does not support prefill")
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

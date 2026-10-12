@@ -18,7 +18,6 @@ from ..base_component import (
     TranslatedErrors,
 )
 from ..templating import TestWithTrace
-from ..typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -98,9 +97,6 @@ class Map(Component, tag="map"):
     tooltip: str = ""
     translated_errors: TranslatedErrors[MapValidatorKeys] | None = None
     validate: MapValidate = msgspec.field(default_factory=MapValidate)
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("map does not support prefill")
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

@@ -1,5 +1,8 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
+
+from hypothesis import given, strategies as st
 
 from .. import BSN, get_template_trace_context, supports_multiple
 from .helpers import ComponentAssertions, load_json
@@ -90,17 +93,48 @@ class BSNTests(ComponentAssertions, TestCase):
                 default_value=["000000000"],
             )
 
-    def test_set_default_value(self):
-        with self.subTest(multiple=False):
-            bsn_single = BSN(key="bsn", label="BSN", multiple=False, default_value="")
+    @given(multiple=..., value=st.text(min_size=9, max_size=9, alphabet="0123456789"))
+    def test_set_default_value(self, multiple: bool, value: str):
+        component = BSN(
+            key="bsn",
+            label="BSN",
+            multiple=multiple,
+            default_value=[] if multiple else "",
+        )
+        new_default_value = [value] if multiple else value
 
-            bsn_single.set_default_value("111222333")
+        component.set_default_value(new_default_value)
 
-            self.assertEqual(bsn_single.default_value, "111222333")
+        self.assertEqual(component.default_value, new_default_value)
 
-        with self.subTest(multiple=True):
-            bsn_single = BSN(key="bsn", label="BSN", multiple=True, default_value=[])
+    @given(multiple=..., value=st.text(min_size=9, max_size=9, alphabet="0123456789"))
+    def test_set_default_value_empty(self, multiple: bool, value: str):
+        component = BSN(
+            key="bsn",
+            label="BSN",
+            multiple=multiple,
+            default_value=[value] if multiple else value,
+        )
 
-            bsn_single.set_default_value(["111222333"])
+        component.set_default_value(None)
 
-            self.assertEqual(bsn_single.default_value, ["111222333"])
+        self.assertEqual(component.default_value, [] if multiple else "")
+
+    @given(multiple=..., value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        multiple: bool,
+        value: None | date | datetime | time | int | bool,
+    ):
+        original_default_value = [] if multiple else ""
+        component = BSN(
+            key="bsn",
+            label="BSN",
+            multiple=multiple,
+            default_value=original_default_value,
+        )
+        new_default_value = [value] if multiple else value
+
+        component.set_default_value(new_default_value)
+
+        self.assertEqual(component.default_value, original_default_value)

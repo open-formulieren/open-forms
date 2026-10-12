@@ -17,6 +17,7 @@ from typing import (
 )
 
 import msgspec
+import structlog
 from typing_extensions import TypeIs
 
 from .templating import TestWithTrace, trace
@@ -39,6 +40,15 @@ __all__ = [
     "SupportedLanguage",
     "TranslatedErrors",
 ]
+
+logger = structlog.stdlib.get_logger(__name__)
+
+
+class Sentinel:  # TODO: python 3.15 has built in types for this
+    pass
+
+
+unset = Sentinel()
 
 
 @dataclass_transform(kw_only_default=True)
@@ -79,6 +89,12 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
     key: Key
     type: ClassVar[str] = "unknown"  # set by metaclass
 
+    def __post_init__(self):
+        # validate the possible interaction of default value with other attributes, like
+        # ``multiple``
+        if hasattr(self, "default_value"):
+            self._process_default_value(self.default_value, strict=True)
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(key={self.key!r})"
 
@@ -94,6 +110,25 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
         """
         yield from ()
 
+    def _process_default_value(
+        self,
+        value: ComponentValue,
+        strict: bool = True,
+    ) -> ComponentValue | Sentinel:
+        """
+        Given a candidate value for ``default_value``, process/normalize it.
+
+        This is called through :meth:`set_default_value` and :meth:`__post_init__`, if
+        the component has a ``default_value`` attribute. The former is called in lax
+        mode and should be robust, as it may receive prefill data that doesn't properly
+        comply with the expected datatypes. When called from the ``__post_init__``, it's
+        called in strict mode and invalid/unexpected value types should raise a
+        ``ValueError``.
+        """
+        raise NotImplementedError(
+            f"Component type '{type(self)}' must implement '_process_default_value."
+        )
+
     def set_default_value(self, value: ComponentValue) -> None:
         """
         Set the component default value.
@@ -107,9 +142,16 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
         """
         if not hasattr(self, "default_value"):
             return
-        raise NotImplementedError(
-            f"Component type '{type(self)}' must implement 'set_default_value'"
-        )
+
+        if (default_value := self._process_default_value(value, strict=False)) is unset:
+            log = logger.bind(component=self.type, value=value)
+            if supports_multiple(self):
+                log = log.bind(multiple=self.multiple)
+            log.warning("received_invalid_default_value")
+            return
+
+        assert not isinstance(default_value, Sentinel)
+        self.default_value = default_value
 
     @abstractmethod
     def render_templates(self, do_render: Callable[[str], str]) -> None:
@@ -135,7 +177,7 @@ class MultipleComponent(Protocol):
     multiple: bool
 
 
-def supports_multiple(component: AnyComponent) -> TypeIs[MultipleComponent]:  # pyright: ignore[reportGeneralTypeIssues]
+def supports_multiple(component: Component) -> TypeIs[MultipleComponent]:  # pyright: ignore[reportGeneralTypeIssues]
     # the protocol nicely narrows down the union at call sites, but results in a type
     # error here in this function definition... :(
     # Defining MultipleComponent as a subclass of ``Component`` leads to ugly union

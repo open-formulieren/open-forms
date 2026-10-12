@@ -1,4 +1,4 @@
-from datetime import UTC, time
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from unittest import TestCase
 from zoneinfo import ZoneInfo
@@ -92,3 +92,22 @@ class DateTests(ComponentAssertions, TestCase):
         component.set_default_value(new_default_value)
 
         self.assertEqual(component.default_value, new_default_value)
+
+    @given(multiple=..., value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        multiple: bool,
+        value: str | None | date | datetime | int | bool,
+    ):
+        original_default_value = [] if multiple else None
+        component = Time(
+            key="time",
+            label="Time",
+            multiple=multiple,
+            default_value=[] if multiple else None,
+        )
+        new_default_value = [value] if multiple else value
+
+        component.set_default_value(new_default_value)
+
+        self.assertEqual(component.default_value, original_default_value)

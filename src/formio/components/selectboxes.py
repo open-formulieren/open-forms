@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Callable, Mapping, Sequence
-from typing import Annotated, Literal, assert_never
+from typing import Annotated, Literal, assert_never, override
 
 import msgspec
 import structlog
@@ -17,6 +17,7 @@ from ..base_component import (
     FormioStruct,
     Option,
     Registration,
+    Sentinel,
     TranslatedErrors,
 )
 from ..templating import TestWithTrace
@@ -91,6 +92,7 @@ class Selectboxes(Component, tag="selectboxes"):
     Either manually provided or set from variable/reference list.
     """
 
+    @override
     def __post_init__(self):
         match self.open_forms.data_src:
             case "manual":
@@ -108,13 +110,24 @@ class Selectboxes(Component, tag="selectboxes"):
             case _:  # pragma: no cover
                 assert_never(self.open_forms.data_src)
 
+        super().__post_init__()
+
         if not self.default_value and self.values:
+            # if no default value is passed, derive it from the available options
             self.default_value = {
                 option.value: False for option in self.values if option.value
             }
 
-    def set_default_value(self, value: ComponentValue) -> None:
-        raise NotImplementedError("selectboxes does not support prefill")
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> Mapping[str, bool] | Sentinel:
+        if not strict:
+            raise NotImplementedError("selectboxes does not support prefill")
+
+        # types are validated by msgspec
+        assert isinstance(value, None | Mapping)
+        return value  # pyright: ignore[reportReturnType]
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

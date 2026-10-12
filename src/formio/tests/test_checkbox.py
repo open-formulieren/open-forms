@@ -58,6 +58,5 @@ class CheckboxTests(ComponentAssertions, TestCase):
     def test_set_default_value(self):
         component = Checkbox(key="checkbox", label="Checkbox", default_value=False)
 
-        component.set_default_value(True)
-
-        self.assertEqual(component.default_value, True)
+        with self.assertRaises(NotImplementedError):
+            component.set_default_value(None)

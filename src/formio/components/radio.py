@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Callable, Mapping, Sequence
-from typing import Literal, assert_never
+from typing import Literal, assert_never, override
 
 import msgspec
 import structlog
@@ -16,7 +16,9 @@ from ..base_component import (
     FormioStruct,
     Option,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -84,7 +86,10 @@ class Radio(Component, tag="radio"):
     Either manually provided or set from variable/reference list.
     """
 
+    @override
     def __post_init__(self):
+        super().__post_init__()
+
         match self.open_forms.data_src:
             case "manual":
                 pass
@@ -101,18 +106,18 @@ class Radio(Component, tag="radio"):
             case _:  # pragma: no cover
                 assert_never(self.open_forms.data_src)
 
-    def set_default_value(self, value: ComponentValue) -> None:
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> str | Sentinel:
         match value:
             case str():
-                self.default_value = value
-            case None:
-                self.default_value = ""
+                return value
+            case None if not strict:
+                return ""
             case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                )
+                assert not strict
+                return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)

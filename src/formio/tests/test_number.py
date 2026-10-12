@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from pathlib import Path
 from unittest import TestCase
 
@@ -62,9 +63,20 @@ class NumberTests(ComponentAssertions, TestCase):
             st.none(), st.integers(), st.floats(allow_infinity=False, allow_nan=False)
         )
     )
-    def test_set_default_value(self, value: float | None):
-        component = Number(key="number", label="Number", default_value=False)
+    def test_set_default_value(self, value: int | float | None):  # noqa: PYI041
+        component = Number(key="number", label="Number", default_value=None)
 
         component.set_default_value(value)
 
         self.assertEqual(component.default_value, value)
+
+    @given(value=...)
+    def test_it_does_not_crash_with_wrong_default_value_data_type(
+        self,
+        value: str | date | datetime | time,
+    ):
+        component = Number(key="number", label="Number", default_value=None)
+
+        component.set_default_value(value)
+
+        self.assertIsNone(component.default_value)

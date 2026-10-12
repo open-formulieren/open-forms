@@ -42,13 +42,3 @@ class SoftRequiredErrorsTests(ComponentAssertions, TestCase):
         component.test_templates_with_trace(do_parse)
 
         self.assertEqual(attributes, set())
-
-    def test_set_default_value_noop(self):
-        component = SoftRequiredErrors(
-            key="softRequiredErrors",
-            html=r"<p>Hello there {{ field_errors }}</p>",
-        )
-
-        component.set_default_value(None)
-
-        self.assertFalse(hasattr(component, "default_value"))

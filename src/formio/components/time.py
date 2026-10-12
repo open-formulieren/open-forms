@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import time
-from typing import Literal
+from typing import Literal, override
 
 import msgspec
 import structlog
@@ -15,7 +15,9 @@ from ..base_component import (
     FAQItem,
     FormioStruct,
     Registration,
+    Sentinel,
     TranslatedErrors,
+    unset,
 )
 from ..templating import TestWithTrace
 from ..typing import ComponentValue
@@ -58,32 +60,24 @@ class Time(Component, tag="time"):
     translated_errors: TranslatedErrors[TimeValidatorKeys] | None = None
     validate: DateTimeValidate = msgspec.field(default_factory=DateTimeValidate)
 
-    def __post_init__(self):
-        match (self.multiple, self.default_value):
-            case True, time():
-                raise ValueError("You must pass a list of values when multiple=True")
+    @override
+    def _process_default_value(
+        self, value: ComponentValue, strict: bool = True
+    ) -> time | None | Sequence[time | None] | Sentinel:
+        match (self.multiple, value):
             case False, time():
-                pass
-            case False, Sequence():
+                return value
+            case True, time() | None if strict:
+                raise ValueError("You must pass a list of values when multiple=True")
+            case True, Sequence():
+                return [item for item in value if isinstance(item, time)]
+            case False, Sequence() if strict:
                 raise ValueError(
-                    "You must pass a string default_value when multiple=False"
+                    "You must pass a time default_value when multiple=False"
                 )
-
-    def set_default_value(self, value: ComponentValue) -> None:
-        match value:
-            case time() if not self.multiple:
-                self.default_value = value
-            case Sequence() if self.multiple:
-                self.default_value = [item for item in value if isinstance(item, time)]
-            case None:
-                self.default_value = [] if self.multiple else None
-            case _:
-                logger.warning(
-                    "received_invalid_default_value",
-                    component=str(type(self)),
-                    value=value,
-                    multiple=self.multiple,
-                )
+            case _, None:
+                return [] if self.multiple else None
+        return unset
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)
