@@ -175,3 +175,65 @@ def supports_multiple(component: Component) -> TypeIs[MultipleComponent]:  # pyr
     # typing :sadge:.
     return hasattr(component, "multiple")
 
+
+class FormioStruct(msgspec.Struct, metaclass=FormioStructMeta):
+    """
+    Base struct that applies camel case conversion and only accepts keyword arguments.
+    """
+
+
+class Conditional(FormioStruct):
+    """
+    Conditional visibility configuration (aka "frontend logic").
+
+    The ``None``/``null`` is not in line with the frontend types, but ``undefined``
+    does not exist in Python, so these have been historically saved to the DB as
+    ``null``.
+
+    Note however that formio at runtime uses ``null`` (!).
+    """
+
+    show: bool | None = None
+    when: MaybeEmptyKey | None = None
+    # formio defaults to empty string - make sure the renderer has the same behaviour
+    # if this is changed here
+    eq: str | bool | int | float | None = ""
+
+
+type SupportedLanguage = Literal["nl", "en"]
+
+type Errors[KT: str] = MutableMapping[KT, str]
+
+type TranslatedErrors[KT: str] = MutableMapping[SupportedLanguage, Errors[KT]]
+
+P = TypeVar("P", bound=str)  # needs to be defined for msgspec
+
+type PropertyTranslations[P] = Mapping[SupportedLanguage, Mapping[P, str]]
+
+
+class BaseOpenFormsExtensions[P](FormioStruct):
+    translations: PropertyTranslations[P] | msgspec.UnsetType = msgspec.UNSET
+    """
+    Field properties that can be translated server-side.
+
+    Translation machinery also passes them through the sandboxed template engine.
+
+    Note that this property is not optional in the TS types, but for DX reasons we make
+    it optional in the backend as it cuts down on boilerplate.
+    """
+
+
+class Prefill(FormioStruct):
+    """
+    Component-level prefill settings.
+
+    When plugin and attribute are empty strings, prefill is not configured.
+    """
+
+    plugin: str
+    attribute: str
+    identifier_role: Literal["main", "authorizee"] = "main"
+
+
+class Registration(FormioStruct):
+    attribute: str
