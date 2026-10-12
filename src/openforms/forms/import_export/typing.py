@@ -25,6 +25,19 @@ class FormRegistrationData(TypedDict, total=False):
     options: JSONObject
 
 
+class FormLogicActionConfigData(TypedDict, total=False):
+    type: str
+    value: str
+
+
+class FormLogicActionData(TypedDict, total=False):
+    uuid: str
+    component: str
+    variable: str
+    form_step_uuid: str
+    action: FormLogicActionConfigData
+
+
 class FormLogicData(TypedDict, total=False):
     uuid: str
     url: str
@@ -32,7 +45,7 @@ class FormLogicData(TypedDict, total=False):
     json_logic_trigger: JSONObject
     description: str
     order: int
-    actions: list[JSONObject]
+    actions: list[FormLogicActionData]
     is_advanced: bool
 
 
