@@ -1,10 +1,12 @@
 from datetime import date, datetime, time
 from pathlib import Path
+from typing import Literal
 from unittest import TestCase
 
 from hypothesis import given
 
 from .. import Option, Radio, get_template_trace_context, supports_multiple
+from ..components.radio import RadioExtensions
 from .helpers import ComponentAssertions, load_json
 
 TEST_FILES = Path(__file__).parent.resolve() / "files" / "radio"
@@ -48,6 +50,23 @@ class RadioTests(ComponentAssertions, TestCase):
 
             assert isinstance(component, Radio)
             self.assertEqual(component.open_forms.data_src, "referenceLists")
+
+    @given(data_src=...)
+    def test_data_src_variable_or_reference_lists_does_not_wipe_values(
+        self, data_src: Literal["variable", "referenceLists"]
+    ):
+        component = Radio(
+            key="radio",
+            label="radio",
+            open_forms=RadioExtensions(
+                data_src=data_src,
+                items_expression="someVar",
+            ),
+            values=[Option(value="noWipe", label="No wipe")],
+        )
+
+        self.assertNotEqual(component.values, [])
+        self.assertGreater(len(component.values), 0)
 
     def test_render_templates(self):
         component = Radio(

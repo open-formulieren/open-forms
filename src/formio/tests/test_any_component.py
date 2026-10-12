@@ -1,11 +1,19 @@
 from collections.abc import Iterator
 from pathlib import Path
-from unittest import TestCase
 
 import msgspec
 from hypothesis import HealthCheck, given, settings, strategies as st
+from unittest_parametrize import ParametrizedTestCase, parametrize
 
-from .. import Content, Email, FormioConfiguration, Textarea, TextField
+from .. import (
+    AnyComponent,
+    Content,
+    Email,
+    Fieldset,
+    FormioConfiguration,
+    Textarea,
+    TextField,
+)
 from ..base_component import Component
 from .search_strategies import formio_key
 
@@ -20,7 +28,7 @@ CONFIGURATION_FILES = (
 decoder = msgspec.json.Decoder(type=FormioConfiguration)
 
 
-class AnyComponentTests(TestCase):
+class AnyComponentTests(ParametrizedTestCase):
     def test_load_existing_formio_definitions_from_json(self):
         for path in CONFIGURATION_FILES:
             with self.subTest(path=path):
@@ -94,3 +102,18 @@ class AnyComponentTests(TestCase):
             self.assertIsInstance(component, Component)
             self.assertIsInstance(component.key, str)
             self.assertGreater(len(component.key), 0)
+
+    @parametrize(
+        "component",
+        [
+            Content(key="content", html=""),
+            Fieldset(key="fieldset", label="fieldset", components=[]),
+        ],
+    )
+    def test_setting_layout_component_default_value_is_noop(
+        self,
+        component: AnyComponent,
+    ):
+        component.set_default_value(None)
+
+        self.assertFalse(hasattr(component, "default_value"))

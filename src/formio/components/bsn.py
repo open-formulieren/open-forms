@@ -89,8 +89,6 @@ class BSN(Component, tag="bsn"):
                 self.default_value = do_render(self.default_value)
             case Sequence():
                 self.default_value = [do_render(v) for v in self.default_value]
-            case None:
-                pass
             case _:  # pragma: no cover
                 assert_never(self.default_value)
 

@@ -1,7 +1,11 @@
 from pathlib import Path
+from typing import Literal
 from unittest import TestCase
 
+from hypothesis import given
+
 from .. import Option, Selectboxes, get_template_trace_context, supports_multiple
+from ..components.selectboxes import SelectboxesExtensions
 from .helpers import ComponentAssertions, load_json
 
 TEST_FILES = Path(__file__).parent.resolve() / "files" / "selectboxes"
@@ -45,6 +49,23 @@ class SelectboxesTests(ComponentAssertions, TestCase):
 
             assert isinstance(component, Selectboxes)
             self.assertEqual(component.open_forms.data_src, "referenceLists")
+
+    @given(data_src=...)
+    def test_data_src_variable_or_reference_lists_does_not_wipe_values(
+        self, data_src: Literal["variable", "referenceLists"]
+    ):
+        component = Selectboxes(
+            key="selectboxes",
+            label="selectboxes",
+            open_forms=SelectboxesExtensions(
+                data_src=data_src,
+                items_expression="someVar",
+            ),
+            values=[Option(value="noWipe", label="No wipe")],
+        )
+
+        self.assertNotEqual(component.values, [])
+        self.assertGreater(len(component.values), 0)
 
     def test_builds_default_value_from_options(self):
         component = Selectboxes(

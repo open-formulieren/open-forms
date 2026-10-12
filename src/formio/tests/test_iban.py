@@ -33,12 +33,15 @@ class IbanTests(ComponentAssertions, TestCase):
         with self.assertRaises(ValueError):
             IBAN(key="iban", label="Iban", multiple=True, default_value="")
 
-    def test_render_templates(self):
+    @given(multiple=...)
+    def test_render_templates(self, multiple: bool):
         component = IBAN(
             key="template",
+            multiple=multiple,
             label="label",
             description="description",
             tooltip="tooltip",
+            default_value=["default_value"] if multiple else "default_value",
         )
 
         component.render_templates(lambda tpl: f"templated: {tpl}")
@@ -46,6 +49,10 @@ class IbanTests(ComponentAssertions, TestCase):
         self.assertEqual(component.label, "templated: label")
         self.assertEqual(component.description, "templated: description")
         self.assertEqual(component.tooltip, "templated: tooltip")
+        self.assertEqual(
+            component.default_value,
+            ["templated: default_value"] if multiple else "templated: default_value",
+        )
 
     def test_template_testing(self):
         component = IBAN(
@@ -53,6 +60,7 @@ class IbanTests(ComponentAssertions, TestCase):
             label="label",
             description="description",
             tooltip="tooltip",
+            default_value="default_value",
         )
         attributes: set[str] = set()
 
@@ -63,7 +71,9 @@ class IbanTests(ComponentAssertions, TestCase):
 
         component.test_templates_with_trace(do_parse)
 
-        self.assertEqual(attributes, {"label", "description", "tooltip"})
+        self.assertEqual(
+            attributes, {"label", "description", "tooltip", "default_value"}
+        )
 
     @given(multiple=..., value=...)
     def test_set_default_value(self, multiple: bool, value: str):

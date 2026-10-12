@@ -33,13 +33,15 @@ class BSNTests(ComponentAssertions, TestCase):
         with self.assertRaises(ValueError):
             BSN(key="bsn", label="BSN", multiple=True, default_value="")
 
-    def test_render_templates(self):
+    @given(multiple=...)
+    def test_render_templates(self, multiple: bool):
         component = BSN(
             key="template",
+            multiple=multiple,
             label="label",
             description="description",
             tooltip="tooltip",
-            default_value="defaultValue",
+            default_value=["default_value"] if multiple else "default_value",
         )
 
         component.render_templates(lambda tpl: f"templated: {tpl}")
@@ -47,7 +49,10 @@ class BSNTests(ComponentAssertions, TestCase):
         self.assertEqual(component.label, "templated: label")
         self.assertEqual(component.description, "templated: description")
         self.assertEqual(component.tooltip, "templated: tooltip")
-        self.assertEqual(component.default_value, "templated: defaultValue")
+        self.assertEqual(
+            component.default_value,
+            ["templated: default_value"] if multiple else "templated: default_value",
+        )
 
     def test_template_testing(self):
         component = BSN(
@@ -55,7 +60,7 @@ class BSNTests(ComponentAssertions, TestCase):
             label="label",
             description="description",
             tooltip="tooltip",
-            default_value="defaultValue",
+            default_value="default_value",
         )
         attributes: set[str] = set()
 

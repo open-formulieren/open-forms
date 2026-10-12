@@ -39,20 +39,6 @@ class PostcodeValidate(FormioStruct):
     plugins: Sequence[str] = []
 
 
-def default_value_processor(
-    component: Postcode, value: ComponentValue, strict: bool = True
-) -> str | Sequence[str] | Sentinel:
-    match value:
-        case str() if not component.multiple:
-            return value
-        case Sequence() if component.multiple:
-            string_values = [x for x in value if isinstance(x, str)]
-            return string_values
-        case None:
-            return [] if component.multiple else ""
-    return unset
-
-
 class Postcode(Component, tag="postcode"):
     clear_on_hide: bool = True
     conditional: Conditional | None = None
@@ -106,8 +92,6 @@ class Postcode(Component, tag="postcode"):
                 self.default_value = do_render(self.default_value)
             case Sequence():
                 self.default_value = [do_render(v) for v in self.default_value]
-            case None:
-                pass
             case _:  # pragma: no cover
                 assert_never(self.default_value)
 
