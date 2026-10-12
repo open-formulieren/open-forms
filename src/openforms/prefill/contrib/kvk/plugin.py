@@ -26,7 +26,7 @@ from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import StrOrPromise
 
-from ...base import BasePlugin
+from ...base import BasePlugin, Options
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
@@ -49,6 +49,11 @@ class KVK_KVKNumberPrefill(BasePlugin):
     verbose_name = _("KvK Company by KvK number")
 
     requires_auth = (AuthAttribute.kvk,)
+
+    def get_vendor_hint(self, options: Options) -> str | None:
+        config = KVKConfig.get_solo()
+        service = config.branch_profile_service or config.profile_service
+        return service.api_root if service else None
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:

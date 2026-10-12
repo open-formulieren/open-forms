@@ -30,6 +30,12 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     verbose_name = _("Objects API")
     options = ObjectsAPIOptionsSerializer
 
+    def get_vendor_hint(self, options: ObjectsAPIOptions) -> str | None:
+        try:
+            return options["objects_api_group"].objects_service.api_root
+        except (KeyError, AttributeError):
+            return None
+
     def verify_initial_data_ownership(
         self, submission: Submission, prefill_options: ObjectsAPIOptions
     ) -> None:
