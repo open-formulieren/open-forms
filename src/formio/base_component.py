@@ -4,15 +4,22 @@ Base building blocks for Formio component type definitions.
 
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from collections.abc import Mapping, MutableMapping
 from typing import (
     Annotated,
     ClassVar,
+    Literal,
+    Protocol,
+    TypeVar,
     dataclass_transform,
 )
 
 import msgspec
 import structlog
+from typing_extensions import TypeIs
+
+from .typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -100,9 +107,74 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
     Set through :class:`ComponentMeta` for each concrete component type class.
     """
 
+    def __post_init__(self):
+        # validate the possible interaction of default value with other attributes, like
+        # ``multiple``
+        if hasattr(self, "default_value"):
+            self._process_default_value(self.default_value, strict=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(key={self.key!r})"
 
     def get_label(self) -> str:
         return getattr(self, "label", "") or self.key
+
+    def _process_default_value(
+        self,
+        value: ComponentValue,
+        strict: bool = True,
+    ) -> ComponentValue | msgspec.UnsetType:
+        """
+        Given a candidate value for ``default_value``, process/normalize it.
+
+        This is called through :meth:`set_default_value` and :meth:`__post_init__`, if
+        the component has a ``default_value`` attribute. The former is called in lax
+        mode and should be robust, as it may receive prefill data that doesn't properly
+        comply with the expected datatypes. When called from the ``__post_init__``, it's
+        called in strict mode and invalid/unexpected value types should raise a
+        ``ValueError``.
+        """
+        raise NotImplementedError(
+            f"Component type '{type(self)}' must implement '_process_default_value."
+        )
+
+    def set_default_value(self, value: ComponentValue) -> None:
+        """
+        Set the component default value.
+
+        Typically invoked from the prefill machinery which currently still operates on
+        the default value, but should eventually switch to just populating the variables
+        instead.
+
+        Note that the value can pretty much be any type, including types that aren't
+        compatible with the component. The component must be resilient to this, as
+        broken data can seep in from external systems and form misconfiguration by
+        (functional) administrators.
+        """
+        if not hasattr(self, "default_value"):
+            return
+
+        if (
+            default_value := self._process_default_value(value, strict=False)
+        ) is msgspec.UNSET:
+            log = logger.bind(component=self.type, value=value)
+            if supports_multiple(self):
+                log = log.bind(multiple=self.multiple)
+            log.warning("received_invalid_default_value")
+            return
+
+        self.default_value = default_value
+
+
+class MultipleComponent(Protocol):
+    multiple: bool
+
+
+def supports_multiple(component: Component) -> TypeIs[MultipleComponent]:  # pyright: ignore[reportGeneralTypeIssues]
+    # the protocol nicely narrows down the union at call sites, but results in a type
+    # error here in this function definition... :(
+    # Defining MultipleComponent as a subclass of ``Component`` leads to ugly union
+    # types at call sites and seems to end up in nominal typing rather than structural
+    # typing :sadge:.
+    return hasattr(component, "multiple")
+
