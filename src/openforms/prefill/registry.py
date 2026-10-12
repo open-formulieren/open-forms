@@ -1,13 +1,20 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Iterable
 
-from django.db.models import Count
+import structlog
 
 from openforms.forms.models import Form, FormVariable
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import (
+    VENDOR_HINT_METRIC_LABEL,
+    BaseRegistry,
+    MetricLabels,
+)
 
 from .base import BasePlugin
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class Registry(BaseRegistry[BasePlugin]):
@@ -17,18 +24,41 @@ class Registry(BaseRegistry[BasePlugin]):
 
     module = "prefill"
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
-        qs = (
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, MetricLabels]]:
+        usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)
+
+        active_form_variables = (
             FormVariable.objects.exclude(prefill_plugin="")
             .filter(form__in=Form.objects.live())
-            .values("prefill_plugin")
-            .annotate(count=Count("*"))
+            .iterator()
         )
-        usage_counts: dict[str, int] = {
-            item["prefill_plugin"]: item["count"] for item in qs
-        }
+
+        for form_variable in active_form_variables:
+            if form_variable.prefill_plugin not in self:
+                logger.warning(
+                    "ignore_unknown_plugin",
+                    plugin_id=form_variable.prefill_plugin,
+                )
+                continue
+
+            plugin = self[form_variable.prefill_plugin]
+            serializer = plugin.options(data=form_variable.prefill_options)
+            serializer.is_valid(raise_exception=True)
+            vendor_hint = plugin.get_vendor_hint(serializer.validated_data)
+
+            usage_counts[(plugin, vendor_hint)] += 1
+
         for plugin in self:
-            yield plugin, usage_counts.get(plugin.identifier, 0)
+            plugin_usages = {k: v for k, v in usage_counts.items() if k[0] == plugin}
+
+            if not plugin_usages:
+                yield plugin, 0, {}
+            else:
+                for (p, vendor_hint), count in plugin_usages.items():
+                    tags = (
+                        {VENDOR_HINT_METRIC_LABEL: vendor_hint} if vendor_hint else {}
+                    )
+                    yield p, count, tags
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

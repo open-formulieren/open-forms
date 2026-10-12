@@ -15,6 +15,7 @@ from openforms.variables.constants import FormVariableDataTypes
 
 from ....service import prefill_variables
 from ..constants import PLUGIN_IDENTIFIER
+from ..plugin import CommunicationPreferences
 
 
 class CommunicationPreferencesTests(OFVCRMixin, TestCase):
@@ -508,3 +509,23 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         state = submission.variables_state
 
         self.assertEqual(state.variables["empty-preferences"].value, [])
+
+
+class CommunicationPreferencesVendorHintTests(TestCase):
+    def test_get_vendor_hint_uses_service_api_root(self):
+        group = CustomerInteractionsAPIGroupConfigFactory.create(
+            customer_interactions_service__api_root="https://klant.example/api/"
+        )
+        plugin = CommunicationPreferences(PLUGIN_IDENTIFIER)
+        serializer = plugin.options(
+            data={
+                "customer_interactions_api_group": group.identifier,
+                "profile_form_variable": "profile",
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            plugin.get_vendor_hint(serializer.validated_data),
+            "https://klant.example/api/",
+        )
