@@ -45,6 +45,6 @@ class FormLogicExportSerializer(
 
 
 class FormLogicImportSerializer(
-    FormLogicSerializer, BaseImportSerializer[FormLogicData]
+    FormLogicSerializer, BaseImportSerializer[FormLogic, FormLogicData]
 ):
     pass

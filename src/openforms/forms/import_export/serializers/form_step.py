@@ -27,6 +27,6 @@ class FormStepExportSerializer(
 
 
 class FormStepImportSerializer(
-    FormStepSerializer, BaseImportSerializer[FormStepData]
+    FormStepSerializer, BaseImportSerializer[FormStep, FormStepData]
 ):
     pass

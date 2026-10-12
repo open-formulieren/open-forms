@@ -189,5 +189,5 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer[Form, FormData])
         return fields
 
 
-class FormImportSerializer(FormSerializer, BaseImportSerializer[FormData]):
+class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
     pass
