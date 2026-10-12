@@ -219,3 +219,21 @@ class HaalCentraalFindPersonV2Tests(OFVCRMixin, TestCase):
             )
 
             self.assertEqual(values, {})
+
+
+class HaalCentraalVendorHintTests(TestCase):
+    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
+    def test_get_vendor_hint_uses_service_api_root(self, get_solo):
+        get_solo.return_value = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen.example/api/"
+            )
+        )
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
+        serializer = plugin.options(data={})
+        serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            plugin.get_vendor_hint(serializer.validated_data),
+            "https://personen.example/api/",
+        )
