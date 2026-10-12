@@ -44,6 +44,20 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
+    def get_vendor_hint(self, options: RegistrationOptions) -> str | None:
+        group = options.get("objects_api_group") if isinstance(options, dict) else None
+        if isinstance(group, int):
+            from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
+            group = ObjectsAPIGroupConfig.objects.filter(pk=group).first()
+        elif isinstance(group, str):
+            from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
+            group = ObjectsAPIGroupConfig.objects.filter(identifier=group).first()
+        if group and getattr(group, "objects_service", None):
+            return group.objects_service.api_root
+        return None
+
     @staticmethod
     def set_defaults(options: RegistrationOptions) -> None:
         config_group = options["objects_api_group"]
