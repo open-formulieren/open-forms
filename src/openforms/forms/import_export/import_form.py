@@ -2,7 +2,8 @@ import json
 import zipfile
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Required, TypedDict
+from typing import Any, Protocol, Required, TypedDict
+from uuid import UUID
 
 from django.conf import settings
 from django.db import transaction
@@ -134,6 +135,17 @@ def update_uuids(data: str, uuid_mapping: dict[str, str]) -> str:
     return data
 
 
+class HasUUID(Protocol):
+    uuid: UUID
+
+
+def add_instance_to_uuid_mapping(
+    old_uuid: str | None, instance: HasUUID | None, uuid_mapping: dict[str, str]
+):
+    if old_uuid and instance:
+        uuid_mapping[old_uuid] = str(instance.uuid)
+
+
 def _import_form_resource(
     data: str,
     uuid_mapping: dict[str, str],
@@ -155,12 +167,7 @@ def _import_form_resource(
             deserialized.is_valid(raise_exception=True)
             imported_form = deserialized.save()
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            add_instance_to_uuid_mapping(old_uuid, deserialized.instance, uuid_mapping)
         except ValidationError as e:
             raise e
 
@@ -192,12 +199,7 @@ def _import_form_definition_resources(
             deserialized.is_valid(raise_exception=True)
             form_definitions.append(deserialized.save())
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            add_instance_to_uuid_mapping(old_uuid, deserialized.instance, uuid_mapping)
         except ValidationError as e:
             raise e
 
@@ -221,12 +223,7 @@ def _import_form_step_resources(
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            add_instance_to_uuid_mapping(old_uuid, deserialized.instance, uuid_mapping)
         except ValidationError as e:
             raise e
 
@@ -290,12 +287,7 @@ def _import_form_logic_resources(
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            add_instance_to_uuid_mapping(old_uuid, deserialized.instance, uuid_mapping)
         except ValidationError as e:
             raise e
 
