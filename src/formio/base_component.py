@@ -246,3 +246,19 @@ class Prefill(FormioStruct):
 
 class Registration(FormioStruct):
     attribute: str
+
+
+# Structs for radio, selectboxes, select...
+
+type OptionTranslations = PropertyTranslations[Literal["label", "description"]]
+
+
+class OptionExtensions(FormioStruct):
+    translations: OptionTranslations | msgspec.UnsetType = msgspec.UNSET
+
+
+class Option(FormioStruct):
+    value: str
+    label: str
+    description: str = ""
+    open_forms: OptionExtensions | msgspec.UnsetType = msgspec.UNSET
