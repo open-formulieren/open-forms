@@ -69,7 +69,8 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: count
+            for plugin, count, _tags in register.report_plugin_usage()
         }
 
         self.assertEqual(result, {"demo": 2})
@@ -81,7 +82,8 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: count
+            for plugin, count, _tags in register.report_plugin_usage()
         }
 
         self.assertEqual(result, {"demo": 4})

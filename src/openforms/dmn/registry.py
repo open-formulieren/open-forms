@@ -5,7 +5,7 @@ from collections.abc import Iterable
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form, FormLogic
-from openforms.plugins.registry import BaseRegistry
+from openforms.plugins.registry import BaseRegistry, PluginUsageReport
 
 from .base import BasePlugin
 
@@ -17,7 +17,7 @@ class Registry(BaseRegistry[BasePlugin]):
 
     module = "dmn"
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         logic_rules = FormLogic.objects.filter(
             form__in=Form.objects.live(),
             actions__contains=[{"action": {"type": LogicActionTypes.evaluate_dmn}}],
@@ -31,7 +31,7 @@ class Registry(BaseRegistry[BasePlugin]):
                 usage_counts[plugin_id] += 1
 
         for plugin in self:
-            yield plugin, usage_counts[plugin.identifier]
+            yield plugin, usage_counts[plugin.identifier], {}
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

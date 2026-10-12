@@ -34,7 +34,8 @@ class ReportPluginUsageTests(TestCase):
         FormFactory.create(payment_backend="test2", active=True, deleted_=True)
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: count
+            for plugin, count, _tags in register.report_plugin_usage()
         }
 
         self.assertEqual(result, {"test1": 2, "test2": 0})
