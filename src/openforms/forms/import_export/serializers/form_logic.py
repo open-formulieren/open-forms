@@ -1,5 +1,8 @@
 from ...api.serializers import FormLogicSerializer
 from ...constants import LogicActionTypes
+from ...disable_next_import_conversion import (
+    add_form_step_uuid_to_disable_next_actions,
+)
 from ...models import FormLogic
 from ..typing import FormLogicData
 from .base import BaseExportSerializer, BaseImportSerializer
@@ -73,3 +76,11 @@ class FormLogicImportSerializer(
             # variables.
             if action.get("type") == LogicActionTypes.fetch_from_service:
                 action["value"] = ""
+
+    def apply_backwards_compatibility(self, data: FormLogicData) -> None:
+        # Original commit 879751310d0bdf6a21bdd143b54f2a3d3f095023
+        add_form_step_uuid_to_disable_next_actions(
+            data,  # pyright: ignore[reportArgumentType]
+            self.context["form_variables"].variables,
+            self.context["form_steps"],
+        )
