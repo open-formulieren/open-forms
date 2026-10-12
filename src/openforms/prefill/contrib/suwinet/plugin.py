@@ -11,7 +11,7 @@ from suwinet.client import NoServiceConfigured, SuwinetClient, get_client
 from suwinet.constants import SERVICES
 from suwinet.models import SuwinetConfig
 
-from ...base import BasePlugin
+from ...base import BasePlugin, Options
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
@@ -32,6 +32,10 @@ class SuwinetPrefill(BasePlugin):
     requires_auth = (AuthAttribute.bsn,)
     verbose_name = _("Suwinet")
     for_components = ()
+
+    def get_vendor_hint(self, options: Options) -> str | None:
+        config = SuwinetConfig.get_solo()
+        return config.service.url if config.service else None
 
     @staticmethod
     def get_available_attributes():
