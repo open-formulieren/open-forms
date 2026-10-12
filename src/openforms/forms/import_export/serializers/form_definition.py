@@ -124,6 +124,7 @@ class FormDefinitionExportSerializer(
 
 
 class FormDefinitionImportSerializer(
-    FormDefinitionSerializer, BaseImportSerializer[FormDefinitionData]
+    FormDefinitionSerializer,
+    BaseImportSerializer[FormDefinition, FormDefinitionData],
 ):
     pass
