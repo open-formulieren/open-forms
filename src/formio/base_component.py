@@ -262,3 +262,19 @@ class Option(FormioStruct):
     label: str
     description: str = ""
     open_forms: OptionExtensions | msgspec.UnsetType = msgspec.UNSET
+
+
+# Structs for FAQ items, which support translations as well
+
+type FAQItemTranslations = PropertyTranslations[Literal["label", "content"]]
+
+
+class FAQItemExtensions(FormioStruct):
+    translations: FAQItemTranslations | msgspec.UnsetType = msgspec.UNSET
+
+
+class FAQItem(FormioStruct):
+    id: str
+    label: str
+    content: str
+    open_forms: FAQItemExtensions | msgspec.UnsetType = msgspec.UNSET
