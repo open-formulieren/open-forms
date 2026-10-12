@@ -24,7 +24,6 @@ from openforms.registrations.contrib.zgw_apis.plugin import (
 )
 
 from ..api.datastructures import FormVariableWrapper
-from ..constants import LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
@@ -276,9 +275,6 @@ def _import_form_logic_resources(
         old_uuid: str | None = entry.get("uuid")
         form: Form = context["form"]
 
-        if "order" not in entry:
-            entry["order"] = 0
-
         deserialized = FormLogicImportSerializer(
             data=entry,
             context={
@@ -298,8 +294,6 @@ def _import_form_logic_resources(
 
         try:
             deserialized.is_valid(raise_exception=True)
-            clear_old_service_fetch_config(deserialized.validated_data)
-
             deserialized.save()
 
             if (
@@ -310,21 +304,6 @@ def _import_form_logic_resources(
                 uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
         except ValidationError as e:
             raise e
-
-
-def clear_old_service_fetch_config(rule: dict[str, Any]) -> None:
-    for action in rule.get("actions", []):
-        if action["action"]["type"] != LogicActionTypes.fetch_from_service:
-            continue
-
-        if "value" not in action["action"] or action["action"]["value"] == "":
-            continue
-
-        # See comment above in `import_form_data` where we check if the variable has a
-        # `service_fetch_configuration` attribute.
-        # We can't reliably relate the service fetch configured to an existing configuration.
-        # So we don't add any existing service fetch config to the variables
-        action["action"]["value"] = ""
 
 
 class FileComponentOptions(TypedDict, total=False):

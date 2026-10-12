@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from openforms.typing import JSONObject
 
+from ..api.v3.typing import LogicActionTypeData
 from ..constants import FormTypeChoices
 from .constants import (
     AdditionalFormConfigurationOptions,
@@ -25,6 +26,14 @@ class FormRegistrationData(TypedDict, total=False):
     options: JSONObject
 
 
+class FormLogicActionData(TypedDict, total=False):
+    uuid: str
+    component: str
+    variable: str
+    form_step_uuid: str
+    action: LogicActionTypeData
+
+
 class FormLogicData(TypedDict, total=False):
     uuid: str
     url: str
@@ -32,7 +41,7 @@ class FormLogicData(TypedDict, total=False):
     json_logic_trigger: JSONObject
     description: str
     order: int
-    actions: list[JSONObject]
+    actions: list[FormLogicActionData]
     is_advanced: bool
 
 
