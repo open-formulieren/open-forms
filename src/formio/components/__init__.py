@@ -17,6 +17,7 @@ from .licenseplate import LicensePlate
 from .map import Map
 from .np_family_members import NpFamilyMembers
 from .number import Number
+from .partners import Partners
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -35,6 +36,7 @@ __all__ = [  # noqa: RUF022
     "CosignV2",
     "Map",
     "AddressNL",
+    "Partners",
     "Children",
     "CustomerProfile",
     "NpFamilyMembers",
@@ -63,6 +65,7 @@ type AnyComponent = (
     | CosignV2
     | Map
     | AddressNL
+    | Partners
     | Children
     | CustomerProfile
     | NpFamilyMembers
