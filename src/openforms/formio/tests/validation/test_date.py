@@ -1,8 +1,8 @@
 from django.test import SimpleTestCase, tag
 from django.utils import timezone
 
+from of_datetime_utils import get_today
 from openforms.submissions.models import Submission
-from openforms.utils.date import get_today
 
 from ...datastructures import FormioConfigurationWrapper, FormioData
 from ...dynamic_config import rewrite_formio_components
