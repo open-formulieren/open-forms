@@ -17,6 +17,7 @@ from .components import (
     Content,
     CosignV1,
     CosignV2,
+    Currency,
 )
 from .templating import get_template_trace_context
 
@@ -28,6 +29,7 @@ __all__ = [  # noqa: RUF022
     "get_template_trace_context",
     # Form fields
     "Checkbox",
+    "Currency",
     # Special fields
     "BSN",
     "CosignV2",
