@@ -30,6 +30,7 @@ from .components import (
     Number,
     Partners,
     PhoneNumber,
+    Postcode,
 )
 from .templating import get_template_trace_context
 
@@ -44,6 +45,7 @@ __all__ = [  # noqa: RUF022
     "Date",
     "DateTime",
     "PhoneNumber",
+    "Postcode",
     "File",
     "Number",
     "Checkbox",
