@@ -24,6 +24,7 @@ from .components import (
     DateTime,
     Email,
     File,
+    LicensePlate,
 )
 from .templating import get_template_trace_context
 
@@ -42,6 +43,7 @@ __all__ = [  # noqa: RUF022
     "Currency",
     # Special fields
     "IBAN",
+    "LicensePlate",
     "BSN",
     "CosignV2",
     "AddressNL",

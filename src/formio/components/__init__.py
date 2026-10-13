@@ -13,6 +13,7 @@ from .datetime import DateTime
 from .email import Email
 from .file import File
 from .iban import IBAN
+from .licenseplate import LicensePlate
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -25,6 +26,7 @@ __all__ = [  # noqa: RUF022
     "Currency",
     # Special fields
     "IBAN",
+    "LicensePlate",
     "BSN",
     "CosignV2",
     "AddressNL",
@@ -49,6 +51,7 @@ type AnyComponent = (
     | Currency
     # Special fields
     | IBAN
+    | LicensePlate
     | BSN
     | CosignV2
     | AddressNL
