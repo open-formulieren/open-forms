@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, MutableSequence
+from collections.abc import Iterator, MutableSequence, Sequence
 
 from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
 from .children import Children
+from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .cosign import CosignV1, CosignV2
 from .currency import Currency
@@ -65,6 +66,7 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "Columns",
     "Fieldset",
     "SoftRequiredErrors",
 ]
@@ -78,6 +80,19 @@ class Fieldset(BaseFieldSet):
     def iter_children(self) -> Iterator[tuple[AnyComponent, str]]:
         for component in self.components:
             yield (component, "")
+
+
+class Column(BaseColumn):
+    components: MutableSequence[AnyComponent]
+
+
+class Columns(BaseColumns):
+    columns: Sequence[Column]
+
+    def iter_children(self) -> Iterator[tuple[AnyComponent, str]]:
+        for column in self.columns:
+            for component in column.components:
+                yield (component, "")
 
 
 # Discriminated union of all possible component types - ordered as they are displayed
@@ -115,6 +130,7 @@ type AnyComponent = (
     | CosignV1
     # Layout
     | Content
+    | Columns
     | Fieldset
     | SoftRequiredErrors
 )

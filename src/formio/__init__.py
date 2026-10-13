@@ -15,6 +15,7 @@ from .components import (
     AnyComponent,
     Checkbox,
     Children,
+    Columns,
     Content,
     CosignV1,
     CosignV2,
@@ -81,6 +82,7 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "Columns",
     "Fieldset",
     "SoftRequiredErrors",
 ]
