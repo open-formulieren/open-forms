@@ -3,8 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from of_datetime_utils import get_today
 from openforms.api.utils import underscore_to_camel
-from openforms.utils.date import get_today
 
 
 class NaturalPersonDetails(BaseModel):
