@@ -23,6 +23,7 @@ from .components import (
     Date,
     DateTime,
     Email,
+    Fieldset,
     File,
     LicensePlate,
     Map,
@@ -80,5 +81,6 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "Fieldset",
     "SoftRequiredErrors",
 ]

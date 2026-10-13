@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterator, MutableSequence
+
 from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
@@ -11,6 +13,7 @@ from .customer_profile import CustomerProfile
 from .date import Date
 from .datetime import DateTime
 from .email import Email
+from .fieldset import Fieldset as BaseFieldSet
 from .file import File
 from .iban import IBAN
 from .licenseplate import LicensePlate
@@ -62,8 +65,20 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "Fieldset",
     "SoftRequiredErrors",
 ]
+
+# Component types - defined here due to circular import dependencies.
+
+
+class Fieldset(BaseFieldSet):
+    components: MutableSequence[AnyComponent]
+
+    def iter_children(self) -> Iterator[tuple[AnyComponent, str]]:
+        for component in self.components:
+            yield (component, "")
+
 
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
@@ -100,5 +115,6 @@ type AnyComponent = (
     | CosignV1
     # Layout
     | Content
+    | Fieldset
     | SoftRequiredErrors
 )
