@@ -29,6 +29,7 @@ from .components import (
     NpFamilyMembers,
     Number,
     Partners,
+    PhoneNumber,
 )
 from .templating import get_template_trace_context
 
@@ -42,6 +43,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "PhoneNumber",
     "File",
     "Number",
     "Checkbox",
