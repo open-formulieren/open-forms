@@ -14,6 +14,7 @@ from .email import Email
 from .file import File
 from .iban import IBAN
 from .licenseplate import LicensePlate
+from .map import Map
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -29,6 +30,7 @@ __all__ = [  # noqa: RUF022
     "LicensePlate",
     "BSN",
     "CosignV2",
+    "Map",
     "AddressNL",
     "Children",
     "CustomerProfile",
@@ -54,6 +56,7 @@ type AnyComponent = (
     | LicensePlate
     | BSN
     | CosignV2
+    | Map
     | AddressNL
     | Children
     | CustomerProfile
