@@ -1,0 +1,23 @@
+{
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "customClass": "",
+  "hidden": false,
+  "html": "inhoud",
+  "id": "eqegfc",
+  "key": "content",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "html": "<p>Ik ben vertaald!</p>"
+      }
+    }
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": false,
+  "type": "content"
+}
