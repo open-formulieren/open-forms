@@ -4,6 +4,7 @@ from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
 from .children import Children
+from .content import Content
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -13,6 +14,8 @@ __all__ = [  # noqa: RUF022
     "BSN",
     "AddressNL",
     "Children",
+    # Layout
+    "Content",
 ]
 
 # Discriminated union of all possible component types - ordered as they are displayed
@@ -25,5 +28,7 @@ type AnyComponent = (
     | BSN
     | AddressNL
     | Children
+    # Layout
+    | Content
 )
 # fmt: on
