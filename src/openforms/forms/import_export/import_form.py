@@ -29,6 +29,7 @@ from ..models import (
     Form,
     FormDefinition,
 )
+from .datastructures import FormImportOptions
 from .serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -65,20 +66,25 @@ def _get_mock_request() -> HttpRequest:
 
 
 @transaction.atomic
-def import_form(import_file: Path, existing_form_instance=None) -> Form | None:
+def import_form(
+    import_file: Path,
+    import_options: FormImportOptions,
+    existing_form_instance: Form | None = None,
+) -> Form | None:
     import_data: dict[str, str] = {}
     with zipfile.ZipFile(import_file, "r") as zip_file:
         for resource in EXPECTED_RESOURCES:
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(import_data, existing_form_instance)
+    return import_form_data(import_data, import_options, existing_form_instance)
 
 
 @transaction.atomic
 @override(language=settings.LANGUAGE_CODE)
 def import_form_data(
     import_data: dict[str, str],
+    import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:
     uuid_mapping: dict[str, str] = {}
@@ -89,6 +95,7 @@ def import_form_data(
     context = {
         "request": request,
         "is_import": True,
+        "import_options": import_options,
     }
 
     if forms_data := import_data.get("forms"):
