@@ -7,7 +7,7 @@ with comonent types supported by Open Forms.
 
 from __future__ import annotations
 
-from .base_component import supports_multiple
+from .base_component import Option, supports_multiple
 from .components import (
     BSN,
     IBAN,
@@ -31,6 +31,7 @@ from .components import (
     Partners,
     PhoneNumber,
     Postcode,
+    Radio,
 )
 from .templating import get_template_trace_context
 
@@ -38,6 +39,7 @@ from .templating import get_template_trace_context
 __all__ = [  # noqa: RUF022
     "AnyComponent",
     # General purpose functionality
+    "Option",
     "supports_multiple",
     "get_template_trace_context",
     # Form fields
@@ -50,6 +52,7 @@ __all__ = [  # noqa: RUF022
     "Number",
     "Checkbox",
     "Currency",
+    "Radio",
     # Special fields
     "IBAN",
     "LicensePlate",
