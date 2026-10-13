@@ -28,6 +28,7 @@ from .components import (
     Map,
     NpFamilyMembers,
     Number,
+    Partners,
 )
 from .templating import get_template_trace_context
 
@@ -52,6 +53,7 @@ __all__ = [  # noqa: RUF022
     "CosignV2",
     "Map",
     "AddressNL",
+    "Partners",
     "Children",
     "CustomerProfile",
     "NpFamilyMembers",
