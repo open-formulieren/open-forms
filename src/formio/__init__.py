@@ -19,6 +19,7 @@ from .components import (
     CosignV2,
     Currency,
     CustomerProfile,
+    Date,
 )
 from .templating import get_template_trace_context
 
@@ -29,6 +30,7 @@ __all__ = [  # noqa: RUF022
     "supports_multiple",
     "get_template_trace_context",
     # Form fields
+    "Date",
     "Checkbox",
     "Currency",
     # Special fields
