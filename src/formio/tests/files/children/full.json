@@ -1,0 +1,43 @@
+{
+  "clearOnHide": false,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "description": "A description",
+  "enableSelection": false,
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "children",
+  "label": "children",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "tooltip": "A tooltip",
+  "type": "children"
+}
