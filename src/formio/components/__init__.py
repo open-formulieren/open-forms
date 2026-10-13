@@ -24,6 +24,7 @@ from .radio import Radio
 from .select import Select
 from .selectboxes import Selectboxes
 from .signature import Signature
+from .soft_required_errors import SoftRequiredErrors
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -55,6 +56,7 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "SoftRequiredErrors",
 ]
 
 # Discriminated union of all possible component types - ordered as they are displayed
@@ -89,4 +91,5 @@ type AnyComponent = (
     | CosignV1
     # Layout
     | Content
+    | SoftRequiredErrors
 )
