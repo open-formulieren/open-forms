@@ -10,10 +10,12 @@ from .currency import Currency
 from .customer_profile import CustomerProfile
 from .date import Date
 from .datetime import DateTime
+from .email import Email
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
     # Form fields
+    "Email",
     "Date",
     "DateTime",
     "Checkbox",
@@ -35,7 +37,8 @@ __all__ = [  # noqa: RUF022
 # fmt: off
 type AnyComponent = (
     # Form fields
-    Date
+    Email
+    | Date
     | DateTime
     | Checkbox
     | Currency
