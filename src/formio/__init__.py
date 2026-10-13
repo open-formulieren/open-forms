@@ -12,6 +12,7 @@ from .components import (
     BSN,
     AddressNL,
     AnyComponent,
+    Checkbox,
 )
 from .templating import get_template_trace_context
 
@@ -21,6 +22,8 @@ __all__ = [  # noqa: RUF022
     # General purpose functionality
     "supports_multiple",
     "get_template_trace_context",
+    # Form fields
+    "Checkbox",
     # Special fields
     "BSN",
     "AddressNL",
