@@ -1,0 +1,76 @@
+{
+  "autocomplete": "name",
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "defaultValue": "",
+  "deriveCity": true,
+  "deriveHouseNumber": "number",
+  "derivePostcode": "postcode",
+  "deriveStreetName": true,
+  "description": "A description",
+  "disabled": false,
+  "errors": {
+    "maxLength": "Een maximale lengte.",
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": false,
+  "key": "someInput",
+  "label": "Some input",
+  "multiple": false,
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "placeholder": "",
+  "prefill": {
+    "attribute": "",
+    "identifierRole": "main",
+    "plugin": ""
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showCharCount": true,
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "maxLength": "Een maximale lengte.",
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "textfield",
+  "validate": {
+    "maxLength": 20,
+    "pattern": "",
+    "plugins": [],
+    "required": false
+  }
+}
