@@ -1,0 +1,63 @@
+{
+  "autocomplete": "tel",
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "defaultValue": "",
+  "description": "A description",
+  "errors": {
+    "pattern": "Enkel getallen toegestaan.",
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someInput",
+  "label": "Some input",
+  "multiple": false,
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "pattern": "Enkel getallen toegestaan.",
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "phoneNumber",
+  "validate": {
+    "pattern": "",
+    "plugins": ["phonenumber-international"],
+    "required": false
+  }
+}
