@@ -15,6 +15,8 @@ from .components import (
     Checkbox,
     Children,
     Content,
+    CosignV1,
+    CosignV2,
 )
 from .templating import get_template_trace_context
 
@@ -28,8 +30,10 @@ __all__ = [  # noqa: RUF022
     "Checkbox",
     # Special fields
     "BSN",
+    "CosignV2",
     "AddressNL",
     "Children",
+    "CosignV1",
     # Layout
     "Content",
 ]

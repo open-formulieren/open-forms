@@ -5,6 +5,7 @@ from .bsn import BSN
 from .checkbox import Checkbox
 from .children import Children
 from .content import Content
+from .cosign import CosignV1, CosignV2
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -12,8 +13,10 @@ __all__ = [  # noqa: RUF022
     "Checkbox",
     # Special fields
     "BSN",
+    "CosignV2",
     "AddressNL",
     "Children",
+    "CosignV1",
     # Layout
     "Content",
 ]
@@ -26,8 +29,10 @@ type AnyComponent = (
     Checkbox
     # Special fields
     | BSN
+    | CosignV2
     | AddressNL
     | Children
+    | CosignV1
     # Layout
     | Content
 )
