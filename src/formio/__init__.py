@@ -10,6 +10,7 @@ from __future__ import annotations
 from .base_component import supports_multiple
 from .components import (
     BSN,
+    IBAN,
     AddressNL,
     AnyComponent,
     Checkbox,
@@ -40,6 +41,7 @@ __all__ = [  # noqa: RUF022
     "Checkbox",
     "Currency",
     # Special fields
+    "IBAN",
     "BSN",
     "CosignV2",
     "AddressNL",
