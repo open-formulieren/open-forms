@@ -1,0 +1,69 @@
+{
+  "clearOnHide": true,
+  "components": [
+    {
+      "autocomplete": "",
+      "clearOnHide": true,
+      "defaultValue": "",
+      "deriveCity": false,
+      "deriveHouseNumber": "",
+      "derivePostcode": "",
+      "deriveStreetName": false,
+      "description": "",
+      "disabled": false,
+      "faqItems": [],
+      "hidden": false,
+      "id": "wien53il",
+      "isSensitiveData": false,
+      "key": "nestedTextField",
+      "label": "Nested text field",
+      "multiple": false,
+      "placeholder": "",
+      "showCharCount": false,
+      "showInEmail": false,
+      "showInPDF": true,
+      "showInSummary": true,
+      "tooltip": "",
+      "type": "textfield",
+      "validate": {
+        "pattern": "",
+        "plugins": [],
+        "required": false
+      }
+    }
+  ],
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": true,
+  "hideHeader": false,
+  "id": "eqegfc",
+  "key": "fieldset",
+  "label": "Fieldset",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "tooltip": "A tooltip for the group",
+  "type": "fieldset"
+}
