@@ -25,6 +25,7 @@ from .select import Select
 from .selectboxes import Selectboxes
 from .signature import Signature
 from .soft_required_errors import SoftRequiredErrors
+from .textarea import Textarea
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -35,6 +36,7 @@ __all__ = [  # noqa: RUF022
     "PhoneNumber",
     "Postcode",
     "File",
+    "Textarea",
     "Number",
     "Checkbox",
     "Selectboxes",
@@ -70,6 +72,7 @@ type AnyComponent = (
     | PhoneNumber
     | Postcode
     | File
+    | Textarea
     | Number
     | Checkbox
     | Selectboxes
