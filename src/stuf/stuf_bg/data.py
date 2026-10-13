@@ -2,9 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from of_datetime_utils import get_today
 from openforms.api.utils import underscore_to_camel
-
-from .utils import get_today
 
 
 class NaturalPersonDetails(BaseModel):

@@ -12,10 +12,10 @@ from typing import Protocol, cast  # noqa: TID251
 import structlog
 from glom import assign, glom
 
+from of_datetime_utils import datetime_in_amsterdam
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
-from openforms.utils.date import datetime_in_amsterdam
 
 from .datastructures import FormioConfigurationWrapper
 from .service import get_component_empty_value

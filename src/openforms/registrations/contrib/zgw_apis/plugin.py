@@ -14,6 +14,7 @@ import structlog
 from furl import furl
 from glom import assign
 
+from of_datetime_utils import datetime_in_amsterdam
 from openforms.authentication.service import get_branch_number
 from openforms.config.data import Action
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -40,7 +41,6 @@ from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.template import openforms_backend, render_from_string
 from openforms.typing import JSONObject, VariableValue
-from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
 
 from ...base import BasePlugin, PreRegistrationResult

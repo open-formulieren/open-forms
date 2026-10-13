@@ -11,8 +11,8 @@ from requests import JSONDecodeError
 from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
+from of_datetime_utils import TIMEZONE_AMS
 from openforms.contrib.client import LoggingClient
-from openforms.utils.date import TIMEZONE_AMS
 
 from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
