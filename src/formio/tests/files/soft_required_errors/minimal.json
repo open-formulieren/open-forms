@@ -1,0 +1,5 @@
+{
+  "type": "softRequiredErrors",
+  "key": "errors",
+  "html": "<p>Some fields should be filled out!!</p>"
+}
