@@ -1,0 +1,95 @@
+{
+  "clearOnHide": false,
+  "columns": [
+    {
+      "components": [
+        {
+          "autocomplete": "",
+          "clearOnHide": true,
+          "conditional": null,
+          "defaultValue": "",
+          "deriveCity": false,
+          "deriveHouseNumber": "",
+          "derivePostcode": "",
+          "deriveStreetName": false,
+          "description": "",
+          "disabled": false,
+          "errors": null,
+          "faqItems": [],
+          "hidden": false,
+          "id": "wien53il",
+          "isSensitiveData": false,
+          "key": "nestedTextField",
+          "label": "Nested text field",
+          "multiple": false,
+          "openForms": null,
+          "placeholder": "",
+          "prefill": null,
+          "registration": null,
+          "showCharCount": false,
+          "showInEmail": false,
+          "showInPDF": true,
+          "showInSummary": true,
+          "tooltip": "",
+          "translatedErrors": null,
+          "type": "textfield",
+          "validate": {
+            "maxLength": null,
+            "pattern": "",
+            "plugins": [],
+            "required": false
+          }
+        }
+      ],
+      "size": 6,
+      "sizeMobile": 4
+    },
+    {
+      "components": [
+        {
+          "autocomplete": "",
+          "clearOnHide": true,
+          "conditional": null,
+          "defaultValue": "",
+          "deriveCity": false,
+          "deriveHouseNumber": "",
+          "derivePostcode": "",
+          "deriveStreetName": false,
+          "description": "",
+          "disabled": false,
+          "errors": null,
+          "faqItems": [],
+          "hidden": false,
+          "id": "abcdefgh",
+          "isSensitiveData": false,
+          "key": "nested2",
+          "label": "Second text field",
+          "multiple": false,
+          "openForms": null,
+          "placeholder": "",
+          "prefill": null,
+          "registration": null,
+          "showCharCount": false,
+          "showInEmail": false,
+          "showInPDF": true,
+          "showInSummary": true,
+          "tooltip": "",
+          "translatedErrors": null,
+          "type": "textfield",
+          "validate": {
+            "maxLength": null,
+            "pattern": "",
+            "plugins": [],
+            "required": false
+          }
+        }
+      ],
+      "size": 3,
+      "sizeMobile": 4
+    }
+  ],
+  "hidden": false,
+  "id": "eqegfc",
+  "key": "columns",
+  "type": "columns"
+}
