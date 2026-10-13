@@ -18,6 +18,7 @@ from .components import (
     CosignV1,
     CosignV2,
     Currency,
+    CustomerProfile,
 )
 from .templating import get_template_trace_context
 
@@ -35,6 +36,7 @@ __all__ = [  # noqa: RUF022
     "CosignV2",
     "AddressNL",
     "Children",
+    "CustomerProfile",
     "CosignV1",
     # Layout
     "Content",
