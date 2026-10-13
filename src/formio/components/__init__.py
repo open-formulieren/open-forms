@@ -20,6 +20,7 @@ from .number import Number
 from .partners import Partners
 from .phone_number import PhoneNumber
 from .postcode import Postcode
+from .radio import Radio
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -33,6 +34,7 @@ __all__ = [  # noqa: RUF022
     "Number",
     "Checkbox",
     "Currency",
+    "Radio",
     # Special fields
     "IBAN",
     "LicensePlate",
@@ -52,7 +54,6 @@ __all__ = [  # noqa: RUF022
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
-# fmt: off
 type AnyComponent = (
     # Form fields
     Email
@@ -64,6 +65,7 @@ type AnyComponent = (
     | Number
     | Checkbox
     | Currency
+    | Radio
     # Special fields
     | IBAN
     | LicensePlate
@@ -79,4 +81,3 @@ type AnyComponent = (
     # Layout
     | Content
 )
-# fmt: on
