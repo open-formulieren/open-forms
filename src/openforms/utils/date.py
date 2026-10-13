@@ -1,5 +1,4 @@
 from datetime import date, datetime, time
-from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 from django.utils.dateparse import (
@@ -10,9 +9,6 @@ from django.utils.dateparse import (
 import structlog
 
 logger = structlog.stdlib.get_logger(__name__)
-
-
-TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
 
 
 def format_date_value(date_value: str) -> str:
@@ -72,14 +68,3 @@ def parse_time(value: str) -> None | time:
         return
 
     return time_value
-
-
-def datetime_in_amsterdam(value: datetime) -> datetime:
-    if timezone.is_naive(value):
-        return value
-    return timezone.make_naive(value, timezone=TIMEZONE_AMS)
-
-
-def get_today() -> date:
-    now = datetime_in_amsterdam(timezone.now())
-    return now.date()

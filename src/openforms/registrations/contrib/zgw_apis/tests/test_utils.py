@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from django.test import SimpleTestCase
 
-from openforms.utils.date import TIMEZONE_AMS
+from of_datetime_utils import TIMEZONE_AMS
 
 from ..utils import process_according_to_eigenschap_format
 
