@@ -1,0 +1,58 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "description": "Sample description",
+  "errors": {
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "id": "123",
+      "label": "Extra info",
+      "content": "<p>Informational content</p>",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "label": "Extra info",
+            "content": "<p>Informatieinhoud</p>"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "8aosjaw",
+  "includeChildren": true,
+  "includePartners": true,
+  "isSensitiveData": false,
+  "key": "test",
+  "label": "A label",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "tooltip": "bar"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "npFamilyMembers",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
