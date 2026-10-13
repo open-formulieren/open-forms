@@ -21,6 +21,7 @@ from .components import (
     CustomerProfile,
     Date,
     DateTime,
+    Email,
 )
 from .templating import get_template_trace_context
 
@@ -31,6 +32,7 @@ __all__ = [  # noqa: RUF022
     "supports_multiple",
     "get_template_trace_context",
     # Form fields
+    "Email",
     "Date",
     "DateTime",
     "Checkbox",
