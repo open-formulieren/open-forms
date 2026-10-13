@@ -11,6 +11,7 @@ from .customer_profile import CustomerProfile
 from .date import Date
 from .datetime import DateTime
 from .email import Email
+from .file import File
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -18,6 +19,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "File",
     "Checkbox",
     "Currency",
     # Special fields
@@ -40,6 +42,7 @@ type AnyComponent = (
     Email
     | Date
     | DateTime
+    | File
     | Checkbox
     | Currency
     # Special fields
