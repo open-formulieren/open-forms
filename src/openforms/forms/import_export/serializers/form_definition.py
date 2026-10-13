@@ -133,6 +133,23 @@ class FormDefinitionImportSerializer(
     FormDefinitionSerializer,
     BaseImportSerializer[FormDefinition, FormDefinitionData],
 ):
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup[FormDefinitionData](
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_component_configuration,
+        ),
+    )
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup[FormDefinitionData](
+            option=AdditionalFormConfigurationOptions.wms_tile_layers,
+            cleanup=clear_wms_tile_layers,
+        ),
+        AdditionalFormConfigurationCleanup[FormDefinitionData](
+            option=AdditionalFormConfigurationOptions.wmts_tile_layers,
+            cleanup=clear_wmts_tile_layers,
+        ),
+    )
+
     def prepare_for_import(self, data: FormDefinitionData) -> None:
         if configuration := data.get("configuration"):
             self.apply_component_conversions(configuration)

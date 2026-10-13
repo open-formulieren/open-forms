@@ -10,6 +10,7 @@ from ..datastructures import (
     AdditionalFormConfigurationCleanup,
     FormConfigurationCleanup,
     FormExportOptions,
+    FormImportOptions,
 )
 
 
@@ -110,11 +111,36 @@ class ImportData(TypedDict):
 
 
 class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
+    excluded_form_configuration_removal: ClassVar[
+        Sequence[FormConfigurationCleanup]
+    ] = ()
+    """
+    Removal functions for form configuration.
+
+    Removal functions that are called when excluding the specified form configuration
+    during import. These functions specify how this configuration should be removed from
+    the form data.
+    """
+    excluded_additional_form_configuration_removal: ClassVar[
+        Sequence[AdditionalFormConfigurationCleanup]
+    ] = ()
+    """
+    Removal functions for additional form configuration.
+
+    Removal functions that are called when excluding the specified additional form
+    configuration during import. These functions specify how this configuration should
+    be removed from the form data.
+    """
+
     def to_internal_value(self, data: DT) -> DT:
         data_copy = data.copy()
 
         self.apply_backwards_compatibility(data_copy)
         self.prepare_for_import(data_copy)
+
+        # Apply import options for form configuration and additional form configuration
+        self.remove_excluded_form_configuration(data_copy)
+        self.remove_excluded_additional_form_configuration(data_copy)
 
         # When importing an existing instance, we should not overwrite the uuid.
         # Furthermore, some model types don't have an uuid field, so we should only set
@@ -153,3 +179,21 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
         instances.
         """
         pass
+
+    def remove_excluded_form_configuration(self, data: DT) -> None:
+        options_to_keep = set(self.import_options.form_configuration)
+
+        for config in self.excluded_form_configuration_removal:
+            if config.option not in options_to_keep:
+                config.cleanup(data)
+
+    def remove_excluded_additional_form_configuration(self, data: DT) -> None:
+        options_to_keep = set(self.import_options.additional_form_configuration)
+
+        for config in self.excluded_additional_form_configuration_removal:
+            if config.option not in options_to_keep:
+                config.cleanup(data)
+
+    @property
+    def import_options(self) -> FormImportOptions:
+        return self.context["import_options"]

@@ -203,6 +203,31 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer[Form, FormData])
 
 
 class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup[FormData](
+            option=FormConfigurationOptions.registration_backends,
+            cleanup=exclude_registration_backends,
+        ),
+        FormConfigurationCleanup[FormData](
+            option=FormConfigurationOptions.payment_backend,
+            cleanup=exclude_payment_backend,
+        ),
+        FormConfigurationCleanup[FormData](
+            option=FormConfigurationOptions.auth_backends,
+            cleanup=exclude_auth_backends,
+        ),
+    )
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup[FormData](
+            option=AdditionalFormConfigurationOptions.product,
+            cleanup=clear_product,
+        ),
+        AdditionalFormConfigurationCleanup[FormData](
+            option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            cleanup=clear_yivi_attribute_groups,
+        ),
+    )
+
     def prepare_for_import(self, data: FormData) -> None:
         if self.context.get("deactivate_form"):
             data["active"] = False
