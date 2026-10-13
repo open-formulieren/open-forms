@@ -27,6 +27,7 @@ from .signature import Signature
 from .soft_required_errors import SoftRequiredErrors
 from .textarea import Textarea
 from .textfield import TextField
+from .time import Time
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -35,6 +36,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "Time",
     "PhoneNumber",
     "Postcode",
     "File",
@@ -72,6 +74,7 @@ type AnyComponent = (
     | Email
     | Date
     | DateTime
+    | Time
     | PhoneNumber
     | Postcode
     | File

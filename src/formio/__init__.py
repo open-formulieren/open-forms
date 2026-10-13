@@ -38,6 +38,7 @@ from .components import (
     SoftRequiredErrors,
     Textarea,
     TextField,
+    Time,
 )
 from .templating import get_template_trace_context
 
@@ -53,6 +54,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "Time",
     "PhoneNumber",
     "Postcode",
     "File",
