@@ -23,6 +23,7 @@ from .postcode import Postcode
 from .radio import Radio
 from .select import Select
 from .selectboxes import Selectboxes
+from .signature import Signature
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -43,6 +44,7 @@ __all__ = [  # noqa: RUF022
     "IBAN",
     "LicensePlate",
     "BSN",
+    "Signature",
     "CosignV2",
     "Map",
     "AddressNL",
@@ -76,6 +78,7 @@ type AnyComponent = (
     | IBAN
     | LicensePlate
     | BSN
+    | Signature
     | CosignV2
     | Map
     | AddressNL
