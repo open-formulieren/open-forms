@@ -26,10 +26,12 @@ from .selectboxes import Selectboxes
 from .signature import Signature
 from .soft_required_errors import SoftRequiredErrors
 from .textarea import Textarea
+from .textfield import TextField
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
     # Form fields
+    "TextField",
     "Email",
     "Date",
     "DateTime",
@@ -66,7 +68,8 @@ __all__ = [  # noqa: RUF022
 
 type AnyComponent = (
     # Form fields
-    Email
+    TextField
+    | Email
     | Date
     | DateTime
     | PhoneNumber
