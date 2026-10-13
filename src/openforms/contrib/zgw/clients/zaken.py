@@ -7,8 +7,8 @@ import structlog
 from furl import furl
 from zgw_consumers.nlx import NLXClient
 
+from of_datetime_utils import get_today
 from openforms.contrib.client import LoggingMixin
-from openforms.utils.date import get_today
 
 from .catalogi import CatalogiClient
 
