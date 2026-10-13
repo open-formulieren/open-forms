@@ -1,0 +1,71 @@
+{
+  "allowNegative": false,
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "decimalLimit": null,
+  "defaultValue": null,
+  "description": "Sample description",
+  "errors": {
+    "min": "Je kan niet minder dan 1 dag per week bestaan.",
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "8aosjaw",
+  "isSensitiveData": false,
+  "key": "test",
+  "label": "A sample number",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "suffix": "foo",
+        "tooltip": "bar"
+      }
+    }
+  },
+  "prefill": {
+    "attribute": "",
+    "identifierRole": "main",
+    "plugin": ""
+  },
+  "prefix": "",
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "suffix": "",
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "min": "Je kan niet minder dan 1 dag per week bestaan.",
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "number",
+  "validate": {
+    "max": null,
+    "min": null,
+    "plugins": [],
+    "required": false
+  }
+}
