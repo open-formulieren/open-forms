@@ -111,18 +111,12 @@ class ImportData(TypedDict):
 
 class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
     def to_internal_value(self, data: DT) -> DT:
-        from typing import cast  # noqa: TID251
-
-        # DRF upstream types (dict[str, Any]) are not compatible with TypedDict, this is
-        # a valid exception to get some grip on type safety
-        data_copy = cast(DT, data.copy())
+        data_copy = data.copy()
 
         # When importing an existing instance, we should not overwrite the uuid.
         # Furthermore, some model types don't have an uuid field, so we should only set
         # the uuid if the model has the expected field.
-        has_uuid_field = any(
-            field.name == "uuid" for field in self.Meta.model._meta.concrete_fields
-        )
+        has_uuid_field = "uuid" in self.fields
         if not self.instance and has_uuid_field:
             data_copy["uuid"] = str(uuid4())
 
