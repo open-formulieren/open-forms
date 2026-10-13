@@ -8,8 +8,8 @@ import requests_mock
 from requests.exceptions import RequestException
 from zgw_consumers.constants import AuthTypes
 
+from of_datetime_utils import TIMEZONE_AMS
 from openforms.formio.service import build_serializer
-from openforms.utils.date import TIMEZONE_AMS
 from openforms.utils.tests.http import (
     fuzzy_client_error_status_code,
     fuzzy_server_error_status_code,

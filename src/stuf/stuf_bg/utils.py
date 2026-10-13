@@ -1,15 +1,8 @@
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
-
-from django.utils import timezone
-
 from lxml.etree import XMLParser, fromstring as _fromstring
 
 from openforms.utils.date import format_date_value
 
 from .typing import StufBgIncompleteDateType
-
-TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
 
 
 def normalize_date_of_birth(date_input: str | StufBgIncompleteDateType) -> str | None:
@@ -44,14 +37,3 @@ def fromstring(content: str | bytes):
     """
     parser = XMLParser(resolve_entities=False)
     return _fromstring(content, parser=parser)
-
-
-def datetime_in_amsterdam(value: datetime) -> datetime:
-    if timezone.is_naive(value):
-        return value
-    return timezone.make_naive(value, timezone=TIMEZONE_AMS)
-
-
-def get_today() -> date:
-    now = datetime_in_amsterdam(timezone.now())
-    return now.date()
