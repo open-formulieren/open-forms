@@ -22,6 +22,7 @@ from .components import (
     Date,
     DateTime,
     Email,
+    File,
 )
 from .templating import get_template_trace_context
 
@@ -35,6 +36,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "File",
     "Checkbox",
     "Currency",
     # Special fields
