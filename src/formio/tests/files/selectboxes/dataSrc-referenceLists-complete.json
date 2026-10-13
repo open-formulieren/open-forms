@@ -1,0 +1,10 @@
+{
+  "type": "selectboxes",
+  "key": "selectboxes",
+  "label": "Selectboxes",
+  "openForms": {
+    "dataSrc": "referenceLists",
+    "service": "someService",
+    "code": "someTable"
+  }
+}
