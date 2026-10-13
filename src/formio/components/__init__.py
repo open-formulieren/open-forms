@@ -36,6 +36,7 @@ from .time import Time
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
+    "AnyComponent",
     # Form fields
     "TextField",
     "Email",
