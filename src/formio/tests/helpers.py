@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import msgspec
 
-from ..base_component import AnyComponent
+from .. import AnyComponent
 
 if TYPE_CHECKING:  # pragma: no cover
     BaseTestCase = TestCase

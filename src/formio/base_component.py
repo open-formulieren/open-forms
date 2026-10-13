@@ -7,6 +7,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Iterator, Mapping, MutableMapping
 from typing import (
+    TYPE_CHECKING,
     Annotated,
     ClassVar,
     Literal,
@@ -22,9 +23,10 @@ from typing_extensions import TypeIs
 from .templating import TestWithTrace, trace
 from .typing import ComponentValue
 
-logger = structlog.stdlib.get_logger(__name__)
+if TYPE_CHECKING:
+    from .components import AnyComponent
 
-type AnyComponent = Component
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass_transform(kw_only_default=True)
