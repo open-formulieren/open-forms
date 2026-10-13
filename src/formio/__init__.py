@@ -27,6 +27,7 @@ from .components import (
     LicensePlate,
     Map,
     NpFamilyMembers,
+    Number,
 )
 from .templating import get_template_trace_context
 
@@ -41,6 +42,7 @@ __all__ = [  # noqa: RUF022
     "Date",
     "DateTime",
     "File",
+    "Number",
     "Checkbox",
     "Currency",
     # Special fields
