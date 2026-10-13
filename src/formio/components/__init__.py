@@ -16,6 +16,7 @@ from .iban import IBAN
 from .licenseplate import LicensePlate
 from .map import Map
 from .np_family_members import NpFamilyMembers
+from .number import Number
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -24,6 +25,7 @@ __all__ = [  # noqa: RUF022
     "Date",
     "DateTime",
     "File",
+    "Number",
     "Checkbox",
     "Currency",
     # Special fields
@@ -51,6 +53,7 @@ type AnyComponent = (
     | Date
     | DateTime
     | File
+    | Number
     | Checkbox
     | Currency
     # Special fields
