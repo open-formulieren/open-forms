@@ -1,0 +1,10 @@
+{
+  "type": "radio",
+  "key": "radio",
+  "label": "radio",
+  "openForms": {
+    "dataSrc": "referenceLists",
+    "service": "someService",
+    "code": "someTable"
+  }
+}
