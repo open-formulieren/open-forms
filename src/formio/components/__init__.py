@@ -9,11 +9,13 @@ from .cosign import CosignV1, CosignV2
 from .currency import Currency
 from .customer_profile import CustomerProfile
 from .date import Date
+from .datetime import DateTime
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
     # Form fields
     "Date",
+    "DateTime",
     "Checkbox",
     "Currency",
     # Special fields
@@ -34,6 +36,7 @@ __all__ = [  # noqa: RUF022
 type AnyComponent = (
     # Form fields
     Date
+    | DateTime
     | Checkbox
     | Currency
     # Special fields
