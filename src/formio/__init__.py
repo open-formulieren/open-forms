@@ -20,6 +20,7 @@ from .components import (
     Currency,
     CustomerProfile,
     Date,
+    DateTime,
 )
 from .templating import get_template_trace_context
 
@@ -31,6 +32,7 @@ __all__ = [  # noqa: RUF022
     "get_template_trace_context",
     # Form fields
     "Date",
+    "DateTime",
     "Checkbox",
     "Currency",
     # Special fields
