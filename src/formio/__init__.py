@@ -34,6 +34,7 @@ from .components import (
     Radio,
     Select,
     Selectboxes,
+    Signature,
 )
 from .templating import get_template_trace_context
 
@@ -61,6 +62,7 @@ __all__ = [  # noqa: RUF022
     "IBAN",
     "LicensePlate",
     "BSN",
+    "Signature",
     "CosignV2",
     "Map",
     "AddressNL",
