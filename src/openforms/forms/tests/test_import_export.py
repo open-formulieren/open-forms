@@ -69,6 +69,7 @@ from ..import_export.service import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
     FormExportOptions,
+    FormImportOptions,
     export_form,
     form_to_json,
     import_form,
@@ -1261,7 +1262,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1339,7 +1340,9 @@ class ImportExportTests(TempdirMixin, TestCase):
 
     @tag("gh-3379")
     def test_import_2_1_3_export_does_not_fail(self):
-        import_form(import_file=PATH / "data/smol.zip")
+        import_form(
+            import_file=PATH / "data/smol.zip", import_options=FormImportOptions()
+        )
         self.assertTrue(Form.objects.filter(name="Smol").exists())
 
     def test_import_no_backends(self):
@@ -1360,7 +1363,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
     def test_import_form_slug_already_exists(self):
         product = ProductFactory.create()
@@ -1384,7 +1387,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             form.pk, archive_name=self.filepath, export_options=FormExportOptions()
         )
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.get()
@@ -1430,7 +1433,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.slug = "modified"
         form.save()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1523,7 +1526,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form_definition.configuration = {"foo": ["bar"]}
         form_definition.save()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         forms = Form.objects.all()
         imported_form = forms.last()
@@ -1602,7 +1605,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             form.pk, archive_name=self.filepath, export_options=FormExportOptions()
         )
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         form_definitions = FormDefinition.objects.all()
         fd2 = form_definitions.last()
@@ -1636,7 +1639,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         form.delete()
         category.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         form = Form.objects.get()
         self.assertIsNone(form.category)
@@ -1723,7 +1726,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(Form.objects.count(), 0)
         self.assertEqual(FormDefinition.objects.count(), 0)
         self.assertEqual(FormStep.objects.count(), 0)
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get()
         imported_form_step = imported_form.formstep_set.select_related().get()
@@ -1934,7 +1937,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         self.assertTrue(Form.objects.filter(slug="auth-plugins").exists())
 
@@ -1996,7 +1999,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             "openforms.forms.import_export.serializers.form_definition.CONVERTERS",
             new=converters,
         ):
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
         fd = imported_form.formstep_set.get().form_definition
@@ -2013,7 +2016,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
         # run the import again
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
         self.assertIsNone(imported_form.theme)
@@ -2082,7 +2085,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         rule = FormLogic.objects.get(form__slug="old-service-fetch-config", order=0)
         self.assertEqual(rule.actions[0]["action"]["value"], "")
@@ -2242,7 +2245,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         form_definition = FormDefinition.objects.get(slug="test-definition")
         fixed_components = form_definition.configuration["components"]
@@ -2293,7 +2296,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         export_form(
             form.pk, archive_name=self.filepath, export_options=FormExportOptions()
         )
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
         fd = imported_form.formstep_set.get().form_definition
@@ -2356,7 +2359,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2396,7 +2399,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get(slug="test-form")
         form_authentication_backend = FormAuthenticationBackend.objects.filter(
@@ -2439,7 +2442,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2503,7 +2506,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2575,7 +2578,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2623,7 +2626,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         error_detail = exc.exception.detail["auth_backends"][0]["backend"][0]
 
@@ -2654,7 +2657,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         error_detail = exc.exception.detail["auth_backends"][0]["backend"][0]
 
@@ -2696,7 +2699,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ]
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2755,7 +2765,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ]
+            ),
+        )
 
         imported_form = Form.objects.get(slug="test-form")
         authentication_backends = imported_form.auth_backends.all()
@@ -2805,7 +2822,14 @@ class ImportExportTests(TempdirMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    additional_form_configuration=[
+                        AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                    ]
+                ),
+            )
 
         error_detail = exc.exception.detail["auth_backends"][0]["options"][
             "additional_attributes_groups"
@@ -2856,7 +2880,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                 form_configuration=[FormConfigurationOptions.registration_backends],
             ),
         )
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         updated_form = Form.objects.last()
         registration_backend = updated_form.registration_backends.get()
@@ -3022,7 +3046,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
         # Import form
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         imported_form = Form.objects.last()
         imported_steps = list(imported_form.formstep_set.all())
@@ -3152,7 +3176,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(form_variables[0]["name"], "user_defined")
 
         # Import form
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
         imported_form = Form.objects.last()
 
         # The form should have been imported with the user-defined variable and the
@@ -3249,7 +3273,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "objects_api_group"
@@ -3293,7 +3317,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "objecttype"
@@ -3340,7 +3364,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3381,7 +3405,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
 
@@ -3438,7 +3462,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend_v1 = FormRegistrationBackend.objects.get(
             key="test-backend-v1"
@@ -3493,7 +3517,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend_valid_mapping = FormRegistrationBackend.objects.get(
             key="test-backend"
@@ -3542,7 +3566,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
         with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         error_detail = exc.exception.detail["registration_backends"][0]["options"][
             "variables_mapping"
@@ -3587,7 +3611,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3702,7 +3726,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()
@@ -3793,7 +3817,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             },
         )
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
@@ -3825,7 +3849,9 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             )
 
             with self.assertRaises(ValidationError) as exc:
-                import_form(import_file=self.filepath)
+                import_form(
+                    import_file=self.filepath, import_options=FormImportOptions()
+                )
 
             error_detail = exc.exception.detail["registration_backends"][0]["options"][
                 "objects_api_group"
@@ -3854,7 +3880,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 },
             )
 
-            import_form(import_file=self.filepath)
+            import_form(import_file=self.filepath, import_options=FormImportOptions())
 
             registration_backend = FormRegistrationBackend.objects.get(
                 key="test-backend"
@@ -3955,7 +3981,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()
@@ -4089,7 +4115,7 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
         )
         form.delete()
 
-        import_form(import_file=self.filepath)
+        import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         backends: dict[str, FormRegistrationBackend] = {
             backend.key: backend for backend in FormRegistrationBackend.objects.all()

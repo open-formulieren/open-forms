@@ -41,7 +41,7 @@ def clear_yivi_attribute_groups(data: FormData):
     of data to be exported or data to be imported.
     """
     for auth in data.get("auth_backends", []):
-        if auth["backend"] == "yivi_oidc":
+        if auth.get("backend") == "yivi_oidc":
             auth["options"]["additional_attributes_groups"] = []
 
 
