@@ -26,6 +26,7 @@ from .components import (
     File,
     LicensePlate,
     Map,
+    NpFamilyMembers,
 )
 from .templating import get_template_trace_context
 
@@ -51,6 +52,7 @@ __all__ = [  # noqa: RUF022
     "AddressNL",
     "Children",
     "CustomerProfile",
+    "NpFamilyMembers",
     "CosignV1",
     # Layout
     "Content",
