@@ -1,0 +1,77 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "defaultValue": "dummy",
+  "description": "",
+  "errors": {
+    "required": "Geef checkbox."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "aRadio",
+  "label": "A radio",
+  "openForms": {
+    "code": "",
+    "dataSrc": "manual",
+    "itemsExpression": {
+      "var": "foo"
+    },
+    "service": "",
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Geef checkbox."
+    }
+  },
+  "type": "radio",
+  "validate": {
+    "plugins": [],
+    "required": false
+  },
+  "values": [
+    {
+      "description": "",
+      "label": "A",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "label": "Vertaald label A."
+          }
+        }
+      },
+      "value": "a"
+    }
+  ]
+}
