@@ -6,11 +6,13 @@ from .checkbox import Checkbox
 from .children import Children
 from .content import Content
 from .cosign import CosignV1, CosignV2
+from .currency import Currency
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
     # Form fields
     "Checkbox",
+    "Currency",
     # Special fields
     "BSN",
     "CosignV2",
@@ -27,6 +29,7 @@ __all__ = [  # noqa: RUF022
 # fmt: off
 type AnyComponent = (
     Checkbox
+    | Currency
     # Special fields
     | BSN
     | CosignV2
