@@ -1,0 +1,79 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "deriveAddress": false,
+  "description": "",
+  "errors": {
+    "required": "Geef email."
+  },
+  "faqItems": [
+    {
+      "id": "123",
+      "label": "Extra info",
+      "content": "<p>Informational content</p>",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "label": "Extra info",
+            "content": "<p>Informatieinhoud</p>"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "hideLabel": true,
+  "id": "yejak",
+  "isSensitiveData": true,
+  "key": "someAddressNL",
+  "label": "Some AddressNL",
+  "layout": "doubleColumn",
+  "openForms": {
+    "components": {
+      "city": {
+        "validate": {"pattern": ""},
+        "translatedErrors": {
+          "nl": {
+            "pattern": ""
+          }
+        },
+        "errors": null
+      },
+      "postcode": {
+        "validate": {"pattern": ""},
+        "translatedErrors": {
+          "nl": {
+            "pattern": ""
+          }
+        },
+        "errors": null
+      }
+    },
+    "translations": {
+      "nl": {
+        "label": "foo"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Geef email."
+    }
+  },
+  "type": "addressNL",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
