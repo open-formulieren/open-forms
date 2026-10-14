@@ -1,4 +1,5 @@
-import {APIError, NotAuthenticatedError, ValidationErrors} from './exception';
+import {APIError, NotAuthenticated, ValidationError} from 'errors';
+
 import {onResponseHook} from './session-expiry';
 
 export const API_BASE_URL = process.env.API_BASE_URL;
@@ -37,20 +38,15 @@ const throwForStatus = (response, responseData = null, throwOn400 = true) => {
   switch (response.status) {
     case 400: {
       if (throwOn400) {
-        throw new ValidationErrors(
-          'Call did not validate on the backend',
-          responseData?.invalidParams
-        );
+        throw new ValidationError('Call did not validate on the backend', responseData);
       }
       break;
     }
     case 401: {
-      throw new NotAuthenticatedError('User not or no longer authenticated');
-      break;
+      throw new NotAuthenticated('User not or no longer authenticated');
     }
     default: {
       throw new APIError(`Error ${response.status} from backend`, response.status);
-      break;
     }
   }
 };
@@ -131,5 +127,4 @@ const apiDelete = async (url, csrftoken) => {
   return response;
 };
 
-export {ValidationErrors};
 export {get, post, put, patch, apiDelete, apiCall};

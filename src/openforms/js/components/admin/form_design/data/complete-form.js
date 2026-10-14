@@ -1,7 +1,7 @@
 import {produce} from 'immer';
 
 import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
-import {ValidationErrors} from 'utils/exception';
+import {ValidationError} from 'errors';
 import {put} from 'utils/fetch';
 
 import {createFormVersion} from './versions';
@@ -299,7 +299,7 @@ const saveCompleteForm = async (state, csrftoken) => {
     newState = await saveForm(state, csrftoken);
   } catch (e) {
     // unknown, re-throw
-    if (e instanceof ValidationErrors) {
+    if (e instanceof ValidationError) {
       return [newState, e];
     }
     throw e;
