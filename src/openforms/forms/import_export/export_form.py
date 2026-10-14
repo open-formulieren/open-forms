@@ -66,7 +66,7 @@ def form_to_json(form_id: int, export_options: FormExportOptions) -> Mapping[str
     # The static variables should be created for each form
     form_variables = form.formvariable_set.filter(
         source=FormVariableSources.user_defined
-    )
+    ).order_by("pk")
 
     request = _get_mock_request()
     context = {
