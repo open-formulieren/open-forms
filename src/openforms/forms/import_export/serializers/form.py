@@ -1,6 +1,8 @@
 import random
 import string
 
+from django.urls import reverse
+
 import structlog
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
@@ -247,11 +249,11 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
 
         This helps prevent common import errors.
         """
-        # theme overrides cannot be imported, since the theme records/FKs have to
-        # exist in the target environment. Importing/exporting themes is also not
-        # possible at this time, so we reset the theme and admins need to update
-        # the imported form.
-        data["theme"] = ""
+        if theme := self.get_import_options.theme:
+            theme_url = reverse("api:themes-detail", args=[theme.uuid])
+            data["theme"] = theme_url
+        else:
+            data["theme"] = ""
 
     def set_category(self, data: FormData) -> None:
         """
@@ -259,12 +261,11 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
 
         This helps prevent common import errors.
         """
-        # we can only extract a category UUID from the URL here, but that requires
-        # an exact match and we currently don't provide import/export functionality
-        # for categories. Relying on ID/Name is not much better than guesswork either,
-        # so we always import forms with NO category at all to prevent import errors.
-        # See #1774 for one such example of an error.
-        data["category"] = ""
+        if category := self.get_import_options.category:
+            category_url = reverse("api:categories-detail", args=[category.uuid])
+            data["category"] = category_url
+        else:
+            data["category"] = ""
 
     @staticmethod
     def uniquify_slug(data: FormData, slug: str) -> None:
