@@ -1,6 +1,6 @@
 import re
 from abc import ABC, ABCMeta, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from itertools import chain
 from typing import override
 from uuid import UUID, uuid4
@@ -20,6 +20,7 @@ from openforms.config.models import MapTileLayer, MapWMSTileLayer
 from openforms.products.models import Product
 
 from ..models import Form
+from .constants import AdditionalFormConfigurationOptions
 
 
 class CombinedResourceMeta(type(ModelResource), ABCMeta):
@@ -267,3 +268,32 @@ class YiviAttributeGroupResource(BaseResource):
 
     def generate_identifier(self, row: dict[str, object]) -> UUID:
         return uuid4()
+
+
+type ImportExportResourceConfig = tuple[type[BaseResource], str]
+
+
+ADDITIONAL_FORM_CONFIGURATION_RESOURCES: Mapping[
+    AdditionalFormConfigurationOptions,
+    ImportExportResourceConfig,
+] = {
+    AdditionalFormConfigurationOptions.product: (ProductResource, "product"),
+    AdditionalFormConfigurationOptions.wms_tile_layers: (
+        WMSTileLayerResource,
+        "wmsTileLayers",
+    ),
+    AdditionalFormConfigurationOptions.wmts_tile_layers: (
+        WMTSTileLayerResource,
+        "wmtsTileLayers",
+    ),
+    AdditionalFormConfigurationOptions.yivi_attribute_groups: (
+        YiviAttributeGroupResource,
+        "yiviAttributeGroups",
+    ),
+}
+"""
+Additional form configuration resources for import/export.
+
+1. The key is the additional form configuration option.
+2. The value is a tuple of (resource class, field name).
+"""

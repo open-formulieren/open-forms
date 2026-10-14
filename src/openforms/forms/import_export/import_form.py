@@ -1,9 +1,8 @@
 import json
 import zipfile
-from collections.abc import Collection, MutableMapping
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Protocol, Required, TypedDict
-from uuid import UUID
+from typing import Any, Required, TypedDict
 
 from django.conf import settings
 from django.db import transaction
@@ -30,6 +29,7 @@ from ..models import (
     FormDefinition,
 )
 from .datastructures import FormImportOptions
+from .import_resources import import_additional_form_configuration_data
 from .serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -44,6 +44,7 @@ from .typing import (
     FormStepData,
     FormVariableData,
 )
+from .uuid_map import UUIDMap
 
 EXPECTED_RESOURCES = (
     "forms",
@@ -51,34 +52,11 @@ EXPECTED_RESOURCES = (
     "formSteps",
     "formVariables",
     "formLogic",
+    "product",
+    "wmsTileLayers",
+    "wmtsTileLayers",
+    "yiviAttributeGroups",
 )
-
-
-class HasUUID(Protocol):
-    uuid: UUID
-
-
-class UUIDMap:
-    def __init__(self):
-        self.mapping: MutableMapping[
-            str, str
-        ] = {}  # Keys are old UUIDs, values are new UUIDs.
-
-    def apply_to_data(self, data: str) -> str:
-        """
-        Replace all old UUID's for their new counterpart in the data, and return the
-        updated data.
-        """
-        for old, new in self.mapping.items():
-            data = data.replace(old, new)
-        return data
-
-    def add(self, old_uuid: str | None, new_instance: HasUUID | None) -> None:
-        """
-        Add the old and new UUID's of an instance to the mapping.
-        """
-        if old_uuid and new_instance:
-            self.mapping[old_uuid] = str(new_instance.uuid)
 
 
 def _get_mock_request() -> HttpRequest:
@@ -130,6 +108,13 @@ def import_form_data(
         "is_import": True,
         "import_options": import_options,
     }
+
+    # Import additional data
+    import_additional_form_configuration_data(
+        resources=import_data,
+        import_options=import_options,
+        uuid_mapping=uuid_mapping,
+    )
 
     if forms_data := import_data.get("forms"):
         imported_form = _import_form_resource(
@@ -195,7 +180,8 @@ def _import_form_resource(
         deserialized.is_valid(raise_exception=True)
         imported_form: Form = deserialized.save()
 
-        uuid_mapping.add(old_uuid, deserialized.instance)
+        if instance := deserialized.instance:
+            uuid_mapping.add(old_uuid, instance.uuid)
     except ValidationError as e:
         raise e
 
@@ -227,7 +213,8 @@ def _import_form_definition_resources(
             deserialized.is_valid(raise_exception=True)
             form_definitions.append(deserialized.save())
 
-            uuid_mapping.add(old_uuid, deserialized.instance)
+            if instance := deserialized.instance:
+                uuid_mapping.add(old_uuid, instance.uuid)
         except ValidationError as e:
             raise e
 
@@ -251,7 +238,8 @@ def _import_form_step_resources(
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
 
-            uuid_mapping.add(old_uuid, deserialized.instance)
+            if instance := deserialized.instance:
+                uuid_mapping.add(old_uuid, instance.uuid)
         except ValidationError as e:
             raise e
 
@@ -315,7 +303,8 @@ def _import_form_logic_resources(
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
 
-            uuid_mapping.add(old_uuid, deserialized.instance)
+            if instance := deserialized.instance:
+                uuid_mapping.add(old_uuid, instance.uuid)
         except ValidationError as e:
             raise e
 
