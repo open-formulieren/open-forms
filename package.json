@@ -124,6 +124,7 @@
     "useTabs": false,
     "importOrder": [
       "^((components|hooks|utils)/(.*))|(errors)$",
+      "^@/.+",
       "^[./]"
     ],
     "importOrderSeparation": true,
