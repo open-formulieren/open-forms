@@ -5,6 +5,7 @@ import structlog
 from typing_extensions import deprecated
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.emails.utils import sanitize_content
 
 from ...api.serializers import FormSerializer
 from ...api.serializers.form import (
@@ -203,6 +204,41 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer[Form, FormData])
         return fields
 
 
+class FormRegistrationBackendImportSerializer(
+    FormRegistrationBackendSerializer,
+    BaseImportSerializer[FormRegistrationBackend, FormRegistrationData],
+):
+    def prepare_for_import(self, data: FormRegistrationData) -> None:
+        # We remove all unknown domains from the email templates
+        self.sanitize_email_templates(data)
+
+    @staticmethod
+    def sanitize_email_templates(data: FormRegistrationData) -> None:
+        """
+        Sanitize email registration plugin templates.
+
+        The email templates contain HTML and plain text content. This content could
+        contain hyperlinks, which could be malicious.
+
+        In various places, e.g. when filling out these fields in the admin, we use
+        validation that checks only explicitly allowed domains are used. To prevent
+        possible import errors, we sanitize the email templates before importing the
+        form.
+        """
+        if data.get("backend") != "email":
+            return
+
+        # Sanitize email registration backend email templates
+        options = data.get("options", {})
+        if template_html := options.get("email_content_template_html"):
+            assert isinstance(template_html, str)
+            options["email_content_template_html"] = sanitize_content(template_html)
+
+        if template_text := options.get("email_content_template_text"):
+            assert isinstance(template_text, str)
+            options["email_content_template_text"] = sanitize_content(template_text)
+
+
 class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
     excluded_form_configuration_removal = (
         FormConfigurationCleanup[FormData](
@@ -228,6 +264,9 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
             cleanup=clear_yivi_attribute_groups,
         ),
     )
+    registration_backends = FormRegistrationBackendImportSerializer(
+        many=True, required=False
+    )
 
     def prepare_for_import(self, data: FormData) -> None:
         if self.context.get("deactivate_form"):
@@ -235,6 +274,9 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
 
         self.set_category(data)
         self.set_theme(data)
+
+        # We remove all unknown domains from the email templates
+        self.sanitize_email_templates(data)
 
         # If there is a slug, make sure that it's unique
         if form_slug := data.get("slug"):
@@ -276,6 +318,46 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
         if Form.objects.filter(slug=slug).exists():
             suffix = get_random_string(length=6)
             data["slug"] = f"{slug}-{suffix}"
+
+    @staticmethod
+    def sanitize_email_templates(data: FormData) -> None:
+        """
+        Sanitize confirmation email templates.
+
+        The email templates contain HTML and plain text content. This content could
+        contain hyperlinks, which could be malicious.
+
+        In various places, e.g. when filling out these fields in the admin, we use
+        validation that checks only explicitly allowed domains are used. To prevent
+        possible import errors, we sanitize the email templates before importing the
+        form.
+        """
+        if (email_template := data.get("confirmation_email_template")) is None:
+            return
+
+        # Sanitize confirmation email templates
+        if content := email_template.get("content"):
+            assert isinstance(content, str)
+            email_template["content"] = sanitize_content(content)
+
+        if cosign_content := email_template.get("cosign_content"):
+            assert isinstance(cosign_content, str)
+            email_template["cosign_content"] = sanitize_content(cosign_content)
+
+        translations = email_template.get("translations", {})
+        assert isinstance(translations, dict)
+        for translation in translations.values():
+            assert isinstance(translation, dict)
+
+            if translation_content := translation.get("content"):
+                assert isinstance(translation_content, str)
+                translation["content"] = sanitize_content(translation_content)
+
+            if translation_cosign_content := translation.get("cosign_content"):
+                assert isinstance(translation_cosign_content, str)
+                translation["cosign_content"] = sanitize_content(
+                    translation_cosign_content
+                )
 
     def apply_backwards_compatibility(self, data: FormData) -> None:
         self.apply_backwards_compatibility_appointment_type(data)
