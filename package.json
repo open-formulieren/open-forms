@@ -63,6 +63,7 @@
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.13.13",
     "@bbt/bem": "^1.0.1",
+    "@open-formulieren/types": "^1.6.0",
     "@rolldown/plugin-babel": "^0.2.4",
     "@storybook/addon-docs": "10.6.1",
     "@storybook/addon-links": "10.6.1",
