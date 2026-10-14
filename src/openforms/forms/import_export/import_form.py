@@ -30,6 +30,7 @@ from ..models import (
     FormDefinition,
 )
 from .datastructures import FormImportOptions
+from .import_resources import import_additional_form_configuration_data
 from .serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -51,6 +52,10 @@ EXPECTED_RESOURCES = (
     "formSteps",
     "formVariables",
     "formLogic",
+    "product",
+    "wmsTileLayers",
+    "wmtsTileLayers",
+    "yiviAttributeGroups",
 )
 
 
@@ -97,6 +102,13 @@ def import_form_data(
         "is_import": True,
         "import_options": import_options,
     }
+
+    # Import additional data
+    import_additional_form_configuration_data(
+        resources=import_data,
+        import_options=import_options,
+        uuid_mapping=uuid_mapping,
+    )
 
     if forms_data := import_data.get("forms"):
         imported_form = _import_form_resource(
