@@ -653,6 +653,8 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(len(form_variables), 2)
         self.assertEqual(len(form_definitions), 1)
 
+        # we expect deterministic ordering
+        self.assertEqual(form_variables[0]["key"], "variable_with_demo_prefill")
         # Both variables should have empty prefill data
         self.assertEqual(form_variables[0]["prefill_plugin"], "")
         self.assertEqual(form_variables[0]["prefill_attribute"], "")
