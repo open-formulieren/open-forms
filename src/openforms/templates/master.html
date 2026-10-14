@@ -89,7 +89,7 @@
         {% include "includes/page-footer.html" %}
     {% endblock %}
 
-    {% vite_asset 'src/openforms/js/public.js' %}
+    {% vite_asset 'src/openforms/js/public.ts' %}
     {% block extra_js %}{% endblock %}
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_bottom.html" with analytics_varname=analytics_varname %}
