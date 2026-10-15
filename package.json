@@ -14,8 +14,8 @@
     "start": "vite dev",
     "makemessages": "formatjs extract",
     "compilemessages": "formatjs compile",
-    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
-    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
+    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{ts,tsx,js,scss,mdx}'",
+    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{ts,tsx,js,scss,mdx}'",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --webpack-stats-json",
     "postinstall": "patch-package"
