@@ -72,7 +72,7 @@ def _get_mock_request() -> HttpRequest:
 
 @transaction.atomic
 def import_form(
-    import_file: Path,
+    import_file: Path | str,
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:

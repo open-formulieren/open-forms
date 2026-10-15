@@ -1,5 +1,6 @@
 import zipfile
 from datetime import date
+from pathlib import Path
 from uuid import uuid4
 
 from django import forms
@@ -136,18 +137,20 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
         import_file = form.cleaned_data["file"]
         is_bulk_import = self.get_is_bulk_import(import_file)
 
+        import_options = FormImportOptions(
+            form_configuration=form.cleaned_data["form_configuration"],
+            additional_form_configuration=form.cleaned_data[
+                "additional_form_configuration"
+            ],
+            theme=form.cleaned_data["theme"],
+            category=form.cleaned_data["category"],
+        )
+
         if not is_bulk_import:
             try:
                 import_form(
                     import_file,
-                    FormImportOptions(
-                        form_configuration=form.cleaned_data["form_configuration"],
-                        additional_form_configuration=form.cleaned_data[
-                            "additional_form_configuration"
-                        ],
-                        theme=form.cleaned_data["theme"],
-                        category=form.cleaned_data["category"],
-                    ),
+                    import_options,
                 )
             except ValidationError as exc:
                 messages.error(
@@ -156,8 +159,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
                 )
                 return super().form_invalid(form)
         else:
-            # TODO pass import options along
-            self._bulk_import_forms(import_file)
+            self._bulk_import_forms(import_file, import_options)
 
         return super().form_valid(form)
 
@@ -171,11 +173,24 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
             "The bulk import is being processed! The imported forms will soon be available."
         )
 
-    def _bulk_import_forms(self, import_file):
+    def _bulk_import_forms(self, import_file: Path, import_options: FormImportOptions):
         name = f"imports/import_forms_{uuid4()}.zip"
         filename = private_media_storage.save(name, import_file)
 
-        process_forms_import.delay(filename, self.request.user.id)
+        process_forms_import.delay(
+            filename,
+            self.request.user.id,
+            import_options={
+                "form_configuration": import_options.form_configuration,
+                "additional_form_configuration": import_options.additional_form_configuration,
+                "theme_uuid": str(import_options.theme.uuid)
+                if import_options.theme
+                else None,
+                "category_uuid": str(import_options.category.uuid)
+                if import_options.category
+                else None,
+            },
+        )
 
 
 @method_decorator(staff_member_required, name="dispatch")
