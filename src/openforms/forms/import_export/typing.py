@@ -18,6 +18,15 @@ class FormExportOptionsData(TypedDict, total=False):
     additional_form_configuration: Sequence[AdditionalFormConfigurationOptions]
 
 
+# This is needed for the form bulk import Celery task.
+# Any other place where import options are needed should use FormImportOptions.
+class FormImportOptionsData(TypedDict, total=False):
+    form_configuration: Sequence[FormConfigurationOptions]
+    additional_form_configuration: Sequence[AdditionalFormConfigurationOptions]
+    theme_uuid: str | None
+    category_uuid: str | None
+
+
 class FormRegistrationData(TypedDict, total=False):
     key: str
     name: str
