@@ -94,6 +94,8 @@ include = [
     "src/openforms/translations/tests/test_subprocesses.py",
     "src/openforms/translations/tests/test_tasks.py",
     "src/openforms/translations/tests/test_views.py",
+    # Initial submission data
+    "src/openforms/initial_data/",
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
