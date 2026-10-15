@@ -245,6 +245,7 @@ INSTALLED_APPS = [
     "openforms.contrib.objects_api",
     "openforms.dmn",
     "openforms.dmn.contrib.camunda",
+    "openforms.initial_data",
     "openforms.registrations",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
