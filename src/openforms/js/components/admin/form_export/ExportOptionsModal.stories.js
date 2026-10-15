@@ -1,7 +1,8 @@
-import {FormDecorator} from '@/sb-decorators';
 import {expect, fn, userEvent, within} from 'storybook/test';
 
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
+
+import {FormDecorator} from '@/sb-decorators';
 
 import ExportOptionsModal from './ExportOptionsModal';
 

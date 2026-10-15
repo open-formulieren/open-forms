@@ -14,8 +14,8 @@
     "start": "vite dev",
     "makemessages": "formatjs extract",
     "compilemessages": "formatjs compile",
-    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
-    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
+    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{ts,tsx,js,scss,mdx}'",
+    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{ts,tsx,js,scss,mdx}'",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --webpack-stats-json",
     "postinstall": "patch-package"
@@ -63,6 +63,7 @@
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.13.13",
     "@bbt/bem": "^1.0.1",
+    "@open-formulieren/types": "^1.6.0",
     "@rolldown/plugin-babel": "^0.2.4",
     "@storybook/addon-docs": "10.6.1",
     "@storybook/addon-links": "10.6.1",
@@ -124,6 +125,7 @@
     "useTabs": false,
     "importOrder": [
       "^((components|hooks|utils)/(.*))|(errors)$",
+      "^@/.+",
       "^[./]"
     ],
     "importOrderSeparation": true,

@@ -42,7 +42,7 @@ class StaticFormVariablesView(ListMixin, APIView):
             "List the registration static variables that will be associated with every form"
         ),
         responses={
-            200: FormVariableSerializer(many=True),
+            200: RegistrationPluginVariablesSerializer(many=True),
             403: ExceptionSerializer,
         },
     ),
