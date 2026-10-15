@@ -1,5 +1,6 @@
 from collections.abc import Sequence
-from typing import ClassVar, TypedDict
+from typing import ClassVar, NotRequired, TypedDict
+from uuid import uuid4
 
 from django.db.models import Model
 
@@ -102,3 +103,21 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
     @property
     def get_export_options(self) -> FormExportOptions:
         return self.context["export_options"]
+
+
+class ImportData(TypedDict):
+    uuid: NotRequired[str]
+
+
+class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
+    def to_internal_value(self, data: DT) -> DT:
+        data_copy = data.copy()
+
+        # When importing an existing instance, we should not overwrite the uuid.
+        # Furthermore, some model types don't have an uuid field, so we should only set
+        # the uuid if the model has the expected field.
+        has_uuid_field = "uuid" in self.fields
+        if not self.instance and has_uuid_field:
+            data_copy["uuid"] = str(uuid4())
+
+        return super().to_internal_value(data_copy)

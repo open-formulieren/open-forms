@@ -10,15 +10,21 @@ from ..datastructures import (
 from ..typing import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
-    FormDefinitionExportRepresentation,
+    FormDefinitionData,
 )
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
-def clear_wms_tile_layers(representation: FormDefinitionExportRepresentation):
+def clear_wms_tile_layers(data: FormDefinitionData):
+    """
+    Remove WMS (information) tile layers from the form definition.
+
+    :param data: FormDefinitionData The Form definition data as dict. This could be
+    either the representation of data to be exported or data to be imported.
+    """
     from typing import cast  # noqa: TID251
 
-    for component in iter_components(representation.get("configuration", {})):
+    for component in iter_components(data.get("configuration", {})):
         if component["type"] != "map":
             continue
 
@@ -29,10 +35,16 @@ def clear_wms_tile_layers(representation: FormDefinitionExportRepresentation):
             overlay["layers"] = []
 
 
-def clear_wmts_tile_layers(representation: FormDefinitionExportRepresentation):
+def clear_wmts_tile_layers(data: FormDefinitionData):
+    """
+    Remove WMTS (background) tile layers from the form definition.
+
+    :param data: FormDefinitionData The Form definition data as dict. This could be
+    either the representation of data to be exported or data to be imported.
+    """
     from typing import cast  # noqa: TID251
 
-    for component in iter_components(representation.get("configuration", {})):
+    for component in iter_components(data.get("configuration", {})):
         if component["type"] != "map" or "tileLayerIdentifier" not in component:
             continue
 
@@ -41,10 +53,14 @@ def clear_wmts_tile_layers(representation: FormDefinitionExportRepresentation):
         component["tileLayerIdentifier"] = ""
 
 
-def remove_prefill_from_component_configuration(
-    representation: FormDefinitionExportRepresentation,
-):
-    for component in iter_components(representation.get("configuration", {})):
+def remove_prefill_from_component_configuration(data: FormDefinitionData):
+    """
+    Remove prefill configuration from the form definition components.
+
+    :param data: FormDefinitionData The Form definition data as dict. This could be
+    either the representation of data to be exported or data to be imported.
+    """
+    for component in iter_components(data.get("configuration", {})):
         if "prefill" not in component:
             return
         component["prefill"]["plugin"] = ""
@@ -53,20 +69,20 @@ def remove_prefill_from_component_configuration(
 
 class FormDefinitionExportSerializer(
     FormDefinitionSerializer,
-    BaseExportSerializer[FormDefinition, FormDefinitionExportRepresentation],
+    BaseExportSerializer[FormDefinition, FormDefinitionData],
 ):
     excluded_additional_form_configuration_cleanup = (
-        AdditionalFormConfigurationCleanup[FormDefinitionExportRepresentation](
+        AdditionalFormConfigurationCleanup[FormDefinitionData](
             option=AdditionalFormConfigurationOptions.wms_tile_layers,
             cleanup=clear_wms_tile_layers,
         ),
-        AdditionalFormConfigurationCleanup[FormDefinitionExportRepresentation](
+        AdditionalFormConfigurationCleanup[FormDefinitionData](
             option=AdditionalFormConfigurationOptions.wmts_tile_layers,
             cleanup=clear_wmts_tile_layers,
         ),
     )
     excluded_form_configuration_cleanup = (
-        FormConfigurationCleanup[FormDefinitionExportRepresentation](
+        FormConfigurationCleanup[FormDefinitionData](
             option=FormConfigurationOptions.prefill,
             cleanup=remove_prefill_from_component_configuration,
         ),
@@ -86,8 +102,8 @@ class FormDefinitionExportSerializer(
     def remove_sensitive_content(
         self,
         instance: FormDefinition,
-        representation: FormDefinitionExportRepresentation,
-    ) -> FormDefinitionExportRepresentation:
+        representation: FormDefinitionData,
+    ) -> FormDefinitionData:
         representation = super().remove_sensitive_content(instance, representation)
 
         if (form := self.context.get("form", None)) is None:
@@ -105,3 +121,10 @@ class FormDefinitionExportSerializer(
                 component["defaultValue"] = ""
 
         return representation
+
+
+class FormDefinitionImportSerializer(
+    FormDefinitionSerializer,
+    BaseImportSerializer[FormDefinition, FormDefinitionData],
+):
+    pass
