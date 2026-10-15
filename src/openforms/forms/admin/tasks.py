@@ -25,10 +25,10 @@ from ..import_export.service import (
     FormExportOptions,
     FormExportOptionsData,
     export_form,
+    import_form,
 )
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import import_form
 
 logger = structlog.stdlib.get_logger(__name__)
 

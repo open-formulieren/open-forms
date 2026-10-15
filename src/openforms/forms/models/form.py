@@ -715,7 +715,7 @@ class Form(models.Model):
     def restore_old_version(
         self, form_version_uuid: str, user: User | None = None
     ) -> None:
-        from ..utils import import_form_data
+        from ..import_export.service import import_form_data
         from .form_version import FormVersion
 
         # we use the window function to find the record with its index in _all_
