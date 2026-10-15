@@ -65,7 +65,14 @@ class FormVariableExportSerializer(
 
 
 class FormVariableImportSerializer(
-    FormVariableSerializer,
-    BaseImportSerializer[FormVariable, FormVariableData],
+    FormVariableSerializer, BaseImportSerializer[FormVariable, FormVariableData]
 ):
-    pass
+    def prepare_for_import(self, instance: FormVariableData) -> FormVariableData:
+        if "service_fetch_configuration" in instance:
+            # The transferring between systems case is very tricky better not import
+            # these, we don't know where this came from. Services and ids may point to
+            # different things in different OF instances. Even when restoring a form
+            # version, we don't know if the service is the same as it was before.
+            del instance["service_fetch_configuration"]
+
+        return instance

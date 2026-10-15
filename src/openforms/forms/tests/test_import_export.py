@@ -1992,7 +1992,8 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         converters = {"textfield": {"add_foo": add_foo}}
         with patch(
-            "openforms.forms.import_export.import_form.CONVERTERS", new=converters
+            "openforms.forms.import_export.serializers.form_definition.CONVERTERS",
+            new=converters,
         ):
             import_form(import_file=self.filepath)
 
@@ -3100,6 +3101,65 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(
                 rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
             )
+
+    def test_import_create_component_variable_from_form_step(self):
+        form = FormFactory.create(name="Form")
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "checkbox", "label": "Checkbox", "key": "checkbox"}
+                ]
+            },
+        )
+
+        # Form variables
+        FormVariableFactory.create(
+            form=form,
+            name="user_defined",
+            key="user_defined",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.string,
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(),
+        )
+
+        # Remove the original form and form variables
+        form.delete()
+        self.assertEqual(FormVariable.objects.count(), 0)
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            form_variables = json.loads(f.read("formVariables.json"))
+            # Assert that the import files only contain the user-defined variable
+            self.assertEqual(len(form_variables), 1)
+            self.assertEqual(form_variables[0]["name"], "user_defined")
+
+        # Import form
+        import_form(import_file=self.filepath)
+        imported_form = Form.objects.last()
+
+        # The form should have been imported with the user-defined variable and the
+        # generated component variable.
+        imported_variables = list(imported_form.formvariable_set.all())
+        self.assertEqual(len(imported_variables), 2)
+        self.assertEqual(imported_variables[0].name, "Checkbox")
+        self.assertEqual(imported_variables[1].name, "user_defined")
 
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
