@@ -87,10 +87,8 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
     """
     Unique component identifier, within the configuration.
 
-    Not relevant for the backend at all, hence the empty default value.
-
-    TODO: it's use may be obsolete now with the formiojs removal - check if it can be
-    removed in the typescript types (implying it's not used by renderer or builder).
+    Not relevant for the backend at all, hence the empty default value, but it is used
+    as input for the React ``key`` in the renderer.
     """
     key: Key
     """
