@@ -176,7 +176,51 @@ const FormContext = React.createContext<FormContextType>({
 });
 FormContext.displayName = 'FormContext';
 
-interface FormLogicContextType {}
+interface ServiceFetchConfiguration {
+  readonly id: number;
+  name: string;
+  service: string;
+  readonly serviceUuid: string;
+  path?: string;
+  method?: 'GET' | 'POST';
+  headers?: JSONObject;
+  queryParams?: {[k: string]: string[]};
+  body?: JSONObject | null;
+  dataMappingType?: '' | 'JsonLogic' | 'jq';
+  mappingExpression?: JSONValue;
+  cacheTimeout?: number | null;
+}
+
+interface FormLogicContextType {
+  services: {
+    readonly url: string;
+    uuid: string;
+    slug: string;
+    label: string;
+    apiRoot: string;
+    apiType:
+      | 'ac'
+      | 'nrc'
+      | 'zrc'
+      | 'ztc'
+      | 'drc'
+      | 'brc'
+      | 'rc'
+      | 'kic'
+      | 'oc'
+      | 'ic'
+      | 'pc'
+      | 'ptc'
+      | 'vrc'
+      | 'tc'
+      | 'bc'
+      | 'cmc'
+      | 'kc'
+      | 'orc';
+  }[];
+  serviceFetchConfigurations: ServiceFetchConfiguration[];
+  onServiceFetchAdd: (variableName: string, values: ServiceFetchConfiguration) => void;
+}
 
 const FormLogicContext = React.createContext<FormLogicContextType>({
   services: [],
