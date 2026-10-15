@@ -732,7 +732,7 @@ class Form(models.Model):
     def restore_old_version(
         self, form_version_uuid: str, user: User | None = None
     ) -> None:
-        from ..import_export.service import import_form_data
+        from ..import_export.service import FormImportOptions, import_form_data
         from .form_version import FormVersion
 
         # we use the window function to find the record with its index in _all_
@@ -766,7 +766,10 @@ class Form(models.Model):
         assert len(forms) == 1, "expected exactly one form in the old version"
         form_data = forms[0]
 
-        restored_form = import_form_data(old_version_data, form_version.form)
+        # TODO set the correct import options for version restore
+        restored_form = import_form_data(
+            old_version_data, FormImportOptions(), form_version.form
+        )
 
         # The FormImportSerializer sets the 'active' state to False by default. We should
         # restore it to the state it had before.

@@ -24,6 +24,7 @@ from openforms.utils.urls import build_absolute_uri
 from ..import_export.service import (
     FormExportOptions,
     FormExportOptionsData,
+    FormImportOptions,
     export_form,
     import_form,
 )
@@ -93,9 +94,11 @@ def process_forms_import(import_file: str, user_id: int) -> None:
         with zipfile.ZipFile(private_media_storage.open(import_file), "r") as zip_file:
             for zipped_form_file in zip_file.infolist():
                 try:
+                    # TODO set the correct import options for bulk import
                     # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
                     import_form(
-                        zip_file.extract(member=zipped_form_file, path=temp_dir)
+                        zip_file.extract(member=zipped_form_file, path=temp_dir),
+                        FormImportOptions(),
                     )
                 except ValidationError as exc:
                     filename = Path(zipped_form_file.filename).name

@@ -67,6 +67,13 @@ class FormVariableExportSerializer(
 class FormVariableImportSerializer(
     FormVariableSerializer, BaseImportSerializer[FormVariable, FormVariableData]
 ):
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup[FormVariableData](
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_variable,
+        ),
+    )
+
     def prepare_for_import(self, instance: FormVariableData) -> FormVariableData:
         if "service_fetch_configuration" in instance:
             # The transferring between systems case is very tricky better not import

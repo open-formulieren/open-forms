@@ -29,6 +29,7 @@ from ..forms.form import FormImportForm
 from ..import_export.service import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
+    FormImportOptions,
     import_form,
 )
 from ..models import Form, FormsExport, FormSubmissionStatistics
@@ -137,7 +138,17 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
 
         if not is_bulk_import:
             try:
-                import_form(import_file)
+                import_form(
+                    import_file,
+                    FormImportOptions(
+                        form_configuration=form.cleaned_data["form_configuration"],
+                        additional_form_configuration=form.cleaned_data[
+                            "additional_form_configuration"
+                        ],
+                        theme=form.cleaned_data["theme"],
+                        category=form.cleaned_data["category"],
+                    ),
+                )
             except ValidationError as exc:
                 messages.error(
                     self.request,
@@ -145,6 +156,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
                 )
                 return super().form_invalid(form)
         else:
+            # TODO pass import options along
             self._bulk_import_forms(import_file)
 
         return super().form_valid(form)
