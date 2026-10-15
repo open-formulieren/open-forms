@@ -1,6 +1,7 @@
 import uuid as _uuid
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -20,13 +21,16 @@ class Product(models.Model):
         default=_uuid.uuid4,
         help_text=_("Globally unique identifier"),
         unique=True,
+        blank=True,
     )
-    name = models.CharField(_("name"), max_length=50)
+    name = models.CharField(_("name"), max_length=50, blank=True)
     price = models.DecimalField(
         _("price"),
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0.01"))],
+        blank=True,
+        null=True,
     )
 
     information = CSPPostProcessedWYSIWYGField(
@@ -39,9 +43,67 @@ class Product(models.Model):
         ),
     )
 
+    #
+    # Open Product related fields
+    #
+    producttype = models.UUIDField(
+        _("Producttype"),
+        help_text=_("Open Product producttype UUID"),
+        blank=True,
+        null=True,
+    )
+
     class Meta:
         verbose_name = _("Product")
         verbose_name_plural = _("Products")
+        constraints = [
+            # Price field may only be blank when producttype is set
+            models.CheckConstraint(
+                name="price_not_blank_without_producttype",
+                check=(
+                    models.Q(producttype__isnull=True, price__isnull=False)
+                    | models.Q(
+                        producttype__isnull=False,
+                        price__isnull=True,
+                    )
+                ),
+                violation_error_message=_(
+                    "Price cannot be blank without a producttype."
+                ),
+            ),
+        ]
 
     def __str__(self):
         return self.name
+
+    def save(self, **kwargs) -> None:
+        if not self.uuid and self.producttype:
+            self.uuid = self.producttype
+
+        return super().save(**kwargs)
+
+    def clean(self) -> None:
+        super().clean()
+
+        errors = []
+        if self.producttype and self.price:
+            errors.append(
+                _("Price cannot be filled in for products with a producttype.")
+            )
+        elif not self.producttype and not self.price:
+            errors.append(_("Price is required for products without a producttype."))
+
+        if self.producttype and self.name:
+            errors.append(
+                _("Name cannot be filled in for products with a producttype.")
+            )
+
+        if (self.uuid and self.producttype) and self.uuid != self.producttype:
+            errors.append(
+                _(
+                    "Product UUID cannot be different from producttype when a producttype is specified."
+                )
+            )
+
+        if errors:
+            raise ValidationError(errors)
