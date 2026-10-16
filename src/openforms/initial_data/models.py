@@ -3,7 +3,7 @@ from collections.abc import Callable
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -61,16 +61,19 @@ class InitialSubmissionData(models.Model):
         ),
     )
 
-    ttl = models.PositiveSmallIntegerField(
-        _("ttl (in hours)"),
+    ttl = models.DurationField(
+        _("ttl"),
         help_text=_(
-            "Time-to-live in hours. The expiry date is calculated from the creation "
+            "Time-to-live. The expiry date is calculated from the creation "
             "timestamp plus the TTL. After this moment, the submission data will be "
             "deleted. A submission should be started within this TTL."
         ),
         # 1 day TTL max - this is a conservative default. If feedback comes in that
         # this is too low, we can definitely reconsider.
-        validators=[MaxValueValidator(24)],
+        validators=[
+            MinValueValidator(timedelta(seconds=1)),
+            MaxValueValidator(timedelta(days=1)),
+        ],
     )
 
     # audit/metadata
@@ -106,4 +109,4 @@ class InitialSubmissionData(models.Model):
 
     @property
     def expiry_date(self) -> datetime:
-        return self.created_on + timedelta(hours=self.ttl)
+        return self.created_on + self.ttl
