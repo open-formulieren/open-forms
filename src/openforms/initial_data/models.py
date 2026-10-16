@@ -61,8 +61,8 @@ class InitialSubmissionData(models.Model):
         ),
     )
 
-    ttl = models.PositiveSmallIntegerField(
-        _("ttl (in hours)"),
+    ttl = models.DurationField(
+        _("ttl"),
         help_text=_(
             "Time-to-live in hours. The expiry date is calculated from the creation "
             "timestamp plus the TTL. After this moment, the submission data will be "
@@ -70,7 +70,7 @@ class InitialSubmissionData(models.Model):
         ),
         # 1 week TTL max - this is a conservative default. If feedback comes in that
         # this is too low, we can definitely reconsider.
-        validators=[MaxValueValidator(24 * 7)],
+        validators=[MaxValueValidator(timedelta(hours=24 * 7))],
     )
 
     # audit/metadata
@@ -106,4 +106,4 @@ class InitialSubmissionData(models.Model):
 
     @property
     def expiry_date(self) -> datetime:
-        return self.created_on + timedelta(hours=self.ttl)
+        return self.created_on + self.ttl

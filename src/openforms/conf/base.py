@@ -901,6 +901,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.authentication.tasks.update_saml_metadata",
         "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
     },
+    "cleanup-initial-data": {
+        "task": "openforms.initial_data.tasks.cleanup_expired_initial_data",
+        "schedule": crontab(minute=10, hour=5),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(

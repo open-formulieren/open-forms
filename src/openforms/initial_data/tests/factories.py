@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import factory
 import factory.fuzzy
 
@@ -13,8 +15,11 @@ class InitialSubmissionDataFactory(factory.django.DjangoModelFactory):
         choices=SupportedAuthAttributes
     )
     representee_auth_value = "XXXXXXXXX"
-    ttl = factory.fuzzy.FuzzyInteger(low=1, high=24 * 7)
+    ttl = factory.LazyAttribute(lambda o: timedelta(hours=o.ttl_hours))
     owner = factory.SubFactory(UserFactory)
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = "initial_data.InitialSubmissionData"
+
+    class Params:
+        ttl_hours = factory.fuzzy.FuzzyInteger(low=1, high=24 * 7)

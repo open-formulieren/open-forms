@@ -1,6 +1,7 @@
 from typing import override
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -57,11 +58,10 @@ class InitialSubmissionDataViewSet(
     def get_queryset(self) -> models.QuerySet[InitialSubmissionData]:
         """
         Only allow users to access records they own.
-
-        # TODO: would be nice if we can filter on expiry_date, but that's calculated in
-        Python.
         """
-        return InitialSubmissionData.objects.filter(owner=self.request.user)
+        return InitialSubmissionData.objects.annotate(
+            _expiry_date=models.F("created_on") + models.F("ttl")
+        ).filter(owner=self.request.user, _expiry_date__gte=timezone.now())
 
     @override
     def perform_create(self, serializer) -> None:
