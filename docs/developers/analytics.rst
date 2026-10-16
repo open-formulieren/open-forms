@@ -1,4 +1,4 @@
-.. _developers_sdk_analytics:
+.. _developers_analytics:
 
 ==============================
 Analytics/tracking integration
@@ -9,6 +9,7 @@ The SDK supports a couple of analytics providers out of the box:
 - SiteImprove
 - Matomo (formerly known as Piwik)
 - Google Analytics
+- Silktide
 
 These integrations rely on the typical integrations of each provider which require
 Javascript snippets to be embedded.
@@ -37,23 +38,29 @@ Google Analytics uses the ``window.ga`` global variable.
 
 Piwik PRO uses the ``_paq`` global variable.
 
+**Silktike**
+
+Silktide uses the ``window.silktide`` global variable.
+
 Adding other providers
 ======================
 
-We expose the object ``OpenForms.ANALYTICS_PROVIDERS`` in the SDK.
+The SDK exports the ``ANALYTICS_PROVIDERS`` object.
 
 You can add your custom provider to this or even delete integrations, for example:
 
 .. code-block:: js
 
-    OpenForms.ANALYTICS_PROVIDERS.custom = async (location, previousLocation) => {
+    import {ANALYTICS_PROVIDERS, OpenForm} from 'https://openforms.example.com/static/sdk/open-forms-sdk.mjs';
+
+    ANALYTICS_PROVIDERS.custom = async (location, previousLocation) => {
         const navigatedFrom = previousLocation ?  ` from ${previousLocation.pathname}` : '';
         console.log(`Navigated to ${location.pathname}${from}`);
     };
 
     ...
 
-    const form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
+    const form = new OpenForm(targetNode, targetNode.dataset);
     form.init();
 
 .. note::

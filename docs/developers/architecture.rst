@@ -84,6 +84,6 @@ process of successfully filling out a form designed by a content editor.
 The SDK consumes the API served by the backend and has no knowledge of specific plugins
 implemented in the backend.
 
-The technical documentation can be found in :ref:`another section <developers_sdk_index>`.
+The technical documentation can be found via :ref:`another section <developers_sdk>`.
 
 .. _Common Ground: https://commonground.nl
