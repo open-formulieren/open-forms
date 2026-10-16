@@ -29,7 +29,7 @@ class InitialSubmissionDataModelTests(TestCase):
 
     @time_machine.travel("2026-01-01T00:00:00+00:00", tick=False)
     def test_expiry_date_calculation(self):
-        initial_data = InitialSubmissionDataFactory.create(ttl=3)
+        initial_data = InitialSubmissionDataFactory.create(ttl_hours=3)
 
         self.assertEqual(
             initial_data.expiry_date, datetime(2026, 1, 1, 3, 0, 0, tzinfo=UTC)
