@@ -51,6 +51,8 @@ class InitialSubmissionDataViewSet(
     permission_classes = (permissions.DjangoModelPermissions,)
     queryset = InitialSubmissionData.objects.none()
     serializer_class = InitialSubmissionDataSerializer
+    lookup_field = "uuid"
+    lookup_url_kwarg = "uuid"
 
     def get_queryset(self) -> models.QuerySet[InitialSubmissionData]:
         """
