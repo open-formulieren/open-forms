@@ -16,6 +16,7 @@ See the table of contents below for articles documenting use cases.
    embedding
    analytics
    public-api
+   initial-data
 
 .. tip::
 
