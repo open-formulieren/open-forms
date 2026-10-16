@@ -9475,9 +9475,9 @@ components:
         ttl:
           type: integer
           maximum: 168
-          minimum: 0
+          minimum: 1
           writeOnly: true
-          title: Ttl (in hours)
+          title: TTL (in hours)
           description: Time-to-live in hours. The expiry date is calculated from the
             creation timestamp plus the TTL. After this moment, the submission data
             will be deleted. A submission should be started within this TTL.
