@@ -30,6 +30,20 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     verbose_name = _("Objects API")
     options = ObjectsAPIOptionsSerializer
 
+    def get_vendor_hint(self, options: ObjectsAPIOptions) -> str | None:
+        group = options.get("objects_api_group") if isinstance(options, dict) else None
+        if isinstance(group, str):
+            from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
+            group = ObjectsAPIGroupConfig.objects.filter(identifier=group).first()
+        elif isinstance(group, int):
+            from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
+            group = ObjectsAPIGroupConfig.objects.filter(pk=group).first()
+        if group and getattr(group, "objects_service", None):
+            return group.objects_service.api_root
+        return None
+
     def verify_initial_data_ownership(
         self, submission: Submission, prefill_options: ObjectsAPIOptions
     ) -> None:

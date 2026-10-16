@@ -17,7 +17,7 @@ from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.submissions.models import Submission
 from openforms.typing import StrOrPromise
 
-from ...base import BasePlugin
+from ...base import BasePlugin, Options
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
@@ -36,6 +36,14 @@ def get_attributes_cls():
 class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal: BRP Personen Bevragen")
     requires_auth = (AuthAttribute.bsn,)
+
+    def get_vendor_hint(self, options: Options) -> str | None:
+        config = HaalCentraalConfig.get_solo()
+        return (
+            config.brp_personen_service.api_root
+            if config.brp_personen_service
+            else None
+        )
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
