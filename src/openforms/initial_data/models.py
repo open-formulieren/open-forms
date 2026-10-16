@@ -17,6 +17,11 @@ from .constants import SupportedAuthAttributes
 class InitialSubmissionData(models.Model):
     """
     Store initial submission information for a particular form.
+
+    .. warning:: Using this model beyond its initial scope (
+       :class:`openforms.authentication.views.RegistratorSubjectInfoView`) requires
+       careful re-evaluation of the security threat model. See also the developer docs
+       about seeding initial submission data.
     """
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
