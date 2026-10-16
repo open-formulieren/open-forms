@@ -3914,6 +3914,80 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/public/initial-data:
+    post:
+      operationId: public_initial_data_create
+      description: |-
+        Prepare initial submission data by sending the authentication details for a given form. The response contains the redirect URL for the user about to fill out the form.
+
+        We recommend keeping the TTL as low as possible to limit the duration that plain text person/company identifiers are stored in the database.
+      summary: Create initial submission data
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialSubmissionData'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InitialSubmissionData'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InitialSubmissionData'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitialSubmissionData'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/public/initial-data/{uuid}:
+    get:
+      operationId: public_initial_data_retrieve
+      description: Look up existing initial submission data by UUID. The identifiers/data
+        are not returned, only the redirect URL and metadata. Only the original creator
+        can access the initial data.
+      summary: Retrieve initial submission data
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - public
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitialSubmissionData'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/reference-lists-tables/{service_slug}:
     get:
       operationId: reference_lists_tables_list
@@ -7098,6 +7172,14 @@ components:
             separate attribute groups.
       required:
       - name
+    AuthAttributeEnum:
+      enum:
+      - bsn
+      - kvk
+      type: string
+      description: |-
+        * `bsn` - BSN
+        * `kvk` - KvK number
     AuthPlugin:
       type: object
       properties:
@@ -9411,6 +9493,63 @@ components:
       description: |-
         * `delete_permanently` - Submissions will be deleted
         * `make_anonymous` - Sensitive data within the submissions will be deleted
+    InitialSubmissionData:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        form:
+          type: string
+          format: uuid
+          writeOnly: true
+          title: Form to start
+          description: UUID of the form about to be started.
+        formUrl:
+          type: string
+          format: uri
+          writeOnly: true
+          title: Custom form url
+          description: URL where the form is embedded when this is different from
+            Open Forms itself. If left blank, then the redirect URL will use Open
+            Forms' own form detail page.
+          maxLength: 1000
+        representee:
+          allOf:
+          - $ref: '#/components/schemas/Representee'
+          writeOnly: true
+          description: Identification details for the representee on whose behalf
+            the form is about to be filled out.
+        ttl:
+          type: integer
+          maximum: 24
+          minimum: 0
+          writeOnly: true
+          title: Ttl (in hours)
+          description: Time-to-live in hours. The expiry date is calculated from the
+            creation timestamp plus the TTL. After this moment, the submission data
+            will be deleted. A submission should be started within this TTL.
+        redirectUrl:
+          type: string
+          format: uri
+          readOnly: true
+          description: URL to send the form submitter to, which will start the form
+            submission with the specified initial data/context. If `formUrl` was provided,
+            the resulting URL is based on it, otherwise the internal pages are used.
+        expiresAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when this initial data will no longer be usable.
+            It's calculated from the creation timestamp + the provided TTL.
+      required:
+      - expiresAt
+      - form
+      - redirectUrl
+      - representee
+      - ttl
+      - uuid
     Language:
       type: object
       properties:
@@ -10691,6 +10830,31 @@ components:
       - pluginIdentifier
       - pluginVariables
       - pluginVerboseName
+    Representee:
+      type: object
+      properties:
+        authAttribute:
+          allOf:
+          - $ref: '#/components/schemas/AuthAttributeEnum'
+          title: Authentication attribute
+          description: |-
+            Attribute that will be provided for the submission authentication.
+
+            * `bsn` - BSN
+            * `kvk` - KvK number
+        value:
+          type: string
+          title: identifier
+          description: Value of the identifier for the submission authentication.
+          maxLength: 250
+        branchNumber:
+          type: string
+          title: KvK branch number
+          description: Optional branch number of the company identified by KVK. Note
+            that this may only be provided if the auth attribute is 'kvk'.
+      required:
+      - authAttribute
+      - value
     ResultEnum:
       enum:
       - failed
