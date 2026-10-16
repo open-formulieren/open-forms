@@ -21,6 +21,7 @@ from openforms.forms.api.viewsets import (
     FormVersionViewSet,
     FormViewSet,
 )
+from openforms.initial_data.api.viewsets import InitialSubmissionDataViewSet
 from openforms.products.api.viewsets import ProductViewSet
 from openforms.services.api.viewsets import ServiceViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
@@ -51,6 +52,9 @@ router.register(r"submissions", SubmissionViewSet)
 submissions_router = NestedSimpleRouter(router, r"submissions", lookup="submission")
 submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
+)
+router.register(
+    "public/initial-data", InitialSubmissionDataViewSet, basename="initial-data"
 )
 
 # products

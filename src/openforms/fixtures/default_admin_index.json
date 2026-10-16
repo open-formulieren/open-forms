@@ -83,6 +83,10 @@
         "slug": "inzendingen",
         "models": [
             [
+                "initial_data",
+                "initialsubmissiondata"
+            ],
+            [
                 "payments",
                 "submissionpayment"
             ],

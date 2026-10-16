@@ -245,6 +245,7 @@ INSTALLED_APPS = [
     "openforms.contrib.objects_api",
     "openforms.dmn",
     "openforms.dmn.contrib.camunda",
+    "openforms.initial_data",
     "openforms.registrations",
     "openforms.registrations.contrib.demo",
     "openforms.registrations.contrib.zgw_apis",
@@ -1109,6 +1110,8 @@ SPECTACULAR_SETTINGS = {
         "PaymentBackendEnum": "openforms.forms.api.v3.serializers.payment.get_payment_backend_choices",
     },
     "GET_LIB_DOC_EXCLUDES": "openforms.api.drf_spectacular.plumbing.get_lib_doc_excludes",
+    # workaround: https://github.com/tfranzel/drf-spectacular/issues/1543
+    "REDOC_DIST": "https://cdn.jsdelivr.net/npm/redoc@2.5.4",
 }
 
 #
