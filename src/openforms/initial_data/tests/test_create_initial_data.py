@@ -1,6 +1,7 @@
 import json
 from datetime import UTC, datetime
 
+from django.test import override_settings
 from django.urls import reverse
 
 import time_machine
@@ -159,3 +160,52 @@ class CreateInitialDataTests(APITestCase):
         )
         self.assertEqual(initial_data.representee_auth_value, "12345678")
         self.assertEqual(initial_data.representee_branch_number, "123456123456")
+
+    def test_create_initial_data_with_custom_url_not_in_cors_policy(self):
+        form = FormFactory.create()
+        data = {
+            "form": str(form.uuid),
+            "formUrl": "https://evil.com/some-form",
+            "representee": {
+                "authAttribute": SupportedAuthAttributes.bsn,
+                "value": "999993380",
+            },
+            "ttl": 1,
+        }
+
+        response = self.client.post(self.endpoint, data, headers=self.auth_header)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["name"], "formUrl")
+        self.assertEqual(error["code"], "invalid")
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_create_initial_data_with_custom_url(self):
+        form = FormFactory.create()
+        data = {
+            "form": str(form.uuid),
+            "formUrl": "https://example.com/some-cms-page/form/",
+            "representee": {
+                "authAttribute": SupportedAuthAttributes.bsn,
+                "value": "999993380",
+            },
+            "ttl": 1,
+        }
+
+        response = self.client.post(self.endpoint, data, headers=self.auth_header)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response_data = response.json()
+        initial_data = InitialSubmissionData.objects.get()
+
+        with self.subTest("redirect URL"):
+            redirect_url = furl(response_data["redirectUrl"])
+
+            self.assertEqual(redirect_url.host, "example.com")
+            self.assertEqual(redirect_url.path, "/some-cms-page/form/")
+            self.assertEqual(redirect_url.args["_of_action"], "init")
+            _params_str = redirect_url.args["_of_action_params"]
+            assert isinstance(_params_str, str)
+            action_params = json.loads(_params_str)
+            self.assertEqual(action_params["representee_ref"], str(initial_data.uuid))
