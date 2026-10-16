@@ -115,7 +115,7 @@ class InitialSubmissionDataSerializer(serializers.ModelSerializer):
         ),
     )
     ttl = serializers.IntegerField(
-        label=_("ttl (in hours)"),
+        label=_("TTL (in hours)"),
         required=True,
         help_text=_(
             "Time-to-live in hours. The expiry date is calculated from the creation "
