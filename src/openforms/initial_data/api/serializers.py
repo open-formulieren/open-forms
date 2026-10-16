@@ -1,25 +1,34 @@
 from datetime import datetime
+from typing import NotRequired, TypedDict, assert_never
 
+from django.core.exceptions import ValidationError
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
+from rest_framework.fields import get_error_detail
 from rest_framework.request import Request
 
+from openforms.contrib.kvk.validators import validate_branchNumber, validate_kvk
 from openforms.forms.models import Form
 from openforms.frontend import get_frontend_redirect_url
 from openforms.submissions.models import Submission
+from openforms.utils.validators import validate_bsn
 
 from ..constants import SupportedAuthAttributes
 from ..models import InitialSubmissionData
 
 
-class RepresenteeSerializer(serializers.ModelSerializer):
-    # TODO: run BSN/KVK number validation based on the specified auth attribute
-    # TODO: validate that the auth attribute makes sense in the context of the form? not
-    # sure we can do this actually, with the loose coupling we have...
+class RepresenteeData(TypedDict):
+    representee_auth_attribute: str
+    representee_auth_value: str
+    representee_branch_number: NotRequired[str]
+
+
+class RepresenteeSerializer(serializers.Serializer):
     auth_attribute = serializers.ChoiceField(
         source="representee_auth_attribute",
         choices=SupportedAuthAttributes.choices,
@@ -34,10 +43,57 @@ class RepresenteeSerializer(serializers.ModelSerializer):
         help_text=_("Value of the identifier for the submission authentication."),
         max_length=250,
     )
+    # preferably I'd use PolymorphicSerializer for this instead, but there's a bug in
+    # how the (empty) validated data is interpreted - see
+    # https://github.com/maykinmedia/drf-polymorphic/issues/15
+    branch_number = serializers.CharField(
+        source="representee_branch_number",
+        required=False,
+        allow_blank=True,
+        label=_("KvK branch number"),
+        help_text=_(
+            "Optional branch number of the company identified by KVK. Note that this "
+            "may only be provided if the auth attribute is 'kvk'."
+        ),
+    )
 
-    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
-        model = InitialSubmissionData
-        fields = ("auth_attribute", "value")
+    def validate(self, attrs: RepresenteeData) -> RepresenteeData:
+        attrs = super().validate(attrs)
+
+        attribute = SupportedAuthAttributes(attrs["representee_auth_attribute"])
+        value = attrs["representee_auth_value"]
+        branch_number = attrs.get("representee_branch_number", "")
+
+        errors: dict[str, list[ErrorDetail] | ErrorDetail] = {}
+
+        match attribute:
+            case SupportedAuthAttributes.bsn:
+                value_validator = validate_bsn
+            case SupportedAuthAttributes.kvk:
+                value_validator = validate_kvk
+                if branch_number:
+                    try:
+                        validate_branchNumber(branch_number)
+                    except ValidationError as exc:
+                        errors["branch_number"] = get_error_detail(exc)
+            case _:  # pragma: no cover
+                assert_never(attribute)
+
+        try:
+            value_validator(value)
+        except ValidationError as exc:
+            errors["value"] = get_error_detail(exc)
+
+        if branch_number and attribute != SupportedAuthAttributes.kvk:
+            errors["branch_number"] = ErrorDetail(
+                gettext("You may only provide a branch number for KvK attributes."),
+                code="invalid",
+            )
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return attrs
 
 
 class InitialSubmissionDataSerializer(serializers.ModelSerializer):
