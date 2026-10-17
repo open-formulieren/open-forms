@@ -250,3 +250,35 @@ class Prefill(FormioStruct):
 
 class Registration(FormioStruct):
     attribute: str
+
+
+# Structs for radio, selectboxes, select...
+
+type OptionTranslations = PropertyTranslations[Literal["label", "description"]]
+
+
+class OptionExtensions(FormioStruct):
+    translations: OptionTranslations | None = None
+
+
+class Option(FormioStruct):
+    value: str
+    label: str
+    description: str = ""
+    open_forms: OptionExtensions | None = None
+
+
+# Structs for FAQ items, which support translations as well
+
+type FAQItemTranslations = PropertyTranslations[Literal["label", "content"]]
+
+
+class FAQItemExtensions(FormioStruct):
+    translations: FAQItemTranslations | None = None
+
+
+class FAQItem(FormioStruct):
+    id: str
+    label: str
+    content: str
+    open_forms: FAQItemExtensions | None = None
