@@ -12,6 +12,7 @@ from .date import Date
 from .datetime import DateTime
 from .email import Email
 from .file import File
+from .iban import IBAN
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -23,6 +24,7 @@ __all__ = [  # noqa: RUF022
     "Checkbox",
     "Currency",
     # Special fields
+    "IBAN",
     "BSN",
     "CosignV2",
     "AddressNL",
@@ -46,6 +48,7 @@ type AnyComponent = (
     | Checkbox
     | Currency
     # Special fields
+    | IBAN
     | BSN
     | CosignV2
     | AddressNL
