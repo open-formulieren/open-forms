@@ -777,6 +777,13 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertEqual(data, {"skipped_subject_info": True})
 
     def test_view_loads_initial_submission_data_when_representee_ref_is_given(self):
+        log_records_ref_provided = TimelineLogProxy.objects.for_object(
+            self.form
+        ).filter_event("representee_ref_provided")
+        log_records_populated = TimelineLogProxy.objects.for_object(
+            self.form
+        ).filter_event("initial_data_auth_prepopulated")
+
         with self.subTest("citizen"):
             initial_data = InitialSubmissionDataFactory.create(
                 form=self.form,
@@ -794,6 +801,8 @@ class RegistratorSubjectInfoViewTests(WebTest):
             form = response.forms["registrator-subject"]
             self.assertEqual(form["mode"].value, ModeChoices.citizen)
             self.assertEqual(form["bsn"].value, "115736499")
+            self.assertEqual(log_records_ref_provided.count(), 1)
+            self.assertEqual(log_records_populated.count(), 1)
 
         with self.subTest("company without branch number"):
             initial_data = InitialSubmissionDataFactory.create(
@@ -814,6 +823,8 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertEqual(form["mode"].value, ModeChoices.company)
             self.assertEqual(form["kvk"].value, "12345678")
             self.assertEqual(form["kvk_branch_number"].value, "")
+            self.assertEqual(log_records_ref_provided.count(), 2)
+            self.assertEqual(log_records_populated.count(), 2)
 
         with self.subTest("company with branch number"):
             initial_data = InitialSubmissionDataFactory.create(
@@ -834,6 +845,14 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertEqual(form["mode"].value, ModeChoices.company)
             self.assertEqual(form["kvk"].value, "12345678")
             self.assertEqual(form["kvk_branch_number"].value, "123456123456")
+            self.assertEqual(log_records_ref_provided.count(), 3)
+            self.assertEqual(log_records_populated.count(), 3)
+
+        self.assertFalse(
+            TimelineLogProxy.objects.filter_event(
+                "initial_data_prepopulation_failed"
+            ).exists()
+        )
 
     def test_view_ignores_invalid_references(self):
         initial_data_other_form = InitialSubmissionDataFactory.create(
@@ -881,6 +900,15 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertEqual(form["bsn"].value, "")
             self.assertEqual(form["kvk"].value, "")
             self.assertEqual(form["kvk_branch_number"].value, "")
+
+        log_records_ref_provided = TimelineLogProxy.objects.filter_event(
+            "representee_ref_provided"
+        )
+        log_records_failed = TimelineLogProxy.objects.filter_event(
+            "initial_data_prepopulation_failed"
+        )
+        self.assertEqual(log_records_ref_provided.count(), 3)
+        self.assertEqual(log_records_failed.count(), 3)
 
 
 class LogoutTestViewTests(TestCase):
