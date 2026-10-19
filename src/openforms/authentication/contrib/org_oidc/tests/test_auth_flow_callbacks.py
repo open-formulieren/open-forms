@@ -109,3 +109,26 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         )
         self.assertEqual(callback_response.request.url, str(expected_url))
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+
+    def test_auth_flow_forwards_representee_ref_parameter(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
+        form = FormFactory.create(authentication_backend="org-oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="org-oidc", representee_ref="foo"
+        )
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"], username="admin", password="admin"
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        self.assertTemplateUsed(
+            callback_response, "of_authentication/registrator_subject_info.html"
+        )
+        self.assertEqual(callback_response.request.GET["representeeRef"], "foo")
