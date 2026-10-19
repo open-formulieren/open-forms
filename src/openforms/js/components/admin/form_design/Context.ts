@@ -83,6 +83,8 @@ interface FormContextType {
   formSteps: {
     uuid: string;
     slug: string;
+    name: string;
+    internalName: string;
     formDefinition: string;
     index: number;
     literals: {
@@ -92,6 +94,7 @@ interface FormContextType {
     };
     url: string;
     isApplicable: boolean;
+    _generatedId?: string;
   }[];
   formDefinitions: {
     url: string;

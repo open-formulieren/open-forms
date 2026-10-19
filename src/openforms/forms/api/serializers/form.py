@@ -200,6 +200,31 @@ class HelpDialogSerializer(serializers.Serializer):
         fields = ("content", "image")
 
 
+# Note: this serializer should not be used to expose other Open Product related
+# fields as this might lead to hard-to-debug (performance) issues later on.
+class NestedProductSerializer(serializers.HyperlinkedModelSerializer):
+    producttype = serializers.UUIDField(
+        source="producttype_uuid",
+        label=_("Producttype ID"),
+        help_text=_("Open Product producttype UUID."),
+        allow_null=True,
+    )
+
+    class Meta:
+        model = Product
+        fields = (
+            "url",
+            "producttype",
+        )
+
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:product-detail",
+                "lookup_field": "uuid",
+            },
+        }
+
+
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -251,14 +276,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the theme in the Open Forms API"),
     )
-    product = serializers.HyperlinkedRelatedField(
+    product = NestedProductSerializer(
         label=_("product"),
-        queryset=Product.objects.all(),
+        help_text=_("Product related information inside a object."),
         required=False,
         allow_null=True,
-        view_name="api:product-detail",
-        lookup_field="uuid",
-        help_text=_("URL to the product in the Open Forms API"),
     )
     payment_backend = serializers.ChoiceField(
         choices=[],
@@ -441,6 +463,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
+    # TODO: retrieve and set product based on validated data.
+    # Validated data however currently does not seem to include any data which
+    # we can use to determine the product.
     @transaction.atomic()
     def create(self, validated_data):
         confirmation_email_template = validated_data.pop(
@@ -470,6 +495,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
         return instance
 
+    # TODO: retrieve and set product based on validated data.
+    # Validated data however currently does not seem to include any data which
+    # we can use to determine the product.
     @transaction.atomic()
     def update(self, instance, validated_data):
         confirmation_email_template = validated_data.pop(

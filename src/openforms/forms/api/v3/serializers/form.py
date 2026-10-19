@@ -842,11 +842,25 @@ class FormSerializer(serializers.ModelSerializer):
         if attrs.get("auth_backends"):
             raise serializers.ValidationError(authentication_error_msg)
 
+    def validate_price_variable(self, attrs: FormValidatedData) -> None:
+        price_variable_key = attrs.get("price_variable_key")
+        product = attrs.get("product")
+
+        if product and product.producttype_uuid and price_variable_key:
+            raise ValidationError(
+                {
+                    "price_variable_key": _(
+                        "Price variable cannot be specified using Open Product products."
+                    )
+                }
+            )
+
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)
         # validate variables after validation of the form definitions were ran
         self.validate_variable_data(attrs)
         self.validate_auto_login_backend(attrs)
+        self.validate_price_variable(attrs)
 
         # single step form type validations
         if (
