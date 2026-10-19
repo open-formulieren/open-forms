@@ -2,7 +2,9 @@ import random
 import uuid
 
 import factory.fuzzy
+import msgspec
 
+from formio import convert_components
 from openforms.authentication.registry import register as authentication_registry
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
@@ -161,7 +163,7 @@ class FormAuthenticationBackendFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("form", "backend")
 
 
-class FormDefinitionFactory(factory.django.DjangoModelFactory):
+class FormDefinitionFactory(factory.django.DjangoModelFactory[FormDefinition]):
     name = factory.Sequence(lambda n: f"FormDefinition {n:03d}")
 
     slug = factory.Sequence(lambda n: f"fd-{n}")
@@ -220,6 +222,26 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
                 ],
             }
         )
+
+    @classmethod
+    def build(cls, **kwargs) -> FormDefinition:
+        instance = super().build(**kwargs)
+        return instance
+
+    @classmethod
+    def create(cls, **kwargs) -> FormDefinition:
+        instance = super().create(**kwargs)
+        return instance
+
+    @classmethod
+    def _verify_formio_configuration(cls, instance: FormDefinition) -> None:
+        components = instance.configuration.get("components", [])
+        try:
+            convert_components(components)
+        except msgspec.ValidationError as exc:
+            raise ValueError(
+                "One or more compmonent definitions don't pass msgspec validation."
+            ) from exc
 
 
 class FormStepFactory(factory.django.DjangoModelFactory):
