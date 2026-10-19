@@ -102,7 +102,6 @@ export default defineConfig(({mode}) => {
         components: resolve(jsRoot, 'components'),
         hooks: resolve(jsRoot, 'hooks'),
         utils: resolve(jsRoot, 'utils'),
-        tinymce_appearance: resolve(jsRoot, 'tinymce_appearance'),
       },
     },
     css: {

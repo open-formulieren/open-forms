@@ -1,54 +1,115 @@
 import {FormBuilder as BareFormBuilder} from '@open-formulieren/formio-builder';
+import type {MapOverlayTileLayer} from '@open-formulieren/formio-builder/context.js';
+import type {AnyComponentSchema, SupportedLocales} from '@open-formulieren/types';
 import {useContext, useState} from 'react';
 import {useGlobalState} from 'state-pool';
 
-import {FormContext} from 'components/admin/form_design/Context';
+import {FormContext} from '@/components/admin/form_design/Context';
 import {
   getAvailableAuthPlugins,
   getPrefillAttributes,
   getPrefillPlugins,
   getRegistrationAttributes,
   getValidatorPlugins,
-} from 'components/admin/form_design/plugins';
+} from '@/components/admin/form_design/plugins';
 import {
   getReferenceListsTableItems,
   getReferenceListsTables,
   getServices,
-} from 'components/admin/form_design/reference-lists';
-import {getUniqueKey} from 'components/admin/form_design/utils';
-import {flattenComponents} from 'components/utils';
-import jsonScriptToVar from 'utils/json-script';
-import {currentTheme} from 'utils/theme';
+} from '@/components/admin/form_design/reference-lists';
+import {getUniqueKey} from '@/components/admin/form_design/utils';
+import {flattenComponents} from '@/components/utils';
+import jsonScriptToVar from '@/utils/json-script';
+import {currentTheme} from '@/utils/theme';
+import type {OFTheme} from '@/utils/theme';
 
-const LANGUAGES = jsonScriptToVar('languages', {default: []}).map(([langCode]) => langCode);
-const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
-const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
-const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
-const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
-const MAP_WMS_LAYERS = jsonScriptToVar('config-MAP_WMS_LAYERS', {default: []});
-const MAP_WFS_LAYERS = [];
-const VALIDATE_REQUIRED_DEFAULT = jsonScriptToVar('config-REQUIRED_DEFAULT', {default: false});
+/**
+ * A single available language for the application. Tuple made up of language code and
+ * language name.
+ */
+type LanguageDefinition = [SupportedLocales, string];
 
-const getMapOverlayTileLayers = async () => {
-  const layers = [
-    ...MAP_WMS_LAYERS.map(layer => ({...layer, type: 'wms'})),
-    ...MAP_WFS_LAYERS.map(layer => ({...layer, type: 'wfs'})),
-  ];
-  return layers.sort((layerA, layerB) => layerA.name.localeCompare(layerB.name));
-};
+/**
+ * A possible upload file type definition.
+ */
+interface UploadFileType {
+  /**
+   * The content type for the file type, e.g. `image/png`. Can also be the wildcard string.
+   */
+  value: string;
+  /**
+   * Human readable name for the file type.
+   */
+  label: string;
+}
 
-export const getInitialUsedComponentKeys = components => {
+interface RichTextColor {
+  /**
+   * Color as HEX code.
+   */
+  color: `#${string}`;
+  /**
+   * Human readable color name.
+   */
+  label: string;
+}
+
+interface MapTileLayer {
+  identifier: string;
+  url: string;
+  /**
+   * Human readable name for the layer.
+   */
+  label: string;
+}
+
+const LANGUAGES: SupportedLocales[] = jsonScriptToVar<LanguageDefinition[]>('languages', {
+  default: [],
+}).map(([langCode]) => langCode);
+
+const FILE_TYPES = jsonScriptToVar<UploadFileType[]>('config-UPLOAD_FILETYPES', {default: []});
+const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar<string>('setting-MAX_FILE_UPLOAD_SIZE', {
+  default: 'unknown',
+});
+
+const RICH_TEXT_COLORS = jsonScriptToVar<RichTextColor[]>('config-RICH_TEXT_COLORS', {
+  default: [],
+});
+
+const MAP_TILE_LAYERS = jsonScriptToVar<MapTileLayer[]>('config-MAP_TILE_LAYERS', {default: []});
+const MAP_WMS_LAYERS: MapOverlayTileLayer[] = jsonScriptToVar<Omit<MapOverlayTileLayer, 'type'>[]>(
+  'config-MAP_WMS_LAYERS',
+  {
+    default: [],
+  }
+).map(layer => ({...layer, type: 'wms'}));
+const MAP_WFS_LAYERS: MapOverlayTileLayer[] = [];
+const ALL_MAP_OVERLAY_LAYERS = MAP_WMS_LAYERS.concat(MAP_WFS_LAYERS).sort((layerA, layerB) =>
+  layerA.name.localeCompare(layerB.name)
+);
+
+const VALIDATE_REQUIRED_DEFAULT = jsonScriptToVar<boolean>('config-REQUIRED_DEFAULT', {
+  default: false,
+});
+
+export const getInitialUsedComponentKeys = (components: AnyComponentSchema[]): string[] => {
   const allComponents = Object.values(flattenComponents(components));
   return allComponents.map(component => component.key);
 };
 
 // Strip out spaces and convert to camel case
-const toCamelCase = source =>
+const toCamelCase = (source: string): string =>
   source
     .split(/[^a-zA-Z0-9]/g)
     .filter(Boolean) // Remove empty strings
     .map((str, index) => (index > 0 ? str[0].toUpperCase() + str.slice(1) : str))
     .join('');
+
+export interface FormBuilderProps {
+  initialComponents?: AnyComponentSchema[];
+  initialUsedComponentKeys?: string[];
+  onChange?: React.ComponentProps<typeof BareFormBuilder>['onChange'];
+}
 
 /**
  * Render the form builder UI with component list and form preview.
@@ -71,18 +132,18 @@ const toCamelCase = source =>
  * and react-modal seems to have a race condition triggered in this particular scenario
  * due to delayed/lost state updates. Don't spend hours on this like I did.
  */
-const FormBuilder = ({
+const FormBuilder: React.FC<FormBuilderProps> = ({
   initialComponents = [],
   initialUsedComponentKeys = getInitialUsedComponentKeys(initialComponents),
   onChange,
 }) => {
-  const [components, setComponents] = useState(initialComponents);
-  const [usedComponentKeys, setUsedComponentKeys] = useState(initialUsedComponentKeys);
+  const [components, setComponents] = useState<AnyComponentSchema[]>(initialComponents);
+  const [usedComponentKeys, setUsedComponentKeys] = useState<string[]>(initialUsedComponentKeys);
   const {
     form: {authBackends = [], type: formType = 'regular'},
     plugins: {availablePrefillPlugins = []},
   } = useContext(FormContext);
-  const [theme] = useGlobalState(currentTheme);
+  const [theme] = useGlobalState<OFTheme>(currentTheme);
   return (
     <BareFormBuilder
       components={components}
@@ -119,7 +180,8 @@ const FormBuilder = ({
             break;
           }
           default: {
-            throw new Error(`Unknown event ${event.type}`);
+            const exhaustiveCheck: never = event;
+            throw new Error(`Unknown event ${exhaustiveCheck}`);
           }
         }
       }}
@@ -131,7 +193,7 @@ const FormBuilder = ({
       theme={theme}
       richTextColors={RICH_TEXT_COLORS}
       getMapTileLayers={async () => MAP_TILE_LAYERS}
-      getMapOverlayTileLayers={getMapOverlayTileLayers}
+      getMapOverlayTileLayers={async () => ALL_MAP_OVERLAY_LAYERS}
       getFormComponents={() => components}
       getValidatorPlugins={getValidatorPlugins}
       getRegistrationAttributes={getRegistrationAttributes}

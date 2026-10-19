@@ -5870,7 +5870,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FormVariable'
+                  $ref: '#/components/schemas/RegistrationPluginVariables'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -10621,6 +10621,27 @@ components:
       - id
       - label
       - schema
+    RegistrationPluginVariables:
+      type: object
+      properties:
+        pluginIdentifier:
+          type: string
+          title: backend identifier
+          description: The identifier of the registration plugin.
+        pluginVerboseName:
+          type: string
+          title: backend verbose name
+          description: The verbose name of the registration plugin.
+        pluginVariables:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormVariable'
+          title: variables
+          description: The list of corresponding registration variables.
+      required:
+      - pluginIdentifier
+      - pluginVariables
+      - pluginVerboseName
     ResultEnum:
       enum:
       - failed

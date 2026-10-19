@@ -1,21 +1,33 @@
 import {Editor} from '@tinymce/tinymce-react';
-import React, {useContext, useRef} from 'react';
+import {useContext, useRef} from 'react';
 import {useIntl} from 'react-intl';
 import {useGlobalState} from 'state-pool';
-import getTinyMCEAppearance from 'tinymce_appearance';
+import type {Editor as RawEditor} from 'tinymce';
 
-import {currentTheme} from 'utils/theme';
+import getTinyMCEAppearance from '@/tinymce_appearance';
+import {currentTheme} from '@/utils/theme';
+import type {OFTheme} from '@/utils/theme';
 
 import {default as defaultTinyMceConfig} from '../../../../conf/tinymce_config.json';
 import {TinyMceContext} from './Context';
 
 export const DEFAULT_CONFIG = defaultTinyMceConfig;
 
-const TinyMCEEditor = ({content, onEditorChange, tinyMceConfig = defaultTinyMceConfig}) => {
-  const editorRef = useRef(null);
+export interface TinyMCEEditorProps {
+  content: string;
+  onEditorChange: React.ComponentProps<typeof Editor>['onEditorChange'];
+  tinyMceConfig: Partial<React.ComponentProps<typeof Editor>['init']>;
+}
+
+const TinyMCEEditor: React.FC<TinyMCEEditorProps> = ({
+  content,
+  onEditorChange,
+  tinyMceConfig = defaultTinyMceConfig,
+}) => {
+  const editorRef = useRef<RawEditor | null>(null);
   const tinyMceUrl = useContext(TinyMceContext);
   const intl = useIntl();
-  const [theme] = useGlobalState(currentTheme);
+  const [theme] = useGlobalState<OFTheme>(currentTheme);
 
   const appearance = getTinyMCEAppearance(theme);
   // when appearance changes, the key changes, which re-initializes the editor. tinymce
@@ -26,7 +38,7 @@ const TinyMCEEditor = ({content, onEditorChange, tinyMceConfig = defaultTinyMceC
       <Editor
         key={key}
         tinymceScriptSrc={tinyMceUrl}
-        onInit={(evt, editor) => (editorRef.current = editor)}
+        onInit={(_, editor) => (editorRef.current = editor)}
         value={content}
         init={{
           ...tinyMceConfig,

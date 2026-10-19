@@ -1,10 +1,10 @@
 import {showCookieBar} from 'django-cookie-consent';
 
-import 'components/auth-mode';
-import {onLoaded} from 'utils/dom';
+import '@/components/auth-mode';
+import {onLoaded} from '@/utils/dom';
 
 // connect the "Print this page" link element to a handler
-const registerPrintHandler = () => {
+const registerPrintHandler = (): void => {
   const node = document.getElementById('print-button');
   if (!node) return;
   node.addEventListener('click', event => {
@@ -13,9 +13,9 @@ const registerPrintHandler = () => {
   });
 };
 
-const initCookieBar = () => {
+const initCookieBar = (): void => {
   const templateNode = document.getElementById('cookie-consent__cookie-bar');
-  if (!templateNode) return;
+  if (!(templateNode instanceof HTMLTemplateElement)) return;
 
   const {varName, statusUrl} = templateNode.dataset;
   showCookieBar({
@@ -28,16 +28,17 @@ const initCookieBar = () => {
     onAccept: groups => {
       const isAnalyticsEnabled = groups.find(group => group.varname === varName);
       if (!isAnalyticsEnabled) return;
-      const analyticsTemplateNodes = document.querySelectorAll('.analytics-scripts');
+      const analyticsTemplateNodes =
+        document.querySelectorAll<HTMLTemplateElement>('.analytics-scripts');
       analyticsTemplateNodes.forEach(templateNode => {
         const clone = templateNode.content.cloneNode(true);
-        templateNode.parentNode.insertBefore(clone, templateNode);
+        templateNode.parentNode!.insertBefore(clone, templateNode);
       });
     },
   });
 };
 
-const init = () => {
+const init = (): void => {
   registerPrintHandler();
   initCookieBar();
 };
