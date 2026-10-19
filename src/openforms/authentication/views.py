@@ -3,7 +3,7 @@ import warnings
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.base import SessionBase
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -13,6 +13,7 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
@@ -30,11 +31,14 @@ from rest_framework.request import Request
 from openforms.accounts.models import User
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form, FormAuthenticationBackend
+from openforms.initial_data.constants import SupportedAuthAttributes
+from openforms.initial_data.models import InitialSubmissionData
 from openforms.logging import audit_logger
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.cosigning import CosignData
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
+from openforms.typing import is_authenticated_request
 from openforms.utils.helpers import obfuscate
 from openforms.utils.redirect import allow_redirect_url
 
@@ -44,6 +48,7 @@ from .constants import (
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
+    ModeChoices,
 )
 from .exceptions import InvalidCoSignData
 from .forms import RegistratorSubjectInfoForm
@@ -506,6 +511,57 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
         # save this
         self.cleaned_next_url = next_url
         return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        assert is_authenticated_request(self.request)
+
+        if not (representee_ref := self.request.GET.get("representeeRef")):
+            return initial
+
+        # look up the initial data from potential pre-created initial submission data
+        # TODO: track/validate that the data is not reused?
+        form_slug = self.kwargs["slug"]
+        try:
+            initial_data = InitialSubmissionData.objects.filter(
+                uuid=representee_ref,
+                form__slug=form_slug,
+            ).first()
+        except ValidationError:  # happens when the reference is not a UUID
+            initial_data = None
+        is_expired = bool(initial_data and initial_data.expiry_date <= timezone.now())
+        audit_log = audit_logger.bind(
+            form=form_slug,
+            ref=representee_ref,
+            is_expired=is_expired,
+            employee=self.request.user.employee_id or self.request.user.username,
+        )
+        audit_log.debug("representee_ref_provided")
+        if not initial_data or is_expired:
+            audit_log.warning("initial_data_prepopulation_failed")
+            return initial
+
+        match auth_attr := initial_data.representee_auth_attribute:
+            case SupportedAuthAttributes.bsn:
+                initial.update(
+                    {
+                        "mode": ModeChoices.citizen,
+                        "bsn": initial_data.representee_auth_value,
+                    }
+                )
+            case SupportedAuthAttributes.kvk:
+                initial.update(
+                    {
+                        "mode": ModeChoices.company,
+                        "kvk": initial_data.representee_auth_value,
+                        "kvk_branch_number": initial_data.representee_branch_number,
+                    }
+                )
+            case _:  # pragma: no cover
+                raise ValueError(f"Unsupported auth attribute: {auth_attr}")
+        audit_log.info("initial_data_auth_prepopulated", attribute=auth_attr)
+
+        return initial
 
     def form_valid(self, form):
         skip_subject = form.cleaned_data.get("skip_subject", False)
