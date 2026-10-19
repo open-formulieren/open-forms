@@ -1,42 +1,26 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
+import type {IntlShape} from 'react-intl';
 
 import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
+import type {ValidationError} from './ValidationErrors';
 
-/**
- * @typedef {Object} IntlErrorMessage
- * @property {string} defaultMessage
- * @property {string} description
- */
+type NamedErrorMessage = [string, string];
+type ErrorMessage = ValidationError | NamedErrorMessage;
 
-/**
- * @typedef {[string, string]} NamedErrorMessage
- * @property {string} 0 - The form field name with the error.
- * @property {string} 1 - The error message itself.
- */
-
-/**
- * @typedef {string | IntlErrorMessage | NamedErrorMessage} ErrorMessage
- */
-
-/**
- *
- * @param  {ErrorMessage | ErrorMessage[]} errors A single error instance or array of errors.
- * @param  {IntlShape} intl   The intl object from react-intl (useIntl() hook return value).
- * @return {[boolean, string[]]}  A tuple indicating if there are errors and the list of error messages.
- */
-export const normalizeErrors = (errors = [], intl) => {
+export const normalizeErrors = (
+  errors: ErrorMessage | ErrorMessage[] = [],
+  intl: IntlShape
+): [boolean, string[]] => {
   if (!Array.isArray(errors)) {
     errors = [errors];
   }
   const hasErrors = Boolean(errors && errors.length);
   const formattedErrors = errors.map(error => {
     if (typeof error === 'string') return error;
-
-    if (error.defaultMessage) return intl.formatMessage(error);
+    if (!Array.isArray(error)) return intl.formatMessage(error);
 
     const [, msg] = error;
     return msg;
@@ -44,10 +28,25 @@ export const normalizeErrors = (errors = [], intl) => {
   return [hasErrors, formattedErrors];
 };
 
+interface FieldProps {
+  name: string;
+  label?: React.ReactNode;
+  helpText?: string;
+  required?: boolean;
+  disabled?: boolean;
+  errors?: ValidationError[];
+  children: React.ReactNode;
+  fieldBox?: boolean;
+  errorClassPrefix?: string;
+  errorClassModifier?: string;
+  noManageChildProps?: boolean;
+  extraModifiers?: string[];
+}
+
 /**
  * Wrap a single form field, providing the label with correct attributes
  */
-const Field = ({
+const Field: React.FC<FieldProps> = ({
   name,
   label = '',
   helpText = '',
@@ -71,11 +70,16 @@ const Field = ({
   const manageChildProps = !noManageChildProps;
   let modifiedChildren = children;
   if (manageChildProps) {
-    const childProps = {id: htmlFor, name: originalName};
+    const childProps: {id: string; name: string; disabled?: boolean} = {
+      id: htmlFor,
+      name: originalName,
+    };
     if (disabled) {
       childProps.disabled = true;
     }
-    modifiedChildren = React.cloneElement(children, childProps);
+    modifiedChildren = React.isValidElement(children)
+      ? React.cloneElement(children, childProps)
+      : undefined;
   }
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
 
@@ -127,31 +131,6 @@ const Field = ({
       </div>
     </>
   );
-};
-
-Field.propTypes = {
-  name: PropTypes.string.isRequired,
-  label: PropTypes.node,
-  children: PropTypes.element.isRequired,
-  helpText: PropTypes.node,
-  required: PropTypes.bool,
-  errors: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.array,
-        // react-intl message
-        PropTypes.shape({
-          defaultMessage: PropTypes.any,
-          id: PropTypes.string,
-        }),
-      ])
-    ),
-    PropTypes.string,
-  ]),
-  fieldBox: PropTypes.bool,
-  disabled: PropTypes.bool,
-  extraModifiers: PropTypes.arrayOf(PropTypes.oneOf(['flex-wrap'])),
 };
 
 export default Field;

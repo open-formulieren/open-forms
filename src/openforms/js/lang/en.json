@@ -1574,6 +1574,11 @@
     "description": "Legacy options fieldset title",
     "originalDefault": "Legacy options"
   },
+  "OAzUo1": {
+    "defaultMessage": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected.",
+    "description": "Warning message that informs the user can only select certain price logic modes when a Open Product product is selected.",
+    "originalDefault": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
+  },
   "OB48En": {
     "defaultMessage": "Design token values",
     "description": "Title of modal to edit design token values",

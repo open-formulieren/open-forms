@@ -4189,6 +4189,12 @@
       "value": "Legacy options"
     }
   ],
+  "OAzUo1": [
+    {
+      "type": 0,
+      "value": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
+    }
+  ],
   "OB48En": [
     {
       "type": 0,
