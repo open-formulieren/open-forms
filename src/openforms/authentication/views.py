@@ -12,7 +12,7 @@ from django.http import (
     HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
@@ -488,14 +488,13 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     # block the AccessMixin login redirection
     raise_exception = True
 
-    cleaned_next_url = None
+    cleaned_next_url: str = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         assert self.cleaned_next_url
-        path = str(furl(self.cleaned_next_url).path)
-        resolved = resolve(path)
-        form = get_object_or_404(Form, slug=resolved.kwargs.get("slug"))
+        slug = self.kwargs["slug"]
+        form = get_object_or_404(Form, slug=slug)
         context[THEME_OVERRIDE_CONTEXT_VAR] = form.theme
         return context
 
