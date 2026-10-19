@@ -52,10 +52,6 @@ class FormLogicImportSerializer(
     FormLogicSerializer, BaseImportSerializer[FormLogic, FormLogicData]
 ):
     def prepare_for_import(self, data: FormLogicData) -> None:
-        # To make sure the logic is always ordered, we set the order to 0 if it's not set.
-        if "order" not in data:
-            data["order"] = 0
-
         self.clear_old_service_fetch_config(data)
 
     @staticmethod

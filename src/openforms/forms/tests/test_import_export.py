@@ -1925,6 +1925,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
                     "json_logic_trigger": {"==": [{"var": "radio"}, "ja"]},
                     "uuid": "b92342be-05e0-4070-b2cc-1b88af472091",
+                    "order": 0,
                 }
             ],
         }
