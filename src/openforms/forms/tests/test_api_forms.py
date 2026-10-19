@@ -21,6 +21,7 @@ from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.products.tests.factories import ProductFactory
 
 from ..api.serializers import FormSerializer
 from ..constants import FormTypeChoices, StatementCheckboxChoices
@@ -380,6 +381,35 @@ class FormsAPITests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_retrieve_detailed_product_information(self):
+        product_uuid = uuid.uuid4()
+        product = ProductFactory.create(
+            uuid=product_uuid,
+            producttype_uuid=str(product_uuid),
+            name="Open Product product",
+            price=None,
+        )
+        product_url = reverse("api:product-detail", kwargs={"uuid": product.uuid})
+        form = FormFactory.create(product=product)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        response = self.client.get(
+            reverse("api:form-detail", kwargs={"uuid_or_slug": form.slug})
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response_data["product"],
+            {
+                "url": f"http://testserver{product_url}",
+                "producttype": str(product_uuid),
+            },
+        )
 
     def test_not_retrieve_deleted_anon(self):
         self.client.logout()

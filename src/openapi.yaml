@@ -7903,10 +7903,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
-          nullable: true
-          description: URL to the product in the Open Forms API
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
+          readOnly: true
+          description: Product related information inside a object.
         slug:
           type: string
           maxLength: 100
@@ -8128,6 +8128,7 @@ components:
       - name
       - paymentOptions
       - paymentRequired
+      - product
       - requiredFieldsWithAsterisk
       - resumeLinkLifetime
       - slug
@@ -9982,6 +9983,22 @@ components:
       - index
       - url
       - uuid
+    NestedProduct:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        producttype:
+          type: string
+          format: uuid
+          nullable: true
+          title: Producttype ID
+          description: Open Product producttype UUID.
+      required:
+      - producttype
+      - url
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -10263,10 +10280,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
-          nullable: true
-          description: URL to the product in the Open Forms API
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
+          readOnly: true
+          description: Product related information inside a object.
         slug:
           type: string
           maxLength: 100
@@ -10721,8 +10738,15 @@ components:
           type: string
           description: Information text to be displayed in the confirmation page and
             confirmation email.
+        producttype:
+          type: string
+          format: uuid
+          nullable: true
+          title: Producttype ID
+          description: Open Product producttype UUID.
       required:
       - name
+      - producttype
       - url
       - uuid
     PublicForm:
