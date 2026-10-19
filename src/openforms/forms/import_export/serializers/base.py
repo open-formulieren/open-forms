@@ -63,7 +63,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         # a valid exception to get some grip on type safety
         representation = cast(RT, super().to_representation(instance))
 
-        if self.get_export_options.remove_sensitive_content:
+        if self.export_options.remove_sensitive_content:
             representation = self.remove_sensitive_content(instance, representation)
 
         representation = self.remove_excluded_form_configuration(representation)
@@ -84,7 +84,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return cleaned_representation
 
     def remove_excluded_form_configuration(self, representation: RT) -> RT:
-        options_to_keep = set(self.get_export_options.form_configuration)
+        options_to_keep = set(self.export_options.form_configuration)
 
         for config in self.excluded_form_configuration_cleanup:
             if config.option not in options_to_keep:
@@ -93,7 +93,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return representation
 
     def remove_excluded_additional_form_configuration(self, representation: RT) -> RT:
-        options_to_keep = set(self.get_export_options.additional_form_configuration)
+        options_to_keep = set(self.export_options.additional_form_configuration)
 
         for config in self.excluded_additional_form_configuration_cleanup:
             if config.option not in options_to_keep:
@@ -102,7 +102,7 @@ class BaseExportSerializer[MT: Model, RT: Representation](serializers.Serializer
         return representation
 
     @property
-    def get_export_options(self) -> FormExportOptions:
+    def export_options(self) -> FormExportOptions:
         return self.context["export_options"]
 
 
