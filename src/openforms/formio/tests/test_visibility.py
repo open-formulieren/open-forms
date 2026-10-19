@@ -2,7 +2,7 @@ from django.test import SimpleTestCase, tag
 
 from hypothesis import example, given, strategies as st
 
-from openforms.formio.tests.search_strategies import formio_key
+from formio.tests.search_strategies import formio_key
 from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
