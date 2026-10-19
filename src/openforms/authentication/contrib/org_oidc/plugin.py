@@ -36,11 +36,14 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
     configuration_options = OIDCOptionsSerializer
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
+        query: dict[str, str] = {"next": form_url}
+        if representee_ref := request.GET.get("representeeRef"):
+            query["representeeRef"] = representee_ref
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
             request=request,
-            query={"next": form_url},
+            query=query,
         )
         if request.user.is_authenticated:
             # logout user if logged in with other account
@@ -78,7 +81,12 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
 
         # we could render here but let's redirect
         return HttpResponseRedirect(
-            self.get_registrator_subject_url(request, form, form_url)
+            self.get_registrator_subject_url(
+                request,
+                form,
+                form_url,
+                representee_ref=request.GET.get("representeeRef", ""),
+            )
         )
 
     def logout(self, request: HttpRequest):
