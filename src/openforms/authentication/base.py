@@ -123,7 +123,11 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         )
 
     def get_registrator_subject_url(
-        self, request: HttpRequest, form: Form, form_url: str
+        self,
+        request: HttpRequest,
+        form: Form,
+        form_url: str,
+        representee_ref: str = "",
     ) -> str:
         f = furl(
             reverse(
@@ -133,6 +137,8 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             )
         )
         f.args["next"] = form_url
+        if representee_ref:
+            f.args["representeeRef"] = representee_ref
         return f.url
 
     def logout(self, request: HttpRequest):
