@@ -207,7 +207,7 @@ django==5.2.18
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-admin-index==4.0.0
+django-admin-index==5.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
