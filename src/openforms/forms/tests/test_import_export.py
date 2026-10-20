@@ -2665,10 +2665,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(error_detail.code, "invalid")
 
-    def test_import_form_with_yivi_auth_backend(self):
+    def test_import_old_form_export_with_yivi_attribute_group_uuid_reference(self):
         AttributeGroupFactory.create(
             name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
         )
+        # Old form export (pre 4.1) that only contains the uuid of the known yivi
+        # attribute group
         resources = {
             "forms": [
                 {
@@ -2686,6 +2688,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                                     "kvk",
                                 ],
                                 "additional_attributes_groups": [
+                                    # The uuid of the existing attribute group
                                     "a1c9df69-927c-4390-be26-f39daf107691",
                                 ],
                                 "bsn_loa": DigiDAssuranceLevels.substantial,
@@ -2701,6 +2704,10 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
+        # Under the hood, the `AdditionalFormConfigurationOptions.yivi_attribute_groups`
+        # option is used to determine which attribute group to use for this form. It will
+        # look for existing attribute groups with the same UUID as the one used in the
+        # export data.
         import_form(
             import_file=self.filepath,
             import_options=FormImportOptions(
@@ -2728,12 +2735,19 @@ class ImportExportTests(TempdirMixin, TestCase):
             ["a1c9df69-927c-4390-be26-f39daf107691"],
         )
 
-    def test_import_form_with_yivi_auth_backend_with_known_old_additional_attributes_groups_reference_updates_options(
+    def test_import_old_form_export_with_yivi_attribute_group_name_reference(
         self,
     ):
+        """
+        Using the name of an attribute group is an older reference style. This test
+        validates that the import process correctly maps the attribute group name to the
+        correct attribute group.
+        """
         AttributeGroupFactory.create(
             name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
         )
+        # Old form export (pre 4.1) that only contains a reference to the known yivi
+        # attribute group
         resources = {
             "forms": [
                 {
@@ -2751,7 +2765,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                                     "kvk",
                                 ],
                                 "additional_attributes_groups": [
-                                    # The name of the previously defined attributeGroup
+                                    # The name of the previously defined attribute group
                                     "known_attributes",
                                 ],
                                 "bsn_loa": DigiDAssuranceLevels.substantial,
@@ -2767,6 +2781,10 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
+        # Under the hood, the `AdditionalFormConfigurationOptions.yivi_attribute_groups`
+        # option is used to determine which attribute group to use for this form. It will
+        # look for existing attribute groups with the same name as the one used in the
+        # export data.
         import_form(
             import_file=self.filepath,
             import_options=FormImportOptions(
@@ -2782,13 +2800,15 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         auth_backend = authentication_backends[0]
 
+        # The right attribute group should be used, and the
+        # `additional_attributes_groups` option should be updated to use it's UUID.
         self.assertEqual(auth_backend.backend, "yivi_oidc")
         self.assertEqual(
             auth_backend.options["additional_attributes_groups"],
             ["a1c9df69-927c-4390-be26-f39daf107691"],
         )
 
-    def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups_raises_exception(
+    def test_import_old_form_export_with_unknown_yivi_attribute_group_raises_exception(
         self,
     ):
         AttributeGroupFactory.create(
@@ -2823,6 +2843,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
+        # During import, the unknown uuid will cause a validation error
         with self.assertRaises(ValidationError) as exc:
             import_form(
                 import_file=self.filepath,
