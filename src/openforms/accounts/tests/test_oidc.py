@@ -38,7 +38,7 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
-            "a", string=_("Login with organization account")
+            "a", href=reverse("oidc_authentication_init")
         )
         # Verify that the login button is not visible
         self.assertIsNone(oidc_login_link)
@@ -51,13 +51,10 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
-            "a", string=_("Login with organization account")
+            "a", href=reverse("oidc_authentication_init")
         )
         # Verify that the login button is visible
         self.assertIsNotNone(oidc_login_link)
-        self.assertEqual(
-            oidc_login_link.attrs["href"], reverse("oidc_authentication_init")
-        )
 
     def test_next_parameter_is_preserved(self):
         OFOIDCClientFactory.create(
@@ -67,11 +64,10 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
         response = self.app.get(reverse("admin-mfa-login"), {"next": "/foo"})
 
         oidc_login_link = response.html.find(
-            "a", string=_("Login with organization account")
+            "a",
+            href=str(furl(reverse("oidc_authentication_init")).set({"next": "/foo"})),
         )
         self.assertIsNotNone(oidc_login_link)
-        parsed_link = furl(oidc_login_link["href"])
-        self.assertEqual(parsed_link.args["next"], "/foo")
 
     def test_config_not_found(self):
         assert not OIDCClient.objects.exists()
@@ -80,7 +76,7 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
 
         self.assertEqual(response.status_code, 200)
         oidc_login_link = response.html.find(
-            "a", string=_("Login with organization account")
+            "a", href=reverse("oidc_authentication_init")
         )
         # Verify that the login button is not visible
         self.assertIsNone(oidc_login_link)

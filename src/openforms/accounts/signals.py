@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Literal
 
 from django.contrib.auth.signals import (
     user_logged_in,
@@ -10,50 +10,11 @@ from django.http import HttpRequest
 
 import structlog
 from axes.signals import user_locked_out
-from hijack.signals import hijack_ended, hijack_started
-
-from openforms.logging import audit_logger
 
 from .metrics import login_failures, logins, logouts, user_lockouts
 from .models import User
 
 logger = structlog.stdlib.get_logger()
-
-
-@receiver(hijack_started, dispatch_uid="hijack_started.manage_totp_device")
-def handle_hijack_start(
-    sender: None, hijacker: User, hijacked: User, request: HttpRequest, **kwargs: Any
-):
-    """
-    Add an audit trail entry for the hijack action.
-
-    Malicious actors can then not hijack another user and view potentially sensitive
-    data causing only the hijacked user to show up in the audit log instead of the
-    hijacker.
-    """
-    audit_logger.info(
-        "hijack_started",
-        hijacker=hijacker.username,
-        hijacked=hijacked.username,
-    )
-
-
-@receiver(hijack_ended, dispatch_uid="hijack_ended.manage_totp_device")
-def handle_hijack_end(
-    sender: None, hijacker: User, hijacked: User, request: HttpRequest, **kwargs: Any
-):
-    """
-    Add an audit trail entry for the hijack action.
-
-    Malicious actors can then not hijack another user and view potentially sensitive
-    data causing only the hijacked user to show up in the audit log instead of the
-    hijacker.
-    """
-    audit_logger.info(
-        "hijack_ended",
-        hijacker=hijacker.username,
-        hijacked=hijacked.username,
-    )
 
 
 @receiver(user_logged_in, dispatch_uid="user_logged_in.increment_counter")
