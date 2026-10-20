@@ -1,5 +1,5 @@
 from ...api.serializers import FormStepSerializer
-from ...models import FormStep
+from ...models import FormStep, FormVariable
 from ..typing import FormStepData
 from .base import BaseExportSerializer, BaseImportSerializer
 
@@ -29,4 +29,7 @@ class FormStepExportSerializer(
 class FormStepImportSerializer(
     FormStepSerializer, BaseImportSerializer[FormStep, FormStepData]
 ):
-    pass
+    def after_import(self, instance: FormStep) -> None:
+        # Once the form step has been created, we create the component FormVariables
+        # based on the form definition configuration.
+        FormVariable.objects.synchronize_for(instance.form_definition)

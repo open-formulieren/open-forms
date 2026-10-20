@@ -1,23 +1,19 @@
 import json
-import random
-import string
 import zipfile
-from collections.abc import Collection
+from collections.abc import Collection, MutableMapping
 from pathlib import Path
-from typing import Any, Required, TypedDict
+from typing import Any, Protocol, Required, TypedDict
+from uuid import UUID
 
 from django.conf import settings
 from django.db import transaction
 from django.http.request import HttpRequest
 from django.utils.translation import override
 
-import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.typing import FileComponent
-from openforms.formio.utils import iter_components
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -27,16 +23,11 @@ from openforms.registrations.contrib.stuf_zds.plugin import (
 from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
-from openforms.typing import JSONObject
 
 from ..api.datastructures import FormVariableWrapper
-from ..constants import FormTypeChoices, LogicActionTypes
 from ..models import (
     Form,
     FormDefinition,
-    FormLogic,
-    FormStep,
-    FormVariable,
 )
 from .serializers import (
     FormDefinitionImportSerializer,
@@ -61,7 +52,32 @@ EXPECTED_RESOURCES = (
     "formLogic",
 )
 
-logger = structlog.stdlib.get_logger(__name__)
+
+class HasUUID(Protocol):
+    uuid: UUID
+
+
+class UUIDMap:
+    def __init__(self):
+        self.mapping: MutableMapping[
+            str, str
+        ] = {}  # Keys are old UUIDs, values are new UUIDs.
+
+    def apply_to_data(self, data: str) -> str:
+        """
+        Replace all old UUID's for their new counterpart in the data, and return the
+        updated data.
+        """
+        for old, new in self.mapping.items():
+            data = data.replace(old, new)
+        return data
+
+    def add(self, old_uuid: str | None, new_instance: HasUUID | None) -> None:
+        """
+        Add the old and new UUID's of an instance to the mapping.
+        """
+        if old_uuid and new_instance:
+            self.mapping[old_uuid] = str(new_instance.uuid)
 
 
 def _get_mock_request() -> HttpRequest:
@@ -83,7 +99,7 @@ def import_form(import_file: Path, existing_form_instance=None) -> Form | None:
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(import_data, existing_form_instance)
+    return import_form_data(import_data, existing_form_instance, deactivate_form=True)
 
 
 @transaction.atomic
@@ -91,26 +107,12 @@ def import_form(import_file: Path, existing_form_instance=None) -> Form | None:
 def import_form_data(
     import_data: dict[str, str],
     existing_form_instance: Form | None = None,
+    deactivate_form: bool = False,
 ) -> Form | None:
-    uuid_mapping: dict[str, str] = {}
+    uuid_mapping = UUIDMap()
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
-
-    # when restoring a previous version, delete the current form configuration,
-    # it will be replaced with the import data.
-    if existing_form_instance:
-        form_steps = FormStep.objects.filter(form=existing_form_instance)
-        # delete single-use form definitions, they're orphan nodes when deleting the steps
-        fd_ids = list(
-            FormDefinition.objects.filter(
-                is_reusable=False, formstep__in=form_steps
-            ).values_list("id", flat=True)
-        )
-        form_steps.delete()
-        FormDefinition.objects.filter(id__in=fd_ids).delete()
-        FormLogic.objects.filter(form=existing_form_instance).delete()
-        FormVariable.objects.filter(form=existing_form_instance).delete()
 
     context = {
         "request": request,
@@ -123,6 +125,7 @@ def import_form_data(
             uuid_mapping=uuid_mapping,
             context=context,
             existing_form_instance=existing_form_instance,
+            deactivate_form=deactivate_form,
         )
 
     assert imported_form is not None, "No form data has been imported"
@@ -155,82 +158,45 @@ def import_form_data(
     return imported_form
 
 
-def update_uuids(data: str, uuid_mapping: dict[str, str]) -> str:
-    for old, new in uuid_mapping.items():
-        data = data.replace(old, new)
-    return data
-
-
 def _import_form_resource(
     data: str,
-    uuid_mapping: dict[str, str],
+    uuid_mapping: UUIDMap,
     context: dict[str, Any],
     existing_form_instance: Form | None,
+    deactivate_form: bool,
 ) -> Form | None:
-    imported_form: Form | None = None
-    data = update_uuids(data, uuid_mapping)
+    data = uuid_mapping.apply_to_data(data)
 
-    for entry in json.loads(data):
-        entry: FormData = entry
-        old_uuid: str | None = entry.get("uuid")
+    forms = json.loads(data)
+    assert len(forms) == 1, "expected exactly one form in the import data"
 
-        # we can only extract a category UUID from the URL here, but that requires
-        # an exact match and we currently don't provide import/export functionality
-        # for categories. Relying on ID/Name is not much better than guesswork either,
-        # so we always import forms with NO category at all to prevent import errors.
-        # See #1774 for one such example of an error.
-        entry["category"] = ""
-        # theme overrides cannot be imported, since the theme records/FKs have to
-        # exist in the target environment. Importing/exporting themes is also not
-        # possible at this time, so we reset the theme and admins need to update
-        # the imported form.
-        entry["theme"] = ""
+    form: FormData = forms[0]
+    old_uuid: str | None = form.get("uuid")
 
-        # forms before v4.0 do not have the type field so in case we import an
-        # old appointment form we have to make sure that the form has the right
-        # type configured (by default is regular)
-        if appointment_options := entry.get("appointment_options"):
-            if appointment_options.get("is_appointment"):
-                entry["type"] = FormTypeChoices.appointment
+    deserialized = FormImportSerializer(
+        data=form,
+        context={**context, "deactivate_form": deactivate_form},
+        instance=existing_form_instance,
+    )
 
-        if not existing_form_instance:
-            entry["active"] = False
+    try:
+        deserialized.is_valid(raise_exception=True)
+        imported_form: Form = deserialized.save()
 
-        # If there is a slug, make sure that it's unique
-        if (form_slug := entry.get("slug")) and Form.objects.filter(
-            slug=form_slug
-        ).first() is not None:
-            entry["slug"] = (
-                f"{form_slug}-{''.join(random.choices(string.hexdigits, k=6))}"
-            )
-
-        deserialized = FormImportSerializer(
-            data=entry, context=context, instance=existing_form_instance
-        )
-
-        try:
-            deserialized.is_valid(raise_exception=True)
-            imported_form = deserialized.save()
-
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
-        except ValidationError as e:
-            raise e
+        uuid_mapping.add(old_uuid, deserialized.instance)
+    except ValidationError as e:
+        raise e
 
     return imported_form
 
 
 def _import_form_definition_resources(
     data: str,
-    uuid_mapping: dict[str, str],
+    uuid_mapping: UUIDMap,
     context: dict[str, Any],
 ) -> list[FormDefinition]:
     form_definitions: list[FormDefinition] = []
-    data = update_uuids(data, uuid_mapping)
+    data = uuid_mapping.apply_to_data(data)
 
     for entry in json.loads(data):
         entry: FormDefinitionData = entry
@@ -247,57 +213,25 @@ def _import_form_definition_resources(
 
         try:
             deserialized.is_valid(raise_exception=True)
-
-            apply_component_conversions(deserialized.validated_data["configuration"])
-            apply_definition_conversions(deserialized.validated_data["configuration"])
-
             form_definitions.append(deserialized.save())
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            uuid_mapping.add(old_uuid, deserialized.instance)
         except ValidationError as e:
             raise e
 
     return form_definitions
 
 
-def apply_component_conversions(configuration: JSONObject) -> None:
-    """
-    Apply the known formio component conversions to the entire form definition.
-    """
-    log = logger.bind(action="forms.apply_component_conversions")
-    for component in iter_components(configuration):
-        if not (component_type := component.get("type")):  # pragma: no cover
-            continue
-        if not (converters := CONVERTERS.get(component_type)):
-            continue
-        for identifier, apply_converter in converters.items():
-            log.debug(
-                "apply_converter", component_type=component_type, identifier=identifier
-            )
-            apply_converter(component)
-
-
-def apply_definition_conversions(configuration: JSONObject) -> None:
-    for converter in DEFINITION_CONVERTERS:
-        converter(configuration)
-
-
 def _import_form_step_resources(
     data: str,
-    uuid_mapping: dict[str, str],
+    uuid_mapping: UUIDMap,
     context: dict[str, Any],
 ) -> None:
-    data = update_uuids(data, uuid_mapping)
+    data = uuid_mapping.apply_to_data(data)
 
     for entry in json.loads(data):
         entry: FormStepData = entry
         old_uuid: str | None = entry.get("uuid")
-        form: Form = context["form"]
 
         deserialized = FormStepImportSerializer(data=entry, context=context)
 
@@ -305,35 +239,19 @@ def _import_form_step_resources(
             deserialized.is_valid(raise_exception=True)
             deserialized.save()
 
-            # Once the form steps have been created, we create the component FormVariables
-            # based on the form definition configurations.
-            FormVariable.objects.create_for_form(form)
-
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            uuid_mapping.add(old_uuid, deserialized.instance)
         except ValidationError as e:
             raise e
 
 
 def _import_form_variable_resources(
-    data: str, uuid_mapping: dict[str, str], context: dict[str, Any]
+    data: str, uuid_mapping: UUIDMap, context: dict[str, Any]
 ) -> None:
-    data = update_uuids(data, uuid_mapping)
+    data = uuid_mapping.apply_to_data(data)
 
     for entry in json.loads(data):
         entry: FormVariableData = entry
         form: Form = context["form"]
-
-        if "service_fetch_configuration" in entry:
-            # The transferring between systems case is very tricky
-            # better not import these, we don't know where this came from.
-            # services and ids may point to different things
-            # in different OF instances.
-            del entry["service_fetch_configuration"]
 
         deserialized = FormVariableImportSerializer(
             data=entry,
@@ -355,17 +273,14 @@ def _import_form_variable_resources(
 
 
 def _import_form_logic_resources(
-    data: str, uuid_mapping: dict[str, str], context: dict[str, Any]
+    data: str, uuid_mapping: UUIDMap, context: dict[str, Any]
 ) -> None:
-    data = update_uuids(data, uuid_mapping)
+    data = uuid_mapping.apply_to_data(data)
 
     for entry in json.loads(data):
         entry: FormLogicData = entry
         old_uuid: str | None = entry.get("uuid")
         form: Form = context["form"]
-
-        if "order" not in entry:
-            entry["order"] = 0
 
         deserialized = FormLogicImportSerializer(
             data=entry,
@@ -386,33 +301,11 @@ def _import_form_logic_resources(
 
         try:
             deserialized.is_valid(raise_exception=True)
-            clear_old_service_fetch_config(deserialized.validated_data)
-
             deserialized.save()
 
-            if (
-                old_uuid
-                and deserialized.instance
-                and hasattr(deserialized.instance, "uuid")
-            ):
-                uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
+            uuid_mapping.add(old_uuid, deserialized.instance)
         except ValidationError as e:
             raise e
-
-
-def clear_old_service_fetch_config(rule: dict[str, Any]) -> None:
-    for action in rule.get("actions", []):
-        if action["action"]["type"] != LogicActionTypes.fetch_from_service:
-            continue
-
-        if "value" not in action["action"] or action["action"]["value"] == "":
-            continue
-
-        # See comment above in `import_form_data` where we check if the variable has a
-        # `service_fetch_configuration` attribute.
-        # We can't reliably relate the service fetch configured to an existing configuration.
-        # So we don't add any existing service fetch config to the variables
-        action["action"]["value"] = ""
 
 
 class FileComponentOptions(TypedDict, total=False):

@@ -1,8 +1,9 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import TypedDict
 
 from openforms.typing import JSONObject
 
+from ..api.v3.typing import LogicActionTypeData
 from ..constants import FormTypeChoices
 from .constants import (
     AdditionalFormConfigurationOptions,
@@ -25,6 +26,14 @@ class FormRegistrationData(TypedDict, total=False):
     options: JSONObject
 
 
+class FormLogicActionData(TypedDict, total=False):
+    uuid: str
+    component: str
+    variable: str
+    form_step_uuid: str
+    action: LogicActionTypeData
+
+
 class FormLogicData(TypedDict, total=False):
     uuid: str
     url: str
@@ -32,7 +41,7 @@ class FormLogicData(TypedDict, total=False):
     json_logic_trigger: JSONObject
     description: str
     order: int
-    actions: list[JSONObject]
+    actions: list[FormLogicActionData]
     is_advanced: bool
 
 
@@ -80,6 +89,11 @@ class FormDefinitionData(TypedDict, total=False):
     translations: JSONObject
 
 
+class AuthBackendData(TypedDict):
+    backend: str
+    options: JSONObject | None
+
+
 class FormData(TypedDict, total=False):
     uuid: str
     name: str
@@ -91,7 +105,7 @@ class FormData(TypedDict, total=False):
     translations_enabled: bool
 
     registration_backends: list[FormRegistrationData]
-    auth_backends: list[JSONObject]
+    auth_backends: list[AuthBackendData]
     auto_login_authentication_backend: str
     payment_required: bool
     payment_backend: str
@@ -140,3 +154,8 @@ class FormData(TypedDict, total=False):
     submission_statements_configuration: JSONObject
     submission_report_download_link_title: str
     brp_personen_request_options: JSONObject
+
+    authentication_backends: list[str]  # DeprecationWarning - remove in Open Forms 5.0
+    authentication_backend_options: Mapping[
+        str, JSONObject
+    ]  # DeprecationWarning - remove in Open Forms 5.0

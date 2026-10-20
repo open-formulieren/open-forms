@@ -712,6 +712,21 @@ class Form(models.Model):
             yield from form_step.iter_components(recursive=recursive)
 
     @transaction.atomic
+    def _delete_current_form_configuration(self):
+        form_steps = self.formstep_set.select_related("form_definition")
+        # delete single-use form definitions, they're orphan nodes when deleting the steps
+        fds = [
+            form_step.form_definition
+            for form_step in form_steps
+            if not form_step.form_definition.is_reusable
+        ]
+        form_steps.delete()
+        for fd in fds:
+            fd.delete()
+        self.formvariable_set.all().delete()
+        self.formlogic_set.all().delete()
+
+    @transaction.atomic
     def restore_old_version(
         self, form_version_uuid: str, user: User | None = None
     ) -> None:
@@ -732,6 +747,10 @@ class Form(models.Model):
         }
         form_version = form_versions_mapping[form_version_uuid]
         old_version_data = form_version.export_blob
+
+        # when restoring a previous version, delete the current form configuration;
+        # it will be replaced with the import data.
+        self._delete_current_form_configuration()
 
         import_form_data(old_version_data, form_version.form)
 

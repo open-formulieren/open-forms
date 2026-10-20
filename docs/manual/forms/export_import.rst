@@ -81,7 +81,7 @@ formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het
 conflicterende formulier zelf aanpassen en het nogmaals proberen.
 
 Export en import van :ref:`logica <manual_logic>` regels die gebruik maken van
-het experimentele bevragen van registraties is niet geïmplementeerd. De
-logica-regels zullen wel geëxporteerd en geïmporteerd worden, maar de
-servicebevragingconfiguraties niet. Gaat u bij deze regels dus altijd na of de
-gebruikte configuraties nog wel daadwerkelijk bestaan!
+het bevragen van registraties is niet geïmplementeerd. De logica-regels zullen wel
+geëxporteerd en geïmporteerd worden, maar de servicebevragingconfiguraties niet. Gaat u
+bij deze regels dus altijd na of de gebruikte configuraties nog wel daadwerkelijk
+bestaan!

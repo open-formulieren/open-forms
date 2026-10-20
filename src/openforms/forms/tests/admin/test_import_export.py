@@ -1300,6 +1300,7 @@ class FormAdminImportTests(WebTest):
                                 "form": "http://openforms.nl/api/v2/forms/b8315e1d-3134-476f-8786-7661d8237c51",
                                 "json_logic_trigger": {"==": [{"var": "radio"}, "ja"]},
                                 "uuid": "b92342be-05e0-4070-b2cc-1b88af472091",
+                                "order": 0,
                             }
                         ]
                     ).encode("utf-8")
