@@ -49,6 +49,9 @@ class RegistratorSubjectInfoForm(forms.Form):
         required=False,
         initial=False,
     )
+    # pass the representee ref in the form submit to avoid session-based race conditions
+    # in case there's stale session data
+    representee_ref = forms.CharField(required=False, widget=forms.HiddenInput())
 
     def clean(self):
         super().clean()

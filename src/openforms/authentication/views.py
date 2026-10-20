@@ -1,4 +1,5 @@
 import warnings
+from typing import assert_never
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import AnonymousUser
@@ -59,6 +60,8 @@ logger = structlog.stdlib.get_logger(__name__)
 
 # unique name so we don't clobber a parameter on the arbitrary url form is hosted at
 BACKEND_OUTAGE_RESPONSE_PARAMETER = "of-auth-problem"
+
+_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY = "_registrator_representee_ref"
 
 
 class AuthenticationFlowBaseView(RetrieveAPIView):
@@ -541,7 +544,10 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
             audit_log.warning("initial_data_prepopulation_failed")
             return initial
 
-        match auth_attr := initial_data.representee_auth_attribute:
+        initial["representee_ref"] = representee_ref
+        match auth_attr := SupportedAuthAttributes(
+            initial_data.representee_auth_attribute
+        ):
             case SupportedAuthAttributes.bsn:
                 initial.update(
                     {
@@ -558,9 +564,10 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
                     }
                 )
             case _:  # pragma: no cover
-                raise ValueError(f"Unsupported auth attribute: {auth_attr}")
-        audit_log.info("initial_data_auth_prepopulated", attribute=auth_attr)
+                assert_never(auth_attr)
 
+        audit_log.info("initial_data_auth_prepopulated", attribute=auth_attr)
+        self.request.session[_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY] = representee_ref
         return initial
 
     def form_valid(self, form):
@@ -570,15 +577,31 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
                 "skipped_subject_info": True,
             }
         else:
+            # extract the representee ref and pass it along in the registrator session
+            # data - this allows us to correlate initial data & submission created from
+            # it so that we can prevent replays
+            representee_ref: str = form.cleaned_data.get("representee_ref") or ""
+            session_representee_ref: str = (
+                self.request.session.get(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY) or ""
+            )
+            if session_representee_ref:
+                del self.request.session[_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY]
+            # compare against the value stored in the session on the GET call before, this
+            # ensures we don't accidentally use stale data
+            if representee_ref and (representee_ref != session_representee_ref):
+                representee_ref = ""
+
             if form.cleaned_data["bsn"]:
                 self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
                     "value": form.cleaned_data["bsn"],
                     "attribute": AuthAttribute.bsn,
+                    "representee_ref": representee_ref,
                 }
             elif form.cleaned_data["kvk"]:
                 self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
                     "value": form.cleaned_data["kvk"],
                     "attribute": AuthAttribute.kvk,
+                    "representee_ref": representee_ref,
                 }
 
                 if branch_number := form.cleaned_data.get("kvk_branch_number"):
