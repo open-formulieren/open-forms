@@ -14,7 +14,6 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
@@ -530,17 +529,14 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
                 ).first()
             except ValidationError:  # happens when the reference is not a UUID
                 initial_data = None
-            is_expired = bool(
-                initial_data and initial_data.expiry_date <= timezone.now()
-            )
             audit_log = audit_logger.bind(
                 form=self.kwargs["slug"],
                 ref=representee_ref,
-                is_expired=is_expired,
+                is_expired=bool(initial_data and initial_data.is_expired),
                 employee=self.request.user.employee_id or self.request.user.username,
             )
             audit_log.debug("representee_ref_provided")
-            if initial_data and not is_expired:
+            if initial_data and initial_data.can_be_used:
                 initial["representee_ref"] = representee_ref
                 match auth_attr := SupportedAuthAttributes(
                     initial_data.representee_auth_attribute

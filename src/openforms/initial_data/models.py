@@ -125,7 +125,9 @@ class InitialSubmissionData(models.Model):
         return self.created_on + self.ttl
 
     @property
+    def is_expired(self) -> bool:
+        return self.expiry_date <= timezone.now()
+
+    @property
     def can_be_used(self) -> bool:
-        if self.used_for_submission_id:
-            return False
-        return self.expiry_date >= timezone.now()
+        return not self.is_expired and not self.used_for_submission_id

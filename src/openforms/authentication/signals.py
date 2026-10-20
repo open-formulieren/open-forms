@@ -8,6 +8,7 @@ import structlog
 from rest_framework.request import Request
 
 from openforms.accounts.models import User
+from openforms.initial_data.models import InitialSubmissionData
 from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import (
@@ -124,6 +125,12 @@ def set_auth_attribute_on_session(
                         "branch_number"
                     ]
                 )
+
+            if representee_ref := registrator_subject.get("representee_ref"):
+                initial_data = InitialSubmissionData.objects.get(uuid=representee_ref)
+                assert not initial_data.used_for_submission_id
+                initial_data.used_for_submission = instance
+                initial_data.save(update_fields=("used_for_submission",))
 
             registrator_save: BaseAuth = {
                 "value": form_auth["value"],
