@@ -598,7 +598,7 @@ markdown-it-py==4.0.0
     #   rich
 markupsafe==3.0.3
     # via jinja2
-maykin-2fa==2.1.0
+maykin-2fa==3.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

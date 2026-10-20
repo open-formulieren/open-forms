@@ -659,7 +659,7 @@ markupsafe==3.0.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jinja2
-maykin-2fa==2.1.0
+maykin-2fa==3.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

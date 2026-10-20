@@ -348,7 +348,7 @@ mail-parser==4.1.4
     # via django-yubin
 markdown-it-py==4.0.0
     # via rich
-maykin-2fa==2.1.0
+maykin-2fa==3.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
