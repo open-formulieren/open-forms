@@ -21,6 +21,7 @@
 
         <form id="registrator-subject" method="post">
             {% csrf_token %}
+            {{ form.representee_ref }}
 
             {% include "includes/forms/errorlist.html" with errors=form.non_field_errors only %}
 
