@@ -286,7 +286,7 @@ class HTMLEmailLoggingTest(TestCase):
 
         logs = TimelineLogProxy.objects.filter(
             template="logging/events/email_status_change.txt"
-        )
+        ).order_by("timestamp", "pk")
 
         self.assertEqual(logs[0].content_object, submission)
         self.assertEqual(
