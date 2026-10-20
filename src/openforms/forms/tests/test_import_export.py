@@ -783,11 +783,11 @@ class ImportExportTests(TempdirMixin, TestCase):
         theme = ThemeFactory.create()
         category = CategoryFactory.create()
 
-        yiviAttributeGroup1 = AttributeGroupFactory.create()
-        yiviAttributeGroup2 = AttributeGroupFactory.create()
+        yivi_attribute_group1 = AttributeGroupFactory.create()
+        yivi_attribute_group2 = AttributeGroupFactory.create()
 
-        wmtsTileLayer = MapTileLayerFactory.create()
-        wmsTileLayer = MapWMSTileLayerFactory.create()
+        wmts_tile_layer = MapTileLayerFactory.create()
+        wms_tile_layer = MapWMSTileLayerFactory.create()
 
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -798,8 +798,8 @@ class ImportExportTests(TempdirMixin, TestCase):
             authentication_backend__options={
                 "authentication_options": [AuthAttribute.bsn],
                 "additional_attributes_groups": [
-                    yiviAttributeGroup1.uuid,
-                    yiviAttributeGroup2.uuid,
+                    yivi_attribute_group1.uuid,
+                    yivi_attribute_group2.uuid,
                 ],
             },
             formstep__form_definition__configuration={
@@ -814,12 +814,12 @@ class ImportExportTests(TempdirMixin, TestCase):
                             "polygon": False,
                             "polyline": False,
                         },
-                        "tileLayerIdentifier": wmtsTileLayer.identifier,
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
                         "overlays": [
                             {
                                 "url": "",
                                 "type": "wms",
-                                "uuid": str(wmsTileLayer.uuid),
+                                "uuid": str(wms_tile_layer.uuid),
                                 "label": "Basisregistratie Adressen en Gebouwen (BAG)",
                                 "layers": ["pand", "verblijfsobject"],
                             },
@@ -873,11 +873,11 @@ class ImportExportTests(TempdirMixin, TestCase):
             )
             # Assert that the authentication_options on the actual form object are kept
             self.assertIn(
-                str(yiviAttributeGroup1.uuid),
+                str(yivi_attribute_group1.uuid),
                 form.auth_backends.first().options["additional_attributes_groups"],
             )
             self.assertIn(
-                str(yiviAttributeGroup2.uuid),
+                str(yivi_attribute_group2.uuid),
                 form.auth_backends.first().options["additional_attributes_groups"],
             )
 
@@ -895,10 +895,10 @@ class ImportExportTests(TempdirMixin, TestCase):
             fd = form.formstep_set.get().form_definition
             self.assertEqual(
                 fd.configuration["components"][0]["tileLayerIdentifier"],
-                wmtsTileLayer.identifier,
+                wmts_tile_layer.identifier,
             )
             overlay = fd.configuration["components"][0]["overlays"][0]
-            self.assertEqual(overlay["uuid"], str(wmsTileLayer.uuid))
+            self.assertEqual(overlay["uuid"], str(wms_tile_layer.uuid))
             self.assertEqual(overlay["layers"], ["pand", "verblijfsobject"])
 
     def test_export_with_all_additional_form_configuration_included(self):
@@ -906,16 +906,18 @@ class ImportExportTests(TempdirMixin, TestCase):
         theme = ThemeFactory.create()
         category = CategoryFactory.create()
 
-        wmtsMap1 = MapTileLayerFactory.create()
-        wmtsMap2 = MapTileLayerFactory.create()
-        wmsMap1 = MapWMSTileLayerFactory.create()
-        wmsMap2 = MapWMSTileLayerFactory.create()
-        wmsMap3 = MapWMSTileLayerFactory.create()
+        wmts_map1 = MapTileLayerFactory.create()
+        wmts_map2 = MapTileLayerFactory.create()
+        wms_map1 = MapWMSTileLayerFactory.create()
+        wms_map2 = MapWMSTileLayerFactory.create()
+        wms_map3 = MapWMSTileLayerFactory.create()
 
-        yiviAttributeGroup1 = AttributeGroupFactory.create(
+        yivi_attribute_group1 = AttributeGroupFactory.create(
             attributes=["first_name", "last_name"]
         )
-        yiviAttributeGroup2 = AttributeGroupFactory.create(attributes=["email_address"])
+        yivi_attribute_group2 = AttributeGroupFactory.create(
+            attributes=["email_address"]
+        )
 
         # Define form with all additional form configuration
         form = FormFactory.create(
@@ -928,8 +930,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                 "authentication_options": [AuthAttribute.bsn],
                 "additional_attributes_groups": [
                     # The uuids of the `personal` and `mail` attributegroups
-                    yiviAttributeGroup1.uuid,
-                    yiviAttributeGroup2.uuid,
+                    yivi_attribute_group1.uuid,
+                    yivi_attribute_group2.uuid,
                 ],
             },
             formstep__form_definition__configuration={
@@ -944,12 +946,12 @@ class ImportExportTests(TempdirMixin, TestCase):
                             "polygon": False,
                             "polyline": False,
                         },
-                        "tileLayerIdentifier": wmtsMap1.identifier,
+                        "tileLayerIdentifier": wmts_map1.identifier,
                         "overlays": [
                             {
                                 "url": "",
                                 "type": "wms",
-                                "uuid": str(wmsMap1.uuid),
+                                "uuid": str(wms_map1.uuid),
                                 "label": "Basisregistratie Adressen en Gebouwen (BAG)",
                                 "layers": ["pand", "verblijfsobject"],
                             },
@@ -965,19 +967,19 @@ class ImportExportTests(TempdirMixin, TestCase):
                             "polygon": False,
                             "polyline": False,
                         },
-                        "tileLayerIdentifier": wmtsMap2.identifier,
+                        "tileLayerIdentifier": wmts_map2.identifier,
                         "overlays": [
                             {
                                 "url": "",
                                 "type": "wms",
-                                "uuid": str(wmsMap2.uuid),
+                                "uuid": str(wms_map2.uuid),
                                 "label": "height",
                                 "layers": ["EL.GridCoverage"],
                             },
                             {
                                 "url": "",
                                 "type": "wms",
-                                "uuid": str(wmsMap3.uuid),
+                                "uuid": str(wms_map3.uuid),
                                 "label": "LGN",
                                 "layers": ["lgn-actueel"],
                             },
@@ -1041,11 +1043,11 @@ class ImportExportTests(TempdirMixin, TestCase):
             auth_backend = forms[0]["auth_backends"][0]
             self.assertEqual(auth_backend["backend"], "yivi_oidc")
             self.assertIn(
-                str(yiviAttributeGroup1.uuid),
+                str(yivi_attribute_group1.uuid),
                 auth_backend["options"]["additional_attributes_groups"],
             )
             self.assertIn(
-                str(yiviAttributeGroup2.uuid),
+                str(yivi_attribute_group2.uuid),
                 auth_backend["options"]["additional_attributes_groups"],
             )
 
@@ -1055,18 +1057,18 @@ class ImportExportTests(TempdirMixin, TestCase):
             component1 = formDefinitions[0]["configuration"]["components"][0]
             component2 = formDefinitions[0]["configuration"]["components"][1]
 
-            self.assertEqual(component1["tileLayerIdentifier"], wmtsMap1.identifier)
+            self.assertEqual(component1["tileLayerIdentifier"], wmts_map1.identifier)
             self.assertEqual(len(component1["overlays"]), 1)
-            self.assertEqual(component1["overlays"][0]["uuid"], str(wmsMap1.uuid))
+            self.assertEqual(component1["overlays"][0]["uuid"], str(wms_map1.uuid))
             self.assertEqual(
                 component1["overlays"][0]["layers"], ["pand", "verblijfsobject"]
             )
 
-            self.assertEqual(component2["tileLayerIdentifier"], wmtsMap2.identifier)
+            self.assertEqual(component2["tileLayerIdentifier"], wmts_map2.identifier)
             self.assertEqual(len(component2["overlays"]), 2)
-            self.assertEqual(component2["overlays"][0]["uuid"], str(wmsMap2.uuid))
+            self.assertEqual(component2["overlays"][0]["uuid"], str(wms_map2.uuid))
             self.assertEqual(component2["overlays"][0]["layers"], ["EL.GridCoverage"])
-            self.assertEqual(component2["overlays"][1]["uuid"], str(wmsMap3.uuid))
+            self.assertEqual(component2["overlays"][1]["uuid"], str(wms_map3.uuid))
             self.assertEqual(component2["overlays"][1]["layers"], ["lgn-actueel"])
 
             # Validate the export file contents
@@ -1085,25 +1087,25 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(len(wms_tile_layers_export), 3)
             self.assertIn(
                 {
-                    "uuid": str(wmsMap1.uuid),
-                    "name": wmsMap1.name,
-                    "url": wmsMap1.url,
+                    "uuid": str(wms_map1.uuid),
+                    "name": wms_map1.name,
+                    "url": wms_map1.url,
                 },
                 wms_tile_layers_export,
             )
             self.assertIn(
                 {
-                    "uuid": str(wmsMap2.uuid),
-                    "name": wmsMap2.name,
-                    "url": wmsMap2.url,
+                    "uuid": str(wms_map2.uuid),
+                    "name": wms_map2.name,
+                    "url": wms_map2.url,
                 },
                 wms_tile_layers_export,
             )
             self.assertIn(
                 {
-                    "uuid": str(wmsMap3.uuid),
-                    "name": wmsMap3.name,
-                    "url": wmsMap3.url,
+                    "uuid": str(wms_map3.uuid),
+                    "name": wms_map3.name,
+                    "url": wms_map3.url,
                 },
                 wms_tile_layers_export,
             )
@@ -1111,17 +1113,17 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(len(wmts_tile_layers_export), 2)
             self.assertIn(
                 {
-                    "identifier": wmtsMap1.identifier,
-                    "label": wmtsMap1.label,
-                    "url": wmtsMap1.url,
+                    "identifier": wmts_map1.identifier,
+                    "label": wmts_map1.label,
+                    "url": wmts_map1.url,
                 },
                 wmts_tile_layers_export,
             )
             self.assertIn(
                 {
-                    "identifier": wmtsMap2.identifier,
-                    "label": wmtsMap2.label,
-                    "url": wmtsMap2.url,
+                    "identifier": wmts_map2.identifier,
+                    "label": wmts_map2.label,
+                    "url": wmts_map2.url,
                 },
                 wmts_tile_layers_export,
             )
@@ -1129,19 +1131,19 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(len(yivi_attribute_groups_export), 2)
             self.assertIn(
                 {
-                    "uuid": str(yiviAttributeGroup1.uuid),
-                    "name": yiviAttributeGroup1.name,
-                    "description": yiviAttributeGroup1.description,
-                    "attributes": ",".join(yiviAttributeGroup1.attributes),
+                    "uuid": str(yivi_attribute_group1.uuid),
+                    "name": yivi_attribute_group1.name,
+                    "description": yivi_attribute_group1.description,
+                    "attributes": ",".join(yivi_attribute_group1.attributes),
                 },
                 yivi_attribute_groups_export,
             )
             self.assertIn(
                 {
-                    "uuid": str(yiviAttributeGroup2.uuid),
-                    "name": yiviAttributeGroup2.name,
-                    "description": yiviAttributeGroup2.description,
-                    "attributes": ",".join(yiviAttributeGroup2.attributes),
+                    "uuid": str(yivi_attribute_group2.uuid),
+                    "name": yivi_attribute_group2.name,
+                    "description": yivi_attribute_group2.description,
+                    "attributes": ",".join(yivi_attribute_group2.attributes),
                 },
                 yivi_attribute_groups_export,
             )
