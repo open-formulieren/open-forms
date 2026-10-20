@@ -138,7 +138,7 @@ django==5.2.18
     #   mozilla-django-oidc-db
     #   sentry-sdk
     #   zgw-consumers
-django-admin-index==4.0.0
+django-admin-index==5.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
@@ -348,7 +348,7 @@ mail-parser==4.1.4
     # via django-yubin
 markdown-it-py==4.0.0
     # via rich
-maykin-2fa==2.1.0
+maykin-2fa==3.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
