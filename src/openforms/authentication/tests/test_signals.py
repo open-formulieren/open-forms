@@ -7,6 +7,7 @@ import time_machine
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.initial_data.tests.factories import InitialSubmissionDataFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -228,6 +229,39 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertEqual(instance.auth_info.plugin, "organization_plugin")
         self.assertEqual(instance.auth_info.attribute, AuthAttribute.employee_id)
         self.assertEqual(instance.auth_info.value, "my-employee-id")
+
+    def test_attributes_set_with_registrator_info_from_initial_data(self):
+        initial_data = InitialSubmissionDataFactory.create()
+        assert initial_data.can_be_used
+        register = Registry()
+        register("organization_plugin")(ProvidesEmployeePlugin)
+        instance = SubmissionFactory.create(form=initial_data.form)
+        request = factory.get("/foo")
+        request.user = StaffUserFactory.create(username="Joe")
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "organization_plugin",
+                    "attribute": AuthAttribute.employee_id,
+                    "value": "my-employee-id",
+                },
+                REGISTRATOR_SUBJECT_SESSION_KEY: {
+                    "attribute": AuthAttribute.bsn,
+                    "value": "123",
+                    "representee_ref": str(initial_data.uuid),
+                },
+            }
+        )
+
+        with mock_register(register):
+            set_auth_attribute_on_session(
+                sender=None, instance=instance, request=request
+            )
+
+        initial_data.refresh_from_db()
+        self.assertEqual(initial_data.used_for_submission, instance)
+        self.assertFalse(initial_data.can_be_used)
 
     @tag("gh-1959")
     def test_setting_auth_attributes_flips_hashed_flag(self):
