@@ -29,6 +29,30 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.0.3 (2026-10-21)
+==================
+
+Hotfix release addressing the "emSign" certificate compromise.
+
+While this is a security update, we expect the exploitability of MITM attackers to be
+low given the typical landscapes where Open Forms is deployed and operated.
+
+* Updated the ``certifi`` certificate trust store.
+* [:backend:`6683`] Fixed a UI crash when configuring service fetch before a target
+  variable is selected.
+
+3.5.11 (2026-10-21)
+===================
+
+Hotfix release addressing the "emSign" certificate compromise.
+
+While this is a security update, we expect the exploitability of MITM attackers to be
+low given the typical landscapes where Open Forms is deployed and operated.
+
+* Updated the ``certifi`` certificate trust store.
+* [:backend:`6683`] Fixed a UI crash when configuring service fetch before a target
+  variable is selected.
+
 4.1.0-alpha.1 (2026-10-09)
 ==========================
 
