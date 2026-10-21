@@ -696,7 +696,7 @@ class FormAPIExportRequestSerializer(serializers.Serializer):
         )
 
 
-class FormImportSerializer(serializers.Serializer):
+class FormAPIImportRequestSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
