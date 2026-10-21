@@ -26,7 +26,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
-from ..import_export.service import export_form, import_form
+from ..import_export.service import FormImportOptions, export_form, import_form
 from ..json_schema import generate_json_schema
 from ..messages import add_success_message
 from ..models import (
@@ -788,7 +788,10 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        form_instance = import_form(serializer.validated_data["file"])
+        # TODO set the correct import options for API import
+        form_instance = import_form(
+            serializer.validated_data["file"], FormImportOptions()
+        )
         assert form_instance
 
         response_serializer = FormImportResponseSerializer(instance=form_instance)

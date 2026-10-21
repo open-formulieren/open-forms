@@ -1,39 +1,8 @@
-from collections.abc import Mapping
-
 from openforms.typing import JSONObject
 
 from ..models import Form
 from .datastructures import FormExportOptions
-from .resources import (
-    BaseResource,
-    ProductResource,
-    WMSTileLayerResource,
-    WMTSTileLayerResource,
-    YiviAttributeGroupResource,
-)
-from .typing import AdditionalFormConfigurationOptions
-
-type ExportResourceConfig = tuple[type[BaseResource], str]
-
-
-ADDITIONAL_FORM_CONFIGURATION_RESOURCES: Mapping[
-    AdditionalFormConfigurationOptions,
-    ExportResourceConfig,
-] = {
-    AdditionalFormConfigurationOptions.product: (ProductResource, "product"),
-    AdditionalFormConfigurationOptions.wms_tile_layers: (
-        WMSTileLayerResource,
-        "wmsTileLayers",
-    ),
-    AdditionalFormConfigurationOptions.wmts_tile_layers: (
-        WMTSTileLayerResource,
-        "wmtsTileLayers",
-    ),
-    AdditionalFormConfigurationOptions.yivi_attribute_groups: (
-        YiviAttributeGroupResource,
-        "yiviAttributeGroups",
-    ),
-}
+from .resources import ADDITIONAL_FORM_CONFIGURATION_RESOURCES
 
 
 def get_additional_form_configuration_data(

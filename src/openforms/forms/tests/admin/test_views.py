@@ -1,6 +1,6 @@
 import io
 import json
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 from zipfile import ZipFile
 
 from django.core.files import File
@@ -16,7 +16,9 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
+from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.admin.tasks import process_forms_export
+from openforms.forms.import_export.constants import FormConfigurationOptions
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
@@ -256,6 +258,68 @@ class TestImportView(WebTest):
 
         self.assertEqual(302, submission_response.status_code)
         m_bulk_import.assert_called()
+
+        # When no import options are specified, the default options are used
+        m_bulk_import.assert_called_with(
+            ANY,  # Path to the import file
+            user.id,
+            import_options={
+                "form_configuration": list(FormConfigurationOptions),
+                "additional_form_configuration": [],
+                "theme_uuid": None,
+                "category_uuid": None,
+            },
+        )
+
+        submission_response = submission_response.follow()
+        messages = list(submission_response.context.get("messages"))
+
+        self.assertEqual(1, len(messages))
+        self.assertEqual(
+            "The bulk import is being processed! The imported forms will soon be available.",
+            messages[0].message,
+        )
+
+    @patch("openforms.forms.admin.views.process_forms_import.delay")
+    def test_bulk_import_with_options(self, m_bulk_import):
+        form1, form2 = FormFactory.create_batch(2)
+        theme = ThemeFactory.create()
+        user = SuperUserFactory.create(email="test@email.nl")
+
+        process_forms_export(
+            forms_uuids=[form1.uuid, form2.uuid],
+            user_id=user.id,
+            export_options={},
+        )
+
+        form_export = FormsExport.objects.get()
+
+        response = self.app.get(reverse("admin:forms_import"), user=user)
+
+        self.assertEqual(200, response.status_code)
+
+        html_form = response.form
+        html_form["file"] = (
+            "file.zip",
+            form_export.export_content.read(),
+        )
+        html_form["theme"] = str(theme.uuid)
+        submission_response = html_form.submit("_import")
+
+        self.assertEqual(302, submission_response.status_code)
+        m_bulk_import.assert_called()
+
+        # The bulk import is called with the theme import option + the default options
+        m_bulk_import.assert_called_with(
+            ANY,  # Path to the import file
+            user.id,
+            import_options={
+                "form_configuration": list(FormConfigurationOptions),
+                "additional_form_configuration": [],
+                "theme_uuid": str(theme.uuid),
+                "category_uuid": None,
+            },
+        )
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))

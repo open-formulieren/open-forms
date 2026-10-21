@@ -730,7 +730,7 @@ class Form(models.Model):
     def restore_old_version(
         self, form_version_uuid: str, user: User | None = None
     ) -> None:
-        from ..import_export.service import import_form_data
+        from ..import_export.service import FormImportOptions, import_form_data
         from .form_version import FormVersion
 
         # we use the window function to find the record with its index in _all_
@@ -752,7 +752,7 @@ class Form(models.Model):
         # it will be replaced with the import data.
         self._delete_current_form_configuration()
 
-        import_form_data(old_version_data, form_version.form)
+        import_form_data(old_version_data, FormImportOptions(), form_version.form)
 
         # now create a new FormVersion for this restore as well, tracking those nuances
         # in the description.

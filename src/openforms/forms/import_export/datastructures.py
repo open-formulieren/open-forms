@@ -1,6 +1,9 @@
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 
+from openforms.config.models import Theme
+
+from ..models import Category
 from .constants import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
@@ -23,13 +26,20 @@ class FormConfigurationCleanup[RT]:
 class FormExportOptions:
     remove_sensitive_content: bool = True
     form_configuration: Sequence[FormConfigurationOptions] = field(
-        default_factory=lambda: [
-            FormConfigurationOptions.registration_backends,
-            FormConfigurationOptions.prefill,
-            FormConfigurationOptions.payment_backend,
-            FormConfigurationOptions.auth_backends,
-        ]
+        default_factory=lambda: list(FormConfigurationOptions)
     )
     additional_form_configuration: Sequence[AdditionalFormConfigurationOptions] = field(
         default_factory=list
     )
+
+
+@dataclass(slots=True)
+class FormImportOptions:
+    form_configuration: Sequence[FormConfigurationOptions] = field(
+        default_factory=lambda: list(FormConfigurationOptions)
+    )
+    additional_form_configuration: Sequence[AdditionalFormConfigurationOptions] = field(
+        default_factory=list
+    )
+    theme: Theme | None = None
+    category: Category | None = None

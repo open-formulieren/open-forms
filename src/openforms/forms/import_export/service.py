@@ -10,10 +10,10 @@ from .constants import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
 )
-from .datastructures import FormExportOptions
+from .datastructures import FormExportOptions, FormImportOptions
 from .export_form import export_form, form_to_json
 from .import_form import import_form, import_form_data
-from .typing import FormExportOptionsData
+from .typing import FormExportOptionsData, FormImportOptionsData
 
 __all__ = [
     "EXPORT_META_KEY",
@@ -21,6 +21,8 @@ __all__ = [
     "FormConfigurationOptions",
     "FormExportOptions",
     "FormExportOptionsData",
+    "FormImportOptions",
+    "FormImportOptionsData",
     "export_form",
     "form_to_json",
     "import_form",
