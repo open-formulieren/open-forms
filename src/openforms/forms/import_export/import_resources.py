@@ -50,9 +50,20 @@ def import_additional_form_configuration_data(
                 case RowResult.IMPORT_TYPE_SKIP:
                     new_identifier = getattr(result.original, identifier_field)
 
+                case RowResult.IMPORT_TYPE_INVALID:  # pragma: no cover
+                    assert result.validation_error is not None
+                    raise result.validation_error
+
+                case RowResult.IMPORT_TYPE_ERROR:
+                    exceptions = [error.error for error in result.errors]
+                    raise ExceptionGroup(
+                        f"Something went wrong importing the {output_name}.json data",
+                        exceptions,
+                    )
+
                 case _:  # pragma: no cover
-                    # If the import results in anything other than new or skip, then
-                    # something is going wrong
+                    # If the import results in anything other than new, skip or an error,
+                    # then something is going wrong
                     raise ValueError(f"Invalid import type: {result.import_type}")
 
             assert new_identifier is not None

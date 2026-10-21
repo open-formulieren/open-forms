@@ -1,6 +1,7 @@
 import json
 import tempfile
 import zipfile
+from decimal import Decimal
 from pathlib import Path
 from shutil import rmtree
 from textwrap import dedent
@@ -4008,6 +4009,106 @@ class ImportExportTests(TempdirMixin, TestCase):
                 }
             ],
         )
+
+    def test_import_with_missing_fields_in_additional_resources_configuration(self):
+        resources = {
+            "forms": [  # Regular form data
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                }
+            ],
+            "wmsTileLayers": [
+                {
+                    # Missing the "name" field
+                    "uuid": "20523058-a69b-4d8e-b58d-b6a9291e3b66",
+                    "url": "http://example.com",
+                },
+            ],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(ExceptionGroup) as exc:
+            import_form(
+                import_file=self.filepath,
+                import_options=FormImportOptions(
+                    additional_form_configuration=[
+                        AdditionalFormConfigurationOptions.wms_tile_layers
+                    ],
+                ),
+            )
+
+        self.assertEqual(
+            exc.exception.message,
+            "Something went wrong importing the wmsTileLayers.json data",
+        )
+        assert len(exc.exception.exceptions) == 1
+        self.assertEqual(
+            exc.exception.exceptions[0].args[0],
+            "Column 'name' not found in dataset. Available columns are: ['uuid', 'url']",
+        )
+
+    def test_import_with_unknown_fields_in_additional_resources_configuration(self):
+        # There shouldn't be any products yet
+        self.assertFalse(Product.objects.exists())
+
+        resources = {
+            "forms": [  # Regular form data
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "product": "http://testserver/api/v2/products/20523058-a69b-4d8e-b58d-b6a9291e3b66",
+                }
+            ],
+            "product": [
+                {
+                    "uuid": "20523058-a69b-4d8e-b58d-b6a9291e3b66",
+                    "name": "Product",
+                    "price": "1,00",
+                    "information": "product information",
+                    "unknown_field": "not supported field",
+                },
+            ],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        import_form(
+            import_file=self.filepath,
+            import_options=FormImportOptions(
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions.product
+                ],
+            ),
+        )
+
+        # A new product has been created
+        self.assertEqual(Product.objects.count(), 1)
+        imported_product = Product.objects.first()
+        assert imported_product is not None
+
+        # Product is imported with all provided data
+        self.assertEqual(imported_product.name, "Product")
+        self.assertEqual(imported_product.price, Decimal("1.00"))
+        self.assertEqual(imported_product.information, "product information")
+
+        imported_form = Form.objects.first()
+        assert imported_form is not None
+
+        # The imported form should use the product
+        self.assertIsNotNone(imported_form.product)
+        self.assertEqual(imported_form.product, imported_product)
 
     def test_import_option_with_theme(self):
         theme1 = ThemeFactory.create()
