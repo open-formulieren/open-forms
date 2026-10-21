@@ -13,6 +13,7 @@ def import_additional_form_configuration_data(
     resources: Mapping[str, str],
     import_options: FormImportOptions,
     uuid_mapping: UUIDMap,
+    force_deep_compare: bool = False,
 ) -> None:
     """
     Import additional form configuration data from the given resources.
@@ -21,6 +22,7 @@ def import_additional_form_configuration_data(
     :param import_options: The import options, specifying which additional form
         configuration data to import.
     :param uuid_mapping: The UUID mapping to update with the imported data.
+    :param force_deep_compare: Whether to force a deep comparison during import.
     """
     resources_to_import = set(import_options.additional_form_configuration)
 
@@ -32,7 +34,7 @@ def import_additional_form_configuration_data(
 
         # Run the import data through the resource
         dataset = tablib.Dataset().load(resources[output_name], "json")
-        results = resource().import_data(dataset)
+        results = resource(force_deep_compare=force_deep_compare).import_data(dataset)
 
         # Add the import results to the uuid mapping
         for result in results:

@@ -114,6 +114,7 @@ def import_form_data(
         resources=import_data,
         import_options=import_options,
         uuid_mapping=uuid_mapping,
+        force_deep_compare=existing_form_instance is not None,
     )
 
     if forms_data := import_data.get("forms"):
