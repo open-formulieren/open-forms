@@ -14,6 +14,18 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.11 (2026-10-21)
+===================
+
+Hotfix release addressing the "emSign" certificate compromise.
+
+While this is a security update, we expect the exploitability of MITM attackers to be
+low given the typical landscapes where Open Forms is deployed and operated.
+
+* Updated the ``certifi`` certificate trust store.
+* [:backend:`6683`] Fixed a UI crash when configuring service fetch before a target
+  variable is selected.
+
 3.5.10 (2026-10-08)
 ===================
 
