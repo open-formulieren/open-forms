@@ -50,9 +50,9 @@ from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
     FormAdminMessageSerializer,
+    FormAPIImportRequestSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
-    FormImportSerializer,
     FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
@@ -770,7 +770,7 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
 
 
 class FormsImportAPIView(views.APIView):
-    serializer_class = FormImportSerializer
+    serializer_class = FormAPIImportRequestSerializer
     parser_classes = (parsers.FileUploadParser,)
     authentication_classes = [TokenAuthentication]
     permission_classes = [FormAPIPermissions]
