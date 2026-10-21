@@ -700,6 +700,35 @@ class FormAPIImportRequestSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+    form_configuration = serializers.MultipleChoiceField(
+        choices=FormConfigurationOptions.choices,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+        required=False,
+    )
+    additional_form_configuration = serializers.MultipleChoiceField(
+        required=False,
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file "
+            "content."
+        ),
+    )
+    theme = serializers.SlugRelatedField(
+        required=False,
+        allow_null=True,
+        queryset=Theme.objects.all(),
+        help_text=_("Which theme should be used for the imported forms."),
+        slug_field="uuid",
+    )
+    category = serializers.SlugRelatedField(
+        required=False,
+        allow_null=True,
+        queryset=Category.objects.all(),
+        help_text=_("Which category should be applied to the imported forms."),
+        slug_field="uuid",
+    )
 
 
 class FormImportResponseSerializer(serializers.Serializer):
