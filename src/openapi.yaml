@@ -1476,9 +1476,12 @@ paths:
       - forms
       requestBody:
         content:
-          '*/*':
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/FormImport'
+              $ref: '#/components/schemas/FormAPIImportRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FormAPIImportRequest'
         required: true
       security:
       - tokenAuth: []
@@ -6860,6 +6863,18 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AdditionalFormConfigurationEnum:
+      enum:
+      - product
+      - wmsTileLayers
+      - wmtsTileLayers
+      - yiviAttributeGroups
+      type: string
+      description: |-
+        * `product` - Product
+        * `wmsTileLayers` - WMS-tile layers
+        * `wmtsTileLayers` - Background tile layers
+        * `yiviAttributeGroups` - Yivi attribute groups
     AddressSearchResult:
       type: object
       properties:
@@ -8040,6 +8055,38 @@ components:
       - submissionStatementsConfiguration
       - url
       - uuid
+    FormAPIImportRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: uri
+          description: The file that contains the form, form definitions and form
+            steps.
+        formConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormConfigurationEnum'
+          description: Which form configuration should be included in the export file
+            content.
+        additionalFormConfiguration:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalFormConfigurationEnum'
+          description: Which additional form configuration should be included in the
+            export file content.
+        theme:
+          type: string
+          format: uuid
+          nullable: true
+          description: Which theme should be used for the imported forms.
+        category:
+          type: string
+          format: uuid
+          nullable: true
+          description: Which category should be applied to the imported forms.
+      required:
+      - file
     FormAdminMessage:
       type: object
       description: Collect metadata about which (success) message to send.
@@ -8078,6 +8125,18 @@ components:
           title: authentication backend options
       required:
       - backend
+    FormConfigurationEnum:
+      enum:
+      - registrationBackends
+      - prefill
+      - paymentBackend
+      - authBackends
+      type: string
+      description: |-
+        * `registrationBackends` - Registration backends
+        * `prefill` - Prefill
+        * `paymentBackend` - Payment backend
+        * `authBackends` - Authentication backends
     FormData:
       type: object
       properties:
@@ -8397,16 +8456,6 @@ components:
           title: Help dialog content [en]
           description: Content displayed in the dialog/modal when the users clicks
             the help icon on a step. Leave blank to disable this functionality.
-    FormImport:
-      type: object
-      properties:
-        file:
-          type: string
-          format: uri
-          description: The file that contains the form, form definitions and form
-            steps.
-      required:
-      - file
     FormImportResponse:
       type: object
       properties:
