@@ -2340,7 +2340,7 @@
   "Ckzpff": [
     {
       "type": 0,
-      "value": "Gebruik een variabele"
+      "value": "Use a variable for the price"
     }
   ],
   "CtjZFq": [
@@ -2889,7 +2889,7 @@
   "FQswyM": [
     {
       "type": 0,
-      "value": "Modus"
+      "value": "Mode"
     }
   ],
   "FWCQJu": [
@@ -3107,7 +3107,7 @@
   "Gi+cvN": [
     {
       "type": 0,
-      "value": "Gebruik gekoppelde productprijs"
+      "value": "Use linked product price"
     }
   ],
   "GjcAY2": [
@@ -4168,6 +4168,12 @@
     {
       "type": 0,
       "value": "Compatibiliteitsinstellingen"
+    }
+  ],
+  "OAzUo1": [
+    {
+      "type": 0,
+      "value": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
     }
   ],
   "OB48En": [
@@ -7020,7 +7026,7 @@
   "fLHOey": [
     {
       "type": 0,
-      "value": "Prijslogica"
+      "value": "Pricing logic"
     }
   ],
   "fN5j5f": [
@@ -9778,7 +9784,7 @@
   "x6oxfg": [
     {
       "type": 0,
-      "value": "Variabele"
+      "value": "Variable"
     }
   ],
   "xBb5YI": [

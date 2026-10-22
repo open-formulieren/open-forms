@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
 import {components} from 'react-select';
+import type {OptionProps} from 'react-select';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {
@@ -10,9 +10,20 @@ import {
   groupVariablesBySource,
 } from 'components/admin/form_design/variables/utils';
 
+import {FieldChangeEvent, FormVariable} from '@/components/types';
+
 import {SelectWithoutFormik} from './ReactSelect';
 
-const VariableOption = props => {
+interface VariableData {
+  value: any;
+  label: string;
+  formDefinitionName: string;
+}
+interface VariableOptionProps extends OptionProps {
+  data: VariableData;
+}
+
+const VariableOption: React.FC<VariableOptionProps> = props => {
   const {value, label, formDefinitionName} = props.data;
   return (
     <components.Option {...props}>
@@ -37,7 +48,22 @@ const VariableOption = props => {
 
 const allowAny = () => true;
 
-const VariableSelection = ({
+interface VariableSelectionProps {
+  id: string;
+  name: string;
+  value: string | string[];
+  onChange: (event: FieldChangeEvent) => void;
+  includeStaticVariables?: boolean;
+  filter?: (...args: any[]) => boolean;
+}
+
+type VariableSource = 'component' | 'user_defined' | 'static';
+interface VariableGroup {
+  source: VariableSource;
+  variables: FormVariable[];
+}
+
+const VariableSelection: React.FC<VariableSelectionProps> = ({
   id,
   name,
   value,
@@ -49,15 +75,19 @@ const VariableSelection = ({
   const {formSteps, formVariables, staticVariables} = useContext(FormContext);
   const intl = useIntl();
 
-  let formDefinitionsNames = {};
+  let formDefinitionsNames: Record<string, string> = {};
   formSteps.forEach(step => {
-    formDefinitionsNames[step.formDefinition || step._generatedId] = step.internalName || step.name;
+    const formDefinitionsIndex = step.formDefinition || step._generatedId;
+    if (!formDefinitionsIndex) {
+      throw Error('Unable to determine an index for step');
+    }
+    formDefinitionsNames[formDefinitionsIndex] = step.internalName || step.name;
   });
 
   const allFormVariables = (includeStaticVariables ? staticVariables : []).concat(formVariables);
   const relevantVariables = allFormVariables.filter(variable => filter(variable));
 
-  const choices = groupVariablesBySource(relevantVariables).map(variableGroup => ({
+  const choices = groupVariablesBySource(relevantVariables).map((variableGroup: VariableGroup) => ({
     label: intl.formatMessage(getVariableSourceLabel(variableGroup.source)),
     options: variableGroup.variables.map(variable => ({
       label: variable.name,
@@ -74,21 +104,12 @@ const VariableSelection = ({
       className="form-variable-dropdown"
       name={name}
       options={choices}
-      onChange={newValue => onChange({target: {name, value: newValue}})}
+      onChange={(newValue: string) => onChange({target: {name, value: newValue}})}
       components={{Option: VariableOption}}
       value={value}
       {...props}
     />
   );
-};
-
-VariableSelection.propTypes = {
-  id: PropTypes.string,
-  name: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-  onChange: PropTypes.func.isRequired,
-  includeStaticVariables: PropTypes.bool,
-  filter: PropTypes.func,
 };
 
 export default VariableSelection;

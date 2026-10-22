@@ -116,7 +116,7 @@ const normalizeProduct = draft => {
     // extract UUID from URL - we don't have the available products in the top-level
     // state, so instead we parse the URL value
     default: {
-      const [productUUID] = new URL(form.product).pathname.split('/').toReversed();
+      const [productUUID] = new URL(form.product.url).pathname.split('/').toReversed();
       form.product = productUUID || null;
       break;
     }

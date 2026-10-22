@@ -32,7 +32,6 @@ import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
 import PaymentFields from './PaymentFields';
 import PriceLogic from './PriceLogic';
-import ProductFields from './ProductFields';
 import RegistrationFields from './RegistrationFields';
 import {SubmissionLimitFields} from './SubmissionFields';
 import Tab from './Tab';
@@ -53,6 +52,7 @@ import {
 } from './constants';
 import {loadForm, loadFromBackend, saveCompleteForm} from './data';
 import {updateWarningsValidationError} from './logic/utils';
+import ProductFields from './products/ProductFields';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {
   assignInitialTranslations,
@@ -1451,7 +1451,11 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 backendOptions={state.form.payment.options}
                 onChange={onFieldChange}
               />
-              <PriceLogic variableKey={state.form.priceVariableKey} onFieldChange={onFieldChange} />
+              <PriceLogic
+                isOpenProduct={!!state.form.product?.producttype}
+                variableKey={state.form.priceVariableKey}
+                onFieldChange={onFieldChange}
+              />
             </TabPanel>
           )}
 
