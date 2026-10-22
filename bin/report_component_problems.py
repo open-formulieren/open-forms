@@ -197,6 +197,16 @@ def check_component(component: Component) -> Iterator[str]:
         case {"prefill": {"plugin": None} | {"attribute": None}}:
             yield "null value(s) found in prefill config"
 
+    for key in ("errors", "translatedErrors", "registration", "prefill", "openForms"):
+        if key in component and component["key"] is None:
+            yield f"'{key}' is null (should be omitted or empty object)"
+
+    match component:
+        case {"validate": {"maxLength": None}}:
+            yield "'validate.maxLength' is null (should be omitted or an integer)"
+        case {"type": "map", "tileLayerIdentifier": None}:
+            yield "'tileLayerIdentifier' is null (should be omitted or empty string)"
+
 
 def check_component_html_usage(component: Component) -> list[str]:
     messages = []
