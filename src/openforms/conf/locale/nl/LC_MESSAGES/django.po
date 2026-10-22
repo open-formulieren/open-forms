@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 11:57+0200\n"
+"POT-Creation-Date: 2026-10-20 17:08+0200\n"
 "PO-Revision-Date: 2026-10-09 11:57+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -128,7 +128,7 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:97 openforms/forms/models/form.py:876
+#: openforms/accounts/models.py:97 openforms/forms/models/form.py:895
 #: openforms/forms/models/form_version.py:86 soap/models.py:53
 msgid "user"
 msgstr "gebruiker"
@@ -1613,7 +1613,7 @@ msgid "The authentication attribute provided by this plugin."
 msgstr "Het authenticatie attribuut geleverd door deze plugin."
 
 #: openforms/authentication/api/serializers.py:28
-#: openforms/forms/api/viewsets.py:655 openforms/payments/api/serializers.py:18
+#: openforms/forms/api/viewsets.py:654 openforms/payments/api/serializers.py:18
 #: openforms/registrations/api/serializers.py:13
 msgid "JSON schema"
 msgstr "JSON-schema"
@@ -2161,7 +2161,7 @@ msgstr ""
 #: openforms/forms/api/serializers/logic/action_serializers.py:214
 #: openforms/forms/api/v3/serializers/logic_rules.py:52
 #: openforms/forms/models/category.py:10 openforms/forms/models/form.py:81
-#: openforms/forms/models/form.py:863
+#: openforms/forms/models/form.py:882
 #: openforms/forms/models/form_definition.py:43
 #: openforms/forms/models/form_step.py:27
 #: openforms/forms/models/form_version.py:66 openforms/forms/models/logic.py:22
@@ -5314,7 +5314,7 @@ msgid "form count"
 msgstr "aantal formulieren"
 
 #: openforms/forms/admin/category.py:37 openforms/forms/admin/form.py:265
-#: openforms/forms/api/serializers/logic/form_logic.py:132
+#: openforms/forms/api/serializers/logic/form_logic.py:129
 #: openforms/submissions/api/serializers.py:245
 #: openforms/config/templates/admin/config/overview.html:25
 msgid "Actions"
@@ -5470,7 +5470,7 @@ msgid "Form configuration"
 msgstr "Formulierconfiguratie"
 
 #: openforms/forms/admin/views.py:60
-#: openforms/forms/api/serializers/form.py:763
+#: openforms/forms/api/serializers/form.py:674
 msgid "Which form configuration should be included in the export file content."
 msgstr "Welke onderdelen in het exportbestand moeten komen."
 
@@ -5479,7 +5479,7 @@ msgid "Additional form configuration"
 msgstr "Ondersteunende configuratie"
 
 #: openforms/forms/admin/views.py:70
-#: openforms/forms/api/serializers/form.py:771
+#: openforms/forms/api/serializers/form.py:682
 msgid ""
 "Which additional form configuration should be included in the export file "
 "content."
@@ -5515,7 +5515,7 @@ msgid "UUID of the form the definition is used in."
 msgstr "UUID van het formulier waarin de definitie gebruikt wordt."
 
 #: openforms/forms/api/public_api/views.py:17
-#: openforms/forms/api/viewsets.py:230
+#: openforms/forms/api/viewsets.py:229
 msgid "List forms"
 msgstr "Formulieren weergeven"
 
@@ -5528,49 +5528,49 @@ msgstr ""
 "informatie. Formulieren die als \"verwijderd\" gemarkeerd zijn, komen niet "
 "terug."
 
-#: openforms/forms/api/serializers/form.py:87
+#: openforms/forms/api/serializers/form.py:83
 #: openforms/forms/models/form_authentication_backend.py:21
 msgid "authentication backend options"
 msgstr "authenticatie-backend-instellingen"
 
-#: openforms/forms/api/serializers/form.py:112
+#: openforms/forms/api/serializers/form.py:108
 #: openforms/forms/models/form_registration_backend.py:29
 msgid "registration backend options"
 msgstr "registratie backend opties"
 
-#: openforms/forms/api/serializers/form.py:155
+#: openforms/forms/api/serializers/form.py:151
 msgid "Help callout page display"
 msgstr "Weergave van de hulp-uitlegpagina"
 
-#: openforms/forms/api/serializers/form.py:156
+#: openforms/forms/api/serializers/form.py:152
 msgid "When to display the help callout page."
 msgstr "Wanneer de hulp-uitlegpagina getoond moet worden."
 
-#: openforms/forms/api/serializers/form.py:161
+#: openforms/forms/api/serializers/form.py:157
 msgid "Help callout page content"
 msgstr "Inhoud van de hulp-uitlegpagina"
 
-#: openforms/forms/api/serializers/form.py:163
+#: openforms/forms/api/serializers/form.py:159
 msgid ""
 "Content for the help callout page, fetched from the global configuration."
 msgstr ""
 "Inhoud van de hulp-uitlegpagina, opgehaald vanuit de algemene configuratie."
 
-#: openforms/forms/api/serializers/form.py:169
+#: openforms/forms/api/serializers/form.py:165
 msgid "Help callout page image"
 msgstr "Afbeelding voor de hulp-uitlegpagina"
 
-#: openforms/forms/api/serializers/form.py:171
+#: openforms/forms/api/serializers/form.py:167
 msgid "Image for the help callout page, fetched from the global configuration."
 msgstr ""
 "Afbeelding voor de hulp-uitlegpagina, opgehaald vanuit de algemene "
 "configuratie."
 
-#: openforms/forms/api/serializers/form.py:181
+#: openforms/forms/api/serializers/form.py:177
 msgid "Content"
 msgstr "Inhoud"
 
-#: openforms/forms/api/serializers/form.py:183
+#: openforms/forms/api/serializers/form.py:179
 #: openforms/forms/models/form.py:424
 msgid ""
 "Content displayed in the dialog/modal when the users clicks the help icon on "
@@ -5579,11 +5579,11 @@ msgstr ""
 "De tekst die getoond wordt in een dialoogvenster wanneer de gebruiker op de "
 "\"Hulp\"-knop klikt. Laat deze leeg om deze functionaliteit uit te schakelen."
 
-#: openforms/forms/api/serializers/form.py:192
+#: openforms/forms/api/serializers/form.py:188
 msgid "Optional image"
 msgstr "Optionele afbeelding"
 
-#: openforms/forms/api/serializers/form.py:194
+#: openforms/forms/api/serializers/form.py:190
 msgid ""
 "The image shown below the content in the help dialog. If no help content is "
 "configured, this has no effect. When uploading an image, make sure to base64-"
@@ -5593,11 +5593,11 @@ msgstr ""
 "De afbeelding wordt enkel getoond als er een inhoud is opgegeven. De "
 "afbeelding moet base64-gecodeerd zijn."
 
-#: openforms/forms/api/serializers/form.py:224
+#: openforms/forms/api/serializers/form.py:220
 msgid "cosign request has links in email"
 msgstr "mede-ondertekenenverzoek-e-mail bevat links"
 
-#: openforms/forms/api/serializers/form.py:226
+#: openforms/forms/api/serializers/form.py:222
 msgid ""
 "Indicates whether deep links are included in the cosign request emails or "
 "not."
@@ -5605,7 +5605,7 @@ msgstr ""
 "Geeft aan of er links gebruikt worden in de e-mail voor mede-"
 "ondertekenverzoek."
 
-#: openforms/forms/api/serializers/form.py:234
+#: openforms/forms/api/serializers/form.py:230
 #: openforms/forms/api/v3/serializers/form.py:142
 msgid ""
 "The authentication backend to which the user will be automatically "
@@ -5616,50 +5616,50 @@ msgstr ""
 "bij het starten van het formulier. De gekozen plugin moet aanwezig zijn in "
 "`auth_backends`"
 
-#: openforms/forms/api/serializers/form.py:241
+#: openforms/forms/api/serializers/form.py:237
 #: openforms/forms/models/category.py:19
 msgid "category"
 msgstr "categorie"
 
-#: openforms/forms/api/serializers/form.py:247
+#: openforms/forms/api/serializers/form.py:243
 msgid "URL to the category in the Open Forms API"
 msgstr "URL naar de formuliercategorie in de Open Forms API"
 
-#: openforms/forms/api/serializers/form.py:250
+#: openforms/forms/api/serializers/form.py:246
 #: openforms/config/models/theme.py:156
 msgid "theme"
 msgstr "stijl"
 
-#: openforms/forms/api/serializers/form.py:256
+#: openforms/forms/api/serializers/form.py:252
 msgid "URL to the theme in the Open Forms API"
 msgstr "URL naar de stijl in de Open Forms API"
 
-#: openforms/forms/api/serializers/form.py:259
+#: openforms/forms/api/serializers/form.py:255
 msgid "product"
 msgstr "product"
 
-#: openforms/forms/api/serializers/form.py:265
+#: openforms/forms/api/serializers/form.py:261
 msgid "URL to the product in the Open Forms API"
 msgstr "URL van het product in de Open Formulieren API"
 
-#: openforms/forms/api/serializers/form.py:273
+#: openforms/forms/api/serializers/form.py:269
 #: openforms/forms/models/form.py:135
 msgid "payment backend options"
 msgstr "betaalprovider backend opties"
 
-#: openforms/forms/api/serializers/form.py:295
+#: openforms/forms/api/serializers/form.py:291
 msgid "Resume link lifetime"
 msgstr "Geldigheidsduur \"formulier hervatten\"-link"
 
-#: openforms/forms/api/serializers/form.py:297
+#: openforms/forms/api/serializers/form.py:293
 msgid "The number of days that the resume link is valid for."
 msgstr "Het aantal dagen dat de link geldig blijft."
 
-#: openforms/forms/api/serializers/form.py:305
+#: openforms/forms/api/serializers/form.py:301
 msgid "submission statements configuration"
 msgstr "Verklaringenconfiguratie voor inzending"
 
-#: openforms/forms/api/serializers/form.py:307
+#: openforms/forms/api/serializers/form.py:303
 msgid ""
 "A list of statements that need to be accepted by the user before they can "
 "submit a form. Returns a list of formio component definitions, all of type "
@@ -5669,12 +5669,12 @@ msgstr ""
 "te kunnen inzenden. Deze worden teruggegeven als lijst van Form.io-"
 "componentdefinities, allemaal van het type 'checkbox'."
 
-#: openforms/forms/api/serializers/form.py:330
+#: openforms/forms/api/serializers/form.py:326
 #: openforms/forms/api/v3/serializers/form.py:166
 msgid "Help dialog configuration"
 msgstr "Hulpdialoogvensterconfiguratie"
 
-#: openforms/forms/api/serializers/form.py:332
+#: openforms/forms/api/serializers/form.py:328
 #: openforms/forms/api/v3/serializers/form.py:168
 msgid ""
 "When the nested content field is not empty, the SDK should render help "
@@ -5683,7 +5683,7 @@ msgstr ""
 "Wanneer het onderliggende inhoud veld ingevuld is, zal de SDK een \"Hulp\"-"
 "knop tonen om gebruikers te ondersteunen met het invullen van het formulier."
 
-#: openforms/forms/api/serializers/form.py:663
+#: openforms/forms/api/serializers/form.py:574
 #: openforms/forms/api/v3/serializers/form.py:817
 msgid ""
 "The `auto_login_authentication_backend` must be one of the selected backends "
@@ -5692,46 +5692,46 @@ msgstr ""
 "De `auto_login_authentication_backend` moet één van de backends uit "
 "`auth_backends` zijn."
 
-#: openforms/forms/api/serializers/form.py:755
+#: openforms/forms/api/serializers/form.py:666
 msgid ""
 "Whether sensative form configuration should be anonymized during exporting."
 msgstr ""
 "Geeft aan of gevoelige/interne formulierconfiguratie geanonimiseerd moet "
 "worden tijdens het exporteren."
 
-#: openforms/forms/api/serializers/form.py:790
+#: openforms/forms/api/serializers/form.py:701
 msgid "The file that contains the form, form definitions and form steps."
 msgstr ""
 "Het bestand dat het formulier, de formulierdefinities en de formulierstappen "
 "bevat."
 
-#: openforms/forms/api/serializers/form.py:795
+#: openforms/forms/api/serializers/form.py:706
 msgid "The uuid of the imported form."
 msgstr "ID van het geïmporteerde formulier."
 
-#: openforms/forms/api/serializers/form.py:800
+#: openforms/forms/api/serializers/form.py:711
 msgid "Registration backend key"
 msgstr "Registratiebackend-sleutel"
 
-#: openforms/forms/api/serializers/form.py:802
+#: openforms/forms/api/serializers/form.py:713
 msgid "The registration backend key for which to generate the schema."
 msgstr ""
 "De registratiebackend-sleutel waarvoor het schema moet worden gegenereerd."
 
-#: openforms/forms/api/serializers/form.py:807
+#: openforms/forms/api/serializers/form.py:718
 msgid "Registration backend identifier"
 msgstr "Registratiebackend-identificatie"
 
-#: openforms/forms/api/serializers/form.py:812
+#: openforms/forms/api/serializers/form.py:723
 msgid "Registration backend options"
 msgstr "Registratiebackend-instellingen"
 
-#: openforms/forms/api/serializers/form.py:824
+#: openforms/forms/api/serializers/form.py:735
 #, python-brace-format
 msgid "Backend with key '{key}' does not exist for form '{form}'"
 msgstr "Backend met sleutel '{key}' bestaat niet voor formulier '{form}'"
 
-#: openforms/forms/api/serializers/form.py:841
+#: openforms/forms/api/serializers/form.py:752
 #, python-brace-format
 msgid "Backend with id '{backend}' does not allow JSON schema generation"
 msgstr ""
@@ -6039,18 +6039,18 @@ msgstr ""
 msgid "Invalid form step specified in logic action."
 msgstr "Ongeldige formulierstapverwijzing."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:39
+#: openforms/forms/api/serializers/logic/form_logic.py:36
 msgid "Appointment forms cannot have logic rules."
 msgstr "Afspraakformulieren kunnen geen logicaregels bevatten."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:65
+#: openforms/forms/api/serializers/logic/form_logic.py:62
 #: openforms/forms/api/v3/serializers/form.py:310
 #, python-brace-format
 msgid "Rule contains cycles through variable(s): {variables}."
 msgstr ""
 "De regel bevat verwijzingen naar zichzelf, via de variabele(n): {variables}."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:134
+#: openforms/forms/api/serializers/logic/form_logic.py:131
 #: openforms/forms/api/v3/serializers/logic_rules.py:100
 #: openforms/submissions/api/serializers.py:247
 msgid "Actions triggered when the trigger expression evaluates to 'truthy'."
@@ -6058,12 +6058,12 @@ msgstr ""
 "Acties die worden geactiveerd wanneer de trigger-expressie wordt geëvalueerd "
 "als 'truthy'."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:143
+#: openforms/forms/api/serializers/logic/form_logic.py:140
 #: openforms/forms/models/form_step.py:85 openforms/forms/models/logic.py:36
 msgid "form steps"
 msgstr "formulierstappen"
 
-#: openforms/forms/api/serializers/logic/form_logic.py:145
+#: openforms/forms/api/serializers/logic/form_logic.py:142
 msgid ""
 "Form steps on which the rule will be executed, determined by logic rule "
 "analysis."
@@ -6071,7 +6071,7 @@ msgstr ""
 "Formulierstappen waarop de logicaregel wordt toegepast, bepaald door de "
 "logicaregel-analyse."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:168
+#: openforms/forms/api/serializers/logic/form_logic.py:165
 #: openforms/forms/api/v3/serializers/logic_rules.py:119
 msgid ""
 "The trigger expression to determine if the actions should execute or not. "
@@ -6082,7 +6082,7 @@ msgstr ""
 "op dat dit een valide JSON-logic expressie moet zijn en de eerste operand "
 "moet een verwijzing zijn naar een variabele in het formulier."
 
-#: openforms/forms/api/serializers/logic/form_logic.py:182
+#: openforms/forms/api/serializers/logic/form_logic.py:179
 #: openforms/forms/api/v3/serializers/logic_rules.py:128
 msgid ""
 "Order of the rule relative to the form it belongs to. Logic rules are "
@@ -6301,39 +6301,39 @@ msgstr ""
 "\"{location}) in het veld \"{property}\": er zijn sjabloonsyntaxfouten in de "
 "expressie."
 
-#: openforms/forms/api/viewsets.py:80 openforms/forms/api/viewsets.py:222
+#: openforms/forms/api/viewsets.py:79 openforms/forms/api/viewsets.py:221
 msgid "Either a UUID4 or a slug identifiying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:85
+#: openforms/forms/api/viewsets.py:84
 msgid "List form steps"
 msgstr "Formulierstappen weergeven"
 
-#: openforms/forms/api/viewsets.py:86
+#: openforms/forms/api/viewsets.py:85
 msgid "Retrieve form step details"
 msgstr "Formulierstap details weergeven"
 
-#: openforms/forms/api/viewsets.py:87
+#: openforms/forms/api/viewsets.py:86
 msgid "Create a form step"
 msgstr "Formulierstap aanmaken"
 
-#: openforms/forms/api/viewsets.py:88
+#: openforms/forms/api/viewsets.py:87
 msgid "Update all details of a form step"
 msgstr "Formulierstap in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:89
+#: openforms/forms/api/viewsets.py:88
 msgid "Update some details of a form step"
 msgstr "Formulierstap gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:90
+#: openforms/forms/api/viewsets.py:89
 msgid "Delete a form step"
 msgstr "Formulierstap verwijderen"
 
-#: openforms/forms/api/viewsets.py:133
+#: openforms/forms/api/viewsets.py:132
 msgid "List form step definitions"
 msgstr "Formulierstap definities weergeven"
 
-#: openforms/forms/api/viewsets.py:135
+#: openforms/forms/api/viewsets.py:134
 #, python-brace-format
 msgid ""
 "Get a list of existing form definitions, where a single item may be a re-"
@@ -6373,31 +6373,31 @@ msgstr ""
 "\n"
 "{admin_fields}"
 
-#: openforms/forms/api/viewsets.py:150
+#: openforms/forms/api/viewsets.py:149
 msgid "Retrieve form step definition details"
 msgstr "Formulierstap definitie details weergeven"
 
-#: openforms/forms/api/viewsets.py:154
+#: openforms/forms/api/viewsets.py:153
 msgid "Create a form definition"
 msgstr "Formulierdefinitie toevoegen"
 
-#: openforms/forms/api/viewsets.py:158
+#: openforms/forms/api/viewsets.py:157
 msgid "Update all details of a form definition"
 msgstr "Formulierdefinitie in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:162
+#: openforms/forms/api/viewsets.py:161
 msgid "Update some details of a form definition"
 msgstr "formulierdefinitie gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:166
+#: openforms/forms/api/viewsets.py:165
 msgid "Delete a form definition"
 msgstr "Verwijder een formulierdefinitie"
 
-#: openforms/forms/api/viewsets.py:197
+#: openforms/forms/api/viewsets.py:196
 msgid "Retrieve form definition JSON schema"
 msgstr "Formulierdefinitie JSON schema weergeven"
 
-#: openforms/forms/api/viewsets.py:232
+#: openforms/forms/api/viewsets.py:231
 #, python-brace-format
 msgid ""
 "List the active forms, including the pointers to the form steps. Form steps "
@@ -6424,18 +6424,18 @@ msgstr ""
 "\n"
 "{admin_fields}"
 
-#: openforms/forms/api/viewsets.py:241
+#: openforms/forms/api/viewsets.py:240
 msgid "Retrieve form details"
 msgstr "Formulier details weergeven"
 
-#: openforms/forms/api/viewsets.py:249
+#: openforms/forms/api/viewsets.py:248
 msgid ""
 "If used, then all authorization methods are visible when the form starts"
 msgstr ""
 "Indien gebruikt, zijn alle autorisatieopties zichtbaar wanneer het formulier "
 "wordt gestart."
 
-#: openforms/forms/api/viewsets.py:255
+#: openforms/forms/api/viewsets.py:254
 #, python-brace-format
 msgid ""
 "Retrieve the details/configuration of a particular form. \n"
@@ -6480,23 +6480,23 @@ msgstr ""
 "header. De gebruikelijke HTTP Content Negotiation principes zijn van "
 "toepassing."
 
-#: openforms/forms/api/viewsets.py:269
+#: openforms/forms/api/viewsets.py:268
 msgid "Create form"
 msgstr "Formulier aanmaken"
 
-#: openforms/forms/api/viewsets.py:271
+#: openforms/forms/api/viewsets.py:270
 msgid "Update all details of a form"
 msgstr "Formulier in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:275
+#: openforms/forms/api/viewsets.py:274
 msgid "Update given details of a form"
 msgstr "Formulier gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:279
+#: openforms/forms/api/viewsets.py:278
 msgid "Mark form as deleted"
 msgstr "Formulier markeren als verwijderd"
 
-#: openforms/forms/api/viewsets.py:281
+#: openforms/forms/api/viewsets.py:280
 msgid ""
 "Destroying a form leads to a soft-delete to protect related submissions. "
 "These deleted forms are no longer visible in the API endpoints."
@@ -6505,11 +6505,11 @@ msgstr ""
 "verwijderd om gerelateerde inzendingen te beschermen. Formulieren die "
 "gemarkeerd zijn als verwijderd komen niet meer in de API naar voren."
 
-#: openforms/forms/api/viewsets.py:287
+#: openforms/forms/api/viewsets.py:286
 msgid "Bulk configure form variables"
 msgstr "Configureer formuliervariabelen in bulk"
 
-#: openforms/forms/api/viewsets.py:289
+#: openforms/forms/api/viewsets.py:288
 msgid ""
 "By sending a list of FormVariables to this endpoint, all the FormVariables "
 "related to the form will be replaced with the data sent to the endpoint."
@@ -6517,11 +6517,11 @@ msgstr ""
 "Alle variabelen van het formulier worden vervangen met de toegestuurde "
 "variabelen."
 
-#: openforms/forms/api/viewsets.py:304
+#: openforms/forms/api/viewsets.py:303
 msgid "Bulk configure logic rules"
 msgstr "Configureer logicaregels in bulk"
 
-#: openforms/forms/api/viewsets.py:306
+#: openforms/forms/api/viewsets.py:305
 msgid ""
 "By sending a list of LogicRules to this endpoint, all the LogicRules related "
 "to the form will be replaced with the data sent to the endpoint."
@@ -6529,60 +6529,60 @@ msgstr ""
 "Alle logicaregels van het formulier worden vervangen met de toegestuurde "
 "regels."
 
-#: openforms/forms/api/viewsets.py:415
+#: openforms/forms/api/viewsets.py:414
 msgid "Export form"
 msgstr "Formulier exporteren"
 
-#: openforms/forms/api/viewsets.py:461
+#: openforms/forms/api/viewsets.py:460
 msgid "Prepare form edit admin message"
 msgstr "Admin berichten voor formulier bewerken voorbereiden"
 
-#: openforms/forms/api/viewsets.py:553
+#: openforms/forms/api/viewsets.py:552
 msgid "List form variables"
 msgstr "Formuliervariabelen weergeven"
 
-#: openforms/forms/api/viewsets.py:554
+#: openforms/forms/api/viewsets.py:553
 msgid "List all variables defined for a form."
 msgstr "Geef alle variabelen terug die bij een formulier horen"
 
-#: openforms/forms/api/viewsets.py:567
+#: openforms/forms/api/viewsets.py:566
 msgid "Filter by form variable source"
 msgstr "Filteren op oorsprong formuliervariabele"
 
-#: openforms/forms/api/viewsets.py:629
+#: openforms/forms/api/viewsets.py:628
 msgid "List logic rules"
 msgstr "Logicaregels weergeven"
 
-#: openforms/forms/api/viewsets.py:630
+#: openforms/forms/api/viewsets.py:629
 msgid "List all logic rules defined for a form."
 msgstr "Geef een lijst van alle logicaregels van een formulier."
 
-#: openforms/forms/api/viewsets.py:656
+#: openforms/forms/api/viewsets.py:655
 msgid "Generate the JSON schema for a form."
 msgstr "Genereer een JSON-schema voor een formulier."
 
-#: openforms/forms/api/viewsets.py:703 openforms/forms/api/viewsets.py:720
-#: openforms/forms/api/viewsets.py:739
+#: openforms/forms/api/viewsets.py:702 openforms/forms/api/viewsets.py:719
+#: openforms/forms/api/viewsets.py:738
 msgid "Either a UUID4 or a slug identifying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:709
+#: openforms/forms/api/viewsets.py:708
 msgid "Save form version"
 msgstr "Formulierversie opslaan"
 
-#: openforms/forms/api/viewsets.py:713
+#: openforms/forms/api/viewsets.py:712
 msgid "Restore form version"
 msgstr "Formulierversie terugzetten"
 
-#: openforms/forms/api/viewsets.py:726
+#: openforms/forms/api/viewsets.py:725
 msgid "The UUID of the form version"
 msgstr "Het UUID van de formulierversie"
 
-#: openforms/forms/api/viewsets.py:732
+#: openforms/forms/api/viewsets.py:731
 msgid "List form versions"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:780
+#: openforms/forms/api/viewsets.py:779
 #: openforms/forms/templates/admin/forms/form/import_form.html:15
 #: openforms/forms/templates/admin/forms/form/import_form.html:20
 msgid "Import form"
@@ -7314,40 +7314,40 @@ msgstr "{name} (kopie)"
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:743
+#: openforms/forms/models/form.py:762
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:865
+#: openforms/forms/models/form.py:884
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:867
+#: openforms/forms/models/form.py:886
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:870
+#: openforms/forms/models/form.py:889
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:871
+#: openforms/forms/models/form.py:890
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:877
+#: openforms/forms/models/form.py:896
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:884
+#: openforms/forms/models/form.py:903
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:885
+#: openforms/forms/models/form.py:904
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:888
+#: openforms/forms/models/form.py:907
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
@@ -13814,19 +13814,7 @@ msgstr "Terug naar website"
 msgid "Show content."
 msgstr "Direct naar de inhoud."
 
-#: openforms/templates/maykin_2fa/login.html:13
-msgid "Login with application account"
-msgstr "Inloggen met lokale account"
-
-#: openforms/templates/maykin_2fa/login.html:16
-msgid "or"
-msgstr "of"
-
-#: openforms/templates/maykin_2fa/login.html:18
-msgid "Login with organization account"
-msgstr "Inloggen met organisatie account"
-
-#: openforms/templates/maykin_2fa/login.html:25
+#: openforms/templates/maykin_2fa/login.html:15
 msgid "Contact support to start the account recovery process"
 msgstr "Neem contact op met support om je toegang te herstellen"
 
@@ -16503,3 +16491,12 @@ msgstr ""
 #: openforms/config/templatetags/privacy_policy.py:19
 msgid "privacy policy"
 msgstr "privacybeleid"
+
+#~ msgid "Login with application account"
+#~ msgstr "Inloggen met lokale account"
+
+#~ msgid "or"
+#~ msgstr "of"
+
+#~ msgid "Login with organization account"
+#~ msgstr "Inloggen met organisatie account"

@@ -95,7 +95,7 @@ class EventDetails(EventDetailsProtocol["User"]):
         return extra_data
 
 
-def from_structlog(event_dict: EventDict) -> EventDetails:
+def from_structlog(event_dict: EventDict) -> EventDetails | None:
     """
     Transform structlog events into django-timeline-logger parameters.
     """
@@ -168,6 +168,16 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
                 tags=[TimelineLogTags.hijack],
                 extra_data=extra_data,
             )
+
+        case {
+            "event": "user_logged_in"
+            | "user_logged_out"
+            | "user_login_failed"
+            | "user_locked_out"
+        }:
+            # we do not prepare these events for database storage - logging to
+            # stdout/stderr is sufficient
+            return None
 
         #
         # Outgoing requests logs

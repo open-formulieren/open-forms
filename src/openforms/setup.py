@@ -50,6 +50,7 @@ def setup_env():
     dotenv_path = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env")
     load_dotenv(dotenv_path)
 
+    os.environ["AUDIT_LOGGER_NAME"] = "openforms_audit"
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
     if "OTEL_SERVICE_NAME" not in os.environ:  # pragma: no cover
         warnings.warn(
