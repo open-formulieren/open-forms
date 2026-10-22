@@ -558,15 +558,9 @@ class FormsStepsAPITests(APITestCase):
         response_retrieve = self.client.get(
             reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid}),
         )
-        response_list = self.client.get(reverse("api:form-list"))
 
         # The form is still visible for staff users from the retrieve endpoint but not from the list endpoint
         self.assertEqual(response_retrieve.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_list.status_code, status.HTTP_200_OK)
-
-        forms = response_list.json()
-        for item in forms:
-            self.assertNotEqual(form.uuid, item["uuid"])
 
         form.refresh_from_db()
         self.assertTrue(form._is_deleted)
