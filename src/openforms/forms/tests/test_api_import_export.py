@@ -15,7 +15,9 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.authentication.tests.factories import AttributeGroupFactory
+from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.config.tests.factories import (
     MapTileLayerFactory,
     MapWMSTileLayerFactory,
@@ -36,7 +38,7 @@ from ..import_export.service import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
 )
-from ..models import Form, FormDefinition, FormStep
+from ..models import Form, FormDefinition, FormStep, FormVariable
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -1165,3 +1167,774 @@ class ImportExportAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_form_import_removes_all_unknown_links_from_email_templates(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        config = GlobalConfiguration.get_solo()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+        # Start with "google" domain in allowlist, so we can create the initial form
+        config.email_template_netloc_allowlist = ["google.com", "allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": [],
+                "email_content_template_html": "<p>test https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com test</p>",
+                "email_content_template_text": "test https://google.com https://allowed.com test",
+            },
+        )
+        ConfirmationEmailTemplateFactory(
+            form=form,
+            subject="Test",
+            content="<p>email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% appointment_information %}</p><p>{% payment_information %}</p>",
+            cosign_subject="Cosign test",
+            cosign_content="<p>cosign email content https://google.com <a href='https://www.google.com'>Google</a> https://allowed.com</p><p>{% payment_information %}</p><p>{% cosign_information %}</p>",
+        )
+
+        # Export the form with all the main form configuration
+        url = reverse("api:form-export", args=(form.uuid,))
+        response = self.client.post(
+            url,
+            format="json",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            data={
+                "form_configuration": [
+                    FormConfigurationOptions.registration_backends,
+                ],
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Remove "google" domain from the allowlist
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+
+        # Import form
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+
+        # Import the form with registration backends
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "form_configuration": [
+                    FormConfigurationOptions.registration_backends,
+                ],
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        self.assertEqual(imported_form.registration_backends.count(), 1)
+        registration_backend = imported_form.registration_backends.first()
+        assert registration_backend is not None
+
+        # The email registration templates should NOT contain the "google.com" domain,
+        # but they SHOULD contain the "allowed.com" domain.
+        self.assertNotIn(
+            "google.com", registration_backend.options["email_content_template_html"]
+        )
+        self.assertNotIn(
+            "google.com", registration_backend.options["email_content_template_text"]
+        )
+        self.assertIn(
+            "allowed.com", registration_backend.options["email_content_template_html"]
+        )
+        self.assertIn(
+            "allowed.com", registration_backend.options["email_content_template_text"]
+        )
+
+        # The confirmation and cosign email templates should not contain the "google.com"
+        # domain, but they should contain the "allowed.com" domain
+        confirmation_templates = imported_form.confirmation_email_template
+        self.assertNotIn("google.com", confirmation_templates.content)
+        self.assertNotIn("google.com", confirmation_templates.cosign_content)
+        self.assertIn("allowed.com", confirmation_templates.content)
+        self.assertIn("allowed.com", confirmation_templates.cosign_content)
+
+    def test_form_import_include_all_form_configuration(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        product = ProductFactory.create()
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            authentication_backend="digid",
+            authentication_backend_options={
+                "loa": DIGID_DEFAULT_LOA,
+            },
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["abc@xyz.com"],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        # Export the form with all the main form configuration
+        url = reverse("api:form-export", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.post(
+            url,
+            format="json",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            data={
+                # Keep sensitive data to keep the email registration config complete
+                "remove_sensitive_content": False,
+                "form_configuration": [
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import form with all main form configuration
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "form_configuration": [
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # Registration backend should be added
+        self.assertEqual(imported_form.registration_backends.count(), 1)
+        registration_backend = imported_form.registration_backends.first()
+        assert registration_backend is not None
+
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(registration_backend.options["to_emails"], ["abc@xyz.com"])
+
+        # The auth backend should be added
+        self.assertEqual(imported_form.auth_backends.count(), 1)
+        auth_backend = imported_form.auth_backends.first()
+        assert auth_backend is not None
+
+        self.assertEqual(auth_backend.backend, "digid")
+        self.assertEqual(auth_backend.options, {"loa": DIGID_DEFAULT_LOA})
+
+        # Payment backend should be added
+        self.assertEqual(imported_form.payment_backend, "worldline")
+        self.assertEqual(
+            imported_form.payment_backend_options,
+            {"descriptor_template": "", "merchant": merchant.pspid, "variant": ""},
+        )
+
+        imported_variables = FormVariable.objects.filter(
+            form=imported_form,
+            source=FormVariableSources.user_defined,
+        ).order_by("pk")
+        self.assertEqual(imported_variables.count(), 2)
+        self.assertEqual(imported_form.formstep_set.count(), 1)
+        imported_form_step = imported_form.formstep_set.first()
+        assert imported_form_step is not None
+
+        imported_form_definition = imported_form_step.form_definition
+        imported_form_variable1 = imported_variables[0]
+        imported_form_variable2 = imported_variables[1]
+
+        # Both variables should have their complete prefill data
+        self.assertEqual(imported_form_variable1.prefill_plugin, "demo")
+        self.assertEqual(imported_form_variable1.prefill_attribute, "random_string")
+        self.assertEqual(
+            imported_form_variable1.prefill_identifier_role, IdentifierRoles.authorizee
+        )
+
+        self.assertEqual(imported_form_variable2.prefill_plugin, "objects_api")
+        self.assertEqual(
+            imported_form_variable2.prefill_options,
+            {
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        # The component prefill data should be kept
+        self.assertEqual(len(imported_form_definition.configuration["components"]), 1)
+        component_definition = imported_form_definition.configuration["components"][0]
+
+        self.assertEqual(component_definition["prefill"]["plugin"], "demo")
+        self.assertEqual(component_definition["prefill"]["attribute"], "random_number")
+        self.assertEqual(
+            component_definition["prefill"]["identifier_role"],
+            IdentifierRoles.authorizee,
+        )
+
+    def test_form_import_exclude_all_form_configuration(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        product = ProductFactory.create()
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            authentication_backend="digid",
+            authentication_backend_options={
+                "loa": DIGID_DEFAULT_LOA,
+            },
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["abc@xyz.com"],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "random_number",
+                            "identifier_role": IdentifierRoles.authorizee,
+                        },
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_demo_prefill",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role=IdentifierRoles.authorizee,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="variable_with_objects_api_prefill",
+            user_defined=True,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "lastName", "target_path": ["name", "last.name"]},
+                    {"variable_key": "age", "target_path": ["age"]},
+                ],
+                "auth_attribute_path": ["bsn"],
+            },
+        )
+
+        # Export the form with all the main form configuration
+        url = reverse("api:form-export", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.post(
+            url,
+            format="json",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            data={
+                # Keep sensitive data to keep the email registration config complete
+                "remove_sensitive_content": False,
+                "form_configuration": [
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.payment_backend,
+                    FormConfigurationOptions.auth_backends,
+                ],
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import form without any form configuration
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "form_configuration": [],
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # The imported form should not have any registration backend
+        self.assertFalse(imported_form.registration_backends.exists())
+
+        # The imported form should not have any auth backend
+        self.assertFalse(imported_form.auth_backends.exists())
+
+        # The imported form should not have payment backend or options
+        self.assertEqual(imported_form.payment_backend, "")
+        self.assertEqual(imported_form.payment_backend_options, {})
+
+        imported_variables = FormVariable.objects.filter(
+            form=imported_form,
+            source=FormVariableSources.user_defined,
+        ).order_by("pk")
+        self.assertEqual(imported_variables.count(), 2)
+        self.assertEqual(imported_form.formstep_set.count(), 1)
+
+        imported_form_step = imported_form.formstep_set.first()
+        assert imported_form_step is not None
+
+        imported_form_definition = imported_form_step.form_definition
+        variable1 = imported_variables[0]
+        variable2 = imported_variables[1]
+
+        # Neither variable should have any prefill data
+        self.assertEqual(variable1.prefill_plugin, "")
+        self.assertEqual(variable1.prefill_attribute, "")
+        self.assertEqual(variable1.prefill_identifier_role, IdentifierRoles.authorizee)
+
+        self.assertEqual(variable2.prefill_plugin, "")
+        self.assertEqual(variable2.prefill_options, {})
+
+        # The component prefill data should be removed
+        self.assertEqual(len(imported_form_definition.configuration["components"]), 1)
+        component_definition = imported_form_definition.configuration["components"][0]
+        self.assertEqual(component_definition["prefill"]["plugin"], "")
+        self.assertEqual(component_definition["prefill"]["attribute"], "")
+        self.assertEqual(
+            component_definition["prefill"]["identifier_role"],
+            IdentifierRoles.authorizee,
+        )
+
+    def test_form_import_include_all_additional_form_configuration(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        # Every OF instance has various default WMTS- and WMS- tile layers.
+        # For more accurate and easier testing, we should start with zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
+        product = ProductFactory.create()
+        wmts_tile_layer = MapTileLayerFactory.create()
+        wms_tile_layer = MapWMSTileLayerFactory.create()
+        yivi_attribute_group = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    yivi_attribute_group.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wms_tile_layer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    }
+                ],
+            },
+        )
+
+        # Export form with auth backends, and all additional form configuration
+        url = reverse("api:form-export", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.post(
+            url,
+            format="json",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            data={
+                "form_configuration": [
+                    FormConfigurationOptions.auth_backends,
+                ],
+                "additional_form_configuration": [
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import form with auth backends, and all additional form configuration
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "form_configuration": [
+                    FormConfigurationOptions.auth_backends,
+                ],
+                "additional_form_configuration": [
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # The imported form should use the existing product
+        self.assertEqual(imported_form.product, product)
+
+        # The Yivi auth backend should be added, with the specified attribute groups
+        self.assertEqual(imported_form.auth_backends.count(), 1)
+        auth_backend = imported_form.auth_backends.first()
+        assert auth_backend is not None
+
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            [str(yivi_attribute_group.uuid)],
+        )
+
+        # The form should have been imported with the exported tile layers
+        self.assertEqual(imported_form.formstep_set.count(), 1)
+        imported_form_step = imported_form.formstep_set.first()
+        assert imported_form_step is not None
+
+        imported_form_definition = imported_form_step.form_definition
+        self.assertEqual(len(imported_form_definition.configuration["components"]), 1)
+        component_definition = imported_form_definition.configuration["components"][0]
+
+        # The imported form uses the existing background tile layer
+        self.assertEqual(
+            component_definition["tileLayerIdentifier"], wmts_tile_layer.identifier
+        )
+        # The imported form uses the existing WMS (interactive) tile layer
+        self.assertEqual(len(component_definition["overlays"]), 1)
+        self.assertEqual(
+            component_definition["overlays"][0]["uuid"], str(wms_tile_layer.uuid)
+        )
+
+    def test_form_import_exclude_all_additional_form_configuration(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        # Every OF instance has various default WMTS- and WMS- tile layers.
+        # For more accurate and easier testing, we should start with zero.
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+
+        product = ProductFactory.create()
+        wmts_tile_layer = MapTileLayerFactory.create()
+        wms_tile_layer = MapWMSTileLayerFactory.create()
+        yivi_attribute_group = AttributeGroupFactory.create(
+            attributes=["first_name", "last_name"]
+        )
+
+        # Define form with all additional form configuration
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            product=product,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    yivi_attribute_group.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmts_tile_layer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wms_tile_layer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    }
+                ],
+            },
+        )
+
+        # Export form with auth backends, and all additional form configuration
+        url = reverse("api:form-export", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.post(
+            url,
+            format="json",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            data={
+                "form_configuration": [
+                    FormConfigurationOptions.auth_backends,
+                ],
+                "additional_form_configuration": [
+                    AdditionalFormConfigurationOptions.product,
+                    AdditionalFormConfigurationOptions.wms_tile_layers,
+                    AdditionalFormConfigurationOptions.wmts_tile_layers,
+                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
+                ],
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import form with only auth backends
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "form_configuration": [
+                    FormConfigurationOptions.auth_backends,
+                ],
+                "additional_form_configuration": [],
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # The imported form should not have any product
+        self.assertIsNone(imported_form.product)
+
+        # The Yivi auth backend should be configured for the imported form, without
+        # attribute groups
+        self.assertEqual(imported_form.auth_backends.count(), 1)
+        auth_backend = imported_form.auth_backends.first()
+        assert auth_backend is not None
+
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(auth_backend.options["additional_attributes_groups"], [])
+
+        self.assertEqual(imported_form.formstep_set.count(), 1)
+        imported_form_step = imported_form.formstep_set.first()
+        assert imported_form_step is not None
+
+        imported_form_definition = imported_form_step.form_definition
+        self.assertEqual(len(imported_form_definition.configuration["components"]), 1)
+        component_definition = imported_form_definition.configuration["components"][0]
+
+        # The map component should have been imported without background and interactive
+        # tile layers
+        self.assertEqual(component_definition["tileLayerIdentifier"], "")
+        self.assertEqual(len(component_definition["overlays"]), 1)
+        self.assertEqual(component_definition["overlays"][0]["uuid"], "")
+
+    def test_form_import_with_theme_and_category(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        # Create a couple themes and categories
+        theme1 = ThemeFactory.create()
+        theme2 = ThemeFactory.create()
+        category1 = CategoryFactory.create()
+        category2 = CategoryFactory.create()
+
+        # The original form should have theme1 and category1
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            theme=theme1,
+            category=category1,
+        )
+
+        # Export form without any export options
+        url = reverse("api:form-export", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import the form with theme2 and category2
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {
+                "file": f,
+                "theme": theme2.uuid,
+                "category": category2.uuid,
+            },
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # The imported form should have theme2 and category2
+        self.assertEqual(imported_form.theme, theme2)
+        self.assertEqual(imported_form.category, category2)
+
+    def test_form_import_without_theme_and_category(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        theme = ThemeFactory.create()
+        category = CategoryFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            theme=theme,
+            category=category,
+        )
+
+        # Export form
+        url = reverse("api:form-export", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Import form without theme and category
+        f = SimpleUploadedFile(
+            "file.zip", response.content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {"file": f},
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        imported_form = Form.objects.last()
+        assert imported_form is not None
+
+        # The imported form should not have a category or theme
+        self.assertIsNone(imported_form.theme)
+        self.assertIsNone(imported_form.category)
