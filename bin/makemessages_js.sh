@@ -11,7 +11,7 @@ SUPPORTED_LOCALES=(
 )
 
 FIXED_ARGS=(
-  'src/openforms/js/**/*.js'
+  'src/openforms/js/**/*.{js,ts,tsx}'
   --id-interpolation-pattern '[sha512:contenthash:base64:6]'
   --format src/openforms/js/i18n-formatter.js
 )
