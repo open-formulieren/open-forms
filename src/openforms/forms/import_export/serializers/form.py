@@ -1,9 +1,12 @@
+from uuid import UUID
+
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 
 import structlog
 from typing_extensions import deprecated
 
+from openforms.config.models import Theme
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.emails.utils import sanitize_content
 
@@ -13,7 +16,7 @@ from ...api.serializers.form import (
     FormRegistrationBackendSerializer,
 )
 from ...constants import FormTypeChoices
-from ...models import Form, FormRegistrationBackend
+from ...models import Category, Form, FormRegistrationBackend
 from ..constants import AdditionalFormConfigurationOptions, FormConfigurationOptions
 from ..datastructures import (
     AdditionalFormConfigurationCleanup,
@@ -239,6 +242,18 @@ class FormRegistrationBackendImportSerializer(
             options["email_content_template_text"] = sanitize_content(template_text)
 
 
+def _get_uuid_from_resource_url(url: str | None) -> UUID | None:
+    from urllib.parse import urlparse
+
+    from django.urls import resolve
+
+    if url is None:
+        return None
+
+    result = resolve(urlparse(url).path)
+    return result.kwargs.get("uuid")
+
+
 class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData]):
     excluded_form_configuration_removal = (
         FormConfigurationCleanup[FormData](
@@ -269,7 +284,9 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
     )
 
     def prepare_for_import(self, data: FormData) -> None:
-        if self.context.get("deactivate_form"):
+        # For normal imports, set the form to inactive. For version restores, keep the
+        # active state as it is.
+        if not self.version_restore:
             data["active"] = False
 
         self.set_category(data)
@@ -291,8 +308,18 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
         if theme := self.import_options.theme:
             theme_url = reverse("api:themes-detail", kwargs={"uuid": theme.uuid})
             data["theme"] = theme_url
-        else:
-            data["theme"] = ""
+            return
+
+        # When restoring a version, we cannot check if the theme has stayed the same.
+        # So, we simply check if it still exists. If so, we keep it.
+        if self.version_restore and (
+            theme_uuid := _get_uuid_from_resource_url(data.get("theme"))
+        ):
+            # If the theme still exists, keep it
+            if Theme.objects.filter(uuid=theme_uuid).exists():
+                return
+
+        data["theme"] = ""
 
     def set_category(self, data: FormData) -> None:
         """
@@ -305,8 +332,18 @@ class FormImportSerializer(FormSerializer, BaseImportSerializer[Form, FormData])
                 "api:categories-detail", kwargs={"uuid": category.uuid}
             )
             data["category"] = category_url
-        else:
-            data["category"] = ""
+            return
+
+        # When restoring a version, we cannot check if the category has stayed the same.
+        # So, we simply check if it still exists. If so, we keep it.
+        if self.version_restore and (
+            category_uuid := _get_uuid_from_resource_url(data.get("category"))
+        ):
+            # If the category still exists, keep it
+            if Category.objects.filter(uuid=category_uuid).exists():
+                return
+
+        data["category"] = ""
 
     @staticmethod
     def uniquify_slug(data: FormData, slug: str) -> None:
