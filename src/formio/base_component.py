@@ -4,8 +4,8 @@ Base building blocks for Formio component type definitions.
 
 from __future__ import annotations
 
-from abc import ABCMeta
-from collections.abc import Iterator, Mapping, MutableMapping
+from abc import ABCMeta, abstractmethod
+from collections.abc import Callable, Iterator, Mapping, MutableMapping
 from typing import (
     Annotated,
     ClassVar,
@@ -19,6 +19,7 @@ import msgspec
 import structlog
 from typing_extensions import TypeIs
 
+from .templating import TestWithTrace, trace
 from .typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -173,6 +174,48 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
             return
 
         self.default_value = default_value
+
+    @abstractmethod
+    def render_templates(self, do_render: Callable[[str], str]) -> None:
+        """
+        Render all attributes that support templating.
+
+        Given a callback for the actual template evaluation, invoke it for each
+        attribute of the component that may hold a template string.
+        """
+        raise NotImplementedError(
+            f"Component type '{type(self)}' must implement 'render_templates'"
+        )
+
+    @abstractmethod
+    def _test_templates(self, test_with_trace: TestWithTrace) -> None:
+        """
+        Parse/test template expressions of all attributes that support templating.
+
+        This method should not be called directly, but rather implemented by each
+        concrete component struct.
+
+        :param test_with_trace: A callable that expects the template source and an
+          attribute name describing the location of the template source.
+        """
+        raise NotImplementedError(
+            f"Component type '{type(self)}' must implement '_test_templates'"
+        )
+
+    def test_templates_with_trace(self, do_parse: Callable[[str]]) -> None:
+        """
+        Parse all attributes that support templating.
+
+        Given a callback for the actual template parsing, invoke it for each attribute
+        of the component that may hold a template string, while ensuring it's wrapped
+        in a trace context for useful error reporting/diagnostics.
+        """
+
+        def _test_with_trace(source: str, *, attribute: str):
+            with trace(component=self, attribute=attribute):
+                do_parse(source)
+
+        self._test_templates(_test_with_trace)
 
 
 class MultipleComponent(Protocol):
