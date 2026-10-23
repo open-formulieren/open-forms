@@ -36,6 +36,7 @@ from .components import (
     Selectboxes,
     Signature,
     SoftRequiredErrors,
+    Textarea,
 )
 from .templating import get_template_trace_context
 
@@ -53,6 +54,7 @@ __all__ = [  # noqa: RUF022
     "PhoneNumber",
     "Postcode",
     "File",
+    "Textarea",
     "Number",
     "Checkbox",
     "Selectboxes",
