@@ -11,3 +11,4 @@ class InitialSubmissionDataAdmin(admin.ModelAdmin):
     search_fields = ("uuid", "form__name", "form__internal_name")
     date_hierarchy = "created_on"
     autocomplete_fields = ("form",)
+    raw_id_fields = ("used_for_submission",)

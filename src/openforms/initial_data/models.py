@@ -5,10 +5,12 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from openforms.accounts.models import User
 from openforms.forms.models import Form
+from openforms.submissions.models import Submission
 from openforms.utils.validators import AllowedRedirectValidator
 
 from .constants import SupportedAuthAttributes
@@ -82,6 +84,20 @@ class InitialSubmissionData(models.Model):
     )
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
 
+    used_for_submission_id: int
+    used_for_submission = models.OneToOneField[Submission](
+        Submission,
+        # deleting the submission must also delete the initial data
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name=_("submission"),
+        help_text=_(
+            "The submission started from this initial data. Once initial data is used "
+            "in a submission, it may not be used again."
+        ),
+    )
+
     get_representee_auth_attribute_display: Callable[[], str]
 
     class Meta:
@@ -107,3 +123,11 @@ class InitialSubmissionData(models.Model):
     @property
     def expiry_date(self) -> datetime:
         return self.created_on + self.ttl
+
+    @property
+    def is_expired(self) -> bool:
+        return self.expiry_date <= timezone.now()
+
+    @property
+    def can_be_used(self) -> bool:
+        return not self.is_expired and not self.used_for_submission_id

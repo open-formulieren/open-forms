@@ -31,6 +31,7 @@ from ..constants import (
 )
 from ..registry import Registry
 from ..views import (
+    _REGISTRATOR_REPRESENTEE_REF_SESSION_KEY,
     BACKEND_OUTAGE_RESPONSE_PARAMETER,
     AuthenticationReturnView,
     AuthenticationStartView,
@@ -724,7 +725,12 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
             self.assertEqual(
-                data, {"attribute": AuthAttribute.bsn, "value": "115736499"}
+                data,
+                {
+                    "attribute": AuthAttribute.bsn,
+                    "value": "115736499",
+                    "representee_ref": "",
+                },
             )
 
         with self.subTest("kvk"):
@@ -742,6 +748,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 {
                     "attribute": AuthAttribute.kvk,
                     "value": "12345678",
+                    "representee_ref": "",
                 },
             )
 
@@ -761,6 +768,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 {
                     "attribute": AuthAttribute.kvk,
                     "value": "12345678",
+                    "representee_ref": "",
                     "branch_number": "000038509490",
                 },
             )
@@ -869,9 +877,18 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 ttl_hours=1,
             )
 
+        already_used_initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.kvk,
+            representee_auth_value="11573649",
+            ttl_hours=1,
+            used_for_submission=SubmissionFactory.create(form=self.form),
+        )
+
         for label, initial_data in (
             ("other_form", initial_data_other_form),
             ("expired", expired_initial_data),
+            ("already_used", already_used_initial_data),
         ):
             with self.subTest(label):
                 response = self.app.get(
@@ -907,8 +924,105 @@ class RegistratorSubjectInfoViewTests(WebTest):
         log_records_failed = TimelineLogProxy.objects.filter_event(
             "initial_data_prepopulation_failed"
         )
-        self.assertEqual(log_records_ref_provided.count(), 3)
-        self.assertEqual(log_records_failed.count(), 3)
+        self.assertEqual(log_records_ref_provided.count(), 4)
+        self.assertEqual(log_records_failed.count(), 4)
+
+    def test_view_ignores_stale_representee_ref_session_data(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        # populate session with "stale" initial data
+        self.app.get(
+            self.subject_url,
+            params={"representeeRef": str(initial_data)},
+            status=200,
+            user=self.user,
+        )
+
+        # now load another registrator info view, without submitting the first
+        response = self.app.get(self.subject_url, status=200, user=self.user)
+        form = response.forms["registrator-subject"]
+        form["mode"] = ModeChoices.company
+        form["kvk"] = "12345678"
+        response = form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.kvk,
+                "value": "12345678",
+                "representee_ref": "",
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
+
+    def test_view_ignores_spoofed_representee_ref(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        other_initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="000000000",
+        )
+        ref = str(initial_data.uuid)
+        response = self.app.get(
+            self.subject_url,
+            params={"representeeRef": ref},
+            status=200,
+            user=self.user,
+        )
+        form = response.forms["registrator-subject"]
+        form["representee_ref"] = str(other_initial_data.uuid)
+
+        response = form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.bsn,
+                "value": "115736499",
+                "representee_ref": "",
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
+
+    def test_view_propagates_initial_data_representee_ref(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        ref = str(initial_data.uuid)
+        response = self.app.get(
+            self.subject_url,
+            params={"representeeRef": ref},
+            status=200,
+            user=self.user,
+        )
+        form = response.forms["registrator-subject"]
+
+        response = form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.bsn,
+                "value": "115736499",
+                "representee_ref": ref,
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
 
 
 class LogoutTestViewTests(TestCase):
