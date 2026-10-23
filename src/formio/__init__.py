@@ -35,6 +35,7 @@ from .components import (
     Select,
     Selectboxes,
     Signature,
+    SoftRequiredErrors,
 )
 from .templating import get_template_trace_context
 
@@ -73,4 +74,5 @@ __all__ = [  # noqa: RUF022
     "CosignV1",
     # Layout
     "Content",
+    "SoftRequiredErrors",
 ]
