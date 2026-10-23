@@ -19,11 +19,13 @@ class ServiceClientFactory:
 
     def get_client_session_kwargs(self) -> dict[str, Any]:
         kwargs = {
-            "verify": self.service.get_verify(),
+            "verify": (verify := self.service.get_verify()),
             "cert": self.service.get_cert(),
             "auth": self.service.get_auth(),
             "timeout": self.service.get_timeout(),
         }
+        if isinstance(verify, str):  # path to a custom certificate file
+            kwargs["trust_env"] = False
         return kwargs
 
 

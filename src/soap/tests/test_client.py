@@ -72,6 +72,7 @@ class ClientTransportTests(OFVCRMixin, TestCase):
         self.assertIs(
             client.transport.session.verify, True
         )  # not just truthy, but identity check
+        self.assertTrue(client.transport.session.trust_env)
 
     def test_server_cert_specified(self):
         service = SoapServiceFactory.build(
@@ -86,6 +87,7 @@ class ClientTransportTests(OFVCRMixin, TestCase):
             Path(cert_path).read_bytes(),
             self.server_cert.public_certificate.read(),
         )
+        self.assertFalse(client.transport.session.trust_env)
 
     def test_no_client_cert_specified(self):
         service = SoapServiceFactory.build(url=WSDL_URI)
