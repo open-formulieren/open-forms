@@ -14,6 +14,13 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.13 (2026-10-23)
+===================
+
+Hotfix release.
+
+* Applied the 4.0.4 patch to SOAP and StUF services too, wich were missed.
+
 3.5.12 (2026-10-23)
 ===================
 
