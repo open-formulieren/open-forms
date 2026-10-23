@@ -16,31 +16,11 @@ generates some combinations with optional fields that semantically make little s
 component). This shall have to be iterated on.
 """
 
-from string import ascii_letters, digits
-
 from hypothesis import strategies as st
 
+from formio.tests.search_strategies import formio_key
 from openforms.formio.constants import DataSrcOptions
 from openforms.tests.search_strategies import jsonb_text
-
-
-def formio_key():
-    """
-    A search strategy that produces valid Formio.js key values.
-
-    Formio.js keys must start and end with an alphanumeric character. Dashes and dots
-    as separators are allowed. A value like ``foo..bar`` is valid, in the resulting
-    data structure empty strings are used as keys:
-    ``{"foo": {"": {"": {"bar": $value}}}}``
-
-    See :func:`openforms.formio.validators.variable_key_validator` for the
-    validator implementation.
-
-    This strategy differs slightly from the validator - it will generate keys with a
-    maximum length of 100 chars.
-    """
-    alphabet = ".-" + ascii_letters + digits
-    return st.from_regex(r"\A(\w|\w[\w.\-]{0,98}\w)\Z", alphabet=alphabet)
 
 
 def _minimal_component_mapping(component_type: str):
