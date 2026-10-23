@@ -468,7 +468,7 @@ packaging==26.0
     #   opentelemetry-instrumentation
 phonenumberslite==9.0.24
     # via -r requirements/base.in
-pillow==12.3.0
+pillow==13.0.0
     # via
     #   -r requirements/base.in
     #   django-colorfield
