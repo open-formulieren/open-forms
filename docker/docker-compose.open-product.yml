@@ -1,0 +1,90 @@
+version: '3.8'
+
+name: open-product
+
+services:
+  openproduct-redis:
+    image: redis:7
+    command: ['redis-server', '--appendonly', 'yes']
+    networks:
+      - open-forms-dev
+
+  openproduct-db:
+    image: postgres:17
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./open-product/docker-init-open-product-db/:/docker-entrypoint-initdb.d
+      - open-product-db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
+
+  openproduct-web.local:
+    # TODO
+    # See if the stable/current version is the suitable one for our needs
+    image: maykinmedia/open-product:${TAG:-stable}
+    environment: &openproduct_web_env
+      - DJANGO_SETTINGS_MODULE=openproduct.conf.docker
+      - SECRET_KEY=not-so-secret
+      - ALLOWED_HOSTS=openproduct-web.local,localhost
+      - DB_NAME=openproduct
+      - DB_USER=openproduct
+      - DB_HOST=openproduct-db
+      - IS_HTTPS=no
+      - CACHE_DEFAULT=openproduct-redis:6379/0
+      - CACHE_AXES=openproduct-redis:6379/0
+      - SUBPATH=${SUBPATH:-/}
+      - DISABLE_2FA=yes
+      - CELERY_BROKER_URL=redis://openproduct-redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://openproduct-redis:6379/1
+      - NOTIFICATIONS_DISABLED=true
+      - OTEL_SDK_DISABLED=true
+    ports:
+      - 8006:8000
+    volumes: &openproduct_web_volumes # mount fixtures dir to automatically populate the DB
+      - ./open-product/fixtures/:/app/fixtures
+      - media:/app/media # Shared media volume to get access to saved OAS files
+      - private-media:/app/private-media
+    depends_on:
+      - openproduct-db
+      - openproduct-redis
+    networks:
+      - open-forms-dev
+
+  # there's no built-in support for fixture loading, so use a bootstrap step
+  openproduct-web-fixtures:
+    # TODO
+    # See if the stable/current version is the suitable one for our needs
+    image: maykinmedia/open-product:${TAG:-stable}
+    environment: *openproduct_web_env
+    volumes: &openproduct_web_volumes
+      - ./open-product/fixtures/:/app/fixtures
+      - ./open-product/load_fixtures.sh:/load_fixtures.sh
+    command: /load_fixtures.sh
+    depends_on:
+      - openproduct-db
+      - openproduct-redis
+    networks:
+      - open-forms-dev
+
+  celery:
+    # TODO
+    # See if the stable/current version is the suitable one for our needs
+    image: maykinmedia/open-product:${TAG:-stable}
+    environment: *openproduct_web_env
+    volumes: *openproduct_web_volumes
+    command: /celery_worker.sh
+    depends_on:
+      - openproduct-db
+      - openproduct-redis
+    networks:
+      - open-forms-dev
+
+volumes:
+  open-product-db:
+  media:
+  private-media:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
