@@ -100,7 +100,7 @@ jobs:
         working-directory: ./storybook-static
 
       - name: Publish to Chromatic
-        uses: chromaui/action@8e6c25f2af5570e4a0ed34674569c345d545ac4a # v18.12.1
+        uses: chromaui/action@e50abd573c8a789526f165fec06137a7c21d7299 # v18.13.0
         if: github.event.pull_request.draft == false || github.event.push
         with:
           autoAcceptChanges: main
