@@ -1,0 +1,78 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "datePicker": {
+    "maxDate": null,
+    "minDate": null
+  },
+  "defaultValue": null,
+  "description": "",
+  "disabled": false,
+  "errors": {
+    "required": "Geef datetime."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "evneg4v",
+  "isSensitiveData": true,
+  "key": "datum",
+  "label": "Datum",
+  "multiple": false,
+  "openForms": {
+    "maxDate": {
+      "mode": ""
+    },
+    "minDate": {
+      "mode": ""
+    },
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "prefill": {
+    "attribute": "",
+    "identifierRole": "main",
+    "plugin": ""
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "en": {
+      "required": ""
+    },
+    "nl": {
+      "required": ""
+    }
+  },
+  "type": "datetime",
+  "validate": {
+    "plugins": [],
+    "required": false
+  }
+}
