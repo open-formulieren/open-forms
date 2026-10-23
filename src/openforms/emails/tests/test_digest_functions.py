@@ -45,6 +45,7 @@ from openforms.registrations.registry import register as register_register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableDataTypes
@@ -1314,6 +1315,12 @@ class OpenProductBrokenConfigurationTests(OFVCRMixin, TestCase):
     See the relevant Docker compose in the ``docker/open-product`` folder.
     """
 
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(lambda: ProductConfiguration.get_solo().delete())
+        self.addCleanup(clear_caches)
+
     def test_no_problem_when_product_service_configured(self):
         opt_service = OpenProductServiceFactory.create()
         product_config = ProductConfiguration.get_solo()
@@ -1324,7 +1331,7 @@ class OpenProductBrokenConfigurationTests(OFVCRMixin, TestCase):
 
         self.assertEqual(len(broken_configuration), 0)
 
-    def test_problem_detected_when_service_not_configured(self):
+    def test_no_problem_detected_when_service_not_configured(self):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(len(broken_configuration), 0)

@@ -10,7 +10,7 @@ interactions:
     body:
       string: '{"type":"http://localhost:8006/ref/fouten/NotAuthenticated/","code":"not_authenticated","title":"Authenticatiegegevens
         zijn niet opgegeven.","status":401,"detail":"Authenticatiegegevens zijn niet
-        opgegeven.","instance":"urn:uuid:9ddb5822-71c6-4c9c-82f0-a40729e5ee97"}'
+        opgegeven.","instance":"urn:uuid:c9f5a8a2-540d-4522-9f05-92f09a1cbdf9"}'
     headers:
       API-version:
       - 1.7.0

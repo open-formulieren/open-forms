@@ -14,7 +14,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
       x-doelbinding:
       - ''
       x-gebruiker:
@@ -37,7 +37,7 @@ interactions:
       Content-Type:
       - application/problem+json
       Date:
-      - Thu, 20 Aug 2026 10:44:35 GMT
+      - Fri, 23 Oct 2026 09:43:08 GMT
       Server:
       - Kestrel
     status:
