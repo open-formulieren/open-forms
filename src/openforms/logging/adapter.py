@@ -295,6 +295,29 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
                 },
             )
 
+        case {
+            "event": "representee_ref_provided"
+            | "initial_data_auth_prepopulated"
+            | "initial_data_prepopulation_failed" as event,
+            "form": str(form_slug),
+            "ref": str(ref),
+            "is_expired": bool(is_expired),
+            "employee": str(employee),
+            "user_id": int(user_id),
+        }:
+            form = Form.objects.get(slug=form_slug)
+            user = User.objects.get(pk=user_id)
+            return EventDetails(
+                event=event,
+                instance=form,
+                user=user,
+                extra_data={
+                    "ref": ref,
+                    "is_expired": is_expired,
+                    "employee": employee,
+                },
+            )
+
         #
         # Submissions
         #

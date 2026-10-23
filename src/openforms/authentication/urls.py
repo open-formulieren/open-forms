@@ -12,7 +12,7 @@ app_name = "authentication"
 
 urlpatterns = [
     path(
-        "<slug:slug>/registrator-subject",
+        "<slug:slug>/registrator-subject/",
         RegistratorSubjectInfoView.as_view(),
         name="registrator-subject",
     ),
