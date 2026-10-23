@@ -14,6 +14,16 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.12 (2026-10-23)
+===================
+
+Hotfix release.
+
+* Fixed an issue where a service's server certificate bundle wasn't used for
+  verification when additional root certificates are added to the instance's trust
+  store.
+* Upgraded Pillow with latest security updates.
+
 3.5.11 (2026-10-21)
 ===================
 
