@@ -29,6 +29,20 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.0.5 (2026-10-23)
+==================
+
+Hotfix release.
+
+* Applied the 4.0.4 patch to SOAP and StUF services too, wich were missed.
+
+3.5.13 (2026-10-23)
+===================
+
+Hotfix release.
+
+* Applied the 4.0.4 patch to SOAP and StUF services too, wich were missed.
+
 4.0.4 (2026-10-23)
 ==================
 
