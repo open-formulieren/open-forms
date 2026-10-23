@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import NotRequired, TypedDict, assert_never
 
 from django.core.exceptions import ValidationError
@@ -114,6 +114,18 @@ class InitialSubmissionDataSerializer(serializers.ModelSerializer):
             "about to be filled out."
         ),
     )
+    ttl = serializers.IntegerField(
+        label=_("TTL (in hours)"),
+        required=True,
+        help_text=_(
+            "Time-to-live in hours. The expiry date is calculated from the creation "
+            "timestamp plus the TTL. After this moment, the submission data will be "
+            "deleted. A submission should be started within this TTL."
+        ),
+        min_value=1,
+        max_value=24 * 7,
+        write_only=True,
+    )
     redirect_url = serializers.SerializerMethodField(
         label=_("Redirect URL"),
         read_only=True,
@@ -146,7 +158,6 @@ class InitialSubmissionDataSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "uuid": {"read_only": True},
             "form_url": {"write_only": True},
-            "ttl": {"write_only": True},
         }
 
     @extend_schema_field(OpenApiTypes.URI)
@@ -164,3 +175,9 @@ class InitialSubmissionDataSerializer(serializers.ModelSerializer):
 
     def get_expires_at(self, obj: InitialSubmissionData) -> datetime:
         return obj.expiry_date
+
+    def save(self, **kwargs) -> InitialSubmissionData:
+        # transform ttl int in hours to proper duration
+        ttl_hours = self.validated_data["ttl"]
+        kwargs["ttl"] = timedelta(hours=ttl_hours)
+        return super().save(**kwargs)

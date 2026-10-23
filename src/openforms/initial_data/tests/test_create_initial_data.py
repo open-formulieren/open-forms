@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from django.test import override_settings
 from django.urls import reverse
@@ -97,7 +97,7 @@ class CreateInitialDataTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         initial_data = InitialSubmissionData.objects.get()
         self.assertEqual(initial_data.form, form)
-        self.assertEqual(initial_data.ttl, 3)
+        self.assertEqual(initial_data.ttl, timedelta(hours=3))
         self.assertEqual(initial_data.owner, self.user)
 
         response_data = response.json()
