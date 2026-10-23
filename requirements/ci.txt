@@ -351,7 +351,7 @@ django-sessionprofile==3.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.11.0
+django-setup-configuration==0.13.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1270,7 +1270,7 @@ zeep==4.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==2.0.2
+zgw-consumers==2.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

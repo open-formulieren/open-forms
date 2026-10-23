@@ -368,7 +368,7 @@ django-sessionprofile==3.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.11.0
+django-setup-configuration==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1405,7 +1405,7 @@ zeep==4.3.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==2.0.2
+zgw-consumers==2.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

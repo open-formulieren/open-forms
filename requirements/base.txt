@@ -219,7 +219,7 @@ django-sendfile2==0.7.2
     # via django-privates
 django-sessionprofile==3.0.0
     # via django-digid-eherkenning
-django-setup-configuration==0.11.0
+django-setup-configuration==0.13.0
     # via
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -709,7 +709,7 @@ xmltodict==1.0.3
     # via -r requirements/base.in
 zeep==4.3.3
     # via -r requirements/base.in
-zgw-consumers==2.0.2
+zgw-consumers==2.1.1
     # via -r requirements/base.in
 zipp==3.23.0
     # via importlib-metadata
