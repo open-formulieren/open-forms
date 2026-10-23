@@ -1,0 +1,58 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "confirmationRecipient": false,
+  "digitalAddressTypes": ["email", "phoneNumber"],
+  "description": "Sample description",
+  "errors": {
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "123",
+  "isSensitiveData": true,
+  "key": "customerProfile",
+  "label": "Customer profile",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "NL translation",
+        "label": "NL translation",
+        "tooltip": "NL translation"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "shouldUpdateCustomerData": false,
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "customerProfile",
+  "validate": {"required": false}
+}
