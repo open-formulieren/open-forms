@@ -1431,7 +1431,7 @@ zeep==4.3.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==1.2.0
+zgw-consumers==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

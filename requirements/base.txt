@@ -716,7 +716,7 @@ xmltodict==1.0.3
     # via -r requirements/base.in
 zeep==4.3.2
     # via -r requirements/base.in
-zgw-consumers==1.2.0
+zgw-consumers==1.2.1
     # via -r requirements/base.in
 zipp==3.23.0
     # via importlib-metadata
