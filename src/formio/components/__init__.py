@@ -21,6 +21,7 @@ from .partners import Partners
 from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .radio import Radio
+from .select import Select
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -33,6 +34,7 @@ __all__ = [  # noqa: RUF022
     "File",
     "Number",
     "Checkbox",
+    "Select",
     "Currency",
     "Radio",
     # Special fields
@@ -64,6 +66,7 @@ type AnyComponent = (
     | File
     | Number
     | Checkbox
+    | Select
     | Currency
     | Radio
     # Special fields
