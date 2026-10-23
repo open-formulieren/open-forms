@@ -1263,6 +1263,26 @@
                 "products",
                 "product"
             ],
+	    [
+                "add_productconfiguration",
+                "products",
+                "productconfiguration"
+            ],
+            [
+                "change_productconfiguration",
+                "products",
+                "productconfiguration"
+            ],
+            [
+                "delete_productconfiguration",
+                "products",
+                "productconfiguration"
+            ],
+            [
+                "view_productconfiguration",
+                "products",
+                "productconfiguration"
+            ],
             [
                 "add_qmaticconfig",
                 "qmatic",

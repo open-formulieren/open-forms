@@ -123,6 +123,10 @@
             [
                 "products",
                 "product"
+            ],
+	    	[
+                "products",
+				"productconfiguration"
             ]
         ]
     }
