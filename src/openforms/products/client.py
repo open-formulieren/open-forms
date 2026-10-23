@@ -44,7 +44,7 @@ def get_open_product_client(
 
     # make sure the service is updated properly according to the api type
     if not base_url.path == furl(OPEN_PRODUCT_API_MAPPINGS[api_type]).path:
-        service.api_root = f"{base_url}/{api_type}/api/v1"
+        service.api_root = f"{base_url.origin}/{api_type}/api/v1"
         service.save()
 
     return build_client(
