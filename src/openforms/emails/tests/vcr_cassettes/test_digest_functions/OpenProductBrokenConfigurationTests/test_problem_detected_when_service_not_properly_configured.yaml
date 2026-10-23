@@ -1,0 +1,46 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - nl
+    method: GET
+    uri: http://localhost:8006/producttypen/api/v1/contentlabels?page=1
+  response:
+    body:
+      string: '{"type":"http://localhost:8006/ref/fouten/NotAuthenticated/","code":"not_authenticated","title":"Authenticatiegegevens
+        zijn niet opgegeven.","status":401,"detail":"Authenticatiegegevens zijn niet
+        opgegeven.","instance":"urn:uuid:9ddb5822-71c6-4c9c-82f0-a40729e5ee97"}'
+    headers:
+      API-version:
+      - 1.7.0
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Language:
+      - nl
+      Content-Length:
+      - '267'
+      Content-Security-Policy:
+      - 'worker-src ''self'' blob:; default-src ''self''; font-src ''self'' fonts.gstatic.com;
+        frame-src ''self''; object-src ''none''; img-src ''self'' data: cdn.redoc.ly;
+        form-action ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        frame-ancestors ''none''; script-src ''self'' ''unsafe-inline''; base-uri
+        ''self'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept-Language, origin
+      WWW-Authenticate:
+      - Bearer realm="api"
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

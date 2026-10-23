@@ -56,6 +56,7 @@ from openforms.prefill.contrib.family_members.service import (
 from openforms.prefill.contrib.stufbg.service import (
     check_stufbg_config_for_family_members,
 )
+from openforms.products.client import check_open_product_config
 from openforms.registrations.registry import register
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
@@ -326,6 +327,7 @@ def collect_broken_configurations() -> list[BrokenConfiguration]:
     check_bag_configuration = check_bag_config_for_address_fields()
     check_hc_configuration = check_hc_config_for_family_members()
     check_stufbg_configuration = check_stufbg_config_for_family_members()
+    check_open_product_configuration = check_open_product_config()
     check_variables_configuration = check_unmatched_variables()
 
     configurations = {
@@ -333,6 +335,7 @@ def collect_broken_configurations() -> list[BrokenConfiguration]:
         _("BAG Client"): check_bag_configuration,
         _("Haal centraal Client"): check_hc_configuration,
         _("StUF-BG Client"): check_stufbg_configuration,
+        _("Open Product Client"): check_open_product_configuration,
         _("User defined Variables"): check_variables_configuration,
     }
 
