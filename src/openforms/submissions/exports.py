@@ -42,15 +42,25 @@ def iter_submission_data_nodes(submission: Submission) -> Iterator[Node]:
             yield node
 
 
+def _get_export_column(data_node: Node) -> str | None:
+    from openforms.formio.rendering.nodes import ComponentNode
+    from openforms.variables.rendering.nodes import SubmissionValueVariableNode
+
+    match data_node:
+        case ComponentNode():
+            return data_node.component["key"]
+        case SubmissionValueVariableNode():
+            return data_node.variable.key
+        case _:  # pragma: no cover
+            return None
+
+
 def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Dataset:
     """
     Turn a submissions queryset into a tablib dataset for export.
 
     .. note:: the queryset of submissions must all be of the same form!
     """
-    from openforms.formio.rendering.nodes import ComponentNode
-    from openforms.variables.rendering.nodes import SubmissionValueVariableNode
-
     # queryset *could* be empty
     if not queryset:
         return tablib.Dataset()
@@ -61,31 +71,41 @@ def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Da
     if first_submission.form.translation_enabled:
         headers.append("Taalcode")
 
-    for data_node in iter_submission_data_nodes(first_submission):
-        match data_node:
-            case ComponentNode():
-                headers.append(data_node.component["key"])
-            case SubmissionValueVariableNode():
-                headers.append(data_node.variable.key)
-            case _:  # pragma: no cover
-                pass
-
-    data = tablib.Dataset(headers=headers)
-
+    column_keys: list[str] = []
+    known_column_keys: set[str] = set()
+    submission_rows = []
     for submission in queryset:
         inzending_datum = (
             make_naive(submission.completed_on) if submission.completed_on else None
         )
-        submission_data = [
+        metadata_values = [
             submission.form.admin_name,
             inzending_datum,
         ]
         if first_submission.form.translation_enabled:
-            submission_data.append(submission.language_code)
-        submission_data += [
-            data_node.value for data_node in iter_submission_data_nodes(submission)
+            metadata_values.append(submission.language_code)
+
+        field_values = {}
+        for data_node in iter_submission_data_nodes(submission):
+            column = _get_export_column(data_node)
+            if column is None:
+                continue
+            if column not in known_column_keys:
+                column_keys.append(column)
+                known_column_keys.add(column)
+            # Historical steps can repeat a field key. Keep the first non-null value.
+            if column not in field_values or field_values[column] is None:
+                field_values[column] = data_node.value
+        submission_rows.append((metadata_values, field_values))
+
+    headers.extend(column_keys)
+    data = tablib.Dataset(headers=headers)
+    for metadata_values, field_values in submission_rows:
+        # All rows use the shared column order, with empty cells for missing fields.
+        ordered_field_values = [
+            field_values.get(column_key, None) for column_key in column_keys
         ]
-        data.append(submission_data)
+        data.append(metadata_values + ordered_field_values)
     logger.info("submission_export_done", num_rows=len(data))
     return data
 
