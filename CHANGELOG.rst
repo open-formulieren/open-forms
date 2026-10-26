@@ -14,6 +14,18 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.6 (2026-10-26)
+==================
+
+Hotfix release.
+
+* Upgraded dependencies to their latest security releases:
+
+  - brotli
+  - certifi
+  - djangorestframework
+  - opentelemetry
+
 4.0.5 (2026-10-23)
 ==================
 
