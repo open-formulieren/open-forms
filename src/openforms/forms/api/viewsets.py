@@ -26,6 +26,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
+from ..import_export.constants import FormConfigurationOptions
 from ..import_export.service import FormImportOptions, export_form, import_form
 from ..json_schema import generate_json_schema
 from ..messages import add_success_message
@@ -50,9 +51,9 @@ from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
     FormAdminMessageSerializer,
+    FormAPIImportRequestSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
-    FormImportSerializer,
     FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
@@ -770,8 +771,8 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
 
 
 class FormsImportAPIView(views.APIView):
-    serializer_class = FormImportSerializer
-    parser_classes = (parsers.FileUploadParser,)
+    serializer_class = FormAPIImportRequestSerializer
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
     authentication_classes = [TokenAuthentication]
     permission_classes = [FormAPIPermissions]
 
@@ -788,9 +789,23 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # TODO set the correct import options for API import
+        # Get the form configuration import options. If not provided, use the
+        # default of all form configuration options.
+        form_configuration_options = serializer.validated_data.get(
+            "form_configuration", list(FormConfigurationOptions)
+        )
+        additional_form_configuration_options = serializer.validated_data.get(
+            "additional_form_configuration", []
+        )
+
         form_instance = import_form(
-            serializer.validated_data["file"], FormImportOptions()
+            serializer.validated_data["file"],
+            FormImportOptions(
+                form_configuration=form_configuration_options,
+                additional_form_configuration=additional_form_configuration_options,
+                theme=serializer.validated_data.get("theme"),
+                category=serializer.validated_data.get("category"),
+            ),
         )
         assert form_instance
 

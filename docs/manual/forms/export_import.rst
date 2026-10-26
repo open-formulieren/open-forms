@@ -44,7 +44,7 @@ exportbestand beïnvloeden:
 * **Formulierinstellingen**: Hiermee kunnen registratiebackends,
   betaalprovider, prefill en inlogmethode eenvoudig bij het exporteren
   weggelaten worden. Standaard worden alle instellingen mee-geëxporteerd.
-* **Aanvullende formulierinstellingen**: Hiermee kunnen aanvullende
+* **Ondersteunende formulierinstellingen**: Hiermee kunnen ondersteunende
   instellingen van het formulier aan de export toegevoegd worden.
 
 Formulieren importeren
@@ -61,6 +61,23 @@ geïmporteerd worden.
 Als het goed is, is het formulier inclusief alle stappen geïmporteerd. Het
 geïmporteerde formulier is standaard niet actief en dus niet direct voor de
 buitenwereld toegankelijk.
+
+Formulierimporteeropties
+------------------------
+
+Bij het importeren van een formulier heb je enkele opties over hoe het
+importbestand wordt geïmporteerd en hoe het formulier wordt gemaakt:
+
+* **Formulierinstellingen**: Hiermee kunnen registratiebackends,
+  betaalprovider, prefill en inlogmethode eenvoudig bij het importeren
+  weggelaten worden. Standaard worden alle instellingen mee-geïmporteerd.
+* **Ondersteunende formulierinstellingen**: Hiermee kunnen ondersteunende
+  instellingen uit het exportbestand toegevoegd worden aan het formulier. Bij
+  het importeren wordt gekeken of de ondersteunende objecten, zoals producten,
+  al in de Open Formulieren-omgeving bestaan. Zo ja, worden deze hergebruikt,
+  zo niet worden ze aangemaakt.
+* **Stijl**: Welk stijl toegepast zal worden op het formulier.
+* **Categorie**: In welke categorie het formulier geplaatst zal worden.
 
 Bijzonderheden
 --------------
@@ -79,6 +96,10 @@ melding van.
 Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan kan het
 formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het
 conflicterende formulier zelf aanpassen en het nogmaals proberen.
+
+Hyperlinks in e-mailsjablonen naar web-locaties, die niet opgenomen zijn in
+**Algemene Configuratie** > **Toegestane e-mail(sub)domeinen**, worden bij het
+importeren automatisch verwijderd.
 
 Export en import van :ref:`logica <manual_logic>` regels die gebruik maken van
 het bevragen van registraties is niet geïmplementeerd. De logica-regels zullen wel

@@ -2513,7 +2513,7 @@
     "originalDefault": "Partners description"
   },
   "eBHgYL": {
-    "defaultMessage": "Aanvullende formulierinstellingen",
+    "defaultMessage": "Ondersteunende formulierinstellingen",
     "description": "Form import/export options 'additionalFormConfiguration' field label",
     "originalDefault": "Additional form configuration"
   },
@@ -3622,7 +3622,7 @@
     "originalDefault": "API group"
   },
   "wdvWi/": {
-    "defaultMessage": "Welke aanvullende formulierinstellingen mee geëxporteerd worden.",
+    "defaultMessage": "Welke ondersteunende formulierinstellingen mee geëxporteerd worden.",
     "description": "Form import/export options 'additionalFormConfiguration' field help text",
     "originalDefault": "Which additional form configuration should be included in the export file content."
   },
