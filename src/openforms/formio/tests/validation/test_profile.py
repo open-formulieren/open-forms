@@ -317,7 +317,9 @@ class ProfileValidationTests(TestCase):
         self.assertFalse(is_valid)
         self.assertEqual(
             error,
-            _("You cannot submit multiple digital addresses for the type 'email'."),
+            _(
+                "You cannot submit multiple digital addresses for the type '{type}'."
+            ).format(type="email"),
         )
 
     def test_unverified_email(self):
