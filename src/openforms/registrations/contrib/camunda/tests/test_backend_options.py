@@ -254,7 +254,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                 "registrationBackends.0.options.processVariables.0.componentKey": "required",
             },
             {
-                "registrationBackends.0.options.processVariables": "null",
+                "registrationBackends.0.options.processVariables.0": "null",
             },
             {
                 "registrationBackends.0.options.processVariables.0.componentKey": "blank",
@@ -305,7 +305,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                 "registrationBackends.0.options.complexProcessVariables.0.type": "required",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables": "null",
+                "registrationBackends.0.options.complexProcessVariables.0": "null",
             },
             {
                 "registrationBackends.0.options.complexProcessVariables.0.alias": "blank",

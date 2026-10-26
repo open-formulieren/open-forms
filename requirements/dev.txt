@@ -68,7 +68,7 @@ boltons==25.0.0
     #   glom
 bracex==2.6
     # via wcmatch
-brotli==1.2.0
+brotli==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -91,7 +91,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-certifi==2026.10.19
+certifi==2026.10.23
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -437,7 +437,7 @@ django-yubin==2.0.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-djangorestframework==3.17.2
+djangorestframework==3.18.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
