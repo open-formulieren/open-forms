@@ -133,6 +133,7 @@ linkcheck_ignore = [
     r"https://(www\.)?npmjs\.com.*",  # IP/UA blocking...
     r"https://storybook\.js\.org.*",  # frequently times out despite being available
     r"https://content-security-policy\.com.*",  # frequently times out despite being available
+    r"https://vng\.nl/wmebv",  # seems to be blocked for Github actions :(
 ]
 
 linkcheck_anchors_ignore_for_url = [
