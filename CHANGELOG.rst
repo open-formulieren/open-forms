@@ -29,6 +29,29 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.0.6 (2026-10-26)
+==================
+
+Hotfix release.
+
+* Upgraded dependencies to their latest security releases:
+
+  - brotli
+  - certifi
+  - djangorestframework
+  - opentelemetry
+
+3.5.14 (2026-10-26)
+===================
+
+Hotfix release.
+
+* Upgraded dependencies to their latest security releases:
+
+  - brotli
+  - certifi
+  - djangorestframework
+
 4.0.5 (2026-10-23)
 ==================
 
