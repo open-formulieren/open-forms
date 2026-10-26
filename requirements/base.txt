@@ -31,7 +31,7 @@ boltons==25.0.0
     # via
     #   face
     #   glom
-brotli==1.2.0
+brotli==1.2.1
     # via fonttools
 cbor2==5.9.0
     # via webauthn
@@ -44,7 +44,7 @@ celery==5.6.2
     #   flower
 celery-once==3.0.1
     # via -r requirements/base.in
-certifi==2026.10.19
+certifi==2026.10.23
     # via
     #   pyproj
     #   requests
@@ -254,7 +254,7 @@ django-vite==3.2.0
     # via -r requirements/base.in
 django-yubin==2.0.6
     # via -r requirements/base.in
-djangorestframework==3.18.0
+djangorestframework==3.18.3
     # via
     #   -r requirements/base.in
     #   drf-jsonschema-serializer
