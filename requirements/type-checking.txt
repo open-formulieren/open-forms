@@ -65,7 +65,7 @@ boltons==25.0.0
     #   -r requirements/ci.txt
     #   face
     #   glom
-brotli==1.2.0
+brotli==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -88,7 +88,7 @@ celery-once==3.0.1
     #   -r requirements/ci.txt
 celery-types==0.24.0
     # via -r requirements/type-checking.in
-certifi==2026.10.19
+certifi==2026.10.23
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -436,7 +436,7 @@ django-yubin==2.0.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-djangorestframework==3.18.0
+djangorestframework==3.18.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -519,7 +519,7 @@ furl==2.1.4
     #   django-digid-eherkenning
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.62
+gitpython==3.2.1
     # via -r requirements/type-checking.in
 glom==25.12.0
     # via
