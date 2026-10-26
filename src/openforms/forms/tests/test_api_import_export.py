@@ -93,7 +93,7 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(forms[0]["name"], form.name)
         self.assertEqual(forms[0]["slug"], form.slug)
         self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
-        self.assertEqual(forms[0]["product"], "")
+        self.assertEqual(forms[0]["product"], None)
 
         form_definitions = json.loads(zf.read("formDefinitions.json"))
         self.assertEqual(len(form_definitions), 1)
@@ -900,7 +900,7 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(len(exported_forms), 1)
 
         # The product reference on the form is removed, theme and category are kept
-        self.assertEqual(exported_forms[0]["product"], "")
+        self.assertEqual(exported_forms[0]["product"], None)
         self.assertIsNotNone(exported_forms[0]["theme"])
         self.assertIsNotNone(exported_forms[0]["category"])
 
