@@ -32,7 +32,7 @@ def clear_product(data: FormData):
     :param data: FormData The Form data as dict. This could be either the representation
     of data to be exported or data to be imported.
     """
-    data["product"] = ""
+    data["product"] = None
 
 
 def clear_yivi_attribute_groups(data: FormData):

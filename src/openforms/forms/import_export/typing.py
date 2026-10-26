@@ -103,6 +103,11 @@ class AuthBackendData(TypedDict):
     options: JSONObject | None
 
 
+class ProductData(TypedDict):
+    producttype: str
+    url: str
+
+
 class FormData(TypedDict, total=False):
     uuid: str
     name: str
@@ -122,7 +127,7 @@ class FormData(TypedDict, total=False):
     price_variable_key: str
 
     appointment_options: JSONObject
-    product: str
+    product: ProductData | None
     type: FormTypeChoices
     category: str
     theme: str
