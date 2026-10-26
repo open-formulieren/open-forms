@@ -1040,3 +1040,65 @@ class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
                 'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
                 'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
             )
+
+
+class FormDesignerStableComponentsTests(E2ETestCase):
+    async def test_component_id_remains_the_same_after_form_save(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "id": "aa1f8597-2dd6-491c-a6bd-604af5f517d4",
+                            "type": "textfield",
+                            "key": "field1",
+                            "label": "Field 1",
+                        },
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            # Interact with the component without changing anything
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await open_component_options_modal(page, "Field 1")
+            await close_modal(page, "Save", exact=True)
+
+            # Save form
+            await page.get_by_role("button", name="Save", exact=True).click()
+            changelist_url = str(
+                furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+            )
+            await expect(page).to_have_url(changelist_url)
+
+        @sync_to_async
+        def assert_state(form: Form):
+            form.refresh_from_db()
+
+            form_step = form.formstep_set.first()
+            assert form_step is not None
+
+            # The component ID should not have changed.
+            self.assertEqual(
+                form_step.form_definition.configuration["components"][0]["id"],
+                "aa1f8597-2dd6-491c-a6bd-604af5f517d4",
+            )
+
+        await assert_state(form)
