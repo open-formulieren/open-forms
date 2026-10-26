@@ -5455,19 +5455,19 @@ msgstr "Export formulieren gereed"
 
 #: openforms/forms/admin/views.py:41
 msgid "Anonymize form configuration"
-msgstr "Formulierconfiguratie anonimiseren"
+msgstr "Formulierinstellingen anonimiseren"
 
 #: openforms/forms/admin/views.py:45
 msgid ""
 "Whether sensative/internal form configuration should be anonymized during "
 "exporting."
 msgstr ""
-"Geeft aan of gevoelige/interne formulierconfiguratie geanonimiseerd moet "
+"Geeft aan of gevoelige/interne formulierinstellingen geanonimiseerd moet "
 "worden tijdens het exporteren."
 
 #: openforms/forms/admin/views.py:49
 msgid "Form configuration"
-msgstr "Formulierconfiguratie"
+msgstr "Formulierinstellingen"
 
 #: openforms/forms/admin/views.py:60
 #: openforms/forms/api/serializers/form.py:763
@@ -5476,14 +5476,14 @@ msgstr "Welke onderdelen in het exportbestand moeten komen."
 
 #: openforms/forms/admin/views.py:64
 msgid "Additional form configuration"
-msgstr "Ondersteunende configuratie"
+msgstr "Ondersteunende formulierinstellingen"
 
 #: openforms/forms/admin/views.py:70
 #: openforms/forms/api/serializers/form.py:771
 msgid ""
 "Which additional form configuration should be included in the export file "
 "content."
-msgstr "Welke ondersteunende configuratie in het exportbestand moeten komen."
+msgstr "Welke ondersteunende instellingen in het exportbestand moeten komen."
 
 #: openforms/forms/admin/views.py:76
 msgid "Invalid form uuids."
@@ -5696,7 +5696,7 @@ msgstr ""
 msgid ""
 "Whether sensative form configuration should be anonymized during exporting."
 msgstr ""
-"Geeft aan of gevoelige/interne formulierconfiguratie geanonimiseerd moet "
+"Geeft aan of gevoelige/interne formulierinstellingen geanonimiseerd moet "
 "worden tijdens het exporteren."
 
 #: openforms/forms/api/serializers/form.py:790
