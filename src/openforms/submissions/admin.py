@@ -144,9 +144,11 @@ class SubmissionLogInline(GenericTabularInline):
         qs = super().get_queryset(request)
         qs = qs.has_tag(TimelineLogTags.submission_lifecycle)
         qs = qs.filter(~Q(template="logging/events/submission_logic_evaluated.txt"))
-        return qs.prefetch_related(
-            "content_object", "content_object__form"
-        ).select_related("user")
+        return (
+            qs.prefetch_related("content_object", "content_object__form")
+            .select_related("user")
+            .order_by("timestamp")
+        )
 
     def has_add_permission(self, request, obj=None):
         return False
