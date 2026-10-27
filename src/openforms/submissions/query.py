@@ -17,6 +17,7 @@ from django.db.models import (
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+from openforms.payments.constants import PaymentStatus
 
 from .constants import RegistrationStatuses, Stages
 
@@ -63,12 +64,25 @@ class SubmissionQuerySet(models.QuerySet["Submission"]):
 
     def annotate_stage(self) -> Self:
         """
-        Label each submissions with its lifecycle stage.
+        Label each submission with its lifecycle stage.
         """
         stage_case_when = Case(
             When(
                 registration_status=RegistrationStatuses.success,
                 then=Value(Stages.successfully_completed),
+            ),
+            # TODO support partial payments
+            # incomplete and paid submissions
+            When(
+                registration_status__in=(
+                    RegistrationStatuses.pending,
+                    RegistrationStatuses.in_progress,
+                ),
+                payments__status__in=(
+                    PaymentStatus.completed,
+                    PaymentStatus.registered,
+                ),
+                then=Value(Stages.other),
             ),
             When(
                 registration_status__in=(
