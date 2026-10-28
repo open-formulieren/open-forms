@@ -1,7 +1,7 @@
-# Objects APIs
+# Open object API
 
-The `docker-compose.objects-apis.yml` compose file is available to run an instance of the Objects
-and Objecttypes API.
+The `docker-compose.objects-apis.yml` compose file is available to run an instance of Open Object
+which provides API endpoints for objects and object types.
 
 ## docker compose
 
@@ -13,8 +13,7 @@ docker compose -f docker-compose.objects-apis.yml up -d
 
 This brings up:
 
-- Objecttypes (admin interface is accessible at http://localhost:8001/admin/).
-- Objects (admin interface is accessible at http://localhost:8002/admin/).
+- Objects and Objecttypes (admin interface is accessible at http://localhost:8001/admin/).
 
 You can log in with the `admin` / `admin` credentials.
 
@@ -30,26 +29,25 @@ same data.
 
 Dump the fixtures with (in the `docker` directory):
 
-**Object types API**
+**Object types**
 
 ```bash
-docker compose -f docker-compose.objects-apis.yml run objecttypes-web \
+docker compose -f docker-compose.objects-apis.yml run open-object-web \
     python src/manage.py dumpdata \
         --indent=4 \
-        --output /app/fixtures/objecttypes_api_fixtures.json \
+        --output /app/fixtures/001_objecttypes_api_fixtures.json \
         core.objecttype \
-        core.objectversion \
-        token
+        core.objecttypeversion
 ```
 
-**Objects API**
+**Objects**
 
 ```bash
-docker compose -f docker-compose.objects-apis.yml run objects-web \
+docker compose -f docker-compose.objects-apis.yml run open-object-web \
     python src/manage.py dumpdata \
         --indent=4 \
-        --output /app/fixtures/objects_api_fixtures.json \
-        core \
+        --output /app/fixtures/002_objects_api_fixtures.json \
+        core.object \
         token \
         zgw_consumers
 ```

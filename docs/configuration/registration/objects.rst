@@ -1,5 +1,82 @@
 .. _configuration_registration_objects:
 
+Open Forms currently supports two ways of interacting with Objects APIs, `Open Object API`_
+(recommended) and `Objects API`_ (legacy). Below you can see the differences and what
+is needed to configure them.
+
+===============
+Open Object API
+===============
+
+The `Open Object API`_ is an open-source API which combines objecttypes and objects, in
+contrast with the legacy `Objects API`_ which exposes two separate APIs for them. It's a
+general purpose API to define the shape of data (object types) and create instances of those
+objecttypes - objects.
+
+The legacy behaviour (see below: `Objects API (legacy) <#objects-api>`_  for details)
+is still supported but it may to be removed in future Open Forms versions, since the
+individual services are no longer being developed. If you still use the legacy version
+we recommend migrating to the new one (Open Object) and below we list the necessary/needed
+actions for doing so.
+
+What does the Open Forms administrator need?
+============================================
+
+*  A single `Open Object API`_ instance, with:
+
+    - an API token to access the API from Open Forms
+
+
+Configuration
+=============
+
+To configure the Open Object API follow these steps:
+
+#. In Open Forms, navigate to: **Configuration** > **Services**
+#. Create a service for the Open Object API (ORC) where the form data will be registered.
+
+   a. Click **Add service**.
+   b. Fill out the form:
+
+      * **Label**: *Fill in a human readable label*, for example: ``My Open Object API``
+      * **Type**: Select the type: ``ORC``
+      * **API root url**: The root of this API, *for example* ``https://example.com/api/v2/``
+      * **Authorization type**: Select the option: ``API Key``
+      * **Header key**: Fill in ``Authorization``
+      * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced
+         by the token provided by the backend service
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+
+   c. Click **Save**.
+
+   .. note:: In case you don't have already an instance for `Documenten` and `Catalogi`
+      APIs, they can be added in the same way (see `Objects API (legacy) <#objects-api>`_).
+
+#. Navigate to **Configuration** > **Configuration overview**. In the
+   **Registration plugins** group, click on **Manage API groups** for the
+   **Objects API registration** line.
+
+#. Enter the following details:
+
+   * **Name**: Enter a recognizable name, it will be displayed in various dropdowns
+   * **Identifier**: Enter a unique identifier for this group
+   * **Objects API**: Select the Open Object API (ORC) service created above
+   * **Objecttypes API**: Select the Open Object API (ORC) service created above (identical to the objects API configuration field)
+   * **Documenten API**: Select the Documenten API (DRC) service
+   * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service
+   * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
+     *For example:* ``123456789``. You an override this on a per-form basis.
+
+#. Click **Save**
+
+The Open Object API configuration is now complete and can be selected as registration
+backend in the form builder. When doing so, the corresponding objecttype and objecttype
+version will have to be configured.
+
+.. warning:: As of Open Object v4.0.0, the ObjectTypes API has been merged into Objects. Migrating
+   the content of the Objects API is out of scope for Open Forms, but you can follow the Open Object
+   `ObjectTypes API migration`_ documentation.
+
 ===========
 Objects API
 ===========
@@ -269,6 +346,8 @@ Documenten API    Test status
 ================  ===============================================
 
 
+.. _`Open Object API`: https://open-object.readthedocs.io/en/latest/
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/
 .. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/#objecttypes
 .. _`ProductAanvraag objecttype`: https://github.com/open-objecten/objecttypes/tree/main/community-concepts/productaanvraag/
+.. _`ObjectTypes API migration`: https://open-object.readthedocs.io/en/latest/manual/migration.html 
