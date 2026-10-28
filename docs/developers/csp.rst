@@ -70,7 +70,7 @@ To make some aspects that are blocked explicit:
 Embedding using the SDK
 -----------------------
 
-The :ref:`SDK <developers_sdk_index>` is developed with care to be usable in strict CSP
+The :ref:`SDK <developers_sdk>` is developed with care to be usable in strict CSP
 environments. All source code is bundled into Javascript, CSS and other static assets.
 Where relevant, external dependencies have been included in the SDK bundle itself - we
 do not rely on external CDNs (such as the Formio CDN, Google Fonts...).

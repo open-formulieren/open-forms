@@ -1,9 +1,10 @@
 import warnings
+from typing import assert_never
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.base import SessionBase
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -12,7 +13,7 @@ from django.http import (
     HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
@@ -30,11 +31,14 @@ from rest_framework.request import Request
 from openforms.accounts.models import User
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form, FormAuthenticationBackend
+from openforms.initial_data.constants import SupportedAuthAttributes
+from openforms.initial_data.models import InitialSubmissionData
 from openforms.logging import audit_logger
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.cosigning import CosignData
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
+from openforms.typing import is_authenticated_request
 from openforms.utils.helpers import obfuscate
 from openforms.utils.redirect import allow_redirect_url
 
@@ -44,6 +48,7 @@ from .constants import (
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
+    ModeChoices,
 )
 from .exceptions import InvalidCoSignData
 from .forms import RegistratorSubjectInfoForm
@@ -54,6 +59,8 @@ logger = structlog.stdlib.get_logger(__name__)
 
 # unique name so we don't clobber a parameter on the arbitrary url form is hosted at
 BACKEND_OUTAGE_RESPONSE_PARAMETER = "of-auth-problem"
+
+_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY = "_registrator_representee_ref"
 
 
 class AuthenticationFlowBaseView(RetrieveAPIView):
@@ -488,14 +495,13 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     # block the AccessMixin login redirection
     raise_exception = True
 
-    cleaned_next_url = None
+    cleaned_next_url: str = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         assert self.cleaned_next_url
-        path = str(furl(self.cleaned_next_url).path)
-        resolved = resolve(path)
-        form = get_object_or_404(Form, slug=resolved.kwargs.get("slug"))
+        slug = self.kwargs["slug"]
+        form = get_object_or_404(Form, slug=slug)
         context[THEME_OVERRIDE_CONTEXT_VAR] = form.theme
         return context
 
@@ -508,6 +514,60 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
         self.cleaned_next_url = next_url
         return super().dispatch(request, *args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+        assert is_authenticated_request(self.request)
+
+        if not (representee_ref := self.request.GET.get("representeeRef")):
+            return initial
+
+        # look up the initial data from potential pre-created initial submission data
+        # TODO: track/validate that the data is not reused?
+        form_slug = self.kwargs["slug"]
+        try:
+            initial_data = InitialSubmissionData.objects.filter(
+                uuid=representee_ref,
+                form__slug=form_slug,
+            ).first()
+        except ValidationError:  # happens when the reference is not a UUID
+            initial_data = None
+        audit_log = audit_logger.bind(
+            form=form_slug,
+            ref=representee_ref,
+            is_expired=bool(initial_data and initial_data.is_expired),
+            employee=self.request.user.employee_id or self.request.user.username,
+        )
+        audit_log.debug("representee_ref_provided")
+        if not initial_data or not initial_data.can_be_used:
+            audit_log.warning("initial_data_prepopulation_failed")
+            return initial
+
+        initial["representee_ref"] = representee_ref
+        match auth_attr := SupportedAuthAttributes(
+            initial_data.representee_auth_attribute
+        ):
+            case SupportedAuthAttributes.bsn:
+                initial.update(
+                    {
+                        "mode": ModeChoices.citizen,
+                        "bsn": initial_data.representee_auth_value,
+                    }
+                )
+            case SupportedAuthAttributes.kvk:
+                initial.update(
+                    {
+                        "mode": ModeChoices.company,
+                        "kvk": initial_data.representee_auth_value,
+                        "kvk_branch_number": initial_data.representee_branch_number,
+                    }
+                )
+            case _:  # pragma: no cover
+                assert_never(auth_attr)
+
+        audit_log.info("initial_data_auth_prepopulated", attribute=auth_attr)
+        self.request.session[_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY] = representee_ref
+        return initial
+
     def form_valid(self, form):
         skip_subject = form.cleaned_data.get("skip_subject", False)
         if skip_subject:
@@ -515,15 +575,31 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
                 "skipped_subject_info": True,
             }
         else:
+            # extract the representee ref and pass it along in the registrator session
+            # data - this allows us to correlate initial data & submission created from
+            # it so that we can prevent replays
+            representee_ref: str = form.cleaned_data.get("representee_ref") or ""
+            session_representee_ref: str = (
+                self.request.session.get(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY) or ""
+            )
+            if session_representee_ref:
+                del self.request.session[_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY]
+            # compare against the value stored in the session on the GET call before, this
+            # ensures we don't accidentally use stale data
+            if representee_ref and (representee_ref != session_representee_ref):
+                representee_ref = ""
+
             if form.cleaned_data["bsn"]:
                 self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
                     "value": form.cleaned_data["bsn"],
                     "attribute": AuthAttribute.bsn,
+                    "representee_ref": representee_ref,
                 }
             elif form.cleaned_data["kvk"]:
                 self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
                     "value": form.cleaned_data["kvk"],
                     "attribute": AuthAttribute.kvk,
+                    "representee_ref": representee_ref,
                 }
 
                 if branch_number := form.cleaned_data.get("kvk_branch_number"):

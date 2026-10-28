@@ -7,7 +7,7 @@ Frontend documentation
 The 'frontend' is an ambiguous concept in the context of Open Forms as a combination
 of software projects and associated code repositories. So, first, let's clear this up.
 
-* The :ref:`developers_sdk_index` is responsible for the form rendering and interacting
+* The :ref:`developers_sdk` is responsible for the form rendering and interacting
   with the backend API.
 
 * The `design tokens`_ package contains the design token definitions/values for the

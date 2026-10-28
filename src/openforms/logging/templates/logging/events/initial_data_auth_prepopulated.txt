@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead user=log.user ref=log.extra_data.ref %}
+   {{ lead }}: Initial representee data ({{ ref }}) populated (requested by {{ user }}).
+{% endblocktrans %}

@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead user=log.user ref=log.extra_data.ref is_expired=log.extra_data.is_expired|yesno %}
+   {{ lead }}: Failed to populate initial representee data ({{ ref }}) requested by {{ user }}. Expired: {{ is_expired }}.
+{% endblocktrans %}

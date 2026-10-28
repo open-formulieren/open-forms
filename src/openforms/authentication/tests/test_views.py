@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings, tag
 from django.test.client import RequestFactory
 from django.utils.translation import gettext as _
 
+import time_machine
 from django_webtest import WebTest
 from furl import furl
 from rest_framework import status
@@ -15,6 +16,8 @@ from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.initial_data.constants import SupportedAuthAttributes
+from openforms.initial_data.tests.factories import InitialSubmissionDataFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
@@ -28,6 +31,7 @@ from ..constants import (
 )
 from ..registry import Registry
 from ..views import (
+    _REGISTRATOR_REPRESENTEE_REF_SESSION_KEY,
     BACKEND_OUTAGE_RESPONSE_PARAMETER,
     AuthenticationReturnView,
     AuthenticationStartView,
@@ -721,7 +725,12 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
             self.assertEqual(
-                data, {"attribute": AuthAttribute.bsn, "value": "115736499"}
+                data,
+                {
+                    "attribute": AuthAttribute.bsn,
+                    "value": "115736499",
+                    "representee_ref": "",
+                },
             )
 
         with self.subTest("kvk"):
@@ -739,6 +748,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 {
                     "attribute": AuthAttribute.kvk,
                     "value": "12345678",
+                    "representee_ref": "",
                 },
             )
 
@@ -758,6 +768,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 {
                     "attribute": AuthAttribute.kvk,
                     "value": "12345678",
+                    "representee_ref": "",
                     "branch_number": "000038509490",
                 },
             )
@@ -772,6 +783,246 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
             self.assertEqual(data, {"skipped_subject_info": True})
+
+    def test_view_loads_initial_submission_data_when_representee_ref_is_given(self):
+        log_records_ref_provided = TimelineLogProxy.objects.for_object(
+            self.form
+        ).filter_event("representee_ref_provided")
+        log_records_populated = TimelineLogProxy.objects.for_object(
+            self.form
+        ).filter_event("initial_data_auth_prepopulated")
+
+        with self.subTest("citizen"):
+            initial_data = InitialSubmissionDataFactory.create(
+                form=self.form,
+                representee_auth_attribute=SupportedAuthAttributes.bsn,
+                representee_auth_value="115736499",
+            )
+
+            response = self.app.get(
+                self.subject_url,
+                params={"representeeRef": str(initial_data.uuid)},
+                status=200,
+                user=self.user,
+            )
+
+            form = response.forms["registrator-subject"]
+            self.assertEqual(form["mode"].value, ModeChoices.citizen)
+            self.assertEqual(form["bsn"].value, "115736499")
+            self.assertEqual(log_records_ref_provided.count(), 1)
+            self.assertEqual(log_records_populated.count(), 1)
+
+        with self.subTest("company without branch number"):
+            initial_data = InitialSubmissionDataFactory.create(
+                form=self.form,
+                representee_auth_attribute=SupportedAuthAttributes.kvk,
+                representee_auth_value="12345678",
+                representee_branch_number="",
+            )
+
+            response = self.app.get(
+                self.subject_url,
+                params={"representeeRef": str(initial_data.uuid)},
+                status=200,
+                user=self.user,
+            )
+
+            form = response.forms["registrator-subject"]
+            self.assertEqual(form["mode"].value, ModeChoices.company)
+            self.assertEqual(form["kvk"].value, "12345678")
+            self.assertEqual(form["kvk_branch_number"].value, "")
+            self.assertEqual(log_records_ref_provided.count(), 2)
+            self.assertEqual(log_records_populated.count(), 2)
+
+        with self.subTest("company with branch number"):
+            initial_data = InitialSubmissionDataFactory.create(
+                form=self.form,
+                representee_auth_attribute=SupportedAuthAttributes.kvk,
+                representee_auth_value="12345678",
+                representee_branch_number="123456123456",
+            )
+
+            response = self.app.get(
+                self.subject_url,
+                params={"representeeRef": str(initial_data.uuid)},
+                status=200,
+                user=self.user,
+            )
+
+            form = response.forms["registrator-subject"]
+            self.assertEqual(form["mode"].value, ModeChoices.company)
+            self.assertEqual(form["kvk"].value, "12345678")
+            self.assertEqual(form["kvk_branch_number"].value, "123456123456")
+            self.assertEqual(log_records_ref_provided.count(), 3)
+            self.assertEqual(log_records_populated.count(), 3)
+
+        self.assertFalse(
+            TimelineLogProxy.objects.filter_event(
+                "initial_data_prepopulation_failed"
+            ).exists()
+        )
+
+    def test_view_ignores_invalid_references(self):
+        initial_data_other_form = InitialSubmissionDataFactory.create(
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        assert initial_data_other_form.form != self.form
+
+        with time_machine.travel("2026-01-01"):
+            expired_initial_data = InitialSubmissionDataFactory.create(
+                form=self.form,
+                representee_auth_attribute=SupportedAuthAttributes.kvk,
+                representee_auth_value="11573649",
+                ttl_hours=1,
+            )
+
+        already_used_initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.kvk,
+            representee_auth_value="11573649",
+            ttl_hours=1,
+            used_for_submission=SubmissionFactory.create(form=self.form),
+        )
+
+        for label, initial_data in (
+            ("other_form", initial_data_other_form),
+            ("expired", expired_initial_data),
+            ("already_used", already_used_initial_data),
+        ):
+            with self.subTest(label):
+                response = self.app.get(
+                    self.subject_url,
+                    params={"representeeRef": str(initial_data.uuid)},
+                    status=200,
+                    user=self.user,
+                )
+
+                form = response.forms["registrator-subject"]
+                self.assertIsNone(form["mode"].value)
+                self.assertEqual(form["bsn"].value, "")
+                self.assertEqual(form["kvk"].value, "")
+                self.assertEqual(form["kvk_branch_number"].value, "")
+
+        with self.subTest("wrong format reference"):
+            response = self.app.get(
+                self.subject_url,
+                params={"representeeRef": "foo"},  # not a UUID
+                status=200,
+                user=self.user,
+            )
+
+            form = response.forms["registrator-subject"]
+            self.assertIsNone(form["mode"].value)
+            self.assertEqual(form["bsn"].value, "")
+            self.assertEqual(form["kvk"].value, "")
+            self.assertEqual(form["kvk_branch_number"].value, "")
+
+        log_records_ref_provided = TimelineLogProxy.objects.filter_event(
+            "representee_ref_provided"
+        )
+        log_records_failed = TimelineLogProxy.objects.filter_event(
+            "initial_data_prepopulation_failed"
+        )
+        self.assertEqual(log_records_ref_provided.count(), 4)
+        self.assertEqual(log_records_failed.count(), 4)
+
+    def test_view_ignores_stale_representee_ref_session_data(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        # populate session with "stale" initial data
+        self.app.get(
+            self.subject_url,
+            params={"representeeRef": str(initial_data)},
+            status=200,
+            user=self.user,
+        )
+
+        # now load another registrator info view, without submitting the first
+        response = self.app.get(self.subject_url, status=200, user=self.user)
+        form = response.forms["registrator-subject"]
+        form["mode"] = ModeChoices.company
+        form["kvk"] = "12345678"
+        form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.kvk,
+                "value": "12345678",
+                "representee_ref": "",
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
+
+    def test_view_ignores_spoofed_representee_ref(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        other_initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="000000000",
+        )
+        ref = str(initial_data.uuid)
+        response = self.app.get(
+            self.subject_url,
+            params={"representeeRef": ref},
+            status=200,
+            user=self.user,
+        )
+        form = response.forms["registrator-subject"]
+        form["representee_ref"] = str(other_initial_data.uuid)
+
+        form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.bsn,
+                "value": "115736499",
+                "representee_ref": "",
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
+
+    def test_view_propagates_initial_data_representee_ref(self):
+        initial_data = InitialSubmissionDataFactory.create(
+            form=self.form,
+            representee_auth_attribute=SupportedAuthAttributes.bsn,
+            representee_auth_value="115736499",
+        )
+        ref = str(initial_data.uuid)
+        response = self.app.get(
+            self.subject_url,
+            params={"representeeRef": ref},
+            status=200,
+            user=self.user,
+        )
+        form = response.forms["registrator-subject"]
+
+        form.submit(status=302)
+
+        self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+        data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+        self.assertEqual(
+            data,
+            {
+                "attribute": AuthAttribute.bsn,
+                "value": "115736499",
+                "representee_ref": ref,
+            },
+        )
+        self.assertNotIn(_REGISTRATOR_REPRESENTEE_REF_SESSION_KEY, self.app.session)
 
 
 class LogoutTestViewTests(TestCase):

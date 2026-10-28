@@ -5,6 +5,7 @@ from openforms.submissions.models import Submission
 
 type SDKAction = Literal[
     "",
+    "init",
     "resume",
     "afspraak-annuleren",
     "cosign-init",
