@@ -59,6 +59,8 @@ class CSPDirective(models.TextChoices):
     )  # Valid values: script, style, or both. See: require-sri-for-known-tokens Note: This doesn’t use default-src as a fall-back.
 
 
+# When adding extensions/mime types, check src/registry/file/constants.ts in the render
+# too!
 class UploadFileType(models.TextChoices):
     all = "*", _("any filetype")
     heic = "image/heic", (".heic")
