@@ -204,6 +204,94 @@ class DeleteSubmissionsTask(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             in_progress_submission_to_be_deleted.refresh_from_db()
 
+    @tag("gh-6867")
+    def test_paid_and_pending_submission_not_deleted_in_incomplete_interval(self):
+        form = FormFactory.create(
+            incomplete_submissions_removal_limit=7,
+            all_submissions_removal_limit=90,
+        )
+        SubmissionFactory.create(
+            form=form,
+            registration_pending=True,
+            with_completed_payment=True,
+            public_registration_reference="foo",
+        )
+
+        with time_machine.travel(timezone.now() + timedelta(days=7)):
+            delete_submissions()
+
+        # submission should not have been removed in the incomplete interval (7 days)
+        self.assertEqual(Submission.objects.count(), 1)
+
+        with time_machine.travel(timezone.now() + timedelta(days=90)):
+            delete_submissions()
+
+        # submission should be removed after the generic removal limit (90 days)
+        self.assertEqual(Submission.objects.count(), 0)
+
+    @tag("gh-6867")
+    def test_pending_and_paid_submissions_delete_combinations(self):
+        form = FormFactory.create(
+            incomplete_submissions_removal_limit=7,
+            all_submissions_removal_limit=90,
+        )
+        # paid and pending
+        SubmissionFactory.create(
+            form=form,
+            registration_pending=True,
+            with_completed_payment=True,
+            public_registration_reference="foo-1",
+        )
+        # paid pending and waiting for cosign
+        SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosignerEmail",
+                    "type": "cosign",
+                    "validate": {"required": True},
+                },
+            ],
+            form=form,
+            registration_pending=True,
+            with_completed_payment=True,
+            public_registration_reference="foo-2",
+            co_sign_data__plugin="digid",
+        )
+
+        paid_and_completed = SubmissionFactory.create(
+            form=form,
+            registration_success=True,
+            with_completed_payment=True,
+            public_registration_reference="foo-3",
+        )
+        paid_completed_and_cosigned = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosignerEmail",
+                    "type": "cosign",
+                    "validate": {"required": True},
+                },
+            ],
+            form=form,
+            registration_success=True,
+            with_completed_payment=True,
+            public_registration_reference="foo-4",
+            co_sign_data__plugin="digid",
+            cosigned=True,
+        )
+
+        with time_machine.travel(timezone.now() + timedelta(days=7)):
+            delete_submissions()
+
+        # pending submissions should not be deleted (limit 90 days)
+        self.assertEqual(Submission.objects.count(), 2)
+
+        # successful submissions should be deleted (limit 7 days)
+        with self.assertRaises(ObjectDoesNotExist):
+            paid_and_completed.refresh_from_db()
+        with self.assertRaises(ObjectDoesNotExist):
+            paid_completed_and_cosigned.refresh_from_db()
+
     def test_incomplete_submissions_correctly_deleted_the_same_day_when_form_removal_limit_is_0(
         self,
     ):
