@@ -723,7 +723,7 @@ xmltodict==1.0.3
     # via -r requirements/base.in
 zeep==4.3.3
     # via -r requirements/base.in
-zgw-consumers==2.1.1
+zgw-consumers==2.2.0
     # via -r requirements/base.in
 zopfli==0.4.1
     # via fonttools
