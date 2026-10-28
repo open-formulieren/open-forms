@@ -217,13 +217,13 @@ class DeleteSubmissionsTask(TestCase):
             public_registration_reference="foo",
         )
 
-        with time_machine.travel(timezone.now() + timedelta(days=7)):
+        with freeze_time(timezone.now() + timedelta(days=7)):
             delete_submissions()
 
         # submission should not have been removed in the incomplete interval (7 days)
         self.assertEqual(Submission.objects.count(), 1)
 
-        with time_machine.travel(timezone.now() + timedelta(days=90)):
+        with freeze_time(timezone.now() + timedelta(days=90)):
             delete_submissions()
 
         # submission should be removed after the generic removal limit (90 days)
@@ -280,7 +280,7 @@ class DeleteSubmissionsTask(TestCase):
             cosigned=True,
         )
 
-        with time_machine.travel(timezone.now() + timedelta(days=7)):
+        with freeze_time(timezone.now() + timedelta(days=7)):
             delete_submissions()
 
         # pending submissions should not be deleted (limit 90 days)
