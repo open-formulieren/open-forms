@@ -197,3 +197,7 @@ class BaseImportSerializer[MT: Model, DT: ImportData](serializers.Serializer):
     @property
     def import_options(self) -> FormImportOptions:
         return self.context["import_options"]
+
+    @property
+    def is_restoring_previous_version(self) -> bool:
+        return self.context["restoring_previous_version"]

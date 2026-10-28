@@ -82,12 +82,7 @@ def import_form(
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(
-        import_data,
-        import_options,
-        existing_form_instance,
-        deactivate_form=True,
-    )
+    return import_form_data(import_data, import_options, existing_form_instance)
 
 
 @transaction.atomic
@@ -96,17 +91,18 @@ def import_form_data(
     import_data: dict[str, str],
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
-    deactivate_form: bool = False,
 ) -> Form | None:
     uuid_mapping = UUIDMap()
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
+    restoring_previous_version: bool = existing_form_instance is not None
 
     context = {
         "request": request,
         "is_import": True,
         "import_options": import_options,
+        "restoring_previous_version": restoring_previous_version,
     }
 
     # Import additional data
@@ -114,6 +110,7 @@ def import_form_data(
         resources=import_data,
         import_options=import_options,
         uuid_mapping=uuid_mapping,
+        force_deep_compare=restoring_previous_version,
     )
 
     if forms_data := import_data.get("forms"):
@@ -122,7 +119,6 @@ def import_form_data(
             uuid_mapping=uuid_mapping,
             context=context,
             existing_form_instance=existing_form_instance,
-            deactivate_form=deactivate_form,
         )
 
     assert imported_form is not None, "No form data has been imported"
@@ -160,7 +156,6 @@ def _import_form_resource(
     uuid_mapping: UUIDMap,
     context: dict[str, Any],
     existing_form_instance: Form | None,
-    deactivate_form: bool,
 ) -> Form | None:
     data = uuid_mapping.apply_to_data(data)
 
@@ -171,9 +166,7 @@ def _import_form_resource(
     old_uuid: str | None = form.get("uuid")
 
     deserialized = FormImportSerializer(
-        data=form,
-        context={**context, "deactivate_form": deactivate_form},
-        instance=existing_form_instance,
+        data=form, context=context, instance=existing_form_instance
     )
 
     try:
