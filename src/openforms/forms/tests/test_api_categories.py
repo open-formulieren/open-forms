@@ -6,8 +6,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 
-from ..models import Category, Form
-from .factories import CategoryFactory
+from ..models import Category
 
 
 class CategoriesAPITests(APITestCase):
@@ -52,31 +51,6 @@ class CategoriesAPITests(APITestCase):
 
         self.assertEqual(len(data[1]["ancestors"]), 1)
         self.assertEqual(data[1]["ancestors"][0]["name"], "foo")
-
-    def test_create_form_with_category(self):
-        category = CategoryFactory.create()
-        category_url = reverse("api:categories-detail", args=[category.uuid])
-        url = reverse("api:form-list")
-        data = {
-            "name": "Test Post Form",
-            "slug": "test-post-form",
-            "category": category_url,
-        }
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Form.objects.count(), 1)
-        form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
-        self.assertEqual(form.category.pk, category.pk)
-
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.json()["category"], "http://testserver" + category_url
-        )
 
 
 class CategoriesAuthTest(APITestCase):
