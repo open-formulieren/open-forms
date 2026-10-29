@@ -153,7 +153,7 @@ class FormAdminExportTests(WebTest):
         self.assertEqual(forms[0]["registration_backends"][0]["backend"], "demo")
 
         # Additional form configuration should be removed
-        self.assertEqual(forms[0]["product"], "")
+        self.assertEqual(forms[0]["product"], None)
 
     def test_form_admin_export_with_broken_export_options(self):
         self.client.force_login(self.user)
@@ -921,7 +921,7 @@ class FormAdminExportTests(WebTest):
         self.assertEqual(len(exported_forms), 1)
 
         # The product reference on the form is removed, theme and category are kept
-        self.assertEqual(exported_forms[0]["product"], "")
+        self.assertEqual(exported_forms[0]["product"], None)
         self.assertIsNotNone(exported_forms[0]["theme"])
         self.assertIsNotNone(exported_forms[0]["category"])
 
@@ -1615,7 +1615,10 @@ class FormAdminImportTests(WebTest):
                                 ],
                                 "payment_backend": "demo",
                                 "payment_backend_options": {},
-                                "product": "http://testserver/api/v2/products/b0044e5a-1eb1-471a-b9a8-5e860d821c88",
+                                "product": {
+                                    "url": "http://testserver/api/v2/products/b0044e5a-1eb1-471a-b9a8-5e860d821c88",
+                                    "producttype": None,
+                                },
                             }
                         ]
                     ).encode("utf-8")
@@ -1689,6 +1692,7 @@ class FormAdminImportTests(WebTest):
                                 "name": "Product",
                                 "price": "12.50",
                                 "information": "",
+                                "producttype_uuid": None,
                             }
                         ]
                     ).encode("utf-8")
@@ -1832,7 +1836,12 @@ class FormAdminImportTests(WebTest):
                                 ],
                                 "payment_backend": "demo",
                                 "payment_backend_options": {},
-                                "product": "http://testserver/api/v2/products/b0044e5a-1eb1-471a-b9a8-5e860d821c88",
+                                # TODO: investigate usage of the NestedProductSerializer
+                                # which now uses a nested representation of the product instead of only an URL.
+                                "product": {
+                                    "url": "http://testserver/api/v2/products/b0044e5a-1eb1-471a-b9a8-5e860d821c88",
+                                    "producttype": None,
+                                },
                             }
                         ]
                     ).encode("utf-8")
@@ -1906,6 +1915,7 @@ class FormAdminImportTests(WebTest):
                                 "name": "Product",
                                 "price": "12.50",
                                 "information": "",
+                                "producttype_uuid": None,
                             }
                         ]
                     ).encode("utf-8")

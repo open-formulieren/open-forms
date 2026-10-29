@@ -794,7 +794,7 @@
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
   "Ckzpff": {
-    "defaultMessage": "Gebruik een variabele",
+    "defaultMessage": "Use a variable for the price",
     "description": "variable pricing mode label",
     "originalDefault": "Use a variable for the price"
   },
@@ -1017,7 +1017,7 @@
     "originalDefault": "Zaaktype code for newly created Zaken in StUF-ZDS"
   },
   "FQswyM": {
-    "defaultMessage": "Modus",
+    "defaultMessage": "Mode",
     "description": "Pricing mode label",
     "originalDefault": "Mode"
   },
@@ -1117,7 +1117,7 @@
     "originalDefault": "Whether to map the specific subfield of addressNl component"
   },
   "Gi+cvN": {
-    "defaultMessage": "Gebruik gekoppelde productprijs",
+    "defaultMessage": "Use linked product price",
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
   },
@@ -1588,6 +1588,11 @@
     "description": "Legacy options fieldset title",
     "originalDefault": "Legacy options"
   },
+  "OAzUo1": {
+    "defaultMessage": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected.",
+    "description": "Warning message that informs the user can only select certain price logic modes when a Open Product product is selected.",
+    "originalDefault": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
+  },
   "OB48En": {
     "defaultMessage": "Design token waarden",
     "description": "Title of modal to edit design token values",
@@ -2020,7 +2025,6 @@
   "WQCs+M": {
     "defaultMessage": "Product",
     "description": "Product fieldset title",
-    "isTranslated": true,
     "originalDefault": "Product"
   },
   "WUTOwp": {
@@ -2414,7 +2418,6 @@
   "cV72I+": {
     "defaultMessage": "Product",
     "description": "Form product label",
-    "isTranslated": true,
     "originalDefault": "Product"
   },
   "cZbqaM": {
@@ -2573,7 +2576,7 @@
     "originalDefault": "Name"
   },
   "fLHOey": {
-    "defaultMessage": "Prijslogica",
+    "defaultMessage": "Pricing logic",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
   },
@@ -3667,7 +3670,7 @@
     "originalDefault": "Cancel"
   },
   "x6oxfg": {
-    "defaultMessage": "Variabele",
+    "defaultMessage": "Variable",
     "description": "Price variable label",
     "originalDefault": "Variable"
   },
