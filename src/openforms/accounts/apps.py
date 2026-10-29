@@ -37,6 +37,10 @@ class AccountsConfig(AppConfig):
     name = "openforms.accounts"
 
     def ready(self):
+        from maykin_common.accounts.audit import (
+            connect_signals as connect_audit_logging_signals,
+        )
+
         # register async metrics
         from . import (
             metrics,  # noqa
@@ -49,3 +53,4 @@ class AccountsConfig(AppConfig):
         post_migrate.connect(update_groups, sender=self)
 
         replace_builtin_admin_plugin()
+        connect_audit_logging_signals()
