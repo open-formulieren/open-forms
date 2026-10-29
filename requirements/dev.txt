@@ -454,7 +454,7 @@ djangorestframework-camel-case==1.4.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-dnspython==2.8.0
+dnspython==2.9.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1278,7 +1278,7 @@ tinyhtml5==2.0.0
     #   weasyprint
 tomlkit==0.14.0
     # via bump-my-version
-tornado==6.5.10
+tornado==6.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
