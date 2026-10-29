@@ -420,7 +420,7 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="openforms@example.com
 # LOGGING
 #
 LOG_STDOUT = config("LOG_STDOUT", default=False)
-LOG_OUTGOING_REQUESTS = config("LOG_OUTGOING_REQUESTS", default=True)
+LOG_OUTGOING_REQUESTS = config("LOG_OUTGOING_REQUESTS", default=False)
 
 LOGGING_DIR = BASE_DIR / "log"
 
@@ -1279,7 +1279,7 @@ LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
     ContentType(pattern="text/*", default_encoding="utf-8"),
 ]
 LOG_OUTGOING_REQUESTS_EMIT_BODY = config(
-    "LOG_OUTGOING_REQUESTS_EMIT_BODY", default=True
+    "LOG_OUTGOING_REQUESTS_EMIT_BODY", default=False
 )
 LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 # number of days
