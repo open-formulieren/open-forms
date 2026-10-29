@@ -9,9 +9,9 @@ import time_machine
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from of_datetime_utils import TIMEZONE_AMS, get_today
 from openforms.formio.constants import DataSrcOptions
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.utils.date import TIMEZONE_AMS, get_today
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
