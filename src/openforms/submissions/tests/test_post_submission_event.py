@@ -614,6 +614,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
             form__name="Pretty Form",
+            form__product__price=Decimal("10.00"),
             auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="111222333",
             language_code="en",
@@ -649,6 +650,11 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         mock_payment_status_update.assert_called()
 
         mails = mail.outbox
+
+        # debug test flakiness
+        if len(mails) != 1:
+            print(f"{submission.payment_complete_confirmation_email_sent=}")
+            print(f"{submission.payment_user_has_paid=}")
 
         self.assertEqual(1, len(mails))
         self.assertEqual(
