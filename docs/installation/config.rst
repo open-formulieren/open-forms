@@ -186,6 +186,36 @@ Logging, monitoring and Open Telemetry settings
 
 * ``LOG_REQUESTS``: When enabled, all incoming requests are logged. Enabled by default.
 
+* ``LOG_OUTGOING_REQUESTS``: When enabled, outgoing requests are logged.
+  
+* ``LOG_OUTGOING_REQUESTS_DB_SAVE``: When enabled, logs are saved in the database. This 
+  requires some attention as sensitive data may be stored in your database. We advise
+  not enabling this by default via Django settings and instead rely on runtime configuration. 
+
+* ``LOG_OUTGOING_REQUESTS_DB_SAVE_BODY``: When enabled, the request and the response body
+  are saved in the database.
+
+* ``LOG_OUTGOING_REQUESTS_EMIT_BODY``: When enabled, the request and the response bodies
+  are logged.
+
+* ``LOG_OUTGOING_REQUESTS_MAX_AGE``: The maximum amount (in days) that the logs will be
+  kept. Logs older than this will be deleted.
+
+* ``LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER``: Defines if/when database logging is reset
+  after settings changes were made in the admin.
+
+* ``LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH``: The max size of the request/response
+  content (in bytes). Bodies larger than this size will not be logged even if saving of
+  bodies is enabled.
+  
+.. warning:: Be aware that a number of settings can be configured at runtime in the admin
+  interface. The settings that can be overridden are::
+
+    *  ``LOG_OUTGOING_REQUESTS_DB_SAVE`` -> **Save logs to database**
+    *  ``LOG_OUTGOING_REQUESTS_DB_SAVE_BODY`` -> **Save request + response body**
+    *  ``LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER`` -> **Reset saving logs in database after**
+    *  ``LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH`` -> **Maximal content size**
+
 **Open Telemetry**
 
 Open Forms uses the official Python SDK which should adhere to the environment variables
