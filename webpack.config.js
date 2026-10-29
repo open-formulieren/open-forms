@@ -32,7 +32,7 @@ module.exports = {
   output: {
     path: `${__dirname}/src/openforms/static/bundles/`,
     filename: '[name].js', // file
-    chunkFilename: '[name].bundle.js',
+    chunkFilename: '[name]-[hash].bundle.js',
     publicPath: '/static/bundles/',
   },
 
