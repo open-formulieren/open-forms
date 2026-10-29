@@ -37,6 +37,7 @@ from .components import (
     Signature,
     SoftRequiredErrors,
     Textarea,
+    TextField,
 )
 from .templating import get_template_trace_context
 
@@ -48,6 +49,7 @@ __all__ = [  # noqa: RUF022
     "supports_multiple",
     "get_template_trace_context",
     # Form fields
+    "TextField",
     "Email",
     "Date",
     "DateTime",
