@@ -15,6 +15,7 @@ from .file import File
 from .iban import IBAN
 from .licenseplate import LicensePlate
 from .map import Map
+from .np_family_members import NpFamilyMembers
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -34,6 +35,7 @@ __all__ = [  # noqa: RUF022
     "AddressNL",
     "Children",
     "CustomerProfile",
+    "NpFamilyMembers",
     "CosignV1",
     # Layout
     "Content",
@@ -60,6 +62,7 @@ type AnyComponent = (
     | AddressNL
     | Children
     | CustomerProfile
+    | NpFamilyMembers
     | CosignV1
     # Layout
     | Content
