@@ -263,7 +263,7 @@ djangorestframework==3.18.3
     #   drf-spectacular
 djangorestframework-camel-case==1.4.2
     # via -r requirements/base.in
-dnspython==2.8.0
+dnspython==2.9.0
     # via django-health-check
 docutils==0.21.2
     # via django-setup-configuration
@@ -647,7 +647,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.5.10
+tornado==6.6
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
