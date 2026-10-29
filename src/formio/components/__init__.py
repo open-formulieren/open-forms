@@ -13,6 +13,7 @@ from .currency import Currency
 from .customer_profile import CustomerProfile
 from .date import Date
 from .datetime import DateTime
+from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .file import File
@@ -58,6 +59,7 @@ __all__ = [  # noqa: RUF022
     "Signature",
     "CosignV2",
     "Map",
+    "EditGrid",
     "AddressNL",
     "Partners",
     "Children",
@@ -95,6 +97,14 @@ class Columns(BaseColumns):
                 yield (component, "")
 
 
+class EditGrid(BaseEditGrid):
+    components: Sequence[AnyComponent]
+
+    def iter_children(self) -> Iterator[tuple[AnyComponent, str]]:
+        for component in self.components:
+            yield (component, self.key)
+
+
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
@@ -122,6 +132,7 @@ type AnyComponent = (
     | Signature
     | CosignV2
     | Map
+    | EditGrid
     | AddressNL
     | Partners
     | Children
