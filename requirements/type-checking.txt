@@ -445,7 +445,7 @@ djangorestframework-camel-case==1.4.2
     #   -r requirements/ci.txt
 djangorestframework-stubs==3.16.8
     # via -r requirements/type-checking.in
-dnspython==2.8.0
+dnspython==2.9.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1245,7 +1245,7 @@ tinyhtml5==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-tornado==6.5.8
+tornado==6.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
