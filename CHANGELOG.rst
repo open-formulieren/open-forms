@@ -14,6 +14,19 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.15 (2026-10-30)
+===================
+
+Bugfix release.
+
+* Updated the SDK to version 3.5.10 bugfix release.
+* [:backend:`6867`] Fixed paid but not-yet-registered submissions being treated as
+  uncompleted submissions, causing them to be deleted faster than expected.
+* Updated dependencies to their latest security releases:
+
+  - tornado
+  - dnspython
+
 3.5.14 (2026-10-26)
 ===================
 
