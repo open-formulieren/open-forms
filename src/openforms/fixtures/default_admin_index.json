@@ -127,6 +127,10 @@
             [
                 "products",
                 "product"
+            ],
+	    	[
+                "products",
+				"productconfiguration"
             ]
         ]
     }
