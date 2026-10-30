@@ -20,6 +20,7 @@ ape-pie==0.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   open-klant-client
+    #   open-product-client
     #   zgw-consumers
 asgiref==3.11.1
     # via
@@ -591,6 +592,11 @@ msal==1.37.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   o365
+msgspec==0.22.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   open-product-client
 networkx==3.6.1
     # via
     #   -c requirements/base.txt
@@ -623,6 +629,10 @@ open-forms-ext-haalcentraal-hr==0.3.1
 open-forms-ext-token-exchange==0.5.0
     # via -r requirements/extensions.in
 open-klant-client==0.8.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+open-product-client==0.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

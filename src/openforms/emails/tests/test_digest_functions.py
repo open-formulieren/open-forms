@@ -37,6 +37,8 @@ from openforms.logging import audit_logger
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
+from openforms.products.models import ProductConfiguration
+from openforms.products.tests.factories import OpenProductServiceFactory
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.registrations.registry import register as register_register
@@ -1303,6 +1305,47 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(broken_configuration, [])
+
+
+class OpenProductBrokenConfigurationTests(OFVCRMixin, TestCase):
+    """
+    This test case requires the Open Product container to be running.
+
+    See the relevant Docker compose in the ``docker/open-product`` folder.
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(ProductConfiguration.clear_cache)
+
+    def test_no_problem_when_product_service_configured(self):
+        opt_service = OpenProductServiceFactory.create(for_test_docker_compose=True)
+        product_config = ProductConfiguration.get_solo()
+        product_config.open_product_service = opt_service
+        product_config.save()
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 0)
+
+    def test_no_problem_detected_when_service_not_configured(self):
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 0)
+
+    def test_problem_detected_when_service_not_properly_configured(self):
+        opt_service = OpenProductServiceFactory.create(
+            for_test_docker_compose=True, header_value="wrong"
+        )
+        product_config = ProductConfiguration.get_solo()
+        product_config.open_product_service = opt_service
+        product_config.save()
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertEqual(broken_configuration[0].config_name, "Open Product Client")
 
 
 @override_settings(LANGUAGE_CODE="en")

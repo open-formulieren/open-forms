@@ -1,0 +1,614 @@
+[
+  {
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$IGcBGxp1QFnZJXcmt3wzpG$vSettlVguE70wZhCO9udt3rS/06+XQhW4qI1WmAs8oo=",
+      "last_login": "2026-10-07T05:52:39.836Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@example.org",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-10-07T05:52:27.177Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authtoken.token",
+    "pk": "75167ed1457337f6c27022ae772ba79a351b053a",
+    "fields": {"user": 1, "created": "2026-10-07T07:14:38.293Z"}
+  },
+  {
+    "model": "locaties.locatie",
+    "pk": 1,
+    "fields": {
+      "uuid": "8d06b015-da58-4f57-a6ca-98d3d8d5c588",
+      "naam": "Maykin",
+      "email": "",
+      "telefoonnummer": "1234",
+      "straat": "Kingsfordweg",
+      "huisnummer": "151",
+      "postcode": "1043 GR",
+      "stad": "Amsterdam"
+    }
+  },
+  {
+    "model": "locaties.organisatie",
+    "pk": 1,
+    "fields": {
+      "uuid": "c07689b0-f853-484d-bb91-77af81435414",
+      "naam": "Maykin",
+      "email": "info@maykin.nl",
+      "telefoonnummer": "020 753 0",
+      "straat": "Kingsfordweg",
+      "huisnummer": "151",
+      "postcode": "1043 GR",
+      "stad": "Amsterdam",
+      "code": ""
+    }
+  },
+  {
+    "model": "locaties.contact",
+    "pk": 1,
+    "fields": {
+      "uuid": "cf2b1d24-2985-4f88-a2f8-c6c0f8d5481f",
+      "organisatie": 1,
+      "naam": "Bob de Vries",
+      "email": "bob@maykin.nl",
+      "telefoonnummer": "020 753 0",
+      "rol": "medewerker"
+    }
+  },
+  {
+    "model": "producten.product",
+    "pk": 4,
+    "fields": {
+      "uuid": "a8cfd19b-8b0a-4fcd-834d-145261f33755",
+      "aanmaak_datum": "2025-05-06T14:19:44.854Z",
+      "update_datum": "2025-05-06T15:06:25.005Z",
+      "gepubliceerd": false,
+      "producttype": 24,
+      "naam": "ABC1234",
+      "start_datum": "2025-05-06",
+      "eind_datum": null,
+      "status": "actief",
+      "prijs": "200.00",
+      "frequentie": "jaarlijks",
+      "verbruiksobject": null,
+      "dataobject": {
+        "gemeente": "amsterdam",
+        "woonplaats": "Amsterdam",
+        "documentnummer": "ABC1234"
+      },
+      "aanvraag_zaak_urn": "urn:nld:maykin:openzaak:zrc:zaak:uuid:d42613cd-ee22-4455-808c-c19c7b8442a1",
+      "aanvraag_zaak_url": "https://maykin.zrc.com/api/v1/zaken/d42613cd-ee22-4455-808c-c19c7b8442a1"
+    }
+  },
+  {
+    "model": "producten.product",
+    "pk": 5,
+    "fields": {
+      "uuid": "e35a76bd-fd48-4196-9012-b5b316155710",
+      "aanmaak_datum": "2025-05-06T15:07:56.630Z",
+      "update_datum": "2025-05-06T15:07:56.630Z",
+      "gepubliceerd": false,
+      "producttype": 23,
+      "naam": "straatweg A",
+      "start_datum": "2025-05-06",
+      "eind_datum": "2026-05-06",
+      "status": "actief",
+      "prijs": "200.00",
+      "frequentie": "jaarlijks",
+      "verbruiksobject": [
+        {
+          "datum": "07-06-2025",
+          "parkeerplaats": "straatweg A"
+        }
+      ],
+      "dataobject": {
+        "kenteken": "AB-123-C"
+      },
+      "aanvraag_zaak_urn": "urn:nld:maykin:openzaak:zrc:zaak:uuid:d42613cd-ee22-4455-808c-c19c7b8442a1",
+      "aanvraag_zaak_url": "https://maykin.zrc.com/api/v1/zaken/d42613cd-ee22-4455-808c-c19c7b8442a1"
+    }
+  },
+  {
+    "model": "producten.document",
+    "pk": 1,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:drc:document:uuid:d57def4b-1135-4c34-9507-3cd15770d0fe",
+      "product": 4
+    }
+  },
+  {
+    "model": "producten.eigenaar",
+    "pk": 3,
+    "fields": {
+      "uuid": "8b8c623c-303e-4c66-9a0c-e5b5d40a9deb",
+      "product": 4,
+      "bsn": "111222333",
+      "kvk_nummer": "",
+      "vestigingsnummer": "",
+      "klantnummer": ""
+    }
+  },
+  {
+    "model": "producten.eigenaar",
+    "pk": 4,
+    "fields": {
+      "uuid": "b007b6b6-7f22-45ce-aaf9-d150adeb6394",
+      "product": 5,
+      "bsn": "111222333",
+      "kvk_nummer": "",
+      "vestigingsnummer": "",
+      "klantnummer": ""
+    }
+  },
+  {
+    "model": "producttypen.dmnconfig",
+    "pk": 1,
+    "fields": {
+      "uuid": "d080f2c0-8c0e-444d-afb6-1d7f8a61d4c2",
+      "naam": "prod",
+      "tabel_endpoint": "https://gemeente.flowable-dmn.nl/flowable-rest/dmn-api/dmn-repository/"
+    }
+  },
+  {
+    "model": "producttypen.jsonschema",
+    "pk": 1,
+    "fields": {
+      "naam": "parkeervergunning-verbruik",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["datum", "parkeerplaats"],
+          "properties": {
+            "datum": {
+              "type": "string"
+            },
+            "parkeerplaats": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "model": "producttypen.jsonschema",
+    "pk": 2,
+    "fields": {
+      "naam": "parkeervergunning-data",
+      "schema": {
+        "type": "object",
+        "title": "parkeervergunning-data",
+        "required": ["kenteken"],
+        "properties": {
+          "kenteken": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "model": "producttypen.jsonschema",
+    "pk": 3,
+    "fields": {
+      "naam": "Identiteitskaart-data",
+      "schema": {
+        "type": "object",
+        "title": "identiteitskaart-data",
+        "required": ["woonplaats", "gemeente", "documentnummer"],
+        "properties": {
+          "gemeente": {
+            "type": "string"
+          },
+          "woonplaats": {
+            "type": "string"
+          },
+          "documentnummer": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "model": "producttypen.thema",
+    "pk": 1,
+    "fields": {
+      "uuid": "cfac32d8-9ced-4b90-aa5c-46ea1cbfe04f",
+      "aanmaak_datum": "2025-04-11T14:11:54.842Z",
+      "update_datum": "2025-05-06T14:04:31.860Z",
+      "naam": "Vervoer",
+      "hoofd_thema": null,
+      "beschrijving": "# Vervoer\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.",
+      "gepubliceerd": false
+    }
+  },
+  {
+    "model": "producttypen.thema",
+    "pk": 2,
+    "fields": {
+      "uuid": "ce3132cc-1c8f-4476-9ea6-1ff93e0ea9e4",
+      "aanmaak_datum": "2025-04-11T15:53:55.104Z",
+      "update_datum": "2025-05-06T14:04:18.684Z",
+      "naam": "Parkeren",
+      "hoofd_thema": 1,
+      "beschrijving": "# Parkeren\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.",
+      "gepubliceerd": false
+    }
+  },
+  {
+    "model": "producttypen.thema",
+    "pk": 4,
+    "fields": {
+      "uuid": "619b8102-c476-4c38-af10-990990e6cf8f",
+      "aanmaak_datum": "2025-05-06T14:04:54.206Z",
+      "update_datum": "2025-05-06T14:04:54.206Z",
+      "naam": "Identificatie",
+      "hoofd_thema": null,
+      "beschrijving": "# Identificatie\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.",
+      "gepubliceerd": false
+    }
+  },
+  {
+    "model": "producttypen.uniformeproductnaam",
+    "fields": {
+      "uuid": "278240fb-ac2f-4f4e-b491-8119c3c8bacf",
+      "naam": "parkeervergunning",
+      "uri": "http://standaarden.overheid.nl/owms/terms/parkeervergunning",
+      "is_verwijderd": false
+    }
+  },
+  {
+    "model": "producttypen.uniformeproductnaam",
+    "fields": {
+      "uuid": "4b351603-6062-4543-8709-e100476609b4",
+      "naam": "identiteitskaart",
+      "uri": "http://standaarden.overheid.nl/owms/terms/identiteitskaart",
+      "is_verwijderd": false
+    }
+  },
+  {
+    "model": "producttypen.producttype",
+    "pk": 23,
+    "fields": {
+      "uuid": "9903945d-b639-49da-85ed-7305817f47ad",
+      "aanmaak_datum": "2025-05-06T14:00:31.967Z",
+      "update_datum": "2025-05-06T14:11:53.460Z",
+      "code": "PARKVER",
+      "verbruiksobject_schema": 1,
+      "dataobject_schema": 2,
+      "toegestane_statussen": "[\"actief\", \"verlopen\"]",
+      "keywords": "[\"auto\"]",
+      "uniforme_product_naam": ["parkeervergunning"],
+      "interne_opmerkingen": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.",
+      "publicatie_start_datum": null,
+      "publicatie_eind_datum": null,
+      "themas": [2],
+      "organisaties": [1],
+      "contacten": [1],
+      "locaties": [1],
+      "doelgroep": "interne_organisatie"
+    }
+  },
+  {
+    "model": "producttypen.producttype",
+    "pk": 24,
+    "fields": {
+      "uuid": "5d42a943-065a-46e7-8f17-54a5edbc88eb",
+      "aanmaak_datum": "2025-05-06T14:09:07.040Z",
+      "update_datum": "2025-05-06T14:12:26.010Z",
+      "code": "IDENKAA",
+      "verbruiksobject_schema": null,
+      "dataobject_schema": 3,
+      "toegestane_statussen": "[\"gereed\", \"actief\", \"ingetrokken\", \"geweigerd\", \"verlopen\"]",
+      "keywords": "[\"documenten\"]",
+      "uniforme_product_naam": ["identiteitskaart"],
+      "interne_opmerkingen": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.",
+      "publicatie_start_datum": null,
+      "publicatie_eind_datum": null,
+      "themas": [4],
+      "organisaties": [],
+      "contacten": [],
+      "locaties": [],
+      "doelgroep": "interne_organisatie"
+    }
+  },
+  {
+    "model": "producttypen.producttypetranslation",
+    "pk": 27,
+    "fields": {
+      "language_code": "nl",
+      "master": 23,
+      "naam": "Parkeervergunning",
+      "samenvatting": "# Parkeervergunning\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\."
+    }
+  },
+  {
+    "model": "producttypen.producttypetranslation",
+    "pk": 28,
+    "fields": {
+      "language_code": "nl",
+      "master": 24,
+      "naam": "Identiteitskaart",
+      "samenvatting": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\."
+    }
+  },
+  {
+    "model": "producttypen.actie",
+    "pk": 1,
+    "fields": {
+      "uuid": "28989af6-bf76-404c-87d5-3490e96a6993",
+      "naam": "verlengen",
+      "producttype": 23,
+      "dmn_config": 1,
+      "dmn_tabel_id": "340961bc-212b-49ac-aeb2-9bc38d442ff3",
+      "mapping": null
+    }
+  },
+  {
+    "model": "producttypen.contentlabel",
+    "pk": 1,
+    "fields": {
+      "uuid": "4d74f065-b433-4f4e-8700-b794525027a4",
+      "naam": "Eisen"
+    }
+  },
+  {
+    "model": "producttypen.contentlabel",
+    "pk": 2,
+    "fields": {
+      "uuid": "b89042d9-4e0d-4b50-9886-c07bf68afb83",
+      "naam": "Voorwaarden"
+    }
+  },
+  {
+    "model": "producttypen.contentelement",
+    "pk": 6,
+    "fields": {
+      "order": 0,
+      "uuid": "a34f4e7c-026e-40eb-91a4-0540a6682519",
+      "producttype": 23,
+      "labels": [1]
+    }
+  },
+  {
+    "model": "producttypen.contentelement",
+    "pk": 7,
+    "fields": {
+      "order": 1,
+      "uuid": "017aa485-b56f-444b-a29f-39026edc3436",
+      "producttype": 23,
+      "labels": [2]
+    }
+  },
+  {
+    "model": "producttypen.contentelement",
+    "pk": 8,
+    "fields": {
+      "order": 0,
+      "uuid": "66f9e6db-faf2-4732-b771-79a155c463c5",
+      "producttype": 24,
+      "labels": [2]
+    }
+  },
+  {
+    "model": "producttypen.contentelementtranslation",
+    "pk": 9,
+    "fields": {
+      "language_code": "nl",
+      "master": 6,
+      "content": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\."
+    }
+  },
+  {
+    "model": "producttypen.contentelementtranslation",
+    "pk": 10,
+    "fields": {
+      "language_code": "nl",
+      "master": 7,
+      "content": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\."
+    }
+  },
+  {
+    "model": "producttypen.contentelementtranslation",
+    "pk": 11,
+    "fields": {
+      "language_code": "nl",
+      "master": 8,
+      "content": "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\."
+    }
+  },
+  {
+    "model": "producttypen.externecode",
+    "pk": 7,
+    "fields": {
+      "uuid": "26f90241-bc5f-41e9-be65-4323d6f05f63",
+      "naam": "ISO",
+      "code": "123",
+      "producttype": 23
+    }
+  },
+  {
+    "model": "producttypen.externecode",
+    "pk": 8,
+    "fields": {
+      "uuid": "34265e2e-4784-4584-a501-36bda3c360fb",
+      "naam": "ISO",
+      "code": "345",
+      "producttype": 24
+    }
+  },
+  {
+    "model": "producttypen.link",
+    "pk": 1,
+    "fields": {
+      "uuid": "e0657949-d24a-4caf-a5cb-f0be55eb939d",
+      "producttype": 23,
+      "naam": "link naar verdere informatie",
+      "url": "https://google.com"
+    }
+  },
+  {
+    "model": "producttypen.link",
+    "pk": 2,
+    "fields": {
+      "uuid": "544d5ce0-a0d5-4a6b-9d06-ec88eba2b688",
+      "producttype": 24,
+      "naam": "link naar verdere informatie",
+      "url": "https://google.com"
+    }
+  },
+  {
+    "model": "producttypen.parameter",
+    "pk": 1,
+    "fields": {
+      "uuid": "102ebc0d-c23a-4b50-bdc0-c79f69884c27",
+      "naam": "doelgroep",
+      "waarde": "inwoners",
+      "producttype": 23
+    }
+  },
+  {
+    "model": "producttypen.parameter",
+    "pk": 2,
+    "fields": {
+      "uuid": "38e5fa9d-09d2-4b6d-99fa-abaeb0eeb4d0",
+      "naam": "doelgroep",
+      "waarde": "inwoners",
+      "producttype": 24
+    }
+  },
+  {
+    "model": "producttypen.prijs",
+    "pk": 1,
+    "fields": {
+      "uuid": "55ed7060-0f46-4f04-9cb2-8dc494c83a92",
+      "producttype": 24,
+      "actief_vanaf": "2025-05-06"
+    }
+  },
+  {
+    "model": "producttypen.prijs",
+    "pk": 2,
+    "fields": {
+      "uuid": "d71a7ff5-32e4-4bb8-8293-44728ba60933",
+      "producttype": 23,
+      "actief_vanaf": "2025-05-06"
+    }
+  },
+  {
+    "model": "producttypen.prijsoptie",
+    "pk": 1,
+    "fields": {
+      "uuid": "d14fe09b-1a6c-4a3a-918f-cddc925b4d6f",
+      "prijs": 1,
+      "bedrag": "80.95",
+      "beschrijving": "normaal"
+    }
+  },
+  {
+    "model": "producttypen.prijsoptie",
+    "pk": 2,
+    "fields": {
+      "uuid": "29068829-c5cc-490a-80bc-a68675df7b85",
+      "prijs": 1,
+      "bedrag": "120.95",
+      "beschrijving": "spoed"
+    }
+  },
+  {
+    "model": "producttypen.prijsregel",
+    "pk": 1,
+    "fields": {
+      "uuid": "7900dff8-4810-42f8-96cc-7d46e8ed6699",
+      "beschrijving": "parkeervergunning prijs dmn tabel",
+      "prijs": 2,
+      "dmn_config": 1,
+      "dmn_tabel_id": "6ebc1a69-17c6-42b9-9b11-df0c8291ef10",
+      "mapping": null
+    }
+  },
+  {
+    "model": "producttypen.proces",
+    "pk": 1,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:prc:process:uuid:12fda81b-1581-4aec-9597-0251ccb8877a",
+      "producttype": 24
+    }
+  },
+  {
+    "model": "producttypen.verzoektype",
+    "pk": 1,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:vtc:verzoektype:uuid:83f0348e-f0c6-4859-9f3b-69ba0833d674",
+      "producttype": 24
+    }
+  },
+  {
+    "model": "producttypen.zaaktype",
+    "pk": 1,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:ztc:zaaktype:uuid:f981fe35-d517-4304-80b3-de5ceea18c32",
+      "producttype": 24
+    }
+  },
+  {
+    "model": "producttypen.zaaktype",
+    "pk": 2,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:ztc:zaaktype:uuid:81d4b529-5d7c-4ac9-b585-2f7dc260389b",
+      "producttype": 23
+    }
+  },
+  {
+    "model": "urn.urnmappingconfig",
+    "pk": 1,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:zrc:zaak",
+      "url": "https://maykin.zrc.com/api/v1/zaken"
+    }
+  },
+  {
+    "model": "urn.urnmappingconfig",
+    "pk": 2,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:ztc:zaaktype",
+      "url": "https://maykin.ztc.com/api/v1/zaaktypen"
+    }
+  },
+  {
+    "model": "urn.urnmappingconfig",
+    "pk": 3,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:drc:document",
+      "url": "https://maykin.ztc.com/api/v1/documenten"
+    }
+  },
+  {
+    "model": "urn.urnmappingconfig",
+    "pk": 4,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:vtc:verzoektype",
+      "url": "https://maykin.ztc.com/api/v1/verzoektypen"
+    }
+  },
+  {
+    "model": "urn.urnmappingconfig",
+    "pk": 5,
+    "fields": {
+      "urn": "urn:nld:maykin:openzaak:prc:process",
+      "url": "https://maykin.ztc.com/api/v1/processen"
+    }
+  }
+]
