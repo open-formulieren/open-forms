@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - nl
+    method: GET
+    uri: http://localhost:8006/producttypen/api/v1/contentlabels?page=1
+  response:
+    body:
+      string: '{"count":2,"next":null,"previous":null,"results":[{"naam":"Voorwaarden"},{"naam":"Eisen"}]}'
+    headers:
+      API-version:
+      - 1.7.0
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Language:
+      - nl
+      Content-Length:
+      - '91'
+      Content-Security-Policy:
+      - 'img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; script-src ''self'' ''unsafe-inline''; worker-src ''self''
+        blob:; font-src ''self'' fonts.gstatic.com; form-action ''self''; object-src
+        ''none''; base-uri ''self''; default-src ''self''; frame-ancestors ''none'';
+        frame-src ''self'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept-Language, origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1
