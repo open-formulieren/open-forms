@@ -100,6 +100,7 @@ flower # task monitoring
 # Common Ground integration
 zgw-consumers[setup-configuration,oauth2]
 open-klant-client
+open-product-client
 
 # Anti virus scan
 clamd

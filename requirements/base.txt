@@ -10,6 +10,7 @@ ape-pie==0.2.0
     # via
     #   -r requirements/base.in
     #   open-klant-client
+    #   open-product-client
     #   zgw-consumers
 asgiref==3.11.1
     # via
@@ -368,6 +369,8 @@ mozilla-django-oidc-db==1.1.1
     #   django-digid-eherkenning
 msal==1.37.0
     # via o365
+msgspec==0.22.0
+    # via open-product-client
 networkx==3.6.1
     # via -r requirements/base.in
 nh3==0.3.3
@@ -383,6 +386,8 @@ oauthlib==4.0.0
 onlinepayments-sdk-python3==7.1.0
     # via -r requirements/base.in
 open-klant-client==0.8.0
+    # via -r requirements/base.in
+open-product-client==0.4.0
     # via -r requirements/base.in
 openpyxl==3.1.5
     # via tablib

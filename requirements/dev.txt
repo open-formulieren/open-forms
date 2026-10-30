@@ -27,6 +27,7 @@ ape-pie==0.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   open-klant-client
+    #   open-product-client
     #   zgw-consumers
 asgiref==3.11.1
     # via
@@ -690,6 +691,11 @@ msal==1.37.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   o365
+msgspec==0.22.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   open-product-client
 networkx==3.6.1
     # via
     #   -c requirements/ci.txt
@@ -718,6 +724,10 @@ onlinepayments-sdk-python3==7.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 open-klant-client==0.8.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+open-product-client==0.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

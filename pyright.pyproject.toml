@@ -54,6 +54,12 @@ include = [
     "src/openforms/forms/import_export/typing.py",
     # Payments
     "src/openforms/payments/",
+    # Products
+    "src/openforms/products/admin/",
+    "src/openforms/products/models/",
+    "src/openforms/products/client.py",
+    "src/openforms/products/constants.py",
+    "src/openforms/products/exceptions.py",
     # Interaction with the outside world
     "src/openforms/contrib/auth_oidc/",
     "src/openforms/contrib/customer_interactions/",
