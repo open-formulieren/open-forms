@@ -29,6 +29,33 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.0.7 (2026-10-30)
+==================
+
+Bugfix release.
+
+* Updated the SDK to version 4.0.4 bugfix release.
+* [:backend:`6867`] Fixed paid but not-yet-registered submissions being treated as
+  uncompleted submissions, causing them to be deleted faster than expected.
+* Fixed stale Javascript-assets not being invalidated, causing blank pages in the admin.
+* Updated dependencies to their latest security releases:
+
+  - tornado
+  - dnspython
+
+3.5.15 (2026-10-30)
+===================
+
+Bugfix release.
+
+* Updated the SDK to version 3.5.10 bugfix release.
+* [:backend:`6867`] Fixed paid but not-yet-registered submissions being treated as
+  uncompleted submissions, causing them to be deleted faster than expected.
+* Updated dependencies to their latest security releases:
+
+  - tornado
+  - dnspython
+
 4.0.6 (2026-10-26)
 ==================
 
