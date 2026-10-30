@@ -12,6 +12,8 @@ from tinymce.models import HTMLField
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.typing import StrOrPromise
 
+from ..constants import ProductSourceChoices
+
 
 class Product(models.Model):
     """
@@ -23,6 +25,15 @@ class Product(models.Model):
         default=_uuid.uuid4,
         help_text=_("Globally unique identifier"),
         unique=True,
+    )
+    product_source = models.CharField(
+        _("Product source"),
+        choices=ProductSourceChoices.choices,
+        default=ProductSourceChoices.local,
+        help_text=_(
+            "The available types of the product. It can be a local product "
+            "created in the admin interface or an external one."
+        ),
     )
     name = models.CharField(_("name"), max_length=50)
     price = models.DecimalField(
@@ -60,15 +71,23 @@ class Product(models.Model):
             # Price field may only be blank when producttype is set
             models.CheckConstraint(
                 name="price_required_without_producttype_uuid",
-                check=(
-                    models.Q(producttype_uuid__isnull=True, price__isnull=False)
-                    | models.Q(
-                        producttype_uuid__isnull=False,
-                        price__isnull=True,
+                condition=(
+                    models.Q(
+                        product_source=ProductSourceChoices.local,
+                        producttype_uuid__isnull=True,
+                        price__isnull=False,
+                    )
+                    | (
+                        ~models.Q(product_source=ProductSourceChoices.local)
+                        & models.Q(
+                            producttype_uuid__isnull=False,
+                            price__isnull=True,
+                        )
                     )
                 ),
                 violation_error_message=_(
-                    "Price cannot be blank and can only be set for products without a producttype ID."
+                    "Price cannot be blank and can only be set for local products "
+                    "and without a producttype ID."
                 ),
             ),
         ]
@@ -76,18 +95,10 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, **kwargs) -> None:
-        if self.producttype_uuid:
-            self.uuid = self.producttype_uuid
-
-        return super().save(**kwargs)
-
     def clean(self) -> None:
         errors: dict[str, list[StrOrPromise]] = defaultdict(list)
-        if not self.producttype_uuid and not self.price:
-            errors["price"].append(
-                _("Price is required for products without a producttype ID.")
-            )
+        if self.product_source == ProductSourceChoices.local and not self.price:
+            errors["price"].append(_("Price is required for local products."))
 
         if errors:
             raise ValidationError(errors)

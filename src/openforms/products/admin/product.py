@@ -2,17 +2,19 @@ from collections import defaultdict
 
 from django import forms
 from django.contrib import admin
+from django.db.models import Q
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
 from openforms.typing import StrOrPromise
 
+from ..constants import ProductSourceChoices
 from ..models import Product
 
 
 class OpenProductListFilter(admin.SimpleListFilter):
-    title = _("Open Product product")
-    parameter_name = "open_product"
+    title = _("External product")
+    parameter_name = "is_external_product"
 
     def lookups(self, request, model_admin):
         return [
@@ -22,9 +24,9 @@ class OpenProductListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "true":
-            return queryset.filter(producttype_uuid__isnull=False)
+            return queryset.filter(~Q(product_source=ProductSourceChoices.local))
         elif self.value() == "false":
-            return queryset.filter(producttype_uuid__isnull=True)
+            return queryset.filter(product_source=ProductSourceChoices.local)
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -37,29 +39,41 @@ class ProductAdminForm(forms.ModelForm):
             self.fields["price"].required = False  # required for local products
 
     def clean(self):
-        super().clean()
+        cleaned_data = super().clean() or {}
 
         errors: dict[str, list[StrOrPromise]] = defaultdict(list)
         is_update = bool(self.instance.pk)
-        producttype_uuid = self.cleaned_data.get("producttype_uuid")
-        name = self.cleaned_data.get("name")
-        # Note that the name field is readonly when a producttype_uuid is set,
-        # hence no extra validation should have to be added here for the update scenario.
-        if not is_update and (producttype_uuid and name):
-            errors["name"].append(
-                _("Name cannot be filled in for products with a producttype ID.")
-            )
-        elif not is_update and not any((name, producttype_uuid)):
-            errors["name"].append(
-                _("Name is required for products without a producttype ID.")
-            )
+        product_source = cleaned_data.get("product_source")
+        product_type_uuid = cleaned_data.get("producttype_uuid")
+        name = cleaned_data.get("name")
+
+        if not is_update:
+            is_local = product_source == ProductSourceChoices.local
+
+            if is_local and product_type_uuid:
+                errors["producttype_uuid"].append(
+                    _("Product type ID cannot be defined for local products.")
+                )
+            if not is_local and not product_type_uuid:
+                errors["producttype_uuid"].append(
+                    _("Product type ID is required for external products.")
+                )
+            if not is_local and name:
+                errors["name"].append(
+                    _("Name cannot be filled in for external products.")
+                )
+            if is_local and not name:
+                errors["name"].append(_("Name is required for local products."))
 
         if errors:
             raise forms.ValidationError(errors)
 
+        return cleaned_data
+
     class Meta:
         fields = (
             "uuid",
+            "product_source",
             "producttype_uuid",
             "price",
             "name",
@@ -69,7 +83,7 @@ class ProductAdminForm(forms.ModelForm):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "open_product")
+    list_display = ("name", "product_source", "external_product")
     list_filter = (OpenProductListFilter,)
 
     form = ProductAdminForm
@@ -77,10 +91,19 @@ class ProductAdmin(admin.ModelAdmin):
     def get_readonly_fields(
         self, request: HttpRequest, obj: Product | None = None
     ) -> list[str]:
-        if obj and obj.producttype_uuid:
-            return ["name", "uuid", "producttype_uuid", "price"]
+        if (
+            obj
+            and obj.product_source != ProductSourceChoices.local
+            and obj.producttype_uuid
+        ):
+            return ["uuid", "product_source", "producttype_uuid", "price", "name"]
+        # this prevents users from trying to modify a local to an external product which
+        # causes a lot of problems now. This will be fixed with the proper UI changes.
+        elif obj and obj.product_source == ProductSourceChoices.local:
+            return ["product_source", "producttype_uuid"]
+
         return []
 
-    @admin.display(description=_("from Open Product?"), boolean=True)
-    def open_product(self, instance: Product) -> bool:
-        return bool(instance.producttype_uuid)
+    @admin.display(description=_("external product"), boolean=True)
+    def external_product(self, instance: Product) -> bool:
+        return bool(instance.product_source != ProductSourceChoices.local)

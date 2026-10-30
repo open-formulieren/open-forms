@@ -4,11 +4,12 @@ from uuid import uuid4
 from django.db import IntegrityError
 from django.test import TestCase
 
-from openforms.products.tests.factories import ProductFactory
+from ..constants import ProductSourceChoices
+from .factories import ProductFactory
 
 
 class ProductTestCase(TestCase):
-    def test_price_without_producttype(self):
+    def test_local_product_price_without_producttype_should_pass(self):
         try:
             ProductFactory.create(price=Decimal(350.0), producttype_uuid=None)
         except IntegrityError as exc:
@@ -16,24 +17,30 @@ class ProductTestCase(TestCase):
                 "Local products should be able to set a price."
             ) from exc
 
-    def test_producttype_without_price(self):
+    def test_external_product_with_producttype_and_without_price_should_pass(self):
         try:
-            ProductFactory.create(price=None, producttype_uuid=uuid4())
+            ProductFactory.create(
+                product_source=ProductSourceChoices.open_product,
+                price=None,
+                producttype_uuid=uuid4(),
+            )
         except IntegrityError as exc:
             raise self.failureException(
-                "Open product products prices should be empty."
+                "External product prices should be empty."
             ) from exc
 
-    def test_price_with_producttype(self):
+    def test_local_product_with_price_producttype_should_fail(self):
         with self.assertRaises(IntegrityError):
-            ProductFactory.create(price=Decimal(350.0), producttype_uuid=uuid4())
+            ProductFactory.create(
+                product_source=ProductSourceChoices.local,
+                price=Decimal(350.0),
+                producttype_uuid=uuid4(),
+            )
 
-    def test_without_price_and_producttype(self):
+    def test_local_product_without_price_and_producttype_should_fail(self):
         with self.assertRaises(IntegrityError):
-            ProductFactory.create(price=None, producttype_uuid=None)
-
-    def test_uuid_follows_producttype(self):
-        producttype_uuid = uuid4()
-        product = ProductFactory.create(price=None, producttype_uuid=producttype_uuid)
-
-        self.assertEqual(product.uuid, producttype_uuid)
+            ProductFactory.create(
+                product_source=ProductSourceChoices.local,
+                price=None,
+                producttype_uuid=None,
+            )
