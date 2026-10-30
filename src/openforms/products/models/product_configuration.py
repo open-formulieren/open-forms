@@ -34,6 +34,6 @@ class ProductConfiguration(SingletonModel):
 
     objects = ProductConfigurationManager()
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("product api configuration")
         verbose_name_plural = _("product api configuration")

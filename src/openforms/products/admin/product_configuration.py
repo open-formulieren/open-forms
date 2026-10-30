@@ -20,8 +20,8 @@ class ProductConfigurationForm(forms.ModelForm):
             "content_labels",
         )
 
-    def clean(self) -> dict[str, object]:
-        cleaned_data = super().clean()
+    def clean(self):
+        cleaned_data = super().clean() or {}
 
         form_labels = cleaned_data.get("content_labels")
         form_service = cleaned_data.get("open_product_service")
