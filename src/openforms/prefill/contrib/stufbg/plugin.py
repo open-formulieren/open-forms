@@ -15,7 +15,7 @@ from stuf.stuf_bg.client import get_client
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
-from ...base import BasePlugin
+from ...base import BasePlugin, Options
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
@@ -96,6 +96,10 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
 class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
     requires_auth = (AuthAttribute.bsn,)
+
+    def get_vendor_hint(self, options: Options) -> str | None:
+        config = StufBGConfig.get_solo()
+        return config.service.soap_service.url if config.service else None
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:

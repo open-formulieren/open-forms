@@ -66,6 +66,23 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
     requires_auth = (AuthAttribute.bsn,)
     options = FamilyMembersOptionsSerializer
 
+    def get_vendor_hint(self, options: FamilyMemberOptions) -> str | None:
+        config = GlobalConfiguration.get_solo()
+        if config.family_members_data_api == FamilyMembersDataAPIChoices.stuf_bg:
+            from stuf.stuf_bg.models import StufBGConfig
+
+            stuf_config = StufBGConfig.get_solo()
+            if stuf_config.service:
+                return stuf_config.service.soap_service.url
+            return None
+
+        from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+
+        hc_config = HaalCentraalConfig.get_solo()
+        if hc_config.brp_personen_service:
+            return hc_config.brp_personen_service.api_root
+        return None
+
     @classmethod
     def get_prefill_values_from_options(
         cls,

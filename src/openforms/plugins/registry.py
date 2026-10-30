@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator, MutableMapping
+from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping
 from typing import TYPE_CHECKING
 
 from django.db import OperationalError
 
 from flags.state import flag_enabled
 from opentelemetry import metrics
+from opentelemetry.util.types import AttributeValue
 
 from .constants import UNIQUE_ID_MAX_LENGTH
 
@@ -15,6 +16,13 @@ if TYPE_CHECKING:
 
 
 meter = metrics.get_meter("openforms.plugins")
+
+VENDOR_HINT_METRIC_LABEL = "openforms.plugin.vendor_hint"
+
+type MetricLabels = Mapping[str, AttributeValue]
+type PluginUsageReport = (
+    tuple[AbstractBasePlugin, int] | tuple[AbstractBasePlugin, int, MetricLabels]
+)
 
 
 class BaseRegistry[PluginT: AbstractBasePlugin]:
@@ -108,12 +116,12 @@ class BaseRegistry[PluginT: AbstractBasePlugin]:
             )
         module_registers[self.module] = self
 
-    def report_plugin_usage(self) -> Iterable[tuple[AbstractBasePlugin, int]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         """
         Introspect the registered plugins and report how often each one is used.
 
         This is called by the plugin usage metric exporter to get insight in how often
-        plugins are used.
+        plugins are used. Can include extra metric labels.
 
         .. note:: This method will be invoked periodically in a background thread. Pay
            attention to DB query optimization to minimize system load.
@@ -128,16 +136,26 @@ def record_plugin_usage(
     options: metrics.CallbackOptions,
 ) -> Iterator[metrics.Observation]:
     for module, register in module_registers.items():
-        for plugin, times_used in register.report_plugin_usage():
+        for usage_item in register.report_plugin_usage():
+            if len(usage_item) == 3:
+                plugin, times_used, extra_attributes = usage_item
+            else:
+                plugin, times_used = usage_item
+                extra_attributes = {}
+
+            attributes: dict[str, AttributeValue] = {
+                "scope": "global",
+                "openforms.plugin.module": module,
+                "openforms.plugin.identifier": plugin.identifier,
+                "openforms.plugin.is_enabled": plugin.is_enabled,
+                "openforms.plugin.is_demo": plugin.is_demo_plugin,
+            }
+            if extra_attributes:
+                attributes.update(extra_attributes)
+
             yield metrics.Observation(
                 value=times_used,
-                attributes={
-                    "scope": "global",
-                    "openforms.plugin.module": module,
-                    "openforms.plugin.identifier": plugin.identifier,
-                    "openforms.plugin.is_enabled": plugin.is_enabled,
-                    "openforms.plugin.is_demo": plugin.is_demo_plugin,
-                },
+                attributes=attributes,
             )
 
 
