@@ -46,6 +46,7 @@ assignees: sergei-maertens
 
     - [ ] `openforms.emails.tests.test_digest_functions.FamilyMembersBrokenHCConfigurationTests`
     - [ ] `openforms.emails.tests.test_digest_functions.InvalidMapComponentOverlaysTests`
+    - [ ] `openforms.emails.tests.test_digest_functions.OpenProductBrokenConfigurationTests`
     - [ ] `openforms.emails.tests.test_tasks_integration.ReferenceListsExpiredDataTests`
 
   - Formio components
@@ -71,6 +72,10 @@ assignees: sergei-maertens
     - [ ] `openforms.prefill.contrib.haalcentraal_brp`
     - [ ] `openforms.prefill.contrib.objects_api`
     - [ ] `openforms.prefill.tests.test_prefill_variables`
+
+  - Products
+
+    - [ ] `openforms.products.tests.test_admin`
 
   - Registrations:
 
