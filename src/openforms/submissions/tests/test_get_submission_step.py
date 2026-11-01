@@ -920,7 +920,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                         "key": "file",
                         "label": "File",
                         "useConfigFiletypes": True,
-                        "filePattern": "*",
                         "url": "",
                         "file": {"allowedTypesLabels": []},
                     }
@@ -941,7 +940,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "key": "file",
             "label": "File",
             "useConfigFiletypes": True,
-            "filePattern": "image/png,application/pdf",
             "url": "http://testserver/api/v2/formio/fileupload",
             "file": {
                 "type": ["image/png", "application/pdf"],

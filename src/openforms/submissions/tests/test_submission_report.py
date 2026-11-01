@@ -309,7 +309,6 @@ class DownloadSubmissionReportTests(APITestCase):
                     component.update(
                         {
                             "file": {"type": []},
-                            "filePattern": "",
                             "url": "",
                         }
                     )

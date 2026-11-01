@@ -1627,7 +1627,6 @@ class FileTests(SimpleTestCase):
             "label": "File",
             "defaultValue": None,
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1643,7 +1642,6 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": None,
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1658,7 +1656,6 @@ class FileTests(SimpleTestCase):
             "label": "File",
             "defaultValue": [],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1673,7 +1670,6 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1688,7 +1684,6 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [None],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)

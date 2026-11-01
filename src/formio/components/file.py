@@ -63,7 +63,6 @@ class File(Component, tag="file"):
     faq_items: Sequence[FAQItem] = []
     file: FileOptions
     file_max_size: str = ""  # e.g. 10MB
-    file_pattern: str
     hidden: bool = False
     is_sensitive_data: bool = True
     label: str

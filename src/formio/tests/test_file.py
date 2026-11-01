@@ -28,7 +28,6 @@ class FileTests(ComponentAssertions, TestCase):
         component = File(
             key="template",
             file=FileOptions(type=[]),
-            file_pattern="*",
             label="label template",
             description="description template",
             tooltip="tooltip template",
@@ -44,7 +43,6 @@ class FileTests(ComponentAssertions, TestCase):
         component = File(
             key="template",
             file=FileOptions(type=[]),
-            file_pattern="*",
             label="label",
             description="description",
             tooltip="tooltip",

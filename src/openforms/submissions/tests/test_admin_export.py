@@ -60,7 +60,6 @@ class TestSubmissionExportAdmin(WebTest):
                         "key": "my_file",
                         "label": "my_file",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ]
             }

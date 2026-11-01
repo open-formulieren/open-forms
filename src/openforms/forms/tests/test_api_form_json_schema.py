@@ -52,7 +52,6 @@ class FormJsonSchemaAPITests(APITestCase):
                         "label": "File",
                         "multiple": False,
                         "file": {"type": []},
-                        "filePattern": "",
                         "url": "",
                     },
                     {
@@ -198,7 +197,6 @@ class FormJsonSchemaAPITests(APITestCase):
                         "label": "File",
                         "multiple": False,
                         "file": {"type": []},
-                        "filePattern": "",
                         "url": "",
                     },
                     {

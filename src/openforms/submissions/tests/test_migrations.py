@@ -6,7 +6,6 @@ from openforms.variables.constants import FormVariableDataTypes
 
 FILE_BOILERPLATE = {
     "file": {"type": []},
-    "filePattern": "",
 }
 
 # not relevant for the tests - we don't actually create any files or content, just make

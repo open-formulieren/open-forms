@@ -24,7 +24,6 @@ class ServiceTestCase(TestCase):
                     "type": "file",
                     "url": "bad",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "id": "e2a2cv9",

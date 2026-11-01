@@ -401,7 +401,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         "key": "attachment",
                         "label": "attachment",
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ]
             },
@@ -517,7 +516,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         "key": "file",
                         "label": "File",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ]
             },

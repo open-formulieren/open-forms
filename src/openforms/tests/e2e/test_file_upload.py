@@ -45,7 +45,6 @@ class FillInFormTests(E2ETestCase):
                                 "type": ["*"],
                                 "allowedTypesLabels": ["any file type"],
                             },
-                            "filePattern": "*",
                         }
                     ]
                 },
@@ -117,7 +116,6 @@ class FillInFormTests(E2ETestCase):
                                 "type": ["*"],
                                 "allowedTypesLabels": ["any file type"],
                             },
-                            "filePattern": "*",
                         }
                     ]
                 },

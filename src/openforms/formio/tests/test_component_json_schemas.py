@@ -116,7 +116,6 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "storage": "url",
             "url": "https://example.com",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
         }
         self.assertComponentSchemaIsValid(component=component)

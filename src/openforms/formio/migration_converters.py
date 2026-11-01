@@ -155,12 +155,9 @@ def fix_file_default_value(component: Component) -> bool:
 
 def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
     component = cast(FileComponent, component)
-    if not (file_type := glom(component, "file.type", default=None)) or not (
-        file_pattern := component.get("filePattern", None)
-    ):
+    if not (file_type := glom(component, "file.type", default=None)):
         return False
 
-    file_pattern_list = file_pattern.split(",")
     needed_mime_types = ("application/x-zip-compressed", "application/zip-compressed")
 
     def add_if_missing(current_list: list[str]):
@@ -168,15 +165,12 @@ def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
             if item not in current_list:
                 current_list.append(item)
 
-    if not ("application/zip" in file_type or "application/zip" in file_pattern_list):
+    if "application/zip" not in file_type:
         return False
 
     # file type
     add_if_missing(file_type)
     assign(component, "file.type", file_type)
-    # file pattern
-    add_if_missing(file_pattern_list)
-    component["filePattern"] = ",".join(file_pattern_list)
     return True
 
 

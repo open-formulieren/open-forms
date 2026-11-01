@@ -455,7 +455,6 @@ class FormNodeTests(TestCase):
             "label": "My File",
             "hidden": False,
             "file": {"type": []},
-            "filePattern": "",
         }
         submission = SubmissionFactory.create(
             form__name="public name",
@@ -484,7 +483,6 @@ class FormNodeTests(TestCase):
                         "type": "application/msword",
                         "url": "http://localhost:8000/api/v2/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ]
             },
@@ -546,7 +544,6 @@ class FormNodeTests(TestCase):
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ],
             },
@@ -558,7 +555,6 @@ class FormNodeTests(TestCase):
                     "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                 },
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
         submission = SubmissionFactory.create(
@@ -748,7 +744,6 @@ class FormNodeTests(TestCase):
                         "label": "File in repeating group",
                         "key": "attachment",
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ],
             },
@@ -757,7 +752,6 @@ class FormNodeTests(TestCase):
                 "label": "attachment",
                 "type": "file",
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
         submission = SubmissionFactory.create(
@@ -897,7 +891,6 @@ class FormNodeTests(TestCase):
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "type": "file",
@@ -907,7 +900,6 @@ class FormNodeTests(TestCase):
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
                         },
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ],
             },
@@ -1035,7 +1027,6 @@ class FormNodeTests(TestCase):
             "label": "My File",
             "hidden": False,
             "file": {"type": []},
-            "filePattern": "",
         }
         submission = SubmissionFactory.create(
             form__name="public name",
