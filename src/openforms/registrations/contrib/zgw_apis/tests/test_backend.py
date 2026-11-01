@@ -1937,7 +1937,6 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                     "key": "file",
                     "label": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={
@@ -2020,7 +2019,6 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                     "key": "file",
                     "label": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={
@@ -2092,13 +2090,11 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                 {
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                     "key": "field1",
                 },
                 {
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                     "key": "field2",
                 },
             ],
@@ -2284,7 +2280,6 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                     "key": "file",
                     "label": "File",
                     "file": {"type": []},
-                    "filePattern": "",
                     "registration": {
                         "informatieobjecttype": "https://example.com/ignore-me",
                     },
@@ -3445,7 +3440,6 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
                     "key": "file",
                     "label": "File",
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                     "multiple": False,
                 },
@@ -3454,7 +3448,6 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
                     "key": "fileMultiple",
                     "label": "Filemultiple",
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                     "multiple": True,
                 },
@@ -3474,7 +3467,6 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
                             "type": "file",
                             "label": "File",
                             "file": {"type": []},
-                            "filePattern": "",
                             "url": "",
                             "multiple": False,
                         },

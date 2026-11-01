@@ -375,14 +375,12 @@ class MoveFileComponentRegistrationOverridesTests(MigratorTestCase):
                         "key": "fileWithoutOverrides",
                         "label": "File without overrides",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "type": "file",
                         "key": "container.fileWithOverrides",
                         "label": "File with overrides",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {
                             "documentType": {
                                 # catalogue mismatch -> ignored!
@@ -414,7 +412,6 @@ class MoveFileComponentRegistrationOverridesTests(MigratorTestCase):
                                         "key": "editgrid.file",
                                         "label": "Editgrid file",
                                         "file": {"type": []},
-                                        "filePattern": "",
                                         "registration": {
                                             "documentType": {
                                                 # catalogue mismatch -> ignored!

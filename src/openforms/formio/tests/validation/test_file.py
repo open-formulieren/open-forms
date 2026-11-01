@@ -29,7 +29,6 @@ DEFAULT_FILE_COMPONENT: FileComponent = {
     "storage": "url",
     "url": "",
     "useConfigFiletypes": False,
-    "filePattern": "",
     "file": {"type": [], "allowedTypesLabels": []},
 }
 
@@ -46,7 +45,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
         }
 
@@ -68,7 +66,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
             "validate": {"required": True},
         }
@@ -97,7 +94,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
             "multiple": True,
             "maxNumberOfFiles": 2,
@@ -129,7 +125,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
             "multiple": False,
         }
@@ -163,7 +158,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
             "maxNumberOfFiles": 1,
         }
@@ -208,7 +202,6 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     "storage": "url",
                     "url": "",
                     "useConfigFiletypes": False,
-                    "filePattern": "",
                     "file": {"type": [], "allowedTypesLabels": []},
                     "multiple": True,
                     "maxNumberOfFiles": 2,
@@ -411,7 +404,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "applicaton/pdf",
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
         }
 
@@ -461,7 +453,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "image/png,image/jpeg",
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
         }
 
@@ -493,7 +484,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "",
             "file": {"type": [], "allowedTypesLabels": []},
         }
 
@@ -531,7 +521,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "*",
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
@@ -569,7 +558,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": True,
-            "filePattern": "*",
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
@@ -601,7 +589,6 @@ class FileValidationMimeTypeTests(TestCase):
             "storage": "url",
             "url": "",
             "useConfigFiletypes": False,
-            "filePattern": "*",
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 

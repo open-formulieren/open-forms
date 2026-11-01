@@ -344,7 +344,6 @@ class ExportTests(TestCase):
                         "label": "Attachments",
                         "multiple": True,
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ]
             },

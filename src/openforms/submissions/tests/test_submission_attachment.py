@@ -78,7 +78,6 @@ class SubmissionAttachmentTest(TestCase):
                     "name": "my-filename.txt",
                     "type": [],
                 },
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -158,7 +157,6 @@ class SubmissionAttachmentTest(TestCase):
                         "label": "file",
                         "type": "file",
                         "file": {"name": "test.txt", "type": []},
-                        "filePattern": "",
                     },
                 ],
             }
@@ -189,7 +187,6 @@ class SubmissionAttachmentTest(TestCase):
                 "label": "my_file",
                 "type": "file",
                 "file": {"name": "test.txt", "type": []},
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -285,7 +282,6 @@ class SubmissionAttachmentTest(TestCase):
                         "key": "fileInRepeatingGroup",
                         "label": "fileInRepeatingGroup",
                         "file": {"type": []},
-                        "filePattern": "",
                     }
                 ],
             },
@@ -294,7 +290,6 @@ class SubmissionAttachmentTest(TestCase):
                 "label": "nested.file",
                 "type": "file",
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -344,7 +339,6 @@ class SubmissionAttachmentTest(TestCase):
                                 "key": "attachment",
                                 "label": "attachment",
                                 "file": {"type": []},
-                                "filePattern": "",
                             }
                         ],
                     },
@@ -354,7 +348,6 @@ class SubmissionAttachmentTest(TestCase):
                         "key": "attachment",
                         "label": "attachment",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ]
             },
@@ -494,14 +487,12 @@ class SubmissionAttachmentTest(TestCase):
                         "key": "fileInRepeatingGroup1",
                         "label": "fileInRepeatingGroup1",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "type": "file",
                         "key": "fileInRepeatingGroup2",
                         "label": "fileInRepeatingGroup2",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ],
             },
@@ -641,14 +632,12 @@ class SubmissionAttachmentTest(TestCase):
                         "key": "fileInRepeatingGroup1",
                         "label": "fileInRepeatingGroup1",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "type": "file",
                         "key": "fileInRepeatingGroup2",
                         "label": "fileInRepeatingGroup2",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                 ],
             },
@@ -657,7 +646,6 @@ class SubmissionAttachmentTest(TestCase):
                 "label": "nested.file",
                 "type": "file",
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -778,7 +766,6 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "file",
                 "multiple": True,
                 "file": {"name": "my-filename.txt", "type": []},
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -900,7 +887,6 @@ class SubmissionAttachmentTest(TestCase):
                 },
                 "multiple": True,
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -949,7 +935,6 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "file",
                 "fileMaxSize": "10B",
                 "file": {"type": []},
-                "filePattern": "",
             },
         ]
 
@@ -1139,7 +1124,6 @@ class SubmissionAttachmentTest(TestCase):
                 "key": "someAttachment",
                 "label": "someAttachment",
                 "file": {"type": []},
-                "filePattern": "",
             },
             {
                 "key": "repeatingGroup",
@@ -1201,7 +1185,6 @@ class SubmissionAttachmentTest(TestCase):
                 "key": "someAttachment",
                 "label": "someAttachment",
                 "file": {"type": []},
-                "filePattern": "",
             },
             {
                 "key": "repeatingGroup",
@@ -1240,7 +1223,6 @@ class SubmissionAttachmentTest(TestCase):
                     "name": "prefix_{{ fileName }}_postfix",
                     "type": [],
                 },
-                "filePattern": "",
                 "type": "file",
             }
         ]

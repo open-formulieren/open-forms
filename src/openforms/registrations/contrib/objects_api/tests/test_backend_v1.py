@@ -554,7 +554,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "key": "fileUpload",
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={

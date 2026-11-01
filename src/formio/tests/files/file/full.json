@@ -30,7 +30,6 @@
     "type": ["image/png", "application/pdf"]
   },
   "fileMaxSize": "10MB",
-  "filePattern": "image/png,application/pdf",
   "hidden": false,
   "id": "yejak",
   "isSensitiveData": true,

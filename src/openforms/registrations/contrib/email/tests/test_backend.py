@@ -108,14 +108,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "type": "file",
                     "label": "file1",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "key": "file2",
                     "type": "file",
                     "label": "file2",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={
@@ -516,7 +514,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "key": "someFile",
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={
@@ -1093,14 +1090,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "type": "file",
                     "label": "file1",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "key": "file2",
                     "type": "file",
                     "label": "file2",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             submitted_data={
@@ -1253,7 +1248,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                         "type": "file",
                         "label": "file",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "key": "repeatingGroup",
@@ -1266,7 +1260,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                                 "label": "attachmentInRepeatingGroup",
                                 "type": "file",
                                 "file": {"type": []},
-                                "filePattern": "",
                             }
                         ],
                     },
@@ -1280,7 +1273,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                                 "label": "attachmentInFieldset",
                                 "type": "file",
                                 "file": {"type": []},
-                                "filePattern": "",
                             }
                         ],
                     },

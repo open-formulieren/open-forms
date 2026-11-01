@@ -803,7 +803,6 @@ class SingleFileTests(ValidationsTestCase):
                 "type": ["*"],
                 "allowedTypesLabels": ["any file type"],
             },
-            "filePattern": "*",
         }
 
         self.assertFileValidationIsAligned(
@@ -825,7 +824,6 @@ class SingleFileTests(ValidationsTestCase):
                 "type": ["*"],
                 "allowedTypesLabels": ["any file type"],
             },
-            "filePattern": "*",
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,
@@ -864,7 +862,6 @@ class SingleFileTests(ValidationsTestCase):
                     ".pdf",
                 ],
             },
-            "filePattern": "application/pdf",
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,
@@ -910,7 +907,6 @@ class SingleFileTests(ValidationsTestCase):
                     "*",
                 ],
             },
-            "filePattern": "",
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,

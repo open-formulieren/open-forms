@@ -480,11 +480,10 @@ class File(BasePlugin[FileComponent]):
         component["url"] = build_absolute_uri(upload_endpoint, request=request)
         component.setdefault("file", {})
 
-        # check if we need to apply "filePattern" modifications
+        # check if we need to apply file type modifications
         if component.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
             mimetypes: list[str] = config.form_upload_default_file_types  # type: ignore
-            component["filePattern"] = ",".join(mimetypes)
             component["file"]["type"] = mimetypes
         else:
             mimetypes: list[str] = component["file"].get("type", [])
