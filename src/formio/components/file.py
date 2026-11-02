@@ -5,7 +5,6 @@ from typing import Annotated, Literal
 
 import msgspec
 from msgspec import Meta
-from typing_extensions import deprecated
 
 from ..base_component import (
     BaseOpenFormsExtensions,
@@ -36,13 +35,9 @@ class ImageOptions(FormioStruct):
 type FileTranslatableProperties = Literal["label", "description", "tooltip"]
 
 
-@deprecated("Should be moved to openForms namespace")
-class LegacyFileExtensions(FormioStruct):
-    image: ImageOptions | msgspec.UnsetType = msgspec.UNSET
-
-
 class FileExtensions(BaseOpenFormsExtensions[FileTranslatableProperties]):
     soft_required: bool = False
+    image: ImageOptions | msgspec.UnsetType = msgspec.UNSET
 
 
 class FileValidate(FormioStruct):
@@ -68,7 +63,6 @@ class File(Component, tag="file"):
     label: str
     max_number_of_files: int | None = None
     multiple: bool = False
-    of: LegacyFileExtensions | msgspec.UnsetType = msgspec.UNSET
     open_forms: FileExtensions | msgspec.UnsetType = msgspec.UNSET
     show_in_email: bool = False
     show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
