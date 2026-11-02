@@ -882,7 +882,7 @@ class SubmissionAttachmentTest(TestCase):
                 "key": "my_file",
                 "label": "my_file",
                 "type": "file",
-                "of": {
+                "openForms": {
                     "image": {"resize": {"apply": True, "width": 100, "height": 100}}
                 },
                 "multiple": True,

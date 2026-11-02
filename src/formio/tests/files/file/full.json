@@ -37,16 +37,14 @@
   "label": "Attachment",
   "maxNumberOfFiles": null,
   "multiple": false,
-  "of": {
+  "openForms": {
     "image": {
       "resize": {
         "apply": true,
         "height": 2000,
         "width": 2000
       }
-    }
-  },
-  "openForms": {
+    },
     "softRequired": true,
     "translations": {
       "nl": {
