@@ -776,7 +776,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "input": True,
                         "label": "File Upload",
                         "tableView": False,
-                        "useConfigFiletypes": True,
+                        "openForms": {"useConfigFiletypes": True},
                     },
                 ]
             },
@@ -828,7 +828,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                                 "input": True,
                                 "label": "File Upload",
                                 "tableView": False,
-                                "useConfigFiletypes": True,
+                                "openForms": {"useConfigFiletypes": True},
                             },
                         ]
                     },

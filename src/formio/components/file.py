@@ -36,6 +36,7 @@ type FileTranslatableProperties = Literal["label", "description", "tooltip"]
 
 
 class FileExtensions(BaseOpenFormsExtensions[FileTranslatableProperties]):
+    use_config_filetypes: bool = False
     soft_required: bool = False
     image: ImageOptions | msgspec.UnsetType = msgspec.UNSET
 
@@ -71,7 +72,6 @@ class File(Component, tag="file"):
     translated_errors: TranslatedErrors[FileValidatorKeys] | msgspec.UnsetType = (
         msgspec.UNSET
     )
-    use_config_filetypes: bool = False
     validate: FileValidate = msgspec.field(default_factory=FileValidate)
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
