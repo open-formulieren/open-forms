@@ -31,8 +31,6 @@ class FileComponentRegistration(TypedDict):
 class FileComponent(Component):
     url: str
     file: FileConfig
-    # TODO: delete/move
-    # maxNumberOfFiles: NotRequired[int]
     registration: NotRequired[FileComponentRegistration]
 
 

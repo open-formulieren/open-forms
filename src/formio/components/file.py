@@ -43,6 +43,7 @@ class FileExtensions(BaseOpenFormsExtensions[FileTranslatableProperties]):
 
 class FileValidate(FormioStruct):
     required: bool = False
+    max_length: int | None = 1  # mimicks old default of ``multiple = False``
 
 
 class FileOptions(FormioStruct):
@@ -62,8 +63,6 @@ class File(Component, tag="file"):
     hidden: bool = False
     is_sensitive_data: bool = True
     label: str
-    max_number_of_files: int | None = None
-    multiple: bool = False
     open_forms: FileExtensions | msgspec.UnsetType = msgspec.UNSET
     show_in_email: bool = False
     show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
@@ -73,6 +72,11 @@ class File(Component, tag="file"):
         msgspec.UNSET
     )
     validate: FileValidate = msgspec.field(default_factory=FileValidate)
+
+    @property
+    def multiple(self) -> bool:
+        max_length = self.validate.max_length
+        return max_length is None or max_length > 1
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)
