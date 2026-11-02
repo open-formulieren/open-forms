@@ -479,9 +479,9 @@ class File(BasePlugin[FileComponent]):
         upload_endpoint = reverse("api:formio:temporary-file-upload")
         component["url"] = build_absolute_uri(upload_endpoint, request=request)
         component.setdefault("file", {})
-
+        extensions = component.get("openForms", {})
         # check if we need to apply file type modifications
-        if component.get("useConfigFiletypes", False):
+        if extensions.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
             mimetypes: list[str] = config.form_upload_default_file_types  # type: ignore
             component["file"]["type"] = mimetypes
@@ -494,12 +494,13 @@ class File(BasePlugin[FileComponent]):
             ]
 
     def build_serializer_field(self, component: FileComponent) -> serializers.ListField:
+        extensions = component.get("openForms", {})
         multiple = component.get("multiple", False)
         max_number_of_files = component.get("maxNumberOfFiles", None if multiple else 1)
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if component.get("useConfigFiletypes"):
+        if extensions.get("useConfigFiletypes"):
             config = GlobalConfiguration.get_solo()
             allowed_mime_types = config.form_upload_default_file_types
         else:

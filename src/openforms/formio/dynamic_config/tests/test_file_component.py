@@ -32,7 +32,7 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": True,
+            "openForms": {"useConfigFiletypes": True},
             "file": {"type": []},
         }
 
@@ -55,7 +55,7 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": True,
+            "openForms": {"useConfigFiletypes": True},
             "file": {"type": []},
         }
 
@@ -73,7 +73,7 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["image/png"]},
         }
 

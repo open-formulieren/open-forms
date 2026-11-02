@@ -38,6 +38,7 @@
   "maxNumberOfFiles": null,
   "multiple": false,
   "openForms": {
+    "useConfigFiletypes": false,
     "image": {
       "resize": {
         "apply": true,
@@ -62,7 +63,6 @@
     }
   },
   "type": "file",
-  "useConfigFiletypes": false,
   "validate": {
     "required": false
   }

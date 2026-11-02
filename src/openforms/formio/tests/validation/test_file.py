@@ -28,7 +28,7 @@ DEFAULT_FILE_COMPONENT: FileComponent = {
     "label": "Test",
     "storage": "url",
     "url": "",
-    "useConfigFiletypes": False,
+    "openForms": {"useConfigFiletypes": False},
     "file": {"type": [], "allowedTypesLabels": []},
 }
 
@@ -44,7 +44,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
         }
 
@@ -65,7 +65,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
             "validate": {"required": True},
         }
@@ -93,7 +93,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
             "multiple": True,
             "maxNumberOfFiles": 2,
@@ -124,7 +124,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
             "multiple": False,
         }
@@ -157,7 +157,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
             "maxNumberOfFiles": 1,
         }
@@ -201,7 +201,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     "label": "Test",
                     "storage": "url",
                     "url": "",
-                    "useConfigFiletypes": False,
+                    "openForms": {"useConfigFiletypes": False},
                     "file": {"type": [], "allowedTypesLabels": []},
                     "multiple": True,
                     "maxNumberOfFiles": 2,
@@ -403,7 +403,7 @@ class FileValidationMimeTypeTests(TestCase):
             "multiple": True,
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
         }
 
@@ -452,7 +452,7 @@ class FileValidationMimeTypeTests(TestCase):
             "multiple": True,
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
         }
 
@@ -483,7 +483,7 @@ class FileValidationMimeTypeTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
         }
 
@@ -520,7 +520,7 @@ class FileValidationMimeTypeTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
@@ -557,7 +557,7 @@ class FileValidationMimeTypeTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": True,
+            "openForms": {"useConfigFiletypes": True},
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
@@ -588,7 +588,7 @@ class FileValidationMimeTypeTests(TestCase):
             "label": "Test",
             "storage": "url",
             "url": "",
-            "useConfigFiletypes": False,
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
