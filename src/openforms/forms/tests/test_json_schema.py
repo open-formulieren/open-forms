@@ -104,7 +104,6 @@ class GenerateJsonSchemaTests(TestCase):
                         "label": "File",
                         "validate": {"required": True},
                         "file": {"type": []},
-                        "filePattern": "",
                         "url": "",
                     },
                     {

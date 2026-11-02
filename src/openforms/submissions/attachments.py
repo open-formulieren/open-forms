@@ -226,10 +226,16 @@ def _maybe_schedule_resize(attachment_pk: int, component: FileComponent) -> None
     from .tasks import resize_submission_attachment
 
     # grab resize settings
-    resize_apply = glom(component, "of.image.resize.apply", default=False)
+    resize_apply = glom(component, "openForms.image.resize.apply", default=False)
     resize_size = (
-        glom(component, "of.image.resize.width", default=DEFAULT_IMAGE_MAX_SIZE[0]),
-        glom(component, "of.image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]),
+        glom(
+            component, "openForms.image.resize.width", default=DEFAULT_IMAGE_MAX_SIZE[0]
+        ),
+        glom(
+            component,
+            "openForms.image.resize.height",
+            default=DEFAULT_IMAGE_MAX_SIZE[1],
+        ),
     )
     if not resize_apply or not resize_size:
         return

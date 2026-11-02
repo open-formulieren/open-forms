@@ -228,7 +228,6 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "url": "http://testserver/api/v2/formio/fileupload",
                         "label": "test-key",
                         "file": {"type": [], "allowedTypesLabels": []},
-                        "filePattern": "",
                     }
                 ]
             },
@@ -1598,7 +1597,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "url": "http://testserver/api/v2/formio/fileupload",
                         "label": "test-key",
                         "file": {"type": [], "allowedTypesLabels": []},
-                        "filePattern": "",
+                        "validate": {"maxLength": 1},
+                        "openForms": {},
                     }
                 ]
             },
@@ -1960,7 +1960,6 @@ class ImportExportTests(TempdirMixin, TestCase):
             "label": "fileTest",
             "url": "",
             "useConfigFiletypes": True,
-            "filePattern": "*",
             "file": {"type": []},
         }
 
@@ -4639,7 +4638,6 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                         "key": "toplevel.file1",
                         "label": "Top level file",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {
                             "bronorganisatie": "100000009",
                             "docVertrouwelijkheidaanduiding": "geheim",
@@ -4658,14 +4656,12 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                         "key": "toplevel.file2",
                         "label": "Top level file 2",
                         "file": {"type": []},
-                        "filePattern": "",
                     },
                     {
                         "type": "file",
                         "key": "toplevel.file3",
                         "label": "Top level file 3",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {"titel": ""},
                     },
                     {
@@ -4679,7 +4675,6 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                                 "key": "editgridFile",
                                 "label": "Editgrid file",
                                 "file": {"type": []},
-                                "filePattern": "",
                                 "registration": {
                                     "bronorganisatie": "100000009",
                                     "titel": "Another title",
@@ -4910,7 +4905,6 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                         "key": "toplevel.file1",
                         "label": "Top level file",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {
                             "bronorganisatie": "100000009",
                             "docVertrouwelijkheidaanduiding": "geheim",
@@ -4935,7 +4929,6 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                                 "key": "editgridFile",
                                 "label": "Editgrid file",
                                 "file": {"type": []},
-                                "filePattern": "",
                                 "registration": {
                                     "bronorganisatie": "100000009",
                                     "titel": "Another title",
@@ -5038,7 +5031,6 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
                         "key": "toplevel.file1",
                         "label": "Top level file",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {
                             "bronorganisatie": "100000009",
                             "docVertrouwelijkheidaanduiding": "geheim",
@@ -5057,7 +5049,6 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
                         "key": "toplevel.file2",
                         "label": "Top level file 2",
                         "file": {"type": []},
-                        "filePattern": "",
                         "registration": {
                             "documentType": {
                                 "catalogue": {
@@ -5079,7 +5070,6 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
                                 "key": "editgridFile",
                                 "label": "Editgrid file",
                                 "file": {"type": []},
-                                "filePattern": "",
                                 "registration": {
                                     "bronorganisatie": "100000009",
                                     "titel": "Another title",

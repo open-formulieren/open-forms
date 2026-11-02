@@ -58,7 +58,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "key": "file",
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 },
             ],
@@ -190,7 +189,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "multiple": True,
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 }
             ],
@@ -296,7 +294,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "multiple": True,
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 }
             ],
@@ -382,7 +379,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "key": "file",
                     "type": "file",
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 }
             ],
@@ -437,7 +433,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "multiple": True,
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 }
             ],
@@ -1266,7 +1261,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "label": "Nested file",
                     "file": {"type": []},
-                    "filePattern": "",
                     "url": "",
                 },
                 {
@@ -1281,7 +1275,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                             "type": "file",
                             "multiple": False,
                             "file": {"type": []},
-                            "filePattern": "",
                             "url": "",
                         },
                     ],
@@ -1525,7 +1518,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                             "type": "file",
                             "multiple": True,
                             "file": {"type": []},
-                            "filePattern": "",
                             "url": "",
                         },
                     ],

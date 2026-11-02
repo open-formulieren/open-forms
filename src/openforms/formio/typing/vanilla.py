@@ -30,10 +30,7 @@ class FileComponentRegistration(TypedDict):
 
 class FileComponent(Component):
     url: str
-    useConfigFiletypes: bool
-    filePattern: str
     file: FileConfig
-    maxNumberOfFiles: NotRequired[int]
     registration: NotRequired[FileComponentRegistration]
 
 

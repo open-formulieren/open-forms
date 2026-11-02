@@ -155,12 +155,9 @@ def fix_file_default_value(component: Component) -> bool:
 
 def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
     component = cast(FileComponent, component)
-    if not (file_type := glom(component, "file.type", default=None)) or not (
-        file_pattern := component.get("filePattern", None)
-    ):
+    if not (file_type := glom(component, "file.type", default=None)):
         return False
 
-    file_pattern_list = file_pattern.split(",")
     needed_mime_types = ("application/x-zip-compressed", "application/zip-compressed")
 
     def add_if_missing(current_list: list[str]):
@@ -168,15 +165,12 @@ def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
             if item not in current_list:
                 current_list.append(item)
 
-    if not ("application/zip" in file_type or "application/zip" in file_pattern_list):
+    if "application/zip" not in file_type:
         return False
 
     # file type
     add_if_missing(file_type)
     assign(component, "file.type", file_type)
-    # file pattern
-    add_if_missing(file_pattern_list)
-    component["filePattern"] = ",".join(file_pattern_list)
     return True
 
 
@@ -527,6 +521,49 @@ def normalize_time_default_value(component: Component):
     return changed
 
 
+def move_renamed_formio_properties(component: FileComponent) -> bool:
+    """
+    Move the renamed (deprecated) properties from #3627.
+
+    * ``file.multiple`` is removed (no replacement necessary)
+    * ``file.filePattern`` is removed (no replacement necessary)
+    * ``file.useConfigFiletypes`` is moved to ``file.openForms.useConfigFiletypes``
+    * ``file.of.image`` is moved to ``file.openForms.image``
+    * ``file.maxNumberOfFiles`` is moved to ``file.validate.maxLength``, and depends on
+      the value of ``file.multiple``
+    """
+    changed: bool = False
+
+    component.setdefault("openForms", {})
+    open_forms = component["openForms"]
+
+    # move the of.image into openForms.image, if it's set
+    if not open_forms.get("image") and (of := component.get("of")):
+        image = of.get("image") or {}
+        if image:
+            open_forms["image"] = image
+            changed = True
+
+    # move useConfigFiletypes from root to openForms if it's present
+    if "useConfigFiletypes" in component and "useConfigFiletypes" not in open_forms:
+        open_forms["useConfigFiletypes"] = component["useConfigFiletypes"]
+        changed = True
+
+    max_number_of_files: int | None = component.get("maxNumberOfFiles")
+    multiple: bool = component.get("multiple", False)
+    component.setdefault("validate", {})
+    validate = component["validate"]
+
+    if "maxLength" not in validate:
+        changed = True
+        match multiple:
+            case False:
+                validate["maxLength"] = 1
+            case True:
+                validate["maxLength"] = max_number_of_files
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -592,6 +629,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_default_value": fix_file_default_value,
         "ensure_extra_zip_mimetypes_exist_in_file_type": ensure_extra_zip_mimetypes_exist_in_file_type,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "move_renamed_formio_properties": move_renamed_formio_properties,  # pyright: ignore[reportAssignmentType]
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,

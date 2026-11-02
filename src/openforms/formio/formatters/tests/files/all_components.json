@@ -1272,7 +1272,6 @@
             "description": "",
             "fileMaxSize": "1GB",
             "fileMinSize": "0KB",
-            "filePattern": "",
             "placeholder": "",
             "showInEmail": false,
             "defaultValue": null,
