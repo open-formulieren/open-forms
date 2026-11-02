@@ -495,9 +495,8 @@ class File(BasePlugin[FileComponent]):
 
     def build_serializer_field(self, component: FileComponent) -> serializers.ListField:
         extensions = component.get("openForms", {})
-        multiple = component.get("multiple", False)
-        max_number_of_files = component.get("maxNumberOfFiles", None if multiple else 1)
         validate = component.get("validate", {})
+        max_number_of_files = validate.get("maxLength")
         required = validate.get("required", False)
 
         if extensions.get("useConfigFiletypes"):

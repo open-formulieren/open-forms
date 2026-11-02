@@ -35,8 +35,6 @@
   "isSensitiveData": true,
   "key": "someFile",
   "label": "Attachment",
-  "maxNumberOfFiles": null,
-  "multiple": false,
   "openForms": {
     "useConfigFiletypes": false,
     "image": {
@@ -64,6 +62,7 @@
   },
   "type": "file",
   "validate": {
-    "required": false
+    "required": false,
+    "maxLength": 1
   }
 }

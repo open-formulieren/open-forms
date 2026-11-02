@@ -1597,6 +1597,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                         "url": "http://testserver/api/v2/formio/fileupload",
                         "label": "test-key",
                         "file": {"type": [], "allowedTypesLabels": []},
+                        "validate": {"maxLength": 1},
+                        "openForms": {},
                     }
                 ]
             },

@@ -95,8 +95,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
-            "multiple": True,
-            "maxNumberOfFiles": 2,
+            "validate": {"maxLength": 2},
         }
 
         submission = SubmissionFactory.create()
@@ -117,7 +116,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
 
         self.assertTrue(is_valid)
 
-    def test_file_multiple_false(self):
+    def test_file_multiple_files_not_allowed(self):
         component: FileComponent = {
             "type": "file",
             "key": "foo",
@@ -126,7 +125,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
-            "multiple": False,
+            "validate": {"maxLength": 1},
         }
 
         submission = SubmissionFactory.create()
@@ -159,7 +158,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "openForms": {"useConfigFiletypes": False},
             "file": {"type": [], "allowedTypesLabels": []},
-            "maxNumberOfFiles": 1,
+            "validate": {"maxLength": 1},
         }
 
         submission = SubmissionFactory.create()
@@ -203,8 +202,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     "url": "",
                     "openForms": {"useConfigFiletypes": False},
                     "file": {"type": [], "allowedTypesLabels": []},
-                    "multiple": True,
-                    "maxNumberOfFiles": 2,
+                    "validate": {"maxNumberOfFiles": 2},
                 }
             ],
         }
@@ -400,11 +398,11 @@ class FileValidationMimeTypeTests(TestCase):
             "key": "foo",
             "type": "file",
             "label": "Test",
-            "multiple": True,
             "storage": "url",
             "url": "",
             "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
+            "validate": {"maxLength": None},
         }
 
         is_valid, errors = validate_formio_data(component, data, submission=submission)
@@ -449,11 +447,11 @@ class FileValidationMimeTypeTests(TestCase):
             "key": "foo",
             "type": "file",
             "label": "Test",
-            "multiple": True,
             "storage": "url",
             "url": "",
             "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
+            "validate": {"maxLength": None},
         }
 
         is_valid, _ = validate_formio_data(component, data, submission=submission)

@@ -20,7 +20,7 @@ class Validate(TypedDict, total=False):
     # all attributes are optional, some attributes are only present with certain
     # component types (which we cannot express in our current type definitions)
     required: bool
-    maxLength: int
+    maxLength: int | None
     pattern: str
     min: int | float
     max: int | float
