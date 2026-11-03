@@ -12,6 +12,7 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.formio.service import holds_submission_data
 from openforms.formio.typing import Component
+from openforms.products.constants import ProductSourceChoices
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...constants import (
@@ -237,6 +238,18 @@ def validate_price_variable(form: Form):
         return
 
     error: ErrorDetail | None = None
+    product = form.product
+    if (
+        product
+        and product.product_source != ProductSourceChoices.local
+        and variable_key
+    ):
+        error = ErrorDetail(
+            _("Price variable cannot be specified using external products."),
+            code="invalid",
+        )
+        raise serializers.ValidationError({"price_variable_key": error})
+
     variables = {var.key: var for var in form.formvariable_set.all()}
     variable = variables.get(variable_key)
     match variable:

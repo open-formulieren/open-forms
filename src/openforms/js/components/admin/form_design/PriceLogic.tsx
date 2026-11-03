@@ -71,16 +71,16 @@ const PricingMode: React.FC<PricingModeProps> = ({
 interface PriceLogicProps {
   variableKey: string;
   onFieldChange: (event: FieldChangeEvent) => void;
-  isOpenProduct: boolean;
+  isExternalProduct: boolean;
 }
 
 export const PriceLogic: React.FC<PriceLogicProps> = ({
   variableKey,
   onFieldChange,
-  isOpenProduct,
+  isExternalProduct,
 }) => {
   const initialPricingMode =
-    variableKey !== '' && !isOpenProduct ? PRICING_MODES.variable : PRICING_MODES.static;
+    variableKey !== '' && !isExternalProduct ? PRICING_MODES.variable : PRICING_MODES.static;
   const [pricingMode, setPricingMode] = useState(initialPricingMode);
 
   const onPricingModeChange = (event: FieldChangeEvent) => {
@@ -102,26 +102,26 @@ export const PriceLogic: React.FC<PriceLogicProps> = ({
   };
 
   const pricingModeChoices = PRICING_MODE_TRANSLATIONS.filter(([mode]) => {
-    if (isOpenProduct && mode === PRICING_MODES.variable) {
+    if (isExternalProduct && mode === PRICING_MODES.variable) {
       return false;
     }
     return true;
   });
 
-  if (isOpenProduct && pricingMode != PRICING_MODES.static) {
+  if (isExternalProduct && pricingMode != PRICING_MODES.static) {
     onPricingModeChange({target: {name: 'pricing.mode', value: PRICING_MODES.static}});
   }
 
   const intl = useIntl();
-  const openProductWarningText = intl.formatMessage({
+  const externalProductWarningText = intl.formatMessage({
     description:
-      'Warning message that informs the user can only select certain price logic modes when a Open Product product is selected.',
+      'Warning message that informs the user can only select certain price logic modes when an external product is selected.',
     defaultMessage:
-      'Only "Use linked product price" mode is allowed when a Open Product product is selected.',
+      'Only "Use linked product price" mode is allowed when an external product is selected.',
   });
   // Pass the WarningIcon component down to the PricingMode component so that the Field
   // component can pass the name and id attributes correctly to it's child element.
-  const warning = isOpenProduct ? <WarningIcon text={openProductWarningText} /> : undefined;
+  const warning = isExternalProduct ? <WarningIcon text={externalProductWarningText} /> : undefined;
   return (
     <Fieldset
       title={

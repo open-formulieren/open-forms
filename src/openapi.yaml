@@ -7905,7 +7905,7 @@ components:
         product:
           allOf:
           - $ref: '#/components/schemas/NestedProduct'
-          readOnly: true
+          nullable: true
           description: Product related information inside a object.
         slug:
           type: string
@@ -8128,7 +8128,6 @@ components:
       - name
       - paymentOptions
       - paymentRequired
-      - product
       - requiredFieldsWithAsterisk
       - resumeLinkLifetime
       - slug
@@ -9996,6 +9995,14 @@ components:
           nullable: true
           title: Producttype ID
           description: Open Product producttype UUID.
+        productSource:
+          allOf:
+          - $ref: '#/components/schemas/ProductSourceEnum'
+          description: |-
+            The available types of the product. It can be a local product created in the admin interface or an external one.
+
+            * `local` - Local
+            * `open_product` - Open product
       required:
       - producttype
       - url
@@ -10282,7 +10289,7 @@ components:
         product:
           allOf:
           - $ref: '#/components/schemas/NestedProduct'
-          readOnly: true
+          nullable: true
           description: Product related information inside a object.
         slug:
           type: string
@@ -10743,12 +10750,20 @@ components:
           format: uuid
           nullable: true
           title: Producttype ID
-          description: Open Product producttype UUID.
+          description: External producttype UUID.
       required:
       - name
       - producttype
       - url
       - uuid
+    ProductSourceEnum:
+      enum:
+      - local
+      - open_product
+      type: string
+      description: |-
+        * `local` - Local
+        * `open_product` - Open product
     PublicForm:
       type: object
       properties:
