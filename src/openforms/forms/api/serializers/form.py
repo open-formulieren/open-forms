@@ -212,10 +212,7 @@ class NestedProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Product
-        fields = (
-            "url",
-            "producttype",
-        )
+        fields = ("url", "producttype", "product_source")
 
         extra_kwargs = {
             "url": {
@@ -476,6 +473,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
         registration_backends = validated_data.pop("registration_backends", [])
         auth_backends = validated_data.pop("auth_backends", [])
+        product = validated_data.pop("product", None)
 
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -493,6 +491,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             FormAuthenticationBackend(form=instance, **backend)
             for backend in auth_backends
         )
+        if product is not None:
+            Product.objects.create(**product)
+            instance.product = product
+            instance.save(update_fields=["product"])
+
         return instance
 
     # TODO: retrieve and set product based on validated data.
@@ -508,6 +511,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
         registration_backends = validated_data.pop("registration_backends", None)
         auth_backends = validated_data.pop("auth_backends", None)
+        product = validated_data.pop("product", None)
 
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -529,6 +533,17 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 FormAuthenticationBackend(form=instance, **backend_config)
                 for backend_config in auth_backends
             )
+        if product is not serializers.empty:
+            if product is None:
+                instance.product = None
+                instance.save(update_fields=["product"])
+            elif instance.product:
+                for attr, value in product.items():
+                    setattr(instance.product, attr, value)
+                instance.product.save()
+            else:
+                product = Product.objects.create(**product)
+                instance.product = product
 
         return instance
 

@@ -30,7 +30,7 @@ export default {
           {
             url: 'http://127.0.0.1:8000/api/v2/products/ed1d5103-772a-4205-a14f-2958020741ec',
             uuid: 'ed1d5103-772a-4205-a14f-2958020741ec',
-            name: 'Open Product product',
+            name: 'External product',
             price: null,
             information: '',
             producttype: 'ed1d5103-772a-4205-a14f-2958020741ec',
@@ -48,7 +48,7 @@ export const LocalProduct: Story = {
 
     await userEvent.click(selectInput);
     expect(await canvas.findByText('Local product')).toBeVisible();
-    expect(await canvas.findByText('Open Product product')).toBeVisible();
+    expect(await canvas.findByText('External product')).toBeVisible();
 
     await userEvent.selectOptions(
       selectInput,
@@ -67,14 +67,14 @@ export const LocalProduct: Story = {
   },
 };
 
-export const OpenProductProduct: Story = {
+export const ExternalProduct: Story = {
   play: async ({canvasElement, args}) => {
     const canvas = within(canvasElement);
     const selectInput = await canvas.findByRole('combobox', {name: 'Product'});
 
     await userEvent.click(selectInput);
     expect(await canvas.findByText('Local product')).toBeVisible();
-    expect(await canvas.findByText('Open Product product')).toBeVisible();
+    expect(await canvas.findByText('External product')).toBeVisible();
 
     await userEvent.selectOptions(
       selectInput,

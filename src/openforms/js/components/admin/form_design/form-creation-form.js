@@ -5,7 +5,7 @@ import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
 import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
-import React, {useCallback, useContext} from 'react';
+import {useCallback, useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 import useAsync from 'react-use/esm/useAsync';
@@ -1452,7 +1452,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 onChange={onFieldChange}
               />
               <PriceLogic
-                isOpenProduct={!!state.form.product?.producttype}
+                isExternalProduct={state.form.product?.productSource != 'local'}
                 variableKey={state.form.priceVariableKey}
                 onFieldChange={onFieldChange}
               />
