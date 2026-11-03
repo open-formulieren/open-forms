@@ -55,7 +55,7 @@ class Product(models.Model):
     )
 
     #
-    # Open Product related fields
+    # External product related fields
     #
     producttype_uuid = models.UUIDField(
         _("Producttype ID"),

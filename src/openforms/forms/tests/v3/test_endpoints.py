@@ -32,6 +32,7 @@ from openforms.payments.contrib.worldline.tests.factories import (
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
+from openforms.products.constants import ProductSourceChoices
 from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
 from openforms.utils.tests.feature_flags import enable_feature_flag
@@ -5599,8 +5600,12 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
         self.assertEqual(error["name"], "priceVariableKey")
         self.assertEqual(error["code"], "invalid")
 
-    def test_price_logic_variable_not_supported_using_open_product(self):
-        product = ProductFactory.create(producttype=uuid4(), price=None)
+    def test_price_logic_variable_not_supported_using_external_product(self):
+        product = ProductFactory.create(
+            product_source=ProductSourceChoices.open_product,
+            producttype_uuid=uuid4(),
+            price=None,
+        )
         form_definition_uuid = uuid4()
         url = reverse(
             "api:v3:form-detail",
@@ -5667,7 +5672,7 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
         self.assertEqual(error["code"], "invalid")
         self.assertEqual(
             error["reason"],
-            _("Price variable cannot be specified using Open Product products."),
+            _("Price variable cannot be specified using external products."),
         )
 
 

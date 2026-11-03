@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.products.constants import ProductSourceChoices
 
 from .factories import ProductFactory
 
@@ -96,11 +97,12 @@ class ProductRetrieveEndpointTests(APITestCase):
             },
         )
 
-    def test_open_product_product(self):
+    def test_external_product(self):
         product_uuid = uuid4()
         product = ProductFactory.create(
+            product_source=ProductSourceChoices.open_product,
             uuid=product_uuid,
-            producttype=str(product_uuid),
+            producttype_uuid=str(product_uuid),
             name="Open Product product",
             price=None,
         )

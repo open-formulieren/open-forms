@@ -21,6 +21,7 @@ from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.products.constants import ProductSourceChoices
 from openforms.products.tests.factories import ProductFactory
 
 from ..api.serializers import FormSerializer
@@ -385,6 +386,7 @@ class FormsAPITests(APITestCase):
     def test_retrieve_detailed_product_information(self):
         product_uuid = uuid.uuid4()
         product = ProductFactory.create(
+            product_source=ProductSourceChoices.open_product,
             uuid=product_uuid,
             producttype_uuid=str(product_uuid),
             name="Open Product product",

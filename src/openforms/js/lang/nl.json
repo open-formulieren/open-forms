@@ -1031,6 +1031,11 @@
     "description": "\"!=\" operator description",
     "originalDefault": "is not equal to"
   },
+  "FurkIg": {
+    "defaultMessage": "Only \"Use linked product price\" mode is allowed when an external product is selected.",
+    "description": "Warning message that informs the user can only select certain price logic modes when an external product is selected.",
+    "originalDefault": "Only \"Use linked product price\" mode is allowed when an external product is selected."
+  },
   "FyNxJn": {
     "defaultMessage": "Tekst",
     "description": "Interpolation expression field label",
@@ -1587,11 +1592,6 @@
     "defaultMessage": "Compatibiliteitsinstellingen",
     "description": "Legacy options fieldset title",
     "originalDefault": "Legacy options"
-  },
-  "OAzUo1": {
-    "defaultMessage": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected.",
-    "description": "Warning message that informs the user can only select certain price logic modes when a Open Product product is selected.",
-    "originalDefault": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
   },
   "OB48En": {
     "defaultMessage": "Design token waarden",

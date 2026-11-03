@@ -9,7 +9,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
     producttype = serializers.UUIDField(
         source="producttype_uuid",
         label=_("Producttype ID"),
-        help_text=_("Open Product producttype UUID."),
+        help_text=_("External producttype UUID."),
         allow_null=True,
     )
 

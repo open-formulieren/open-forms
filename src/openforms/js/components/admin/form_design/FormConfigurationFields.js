@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -9,10 +8,10 @@ import {
   Checkbox,
   DateTimeInput,
   ImageUpload,
+  Radio,
   TextArea,
   TextInput,
 } from 'components/admin/forms/Inputs';
-import {Radio} from 'components/admin/forms/Inputs';
 import RadioList from 'components/admin/forms/RadioList';
 import Select from 'components/admin/forms/Select';
 import {WarningIcon} from 'components/admin/icons';

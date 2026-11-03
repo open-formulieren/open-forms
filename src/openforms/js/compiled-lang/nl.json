@@ -2934,6 +2934,12 @@
       "value": "Grootte van de kolommen"
     }
   ],
+  "FurkIg": [
+    {
+      "type": 0,
+      "value": "Only \"Use linked product price\" mode is allowed when an external product is selected."
+    }
+  ],
   "FyNxJn": [
     {
       "type": 0,
@@ -4174,12 +4180,6 @@
     {
       "type": 0,
       "value": "Compatibiliteitsinstellingen"
-    }
-  ],
-  "OAzUo1": [
-    {
-      "type": 0,
-      "value": "Only \"Use linked product price\" mode is allowed when a Open Product product is selected."
     }
   ],
   "OB48En": [

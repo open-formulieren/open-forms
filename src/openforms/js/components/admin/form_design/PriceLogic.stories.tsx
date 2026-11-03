@@ -14,7 +14,7 @@ export default {
   args: {
     variableKey: '',
     onFieldChange: fn(),
-    isOpenProduct: false,
+    isExternalProduct: false,
   },
 } satisfies Meta<typeof PriceLogic>;
 
@@ -29,9 +29,9 @@ export const LocalProduct: Story = {
   },
 };
 
-export const OpenProductProduct: Story = {
+export const ExternalProduct: Story = {
   args: {
-    isOpenProduct: true,
+    isExternalProduct: true,
   },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -45,7 +45,7 @@ export const OpenProductProduct: Story = {
     // the .not.toBeVisible usage.
     expect(
       await canvas.findByText(
-        'Only "Use linked product price" mode is allowed when a Open Product product is selected.'
+        'Only "Use linked product price" mode is allowed when an external product is selected.'
       )
     ).not.toBeVisible();
   },
