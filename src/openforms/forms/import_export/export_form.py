@@ -1,21 +1,19 @@
-import json
-import zipfile
 from collections.abc import Mapping
-from typing import Any
+from os import PathLike
 
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.http.response import HttpResponseBase
-from django.utils import timezone
 
+import msgspec
 from rest_framework.test import APIRequestFactory
+from tablib import Dataset
 
 from openforms.variables.constants import FormVariableSources
 
 from ..models import Form, FormLogic, FormStep
-from .constants import EXPORT_META_KEY
+from .constants import AdditionalFormConfigurationOptions
 from .datastructures import FormExportOptions
-from .export_resources import get_additional_form_configuration_data
+from .resources import ADDITIONAL_FORM_CONFIGURATION_RESOURCES
 from .serializers import (
     FormDefinitionExportSerializer,
     FormExportSerializer,
@@ -23,6 +21,7 @@ from .serializers import (
     FormStepExportSerializer,
     FormVariableExportSerializer,
 )
+from .structs import Artifact
 
 
 def _get_mock_request():
@@ -39,21 +38,20 @@ def _get_mock_request():
 def export_form(
     form_id: int,
     export_options: FormExportOptions,
-    archive_name: str | None = None,
+    archive_name: str | PathLike[str] | None = None,
     response: HttpResponseBase | None = None,
 ):
-    resources = form_to_json(form_id, export_options)
-
+    artifact = get_export_artifact(form_id, export_options)
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
-
-    with zipfile.ZipFile(outfile, "w") as zip_file:  # pyright: ignore[reportArgumentType, reportCallIssue]
-        for name, data in resources.items():
-            zip_file.writestr(f"{name}.json", data)
+    artifact.write_zip(target=outfile)  # pyright: ignore[reportArgumentType]
     return outfile
 
 
-def form_to_json(form_id: int, export_options: FormExportOptions) -> Mapping[str, str]:
+def get_export_artifact(form_id: int, export_options: FormExportOptions) -> Artifact:
+    """
+    Prepare a single form export artifact.
+    """
     form = Form.objects.get(pk=form_id)
     form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
         "form_definition"
@@ -90,25 +88,54 @@ def form_to_json(form_id: int, export_options: FormExportOptions) -> Mapping[str
         instance=form_variables, many=True, context=context
     ).data
 
-    resources = {
-        "forms": to_json(forms),
-        "formSteps": to_json(form_steps),
-        "formDefinitions": to_json(form_definitions),
-        "formLogic": to_json(form_logic),
-        "formVariables": to_json(form_variables),
-        # Include additional configuration data in the export resources, based on the form.
-        **get_additional_form_configuration_data(form, export_options),
-        EXPORT_META_KEY: to_json(
-            {
-                "of_release": settings.RELEASE,
-                "of_git_sha": settings.GIT_SHA,
-                "created": timezone.now().isoformat(),
-            }
+    additional_form_configuration_data = get_additional_form_configuration_data(
+        form, export_options
+    )
+    return Artifact(
+        forms=list(forms),
+        form_steps=list(form_steps),
+        form_definitions=list(form_definitions),
+        form_logic=list(form_logic),
+        form_variables=list(form_variables),
+        product=additional_form_configuration_data.get(
+            AdditionalFormConfigurationOptions.product,
+            msgspec.UNSET,
         ),
+        wms_tile_layers=additional_form_configuration_data.get(
+            AdditionalFormConfigurationOptions.wms_tile_layers,
+            msgspec.UNSET,
+        ),
+        wmts_tile_layers=additional_form_configuration_data.get(
+            AdditionalFormConfigurationOptions.wmts_tile_layers,
+            msgspec.UNSET,
+        ),
+        yivi_attribute_groups=additional_form_configuration_data.get(
+            AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            msgspec.UNSET,
+        ),
+    )
+
+
+def get_additional_form_configuration_data(
+    form: Form, export_options: FormExportOptions
+) -> Mapping[AdditionalFormConfigurationOptions, Dataset]:
+    """
+    Create a dictionary of additional form configuration data for the given form.
+
+    The keys are the additional export resource option enums, and the values are the
+    datasets representing the resource data.
+    """
+    options_to_include = set(export_options.additional_form_configuration)
+    if unknown_options := options_to_include - set(
+        ADDITIONAL_FORM_CONFIGURATION_RESOURCES
+    ):
+        raise ValueError(
+            f"Invalid additional form configuration option(s): {unknown_options}"
+        )
+    additional_data: dict[AdditionalFormConfigurationOptions, Dataset] = {
+        option: ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option][0]().export_for_form(
+            form
+        )
+        for option in options_to_include
     }
-
-    return resources
-
-
-def to_json(obj: Any) -> str:
-    return json.dumps(obj, cls=DjangoJSONEncoder)
+    return additional_data
