@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - nl
+    method: GET
+    uri: http://localhost:8006/producttypen/api/v1/producttypen/204db6ec-277b-46d9-95e4-d2f8bf35d7b5
+  response:
+    body:
+      string: '{"type":"http://localhost:8006/ref/fouten/NotFound/","code":"not_found","title":"Niet
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:dcf264c5-f2c7-4b3b-b437-1afb544b6b0c"}'
+    headers:
+      API-version:
+      - 1.7.0
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Content-Language:
+      - nl
+      Content-Length:
+      - '195'
+      Content-Security-Policy:
+      - 'img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; script-src ''self'' ''unsafe-inline''; worker-src ''self''
+        blob:; font-src ''self'' fonts.gstatic.com; form-action ''self''; object-src
+        ''none''; base-uri ''self''; default-src ''self''; frame-ancestors ''none'';
+        frame-src ''self'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept-Language, origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 404
+      message: Not Found
+version: 1

@@ -1,7 +1,7 @@
 import json
 from decimal import Decimal
 from unittest.mock import patch
-from uuid import uuid4
+from uuid import UUID
 
 from django.core.cache import cache
 from django.test import override_settings
@@ -12,6 +12,7 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 from openproduct_client.structs.base import PaginatedResponseBody
 from openproduct_client.structs.product_type import ContentLabel
+from zgw_consumers.models import Service
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -115,12 +116,18 @@ class ProductConfigurationAdminTests(OFVCRMixin, WebTest):
 
 
 @disable_admin_mfa()
-class ProductValidationAdminTests(WebTest):
+class ProductValidationAdminTests(OFVCRMixin, WebTest):
     @classmethod
-    def setUpTestData(cls) -> None:
+    def setUpTestData(cls):
         super().setUpTestData()
 
+        cls.addClassCleanup(ProductConfiguration.clear_cache)
+
         cls.user = UserFactory.create(is_superuser=True, is_staff=True)
+        cls.opt_service = OpenProductServiceFactory.create(for_test_docker_compose=True)
+        cls.config = ProductConfiguration.get_solo()
+        cls.config.open_product_service = cls.opt_service
+        cls.config.save()
 
     def test_create_external_product(self):
         response = self.app.get(
@@ -128,7 +135,7 @@ class ProductValidationAdminTests(WebTest):
             user=self.user,
         )
 
-        product_uuid = uuid4()
+        product_uuid = UUID("9903945d-b639-49da-85ed-7305817f47ad")
         form = response.forms["product_form"]
         form["product_source"] = ProductSourceChoices.open_product
         form["name"] = ""
@@ -142,12 +149,83 @@ class ProductValidationAdminTests(WebTest):
             fetch_redirect_response=False,
         )
 
-        product = Product.objects.get()
+        product = Product.objects.last()
+
+        assert product is not None
 
         self.assertEqual(product.uuid, product_uuid)
         self.assertEqual(product.producttype_uuid, product_uuid)
-        self.assertEqual(product.name, "")  # TODO: retrieve this from Open Product
+        self.assertEqual(product.name, "Parkeervergunning")
         self.assertIsNone(product.price, None)  # TODO: retrieve this from Open Product
+
+    def test_create_external_product_with_invalid_producttype(self):
+        response = self.app.get(
+            reverse("admin:products_product_add"),
+            user=self.user,
+        )
+
+        product_uuid = UUID("204db6ec-277b-46d9-95e4-d2f8bf35d7b5")
+        form = response.forms["product_form"]
+        form["product_source"] = ProductSourceChoices.open_product
+        form["name"] = ""
+        form["price"] = ""
+        form["producttype_uuid"] = str(product_uuid)
+        form_response = form.submit()
+
+        self.assertEqual(200, form_response.status_code)
+        self.assertContains(
+            form_response,  # pyright: ignore[reportArgumentType]
+            _("Invalid product type ID."),
+            html=True,
+        )
+
+    def test_api_not_called_when_there_are_already_errors(self):
+        response = self.app.get(
+            reverse("admin:products_product_add"),
+            user=self.user,
+        )
+
+        product_uuid = UUID("9903945d-b639-49da-85ed-7305817f47ad")
+        form = response.forms["product_form"]
+        form["product_source"] = ProductSourceChoices.local
+        form["name"] = ""
+        form["price"] = ""
+        form["producttype_uuid"] = str(product_uuid)
+        form.submit()
+
+        self.assertEqual(self.cassette.requests, [])
+
+    def test_exception_other_than_404_is_raised_for_producttype(self):
+        service = Service.objects.get()
+        service.header_value = "wrong"
+        service.save()
+
+        self.config.open_product_service = service  # pyright: ignore[reportAttributeAccessIssue]
+        self.config.save()
+
+        response = self.app.get(
+            reverse("admin:products_product_add"),
+            user=self.user,
+        )
+
+        product_uuid = UUID("5d42a943-065a-46e7-8f17-54a5edbc88eb")
+        form = response.forms["product_form"]
+        form["product_source"] = ProductSourceChoices.open_product
+        form["name"] = ""
+        form["price"] = ""
+        form["producttype_uuid"] = str(product_uuid)
+
+        form_response = form.submit()
+
+        self.assertEqual(200, form_response.status_code)
+        self.assertContains(
+            form_response,  # pyright: ignore[reportArgumentType]
+            _(
+                "There was an unknown problem retrieving the producttype from Open "
+                "Product. Please check the service configuration."
+            ),
+            html=True,
+        )
 
     def test_create_local_product(self):
         response = self.app.get(
@@ -168,9 +246,37 @@ class ProductValidationAdminTests(WebTest):
             fetch_redirect_response=False,
         )
 
-        product = Product.objects.get()
+        product = Product.objects.last()
+
+        assert product is not None
 
         self.assertEqual(product.name, "Test product")
+        self.assertEqual(product.price, Decimal(10))
+        self.assertIsNone(product.producttype_uuid)
+
+    def test_update_local_product(self):
+        product = ProductFactory.create(name="Product")
+        response = self.app.get(
+            reverse("admin:products_product_change", kwargs={"object_id": product.pk}),
+            user=self.user,
+        )
+
+        form = response.forms["product_form"]
+        form["name"] = "Updated product"
+        form["price"] = "10"
+        form_response = form.submit()
+
+        self.assertRedirects(
+            form_response,  # pyright: ignore[reportArgumentType]
+            reverse("admin:products_product_changelist"),
+            fetch_redirect_response=False,
+        )
+
+        product = Product.objects.last()
+
+        assert product is not None
+
+        self.assertEqual(product.name, "Updated product")
         self.assertEqual(product.price, Decimal(10))
         self.assertIsNone(product.producttype_uuid)
 
@@ -184,7 +290,7 @@ class ProductValidationAdminTests(WebTest):
         form["product_source"] = ProductSourceChoices.local
         form["name"] = "Test product"
         form["price"] = "10"
-        form["producttype_uuid"] = uuid4()
+        form["producttype_uuid"] = UUID("9903945d-b639-49da-85ed-7305817f47ad")
         form_response = form.submit()
 
         self.assertEqual(200, form_response.status_code)
@@ -244,7 +350,7 @@ class ProductValidationAdminTests(WebTest):
         form["product_source"] = ProductSourceChoices.open_product
         form["name"] = ""
         form["price"] = 10
-        form["producttype_uuid"] = str(uuid4())
+        form["producttype_uuid"] = "9903945d-b639-49da-85ed-7305817f47ad"
         form_response = form.submit()
 
         self.assertEqual(200, form_response.status_code)
@@ -267,7 +373,7 @@ class ProductValidationAdminTests(WebTest):
         form["product_source"] = ProductSourceChoices.open_product
         form["name"] = "I should not be filled in"
         form["price"] = ""
-        form["producttype_uuid"] = str(uuid4())
+        form["producttype_uuid"] = "9903945d-b639-49da-85ed-7305817f47ad"
         form_response = form.submit()
 
         self.assertEqual(200, form_response.status_code)
@@ -317,7 +423,7 @@ class ProductValidationAdminTests(WebTest):
     def test_read_only_fields_in_external_product(self):
         product = ProductFactory.create(
             product_source=ProductSourceChoices.open_product,
-            producttype_uuid=uuid4(),
+            producttype_uuid=UUID("9903945d-b639-49da-85ed-7305817f47ad"),
             price=None,
         )
 
@@ -336,7 +442,7 @@ class ProductValidationAdminTests(WebTest):
     def test_changelist_shows_checkmark_for_external_product(self):
         ProductFactory.create(
             product_source=ProductSourceChoices.open_product,
-            producttype_uuid=uuid4(),
+            producttype_uuid=UUID("9903945d-b639-49da-85ed-7305817f47ad"),
             price=None,
         )
 
@@ -351,7 +457,7 @@ class ProductValidationAdminTests(WebTest):
     def test_producttype_uuid_filter(self):
         external_product = ProductFactory.create(
             product_source=ProductSourceChoices.open_product,
-            producttype_uuid=uuid4(),
+            producttype_uuid=UUID("9903945d-b639-49da-85ed-7305817f47ad"),
             price=None,
             name="An External product",
         )

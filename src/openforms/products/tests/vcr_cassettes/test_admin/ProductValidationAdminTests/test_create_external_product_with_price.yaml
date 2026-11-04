@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - nl
+    method: GET
+    uri: http://localhost:8006/producttypen/api/v1/producttypen/9903945d-b639-49da-85ed-7305817f47ad
+  response:
+    body:
+      string: '{"uuid":"9903945d-b639-49da-85ed-7305817f47ad","uniforme_product_naam":"parkeervergunning","doelgroep":"interne_organisatie","themas":[{"uuid":"ce3132cc-1c8f-4476-9ea6-1ff93e0ea9e4","naam":"Parkeren","beschrijving":"#
+        Parkeren\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing elit\\.
+        Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque
+        facilisis bibendum felis et mollis\\. Mauris at augue ligula\\. Mauris viverra
+        tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\.
+        Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed
+        scelerisque volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\,
+        non rhoncus nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\,
+        sollicitudin ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate
+        eu\\. Quisque sollicitudin ex in leo fermentum aliquet\\.","gepubliceerd":false,"aanmaak_datum":"2025-04-11T17:53:55.104000+02:00","update_datum":"2025-05-06T16:04:18.684000+02:00","hoofd_thema":"cfac32d8-9ced-4b90-aa5c-46ea1cbfe04f"}],"locaties":[{"uuid":"8d06b015-da58-4f57-a6ca-98d3d8d5c588","naam":"Maykin","email":"","telefoonnummer":"1234","straat":"Kingsfordweg","huisnummer":"151","postcode":"1043
+        GR","stad":"Amsterdam"}],"organisaties":[{"uuid":"c07689b0-f853-484d-bb91-77af81435414","naam":"Maykin","code":"","email":"info@maykin.nl","telefoonnummer":"020
+        753 0","straat":"Kingsfordweg","huisnummer":"151","postcode":"1043 GR","stad":"Amsterdam"}],"eigenaar":null,"contacten":[{"uuid":"cf2b1d24-2985-4f88-a2f8-c6c0f8d5481f","organisatie":{"uuid":"c07689b0-f853-484d-bb91-77af81435414","naam":"Maykin","code":"","email":"info@maykin.nl","telefoonnummer":"020
+        753 0","straat":"Kingsfordweg","huisnummer":"151","postcode":"1043 GR","stad":"Amsterdam"},"naam":"Bob
+        de Vries","email":"bob@maykin.nl","telefoonnummer":"020 753 0","rol":"medewerker"}],"prijzen":[{"uuid":"d71a7ff5-32e4-4bb8-8293-44728ba60933","prijsopties":[],"prijsregels":[{"uuid":"7900dff8-4810-42f8-96cc-7d46e8ed6699","url":"https://gemeente.flowable-dmn.nl/flowable-rest/dmn-api/dmn-repository/6ebc1a69-17c6-42b9-9b11-df0c8291ef10","beschrijving":"parkeervergunning
+        prijs dmn tabel","mapping":null}],"actief_vanaf":"2025-05-06"}],"links":[{"uuid":"e0657949-d24a-4caf-a5cb-f0be55eb939d","naam":"link
+        naar verdere informatie","url":"https://google.com"}],"acties":[{"uuid":"28989af6-bf76-404c-87d5-3490e96a6993","naam":"verlengen","url":"https://gemeente.flowable-dmn.nl/flowable-rest/dmn-api/dmn-repository/340961bc-212b-49ac-aeb2-9bc38d442ff3","mapping":null}],"bestanden":[],"naam":"Parkeervergunning","samenvatting":"#
+        Parkeervergunning\r\n\r\nLorem ipsum dolor sit amet\\, consectetur adipiscing
+        elit\\. Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\.
+        Pellentesque facilisis bibendum felis et mollis\\. Mauris at augue ligula\\.
+        Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\. Nam
+        et luctus sapien\\. Vestibulum feugiat vestibulum arcu\\, a eleifend purus
+        pharetra et\\. Sed scelerisque volutpat molestie\\. Mauris dapibus ex vel
+        turpis condimentum\\, non rhoncus nulla hendrerit\\. Mauris ipsum odio\\,
+        dapibus quis rutrum nec\\, sollicitudin ac sapien\\. Praesent gravida est
+        ipsum\\, a commodo risus vulputate eu\\. Quisque sollicitudin ex in leo fermentum
+        aliquet\\.","taal":"nl","externe_codes":[{"naam":"ISO","code":"123"}],"parameters":[{"naam":"doelgroep","waarde":"inwoners"}],"verbruiksobject_schema":{"naam":"parkeervergunning-verbruik","schema":{"type":"array","items":{"type":"object","required":["datum","parkeerplaats"],"properties":{"datum":{"type":"string"},"parkeerplaats":{"type":"string"}}}}},"dataobject_schema":{"naam":"parkeervergunning-data","schema":{"type":"object","title":"parkeervergunning-data","required":["kenteken"],"properties":{"kenteken":{"type":"string"}},"additionalProperties":false}},"gepubliceerd":false,"publicatie_start_datum":null,"publicatie_eind_datum":null,"aanmaak_datum":"2025-05-06T16:00:31.967000+02:00","update_datum":"2025-05-06T16:11:53.460000+02:00","code":"PARKVER","toegestane_statussen":["actief","verlopen"],"keywords":["auto"],"interne_opmerkingen":"Lorem
+        ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor
+        pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum
+        felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\,
+        eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum
+        feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque
+        volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus
+        nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin
+        ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\.
+        Quisque sollicitudin ex in leo fermentum aliquet\\.","zaaktypen":[{"urn":"urn:nld:maykin:openzaak:ztc:zaaktype:uuid:81d4b529-5d7c-4ac9-b585-2f7dc260389b","url":null}],"verzoektypen":[],"processen":[]}'
+    headers:
+      API-version:
+      - 1.7.0
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Content-Language:
+      - nl
+      Content-Length:
+      - '5007'
+      Content-Security-Policy:
+      - 'img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; script-src ''self'' ''unsafe-inline''; worker-src ''self''
+        blob:; font-src ''self'' fonts.gstatic.com; form-action ''self''; object-src
+        ''none''; base-uri ''self''; default-src ''self''; frame-ancestors ''none'';
+        frame-src ''self'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept-Language, origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1
