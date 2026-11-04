@@ -89,7 +89,7 @@ defusedxml==0.7.1
     # via -r requirements/base.in
 diff-match-patch==20241021
     # via django-import-export
-django==5.2.18
+django==5.2.19
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -503,7 +503,7 @@ protobuf==6.33.5
     #   opentelemetry-proto
 psycopg==3.3.3
     # via -r requirements/base.in
-pyasn1==0.6.4
+pyasn1==0.6.5
     # via webauthn
 pycountry==26.2.16
     # via schwifty
