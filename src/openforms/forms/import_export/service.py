@@ -11,7 +11,7 @@ from .constants import (
     FormConfigurationOptions,
 )
 from .datastructures import FormExportOptions, FormImportOptions
-from .export_form import export_form, form_to_json
+from .export_form import export_form, get_export_artifact
 from .import_form import import_form, import_form_data
 from .typing import FormExportOptionsData, FormImportOptionsData
 
@@ -24,7 +24,7 @@ __all__ = [
     "FormImportOptions",
     "FormImportOptionsData",
     "export_form",
-    "form_to_json",
+    "get_export_artifact",
     "import_form",
     "import_form_data",
 ]
