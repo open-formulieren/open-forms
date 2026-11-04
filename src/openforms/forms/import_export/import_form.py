@@ -1,15 +1,16 @@
-import json
-import zipfile
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from pathlib import Path
-from typing import Any, Required, TypedDict
+from typing import Literal, Required, TypedDict, assert_never
+from uuid import UUID
 
 from django.conf import settings
 from django.db import transaction
 from django.http.request import HttpRequest
 from django.utils.translation import override
 
-from rest_framework.exceptions import ValidationError
+import msgspec
+import tablib
+from import_export.results import RowResult
 from rest_framework.test import APIRequestFactory
 
 from openforms.formio.typing import FileComponent
@@ -28,8 +29,10 @@ from ..models import (
     Form,
     FormDefinition,
 )
+from .constants import AdditionalFormConfigurationOptions
 from .datastructures import FormImportOptions
-from .import_resources import import_additional_form_configuration_data
+from .exceptions import ImportError
+from .resources import ADDITIONAL_FORM_CONFIGURATION_RESOURCES
 from .serializers import (
     FormDefinitionImportSerializer,
     FormImportSerializer,
@@ -37,13 +40,7 @@ from .serializers import (
     FormStepImportSerializer,
     FormVariableImportSerializer,
 )
-from .typing import (
-    FormData,
-    FormDefinitionData,
-    FormLogicData,
-    FormStepData,
-    FormVariableData,
-)
+from .structs import Artifact, ShallowJSONObject
 from .uuid_map import UUIDMap
 
 EXPECTED_RESOURCES = (
@@ -76,121 +73,190 @@ def import_form(
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:
-    import_data: dict[str, str] = {}
-    with zipfile.ZipFile(import_file, "r") as zip_file:
-        for resource in EXPECTED_RESOURCES:
-            if f"{resource}.json" in zip_file.namelist():
-                import_data[resource] = zip_file.read(f"{resource}.json").decode()
+    artifact = Artifact.from_zip(import_file)
+    return import_form_data(artifact, import_options, existing_form_instance)
 
-    return import_form_data(import_data, import_options, existing_form_instance)
+
+class ImportContext(TypedDict):
+    request: HttpRequest
+    is_import: Literal[True]
+    import_options: FormImportOptions
+    restoring_previous_version: bool
+    form: Form | None
 
 
 @transaction.atomic
 @override(language=settings.LANGUAGE_CODE)
 def import_form_data(
-    import_data: dict[str, str],
+    artifact: Artifact,
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:
-    uuid_mapping = UUIDMap()
+    uuid_map = UUIDMap()
 
     request: HttpRequest = _get_mock_request()
     imported_form: Form | None = None
     restoring_previous_version: bool = existing_form_instance is not None
 
-    context = {
+    context: ImportContext = {
         "request": request,
         "is_import": True,
         "import_options": import_options,
         "restoring_previous_version": restoring_previous_version,
+        "form": existing_form_instance,
     }
 
     # Import additional data
-    import_additional_form_configuration_data(
-        resources=import_data,
+    _import_additional_form_configuration_data(
+        artifact=artifact,
         import_options=import_options,
-        uuid_mapping=uuid_mapping,
+        uuid_map=uuid_map,
         force_deep_compare=restoring_previous_version,
     )
 
-    if forms_data := import_data.get("forms"):
-        imported_form = _import_form_resource(
-            data=forms_data,
-            uuid_mapping=uuid_mapping,
-            context=context,
-            existing_form_instance=existing_form_instance,
-        )
+    if not len(forms_data := artifact.forms) == 1:
+        raise ImportError("The export artifact must contain exactly one form.")
+
+    imported_form = _import_form_resource(
+        data=forms_data,
+        uuid_map=uuid_map,
+        context=context,
+        existing_form_instance=existing_form_instance,
+    )
 
     assert imported_form is not None, "No form data has been imported"
-    context = {
-        **context,
-        "form": imported_form,
-    }
+    context["form"] = imported_form
 
-    if form_definitions_data := import_data.get("formDefinitions"):
-        form_definitions = _import_form_definition_resources(
-            data=form_definitions_data, uuid_mapping=uuid_mapping, context=context
-        )
-        move_file_registration_options(imported_form, form_definitions)
-
-    if form_steps_data := import_data.get("formSteps"):
-        _import_form_step_resources(
-            data=form_steps_data, uuid_mapping=uuid_mapping, context=context
-        )
-
-    if form_variables_data := import_data.get("formVariables"):
-        _import_form_variable_resources(
-            data=form_variables_data, uuid_mapping=uuid_mapping, context=context
-        )
-
-    if form_logic_data := import_data.get("formLogic"):
-        _import_form_logic_resources(
-            data=form_logic_data, uuid_mapping=uuid_mapping, context=context
-        )
-
+    form_definitions = _import_form_definition_resources(
+        data=artifact.form_definitions, uuid_map=uuid_map, context=context
+    )
+    move_file_registration_options(imported_form, form_definitions)
+    _import_form_step_resources(
+        data=artifact.form_steps, uuid_map=uuid_map, context=context
+    )
+    _import_form_variable_resources(
+        data=artifact.form_variables, uuid_map=uuid_map, context=context
+    )
+    _import_form_logic_resources(
+        data=artifact.form_logic, uuid_map=uuid_map, context=context
+    )
     return imported_form
 
 
+def _import_additional_form_configuration_data(
+    artifact: Artifact,
+    import_options: FormImportOptions,
+    uuid_map: UUIDMap,
+    force_deep_compare: bool = False,
+) -> None:
+    """
+    Import additional form configuration data from the given resources.
+
+    :param resources: A mapping of resource names to their JSON data.
+    :param import_options: The import options, specifying which additional form
+        configuration data to import.
+    :param uuid_map: The UUID mapping to update with the imported data.
+    :param force_deep_compare: Whether to force a deep comparison during import.
+    """
+    resources_to_import = set(import_options.additional_form_configuration)
+
+    for option in resources_to_import:
+        dataset: tablib.Dataset | msgspec.UnsetType
+        # look up the dataset
+        match option:
+            case AdditionalFormConfigurationOptions.product:
+                dataset = artifact.product
+            case AdditionalFormConfigurationOptions.wms_tile_layers:
+                dataset = artifact.wms_tile_layers
+            case AdditionalFormConfigurationOptions.wmts_tile_layers:
+                dataset = artifact.wmts_tile_layers
+            case AdditionalFormConfigurationOptions.yivi_attribute_groups:
+                dataset = artifact.yivi_attribute_groups
+            case _:  # pragma: no cover
+                assert_never(option)
+
+        # check if there was import data provided at all
+        if dataset is msgspec.UNSET:
+            continue
+
+        ResourceCls = ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option][0]
+
+        # Run the import data through the resource
+        resource = ResourceCls(force_deep_compare=force_deep_compare)
+        results = resource.import_data(dataset)
+
+        # Add the import results to the uuid mapping
+        for result in results:
+            identifier_field: str = resource.identifier_field
+            # If the old identifier is not present, then something is wrong with the
+            # import data
+            old_identifier: str | None = result.row_values.get(identifier_field)
+            assert old_identifier is not None
+
+            new_identifier: str | UUID | None = None
+            match result.import_type:
+                case RowResult.IMPORT_TYPE_NEW:
+                    new_identifier = getattr(result.instance, identifier_field)
+
+                case RowResult.IMPORT_TYPE_SKIP:
+                    new_identifier = getattr(result.original, identifier_field)
+
+                case RowResult.IMPORT_TYPE_INVALID:  # pragma: no cover
+                    assert result.validation_error is not None
+                    raise result.validation_error
+
+                case RowResult.IMPORT_TYPE_ERROR:
+                    exceptions = [error.error for error in result.errors]
+                    raise ExceptionGroup(
+                        f"Something went wrong importing the '{option}' data",
+                        exceptions,
+                    )
+
+                case _:  # pragma: no cover
+                    # If the import results in anything other than new, skip or an error,
+                    # then something is going wrong
+                    raise ValueError(f"Invalid import type: {result.import_type}")
+
+            assert new_identifier is not None
+            assert isinstance(new_identifier, (str, UUID))
+            uuid_map.add(old_identifier, new_identifier)
+
+
 def _import_form_resource(
-    data: str,
-    uuid_mapping: UUIDMap,
-    context: dict[str, Any],
+    data: Sequence[ShallowJSONObject],
+    uuid_map: UUIDMap,
+    context: ImportContext,
     existing_form_instance: Form | None,
 ) -> Form | None:
-    data = uuid_mapping.apply_to_data(data)
+    assert len(data) == 1, "expected exactly one form in the import data"
+    form_data = uuid_map.apply_to(data[0])
+    old_uuid: str | None = form_data.get("uuid")
 
-    forms = json.loads(data)
-    assert len(forms) == 1, "expected exactly one form in the import data"
-
-    form: FormData = forms[0]
-    old_uuid: str | None = form.get("uuid")
-
+    # only after deserializing do we know something for sure about the shape of the data
     deserialized = FormImportSerializer(
-        data=form, context=context, instance=existing_form_instance
+        data=form_data,
+        context=context,  # pyright: ignore[reportArgumentType]
+        instance=existing_form_instance,
     )
 
-    try:
-        deserialized.is_valid(raise_exception=True)
-        imported_form: Form = deserialized.save()
+    deserialized.is_valid(raise_exception=True)
+    imported_form: Form = deserialized.save()
 
-        if instance := deserialized.instance:
-            uuid_mapping.add(old_uuid, instance.uuid)
-    except ValidationError as e:
-        raise e
+    if instance := deserialized.instance:
+        uuid_map.add(old_uuid, instance.uuid)
 
     return imported_form
 
 
 def _import_form_definition_resources(
-    data: str,
-    uuid_mapping: UUIDMap,
-    context: dict[str, Any],
+    data: Sequence[ShallowJSONObject],
+    uuid_map: UUIDMap,
+    context: ImportContext,
 ) -> list[FormDefinition]:
     form_definitions: list[FormDefinition] = []
-    data = uuid_mapping.apply_to_data(data)
+    data = uuid_map.apply_to(data)
 
-    for entry in json.loads(data):
-        entry: FormDefinitionData = entry
+    for entry in data:
         old_uuid: str | None = entry.get("uuid")
 
         instance: FormDefinition | None = FormDefinition.objects.filter(
@@ -199,107 +265,97 @@ def _import_form_definition_resources(
         ).first()
 
         deserialized = FormDefinitionImportSerializer(
-            data=entry, context=context, instance=instance
+            data=entry,
+            context=context,  # pyright: ignore[reportArgumentType]
+            instance=instance,
         )
-
-        try:
-            deserialized.is_valid(raise_exception=True)
-            form_definitions.append(deserialized.save())
-
-            if instance := deserialized.instance:
-                uuid_mapping.add(old_uuid, instance.uuid)
-        except ValidationError as e:
-            raise e
+        deserialized.is_valid(raise_exception=True)
+        instance = deserialized.save()
+        assert instance is not None
+        form_definitions.append(instance)
+        uuid_map.add(old_uuid, instance.uuid)
 
     return form_definitions
 
 
 def _import_form_step_resources(
-    data: str,
-    uuid_mapping: UUIDMap,
-    context: dict[str, Any],
+    data: Sequence[ShallowJSONObject],
+    uuid_map: UUIDMap,
+    context: ImportContext,
 ) -> None:
-    data = uuid_mapping.apply_to_data(data)
+    data = uuid_map.apply_to(data)
 
-    for entry in json.loads(data):
-        entry: FormStepData = entry
+    for entry in data:
         old_uuid: str | None = entry.get("uuid")
 
-        deserialized = FormStepImportSerializer(data=entry, context=context)
+        deserialized = FormStepImportSerializer(
+            data=entry,
+            context=context,  # pyright: ignore[reportArgumentType]
+        )
 
-        try:
-            deserialized.is_valid(raise_exception=True)
-            deserialized.save()
-
-            if instance := deserialized.instance:
-                uuid_mapping.add(old_uuid, instance.uuid)
-        except ValidationError as e:
-            raise e
+        deserialized.is_valid(raise_exception=True)
+        instance = deserialized.save()
+        assert instance is not None
+        uuid_map.add(old_uuid, instance.uuid)
 
 
 def _import_form_variable_resources(
-    data: str, uuid_mapping: UUIDMap, context: dict[str, Any]
+    data: Sequence[ShallowJSONObject],
+    uuid_map: UUIDMap,
+    context: ImportContext,
 ) -> None:
-    data = uuid_mapping.apply_to_data(data)
+    data = uuid_map.apply_to(data)
+    assert isinstance(context["form"], Form)
+    form = context["form"]
 
-    for entry in json.loads(data):
-        entry: FormVariableData = entry
-        form: Form = context["form"]
-
-        deserialized = FormVariableImportSerializer(
-            data=entry,
-            context={
-                **context,
-                "forms": ({str(form.uuid): form}),
-                "form_definitions": {
-                    str(fd.uuid): fd
-                    for fd in FormDefinition.objects.filter(formstep__form=form)
-                },
+    deserialized = FormVariableImportSerializer(
+        many=True,
+        data=data,
+        context={
+            **context,
+            "forms": ({str(form.uuid): form}),
+            "form_definitions": {
+                str(fd.uuid): fd
+                for fd in FormDefinition.objects.filter(formstep__form=form)
             },
-        )
+        },
+    )
 
-        try:
-            deserialized.is_valid(raise_exception=True)
-            deserialized.save()
-        except ValidationError as e:
-            raise e
+    deserialized.is_valid(raise_exception=True)
+    deserialized.save()
 
 
 def _import_form_logic_resources(
-    data: str, uuid_mapping: UUIDMap, context: dict[str, Any]
+    data: Sequence[ShallowJSONObject],
+    uuid_map: UUIDMap,
+    context: ImportContext,
 ) -> None:
-    data = uuid_mapping.apply_to_data(data)
+    data = uuid_map.apply_to(data)
+    assert isinstance(context["form"], Form)
+    form = context["form"]
 
-    for entry in json.loads(data):
-        entry: FormLogicData = entry
+    updated_context = {
+        **context,
+        "forms": ({str(form.uuid): form}),
+        "form_definitions": {
+            str(fd.uuid): fd
+            for fd in FormDefinition.objects.filter(formstep__form=form)
+        },
+        "form_variables": FormVariableWrapper(form),
+        "form_steps": {
+            form_step.uuid: form_step
+            for form_step in form.formstep_set.all().order_by("order")
+        },
+    }
+
+    for entry in data:
         old_uuid: str | None = entry.get("uuid")
-        form: Form = context["form"]
+        deserialized = FormLogicImportSerializer(data=entry, context=updated_context)
 
-        deserialized = FormLogicImportSerializer(
-            data=entry,
-            context={
-                **context,
-                "forms": ({str(form.uuid): form}),
-                "form_definitions": {
-                    str(fd.uuid): fd
-                    for fd in FormDefinition.objects.filter(formstep__form=form)
-                },
-                "form_variables": FormVariableWrapper(form),
-                "form_steps": {
-                    form_step.uuid: form_step
-                    for form_step in form.formstep_set.all().order_by("order")
-                },
-            },
-        )
-
-        try:
-            deserialized.is_valid(raise_exception=True)
-            deserialized.save()
-
-            if instance := deserialized.instance:
-                uuid_mapping.add(old_uuid, instance.uuid)
-        except ValidationError as e:
-            raise e
+        deserialized.is_valid(raise_exception=True)
+        instance = deserialized.save()
+        assert instance is not None
+        uuid_map.add(old_uuid, instance.uuid)
 
 
 class FileComponentOptions(TypedDict, total=False):
