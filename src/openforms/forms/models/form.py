@@ -78,6 +78,7 @@ class Form(models.Model):
     Form model, containing a list of order form steps.
     """
 
+    id: int  # auto-assigned by Django, assumes the record was saved to the DB
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     name = models.CharField(_("name"), max_length=150)
     internal_name = models.CharField(
