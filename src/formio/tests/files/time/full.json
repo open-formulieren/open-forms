@@ -1,0 +1,68 @@
+{
+  "clearOnHide": true,
+  "conditional": {
+    "eq": "",
+    "show": null,
+    "when": ""
+  },
+  "defaultValue": null,
+  "description": "",
+  "disabled": false,
+  "errors": {
+    "required": "Geef tijd."
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "ezftxdl",
+  "isSensitiveData": false,
+  "key": "someTime",
+  "label": "Some time",
+  "multiple": false,
+  "openForms": {
+    "translations": {
+      "nl": {
+        "label": "foo",
+        "tooltip": "bar"
+      }
+    }
+  },
+  "registration": {
+    "attribute": ""
+  },
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "en": {
+      "maxTime": "Must be maximum XYZ",
+      "required": ""
+    },
+    "nl": {
+      "invalid_time": "Ongeldige tijd opgegeven",
+      "minTime": "Moet minimum XYZ zijn",
+      "required": ""
+    }
+  },
+  "type": "time",
+  "validate": {
+    "maxTime": "20:00",
+    "minTime": "10:00",
+    "plugins": [],
+    "required": false
+  }
+}
