@@ -5,7 +5,7 @@ Base building blocks for Formio component type definitions.
 from __future__ import annotations
 
 from abc import ABCMeta
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Iterator, Mapping, MutableMapping
 from typing import (
     Annotated,
     ClassVar,
@@ -22,6 +22,8 @@ from typing_extensions import TypeIs
 from .typing import ComponentValue
 
 logger = structlog.stdlib.get_logger(__name__)
+
+type AnyComponent = Component
 
 
 @dataclass_transform(kw_only_default=True)
@@ -116,6 +118,15 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
 
     def get_label(self) -> str:
         return getattr(self, "label", "") or self.key
+
+    def iter_children(self) -> Iterator[tuple[AnyComponent, str]]:
+        """
+        Return an iterator producing child components of this component.
+
+        The iterator value is a tuple of ``(component, namespace)`` so that edit grid
+        namespaces can be properly passed along.
+        """
+        yield from ()
 
     def _process_default_value(
         self,
