@@ -10,11 +10,15 @@ on:
     paths:
       - '**.scss'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.yaml'
   pull_request:
     paths:
       - '**.scss'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.yaml'
   workflow_dispatch:
 
