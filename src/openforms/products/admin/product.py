@@ -6,8 +6,11 @@ from django.db.models import Q
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
+import requests
+
 from openforms.typing import StrOrPromise
 
+from ..client import get_open_product_client
 from ..constants import ProductSourceChoices
 from ..models import Product
 
@@ -47,6 +50,7 @@ class ProductAdminForm(forms.ModelForm):
         product_type_uuid = cleaned_data.get("producttype_uuid")
         name = cleaned_data.get("name")
 
+        # no need to check during update because all the following fields are read only
         if not is_update:
             is_local = product_source == ProductSourceChoices.local
 
@@ -64,6 +68,29 @@ class ProductAdminForm(forms.ModelForm):
                 )
             if is_local and not name:
                 errors["name"].append(_("Name is required for local products."))
+
+            # try to restrict the API calls to only when it's really needed
+            if not errors and not is_local and product_type_uuid:
+                with get_open_product_client() as client:
+                    try:
+                        retrieved_product_type = client.product_type.retrieve(
+                            product_type_uuid
+                        )
+                        # populate the name field with the retrieved product type's name
+                        cleaned_data["name"] = retrieved_product_type.naam
+                    except requests.exceptions.HTTPError as exc:
+                        if exc.response is not None and exc.response.status_code == 404:
+                            errors["producttype_uuid"].append(
+                                _("Invalid product type ID.")
+                            )
+                        else:
+                            errors["producttype_uuid"].append(
+                                _(
+                                    "There was an unknown problem retrieving the "
+                                    "producttype from Open Product. Please check the "
+                                    "service configuration."
+                                )
+                            )
 
         if errors:
             raise forms.ValidationError(errors)
