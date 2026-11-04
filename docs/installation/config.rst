@@ -186,7 +186,10 @@ Logging, monitoring and Open Telemetry settings
 
 * ``LOG_REQUESTS``: When enabled, all incoming requests are logged. Enabled by default.
 
-* ``LOG_OUTGOING_REQUESTS``: When enabled, outgoing requests are logged.
+* ``LOG_OUTGOING_REQUESTS``: When enabled, outgoing requests are logged. Disabled by
+  default.
+
+  .. warning:: This should not be enabled in production.
   
 * ``LOG_OUTGOING_REQUESTS_DB_SAVE``: When enabled, logs are saved in the database. This 
   requires some attention as sensitive data may be stored in your database. We advise
