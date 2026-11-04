@@ -370,7 +370,9 @@ mozilla-django-oidc-db==1.1.1
 msal==1.37.0
     # via o365
 msgspec==0.22.0
-    # via open-product-client
+    # via
+    #   -r requirements/base.in
+    #   open-product-client
 networkx==3.6.1
     # via -r requirements/base.in
 nh3==0.3.3
