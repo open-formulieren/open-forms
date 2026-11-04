@@ -14,6 +14,7 @@ from .components import (
     AnyComponent,
     Checkbox,
     Children,
+    Content,
 )
 from .templating import get_template_trace_context
 
@@ -29,4 +30,6 @@ __all__ = [  # noqa: RUF022
     "BSN",
     "AddressNL",
     "Children",
+    # Layout
+    "Content",
 ]
