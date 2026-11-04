@@ -4048,7 +4048,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(
             exc.exception.message,
-            "Something went wrong importing the wmsTileLayers.json data",
+            "Something went wrong importing the 'wmsTileLayers' data",
         )
         assert len(exc.exception.exceptions) == 1
         self.assertEqual(
