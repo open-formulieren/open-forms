@@ -752,14 +752,13 @@ class Form(models.Model):
             form_version.uuid: form_version for form_version in form_versions
         }
         form_version = form_versions_mapping[form_version_uuid]
-        old_version_data = form_version.export_blob
 
         # when restoring a previous version, delete the current form configuration;
         # it will be replaced with the import data.
         self._delete_current_form_configuration()
 
         import_form_data(  # pyright: ignore[reportUnusedCallResult]
-            old_version_data,
+            form_version.get_import_artifact(),
             FormImportOptions(
                 form_configuration=list(FormConfigurationOptions),
                 additional_form_configuration=list(AdditionalFormConfigurationOptions),

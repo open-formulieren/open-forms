@@ -13,11 +13,13 @@ from .constants import (
 from .datastructures import FormExportOptions, FormImportOptions
 from .export_form import export_form, get_export_artifact
 from .import_form import import_form, import_form_data
+from .structs import Artifact
 from .typing import FormExportOptionsData, FormImportOptionsData
 
 __all__ = [
     "EXPORT_META_KEY",
     "AdditionalFormConfigurationOptions",
+    "Artifact",
     "FormConfigurationOptions",
     "FormExportOptions",
     "FormExportOptionsData",

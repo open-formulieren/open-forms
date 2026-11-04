@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid as _uuid
 from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,6 +13,9 @@ from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _
 
 from .form import Form
+
+if TYPE_CHECKING:
+    from ..import_export.service import Artifact
 
 User = get_user_model()
 
@@ -139,3 +143,8 @@ class FormVersion(models.Model):
     def __str__(self):
         timestamp = localize(localtime(self.created))
         return f"{self.form.admin_name} ({timestamp})"
+
+    def get_import_artifact(self) -> Artifact:
+        from ..import_export.service import Artifact
+
+        return Artifact.from_raw_data(self.export_blob, needs_decode=True)
