@@ -1,5 +1,5 @@
+from of_datetime_utils import get_today
 from openforms.typing import JSONObject
-from openforms.utils.date import get_today
 
 from .typing import Record
 
