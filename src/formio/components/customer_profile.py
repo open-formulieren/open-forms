@@ -1,0 +1,66 @@
+from __future__ import annotations
+
+from collections.abc import Callable, Sequence
+from typing import Literal
+
+import msgspec
+
+from ..base_component import (
+    BaseOpenFormsExtensions,
+    Component,
+    Conditional,
+    Errors,
+    FAQItem,
+    FormioStruct,
+    Registration,
+    TranslatedErrors,
+)
+from ..templating import TestWithTrace
+
+type CustomerProfileValidatorKeys = Literal["required"]
+
+type CustomerProfileExtensions = BaseOpenFormsExtensions[
+    Literal["label", "description", "tooltip"]
+]
+
+type DigitalAddressType = Literal["email", "phoneNumber"]
+
+
+class CustomerProfileValidate(FormioStruct):
+    required: bool = False
+
+
+class CustomerProfile(Component, tag="customerProfile"):
+    clear_on_hide: bool = True
+    conditional: Conditional | msgspec.UnsetType = msgspec.UNSET
+    confirmation_recipient: bool = False
+    description: str = ""
+    digital_address_types: Sequence[DigitalAddressType] = []
+    errors: Errors[CustomerProfileValidatorKeys] | msgspec.UnsetType = msgspec.UNSET
+    faq_items: Sequence[FAQItem] = []
+    hidden: bool = False
+    is_sensitive_data: bool = True
+    label: str
+    open_forms: CustomerProfileExtensions | msgspec.UnsetType = msgspec.UNSET
+    registration: Registration | msgspec.UnsetType = msgspec.UNSET
+    should_update_customer_data: bool = True
+    show_in_email: bool = False
+    show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
+    show_in_summary: bool = True
+    tooltip: str = ""
+    translated_errors: (
+        TranslatedErrors[CustomerProfileValidatorKeys] | msgspec.UnsetType
+    ) = msgspec.UNSET
+    validate: CustomerProfileValidate = msgspec.field(
+        default_factory=CustomerProfileValidate
+    )
+
+    def render_templates(self, do_render: Callable[[str], str]) -> None:
+        self.label = do_render(self.label)
+        self.description = do_render(self.description)
+        self.tooltip = do_render(self.tooltip)
+
+    def _test_templates(self, test_with_trace: TestWithTrace) -> None:
+        test_with_trace(self.label, attribute="label")
+        test_with_trace(self.description, attribute="description")
+        test_with_trace(self.tooltip, attribute="tooltip")
