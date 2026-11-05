@@ -4,12 +4,13 @@ from typing import Any
 from django.utils.translation import gettext as _
 
 from openforms.submissions.models import Submission
+from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 
-from ...service import format_value
+from ...rendering.nodes import ComponentNode
 from ...typing import Component
 from ...utils import iter_components
 from .mixins import BaseFormatterTestCase
@@ -26,10 +27,15 @@ def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
     printable_data: list[tuple[str, Any]] = []
     state = submission.variables_state
     data = state.get_data()
+    renderer = Renderer(submission, mode=RenderModes.summary, as_html=False)
 
     for component in filter_printable(submission.form.iter_components(recursive=True)):
+        component_node = ComponentNode.build_node(
+            step_data=data, component=component, renderer=renderer
+        )
+
         key = component["key"]
-        value = format_value(component, data.get(key), as_html=False)
+        value = component_node.display_value
         printable_data.append((component.get("label", key), value))
 
     return printable_data
@@ -93,6 +99,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
             file_name="blank.doc",
             original_name="blank.doc",
             submission_step=submission_step,
+            _component_data_path="file",
         )
         self.assertComponentKeyExists(configuration, "fileUploadMulti")
         SubmissionFileAttachmentFactory.create(
@@ -100,12 +107,14 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
             file_name="blank.doc",
             original_name="blank.doc",
             submission_step=submission_step,
+            _component_data_path="fileUploadMulti",
         )
         SubmissionFileAttachmentFactory.create(
             form_key="fileUploadMulti",
             file_name="dummy.doc",
             original_name="dummy.doc",
             submission_step=submission_step,
+            _component_data_path="fileUploadMulti",
         )
 
         printable_data = _get_printable_data(submission)
