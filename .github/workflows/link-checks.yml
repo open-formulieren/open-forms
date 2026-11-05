@@ -10,7 +10,7 @@ jobs:
 
   setup:
     name: Set up the build variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       sdk-ref: ${{ steps.sdk-vars.outputs.sdk-ref }}
     steps:
@@ -28,7 +28,7 @@ jobs:
 
   docs:
     name: Build and check documentation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
 
     steps:
