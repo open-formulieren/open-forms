@@ -11,7 +11,6 @@ from django.utils.translation import override
 import msgspec
 import tablib
 from import_export.results import RowResult
-from rest_framework.test import APIRequestFactory
 
 from openforms.formio.typing import FileComponent
 from openforms.registrations.contrib.objects_api.constants import (
@@ -29,6 +28,7 @@ from ..models import (
     Form,
     FormDefinition,
 )
+from ._mock_request import get_mock_request as _get_mock_request
 from .constants import AdditionalFormConfigurationOptions
 from .datastructures import FormImportOptions
 from .exceptions import ImportError
@@ -54,17 +54,6 @@ EXPECTED_RESOURCES = (
     "wmtsTileLayers",
     "yiviAttributeGroups",
 )
-
-
-def _get_mock_request() -> HttpRequest:
-    factory = APIRequestFactory()
-    first_allowed_host = (
-        settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "testserver"
-    )
-    server_name = first_allowed_host if first_allowed_host != "*" else "testserver"
-    request = factory.get("/", SERVER_NAME=server_name)
-    request.is_mock_request = True  # pyright: ignore[reportAttributeAccessIssue]
-    return request
 
 
 @transaction.atomic

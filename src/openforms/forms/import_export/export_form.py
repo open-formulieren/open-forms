@@ -1,16 +1,15 @@
 from collections.abc import Mapping
 from os import PathLike
 
-from django.conf import settings
 from django.http.response import HttpResponseBase
 
 import msgspec
-from rest_framework.test import APIRequestFactory
 from tablib import Dataset
 
 from openforms.variables.constants import FormVariableSources
 
 from ..models import Form, FormLogic, FormStep
+from ._mock_request import get_mock_request as _get_mock_request
 from .constants import AdditionalFormConfigurationOptions
 from .datastructures import FormExportOptions
 from .resources import ADDITIONAL_FORM_CONFIGURATION_RESOURCES
@@ -22,17 +21,6 @@ from .serializers import (
     FormVariableExportSerializer,
 )
 from .structs import Artifact
-
-
-def _get_mock_request():
-    factory = APIRequestFactory()
-    first_allowed_host = (
-        settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "testserver"
-    )
-    server_name = first_allowed_host if first_allowed_host != "*" else "testserver"
-    request = factory.get("/", SERVER_NAME=server_name)
-    request.is_mock_request = True  # pyright: ignore[reportAttributeAccessIssue]
-    return request
 
 
 def export_form(
