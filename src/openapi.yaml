@@ -1479,9 +1479,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/FormAPIImportRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FormAPIImportRequest'
         required: true
       security:
       - tokenAuth: []
