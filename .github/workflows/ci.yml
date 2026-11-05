@@ -23,7 +23,7 @@ jobs:
 
   setup:
     name: Set up the build variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       # see https://github.com/orgs/community/discussions/26671
       image-name: ${{ steps.envars-to-outputs.outputs.image-name }}
@@ -50,7 +50,7 @@ jobs:
 
   tests:
     name: Run the Django test suite
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -118,7 +118,7 @@ jobs:
 
   tests-reverse:
     name: Run the Django test suite in reverse
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -167,7 +167,7 @@ jobs:
 
   i18n-check:
     name: Check i18n messages extracted
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -258,7 +258,7 @@ jobs:
 
   docs:
     name: Build and check documentation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -317,7 +317,7 @@ jobs:
       extensions: ${{ matrix.target.extensions }}
 
   image_scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Scan docker image
     needs:
       - setup
@@ -363,7 +363,7 @@ jobs:
     env:
       RUN_SETUP_CONFIG: "False"  # Disable running the setup_configuration
     name: Simulate upgrading instances
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         start:
@@ -427,7 +427,7 @@ jobs:
       # - oas
 
     name: Push Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' # Exclude PRs
 
     permissions:

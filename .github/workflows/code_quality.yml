@@ -14,7 +14,7 @@ on:
 jobs:
   ruff:
     name: Ruff - lint and check code formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -32,7 +32,7 @@ jobs:
 
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -78,7 +78,7 @@ jobs:
 
   dependencies:
     name: Lint dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -93,7 +93,7 @@ jobs:
 
   type-checking:
     name: Type checking (Pyright)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
