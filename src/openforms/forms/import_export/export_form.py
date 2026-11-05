@@ -29,19 +29,19 @@ def export_form(
     archive_name: str | PathLike[str] | None = None,
     response: HttpResponseBase | None = None,
 ):
-    artifact = get_export_artifact(form_id, export_options)
+    form = Form.objects.get(pk=form_id)
+    artifact = get_export_artifact(form, export_options)
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
     artifact.write_zip(target=outfile)  # pyright: ignore[reportArgumentType]
     return outfile
 
 
-def get_export_artifact(form_id: int, export_options: FormExportOptions) -> Artifact:
+def get_export_artifact(form: Form, export_options: FormExportOptions) -> Artifact:
     """
     Prepare a single form export artifact.
     """
-    form = Form.objects.get(pk=form_id)
-    form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
+    form_steps = FormStep.objects.filter(form__pk=form.pk).select_related(
         "form_definition"
     )
     form_definitions = [form_step.form_definition for form_step in form_steps]

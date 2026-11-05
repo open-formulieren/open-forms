@@ -39,7 +39,7 @@ def get_version_export_blob(form: Form) -> Mapping[str, str]:
     )
 
     artifact = get_export_artifact(
-        form.id,
+        form,
         export_options=FormExportOptions(
             form_configuration=[
                 FormConfigurationOptions.registration_backends,
