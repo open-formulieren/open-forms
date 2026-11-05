@@ -168,7 +168,7 @@ def _import_additional_form_configuration_data(
         if dataset is msgspec.UNSET:
             continue
 
-        ResourceCls = ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option][0]
+        ResourceCls = ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option]
 
         # Run the import data through the resource
         resource = ResourceCls(force_deep_compare=force_deep_compare)

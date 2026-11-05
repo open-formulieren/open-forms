@@ -121,9 +121,7 @@ def get_additional_form_configuration_data(
             f"Invalid additional form configuration option(s): {unknown_options}"
         )
     additional_data: dict[AdditionalFormConfigurationOptions, Dataset] = {
-        option: ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option][0]().export_for_form(
-            form
-        )
+        option: ADDITIONAL_FORM_CONFIGURATION_RESOURCES[option]().export_for_form(form)
         for option in options_to_include
     }
     return additional_data
