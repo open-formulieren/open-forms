@@ -25,7 +25,7 @@ jobs:
 
   setup:
     name: Set up the build variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       # see https://github.com/orgs/community/discussions/26671
       image-name: ${{ steps.envars-to-outputs.outputs.image-name }}
@@ -52,7 +52,7 @@ jobs:
 
   tests:
     name: Run the Django test suite
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     services:
       postgres:
@@ -140,7 +140,7 @@ jobs:
 
   tests-reverse:
     name: Run the Django test suite in reverse
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     services:
       postgres:
@@ -190,7 +190,7 @@ jobs:
 
   i18n-check:
     name: Check i18n messages extracted
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -209,7 +209,7 @@ jobs:
           locales: nl
 
   e2etests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: setup
 
     if: "${{ !( (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip: e2e]')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '[skip: e2e]')) ) }}"
@@ -281,7 +281,7 @@ jobs:
 
   docs:
     name: Build and check documentation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: setup
 
     steps:
@@ -340,7 +340,7 @@ jobs:
       extensions: ${{ matrix.target.extensions }}
 
   image_scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     name: Scan docker image
     needs:
       - setup
@@ -385,7 +385,7 @@ jobs:
     env:
       RUN_SETUP_CONFIG: "False"  # Disable running the setup_configuration
     name: Simulate upgrading instances
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         start:
@@ -427,7 +427,7 @@ jobs:
     uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@31eaea25acd18bb681fe0d01b2452c3dd8d299b9 # v7.0.0
     with:
       python-version: '3.12'
-      apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
+      apt-packages: 'libxml2-16 libxmlsec1-1 libxmlsec1-openssl1 gdal-bin'
       django-settings-module: openforms.conf.ci
       oas-generate-command: ./bin/generate_oas.sh
       schema-path: src/openapi.yaml
@@ -448,7 +448,7 @@ jobs:
       - oas
 
     name: Push Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: github.event_name == 'push' # Exclude PRs
 
     permissions:

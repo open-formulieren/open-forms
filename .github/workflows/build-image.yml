@@ -43,7 +43,7 @@ permissions: {}
 jobs:
   image_build:
     name: Build image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
