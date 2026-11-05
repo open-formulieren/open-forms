@@ -10,7 +10,7 @@ permissions: {}
 
 jobs:
   update-trivy-db:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: oras-project/setup-oras@005458ad77f1c8facd38a094e4af2e69e5607ff4 # v2.0.2
       - name: Get current date

@@ -25,7 +25,7 @@ concurrency:
 jobs:
   storybook:
     name: Create storybook build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,7 +60,7 @@ jobs:
       pages: write
       id-token: write
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Exclude PRs
     needs: storybook
     steps:
@@ -73,7 +73,7 @@ jobs:
 
   chromatic:
     name: Chromatic (interaction & visual tests)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs:
       - storybook
 
