@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import re
 from abc import ABC, ABCMeta, abstractmethod
-from collections.abc import Mapping, Sequence
+from collections.abc import MutableMapping, Sequence
 from itertools import chain
 from typing import ClassVar, override
 from uuid import UUID, uuid4
@@ -22,6 +24,19 @@ from openforms.products.models import Product
 from ..models import Form
 from .constants import AdditionalFormConfigurationOptions
 
+ADDITIONAL_FORM_CONFIGURATION_RESOURCES: MutableMapping[
+    AdditionalFormConfigurationOptions,
+    type[BaseResource],
+] = {}
+"""
+Additional form configuration resources for import/export.
+
+1. The key is the additional form configuration option.
+2. The value is the resource class to use for import/export.
+
+It's populated through :meth:`BaseResource.__init_subclass__`.
+"""
+
 
 class CombinedResourceMeta(type(ModelResource), ABCMeta):
     pass
@@ -31,6 +46,8 @@ class BaseResource(ABC, ModelResource, metaclass=CombinedResourceMeta):
     """
     The base resource for all import/export resources.
     """
+
+    configuration_option: ClassVar[AdditionalFormConfigurationOptions]
 
     deep_comparison_fields: ClassVar[Sequence[str]] = ()
     """
@@ -55,6 +72,11 @@ class BaseResource(ABC, ModelResource, metaclass=CombinedResourceMeta):
     def __init__(self, force_deep_compare: bool = False, *args, **kwargs):
         self.force_deep_compare = force_deep_compare
         super().__init__(*args, **kwargs)
+
+    def __init_subclass__(cls) -> None:
+        super().__init_subclass__()
+
+        ADDITIONAL_FORM_CONFIGURATION_RESOURCES[cls.configuration_option] = cls
 
     @abstractmethod
     def export_for_form(self, form: Form) -> Dataset:
@@ -151,6 +173,7 @@ class BaseResource(ABC, ModelResource, metaclass=CombinedResourceMeta):
 
 
 class ProductResource(BaseResource):
+    configuration_option = AdditionalFormConfigurationOptions.product
     deep_comparison_fields = ("name", "price", "information")
     identifier_field = "uuid"
 
@@ -174,6 +197,7 @@ class ProductResource(BaseResource):
 
 
 class WMSTileLayerResource(BaseResource):
+    configuration_option = AdditionalFormConfigurationOptions.wms_tile_layers
     deep_comparison_fields = ("name", "url")
     identifier_field = "uuid"
 
@@ -206,6 +230,7 @@ class WMSTileLayerResource(BaseResource):
 
 
 class WMTSTileLayerResource(BaseResource):
+    configuration_option = AdditionalFormConfigurationOptions.wmts_tile_layers
     deep_comparison_fields = ("label", "url")
     identifier_field = "identifier"
 
@@ -249,12 +274,13 @@ class WMTSTileLayerResource(BaseResource):
 
         while new_identifier in existing_identifiers:
             identifier_index += 1
-            new_identifier = f"{identifier_base}{str(identifier_index)}"
+            new_identifier = f"{identifier_base}{identifier_index}"
 
         return new_identifier
 
 
 class YiviAttributeGroupResource(BaseResource):
+    configuration_option = AdditionalFormConfigurationOptions.yivi_attribute_groups
     deep_comparison_fields = ("name", "description", "attributes")
     identifier_field = "uuid"
 
@@ -281,32 +307,3 @@ class YiviAttributeGroupResource(BaseResource):
 
     def generate_identifier(self, row: dict[str, object]) -> UUID:
         return uuid4()
-
-
-type ImportExportResourceConfig = tuple[type[BaseResource], str]
-
-
-ADDITIONAL_FORM_CONFIGURATION_RESOURCES: Mapping[
-    AdditionalFormConfigurationOptions,
-    ImportExportResourceConfig,
-] = {
-    AdditionalFormConfigurationOptions.product: (ProductResource, "product"),
-    AdditionalFormConfigurationOptions.wms_tile_layers: (
-        WMSTileLayerResource,
-        "wmsTileLayers",
-    ),
-    AdditionalFormConfigurationOptions.wmts_tile_layers: (
-        WMTSTileLayerResource,
-        "wmtsTileLayers",
-    ),
-    AdditionalFormConfigurationOptions.yivi_attribute_groups: (
-        YiviAttributeGroupResource,
-        "yiviAttributeGroups",
-    ),
-}
-"""
-Additional form configuration resources for import/export.
-
-1. The key is the additional form configuration option.
-2. The value is a tuple of (resource class, field name).
-"""
