@@ -175,7 +175,7 @@ class Artifact(msgspec.Struct, kw_only=True, rename="camel"):
 
     @overload
     def as_resources_mapping(
-        self, *, encode: Literal[False]
+        self, *, encode: Literal[False] = False
     ) -> Mapping[str, Sequence[JSONObject]]: ...
 
     def as_resources_mapping(
