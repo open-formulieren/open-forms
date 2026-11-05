@@ -1,16 +1,21 @@
 from django.test import TestCase, tag
 from django.urls import reverse
 
+from furl import furl
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.submissions.models import SubmissionFileAttachment
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.urls import build_absolute_uri
 
 COMPONENTS_1 = [
     # visible component, leaf node
@@ -544,6 +549,7 @@ class SubmissionSummaryRendererTests(TestCase):
         self.assertEqual(step_data[0]["name"], "Checkbox")
 
 
+@temp_private_root()
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_summary_page_endpoint(self):
         form = FormFactory.create()
@@ -622,7 +628,6 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
-    @temp_private_root()
     @tag("gh-6142")
     def test_summary_with_editgrid_items_that_have_conditional_visibility(self):
         submission = SubmissionFactory.from_components(
@@ -740,3 +745,56 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             self.assertIn("Tekstveld1", html)
             self.assertIn("Tekstveld2", html)
             self.assertIn("Tekstveld3", html)
+
+    @tag("gh-6888")
+    def test_summary_completed_with_file_upload_and_cosign_uses_file_attachments(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"type": "cosign", "key": "cosign"},
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "Upload",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+                "file": [SubmittedFileFactory.build()],
+            },
+            completed=True,
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            submission_variable__key="file",
+        )
+
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
+        attachment = SubmissionFileAttachment.objects.get()
+
+        self._add_submission_to_session(submission)
+
+        with self.subTest("summary endpoint data"):
+            url = reverse("api:submission-summary", kwargs={"uuid": submission.uuid})
+
+            response = self.client.get(url)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            summary_data = response.json()[0]["data"]
+
+            expected_download_path = reverse(
+                "submissions:attachment-download",
+                kwargs={"uuid": attachment.uuid},
+            )
+            expected_download_url = furl(
+                build_absolute_uri(expected_download_path)
+            ).add({"hash": attachment.content_hash})
+
+            # The summary item for the file upload component should use the attachment
+            # download link
+            upload_summary_item = summary_data[1]
+            self.assertEqual(upload_summary_item["name"], "Upload")
+            self.assertEqual(
+                upload_summary_item["value"][0]["url"], str(expected_download_url)
+            )
