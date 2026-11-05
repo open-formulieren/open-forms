@@ -42,7 +42,7 @@ with backwards compatibility shims, and to produce better error messages.
 """
 
 
-def _enc_hook(obj: Any) -> Any:
+def _enc_hook(obj: object) -> object:
     """
     Encode non-native msgspec types.
     """
@@ -60,7 +60,7 @@ def _enc_hook(obj: Any) -> Any:
 json_encoder = msgspec.json.Encoder(enc_hook=_enc_hook)
 
 
-def _dec_hook(type: type, obj: Any) -> Any:
+def _dec_hook(type: type, obj: object) -> object:
     """
     Decode JSON into non-native msgspec types.
     """
