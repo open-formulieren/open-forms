@@ -86,6 +86,7 @@
     "msw": "^2.6.5",
     "msw-storybook-addon": "^2.0.4",
     "patch-package": "^8.0.1",
+    "playwright": "^1.61.1",
     "prettier": "^3.3.0",
     "react-select-event": "^5.5.1",
     "sass": "^1.32.12",
