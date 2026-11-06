@@ -2969,6 +2969,12 @@
       "value": "Column sizes"
     }
   ],
+  "FurkIg": [
+    {
+      "type": 0,
+      "value": "Only \"Use linked product price\" mode is allowed when an external product is selected."
+    }
+  ],
   "FyNxJn": [
     {
       "type": 0,

@@ -32,6 +32,7 @@ from openforms.payments.contrib.worldline.tests.factories import (
 from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
+from openforms.products.constants import ProductSourceChoices
 from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
 from openforms.utils.tests.feature_flags import enable_feature_flag
@@ -5598,6 +5599,81 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
         error = invalid_params[0]
         self.assertEqual(error["name"], "priceVariableKey")
         self.assertEqual(error["code"], "invalid")
+
+    def test_price_logic_variable_not_supported_using_external_product(self):
+        product = ProductFactory.create(
+            product_source=ProductSourceChoices.open_product,
+            producttype_uuid=uuid4(),
+            price=None,
+        )
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "label": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "translations": {
+                "nl": {"name": "Create form"},
+                "en": {"name": "Create form"},
+            },
+            "priceVariableKey": "price",
+            "variables": [
+                {
+                    "name": "Price",
+                    "key": "price",
+                    "source": FormVariableSources.user_defined,
+                    "dataType": FormVariableDataTypes.float,
+                    "initialValue": 20,
+                }
+            ],
+            "product": str(product.uuid),
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        self.assertEqual(response_data["code"], "invalid")
+
+        self.assertEqual(len(invalid_params := response_data["invalidParams"]), 1)
+
+        error = invalid_params[0]
+        self.assertEqual(error["name"], "priceVariableKey")
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["reason"],
+            _("Price variable cannot be specified using external products."),
+        )
 
 
 class FormEndpointAccessTests(APITestCase):

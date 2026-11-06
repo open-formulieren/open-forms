@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import {useContext, useId, useState} from 'react';
 
 import {ValidationErrorContext} from './ValidationErrors';
+import type {ValidationErrorTuple} from './ValidationErrors';
 
-const checkHasErrors = (errors = [], fieldNames) => {
+const checkHasErrors = (errors: ValidationErrorTuple[] = [], fieldNames: string[]): boolean => {
   // no field names known -> we don't know what to check, so assume no errors inside
   if (!fieldNames.length) return false;
   // check the error keys against the fieldName list
@@ -19,7 +19,22 @@ const checkHasErrors = (errors = [], fieldNames) => {
   return false;
 };
 
-const Fieldset = ({
+interface FieldsetProps {
+  title?: React.ReactNode;
+  extraClassName?: string;
+  collapsible?: boolean;
+  initialCollapsed?: boolean;
+  children: React.ReactNode;
+  /**
+   * List of field names to monitor for validation errors.
+   *
+   * If validation errors are present for any of these fields, and the fieldset is in
+   * collapsed state -> ensure that the fieldset is initially opened.
+   */
+  fieldNames?: string[];
+}
+
+const Fieldset: React.FC<FieldsetProps> = ({
   title = '',
   children,
   extraClassName,
@@ -68,20 +83,6 @@ const Fieldset = ({
       )}
     </fieldset>
   );
-};
-
-Fieldset.propTypes = {
-  title: PropTypes.node,
-  children: PropTypes.node,
-  collapsible: PropTypes.bool,
-  initialCollapsed: PropTypes.bool,
-  /**
-   * List of field names to monitor for validation errors.
-   *
-   * If validation errors are present for any of these fields, and the fieldset is in
-   * collapsed state -> ensure that the fieldset is initially opened.
-   */
-  fieldNames: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Fieldset;

@@ -1,9 +1,12 @@
+from uuid import uuid4
+
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 
+from ..constants import ProductSourceChoices
 from .factories import ProductFactory
 
 
@@ -43,6 +46,8 @@ class ProductListEndpointTests(APITestCase):
                     "name": "sample",
                     "price": "10.00",
                     "information": "",
+                    "producttypeUuid": None,
+                    "productSource": ProductSourceChoices.local,
                 }
             ],
         )
@@ -89,5 +94,40 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "name": self.product.name,
                 "price": "15.00",
                 "information": "",
+                "producttypeUuid": None,
+                "productSource": ProductSourceChoices.local,
+            },
+        )
+
+    def test_external_product(self):
+        product_uuid = uuid4()
+        product = ProductFactory.create(
+            product_source=ProductSourceChoices.open_product,
+            uuid=product_uuid,
+            producttype_uuid=str(product_uuid),
+            name="Open Product product",
+            price=None,
+        )
+        product_url = reverse("api:product-detail", kwargs={"uuid": product_uuid})
+        user = StaffUserFactory.create()
+
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(
+            reverse("api:product-detail", kwargs={"uuid": product_uuid})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        self.assertEqual(
+            response_data,
+            {
+                "uuid": str(product_uuid),
+                "url": f"http://testserver{product_url}",
+                "name": product.name,
+                "price": None,
+                "information": "",
+                "producttypeUuid": str(product_uuid),
+                "productSource": ProductSourceChoices.open_product,
             },
         )

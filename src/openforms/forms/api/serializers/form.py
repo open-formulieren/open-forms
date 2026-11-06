@@ -200,6 +200,30 @@ class HelpDialogSerializer(serializers.Serializer):
         fields = ("content", "image")
 
 
+class ProductReferenceField(serializers.HyperlinkedRelatedField):
+    """
+    Custom field for the product.
+
+    We need to expose the ``product_source`` to the frontend so we have to manually
+    handle this. We receive the same structure so we have to also get the url from the
+    nested object and retrieve the product instance.
+    """
+
+    def to_representation(self, value):
+        return {
+            "url": super().to_representation(value),
+            "product_source": value.product_source,
+        }
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict):
+            data = data.get("url")
+        return super().to_internal_value(data)
+
+    def get_choices(self, cutoff=None):
+        return {}
+
+
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -251,14 +275,14 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the theme in the Open Forms API"),
     )
-    product = serializers.HyperlinkedRelatedField(
+    product = ProductReferenceField(
         label=_("product"),
+        help_text=_("Product related information inside an object."),
         queryset=Product.objects.all(),
         required=False,
         allow_null=True,
         view_name="api:product-detail",
         lookup_field="uuid",
-        help_text=_("URL to the product in the Open Forms API"),
     )
     payment_backend = serializers.ChoiceField(
         choices=[],
@@ -451,6 +475,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
         registration_backends = validated_data.pop("registration_backends", [])
         auth_backends = validated_data.pop("auth_backends", [])
+        product = validated_data.pop("product", None)
 
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -468,6 +493,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             FormAuthenticationBackend(form=instance, **backend)
             for backend in auth_backends
         )
+
+        # this is needed because this serializer is used for writing too by our new
+        # import-export functionality
+        if product:
+            instance.product = product
+            instance.save()
+
         return instance
 
     @transaction.atomic()
@@ -480,6 +512,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
         registration_backends = validated_data.pop("registration_backends", None)
         auth_backends = validated_data.pop("auth_backends", None)
+        product = validated_data.pop("product", None)
 
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -501,6 +534,12 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 FormAuthenticationBackend(form=instance, **backend_config)
                 for backend_config in auth_backends
             )
+
+        # this is needed because this serializer is used for writing too by our new
+        # import-export functionality
+        if product:
+            instance.product = product
+            instance.save()
 
         return instance
 
