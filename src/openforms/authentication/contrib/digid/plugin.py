@@ -106,3 +106,8 @@ class DigidAuthentication(BasePlugin[DigidOptions]):
     def logout(self, request: HttpRequest):
         if DIGID_AUTH_SESSION_KEY in request.session:
             del request.session[DIGID_AUTH_SESSION_KEY]
+
+    def get_vendor_hint(self, options: DigidOptions) -> str | None:
+        from digid_eherkenning.models import DigidConfiguration
+
+        return DigidConfiguration.get_solo().metadata_file_source or None

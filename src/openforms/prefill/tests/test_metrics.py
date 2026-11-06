@@ -52,10 +52,12 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
         }
 
-        self.assertEqual(result, {"demo": 2})
+        self.assertEqual(result["demo"][0], 2)
+        self.assertEqual(result["demo"][1], {})
 
     def test_includes_user_defined_variables(self):
         FormVariableFactory.create(
@@ -75,7 +77,49 @@ class ReportPluginUsageTests(TestCase):
         )
 
         result = {
-            plugin.identifier: count for plugin, count in register.report_plugin_usage()
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
         }
 
-        self.assertEqual(result, {"demo": 1})
+        self.assertEqual(result["demo"][0], 1)
+        self.assertEqual(result["demo"][1], {})
+
+    def test_unregistered_prefill_plugin_is_ignored(self):
+        FormVariableFactory.create(
+            user_defined=True,
+            prefill_plugin="non_existent_plugin",
+            prefill_attribute="random_number",
+        )
+
+        result = {
+            plugin.identifier: (count, tags)
+            for plugin, count, tags in register.report_plugin_usage()
+        }
+
+        self.assertEqual(result["demo"][0], 0)
+        self.assertEqual(result["demo"][1], {})
+        self.assertNotIn("non_existent_plugin", result)
+
+    def test_vendor_hint_included_in_metrics(self):
+        from ..base import BasePlugin
+        from ..registry import Registry
+
+        class DummyPlugin(BasePlugin):
+            def get_vendor_hint(self, options):
+                return options.get("url")
+
+        custom_register = Registry()
+        custom_register("dummy")(DummyPlugin)
+        FormVariableFactory.create(
+            user_defined=True,
+            prefill_plugin="dummy",
+            prefill_options={"url": "https://api.example.com"},
+        )
+
+        reports = list(custom_register.report_plugin_usage())
+        self.assertEqual(len(reports), 1)
+        _plugin, count, tags = reports[0]
+        self.assertEqual(count, 1)
+        self.assertEqual(
+            tags, {"openforms.plugin.vendor_hint": "https://api.example.com"}
+        )

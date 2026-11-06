@@ -201,6 +201,10 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
 
+    def get_vendor_hint(self, options: RegistrationOptions) -> str | None:
+        config = StufZDSConfig.get_solo()
+        return config.service.soap_service.url if config.service else None
+
     zaak_mapping = {
         # Initiator
         # Medewerker

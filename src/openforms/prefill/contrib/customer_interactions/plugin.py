@@ -42,6 +42,30 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
     options = CommunicationPreferencesSerializer
     rerun_on_submission_resume = True
 
+    def get_vendor_hint(self, options: CommunicationPreferencesOptions) -> str | None:
+        group = (
+            options.get("customer_interactions_api_group")
+            if isinstance(options, dict)
+            else None
+        )
+        if isinstance(group, str):
+            from openforms.contrib.customer_interactions.models import (
+                CustomerInteractionsAPIGroupConfig,
+            )
+
+            group = CustomerInteractionsAPIGroupConfig.objects.filter(
+                identifier=group
+            ).first()
+        elif isinstance(group, int):
+            from openforms.contrib.customer_interactions.models import (
+                CustomerInteractionsAPIGroupConfig,
+            )
+
+            group = CustomerInteractionsAPIGroupConfig.objects.filter(pk=group).first()
+        if group and getattr(group, "customer_interactions_service", None):
+            return group.customer_interactions_service.api_root
+        return None
+
     @classmethod
     def get_prefill_values_from_options(
         cls,
