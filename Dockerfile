@@ -94,11 +94,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         gettext \
         shared-mime-info \
         libpcre3 \
+        # invoked via subprocess as opposed to using the python lib, due to DoS concerns
+        jq \
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/* \
     && pip uninstall --yes --root-user-action ignore pip
+
+# Verify that jq is installed at the expected location
+RUN test -x /usr/bin/jq
 
 WORKDIR /app
 COPY ./bin/docker_start.sh /start.sh
@@ -117,6 +122,7 @@ COPY \
     ./bin/report_logic_with_deprecated_clear_on_hide_behavior.py \
     ./bin/report_file_component_inconsistent_catalogues.py \
     ./bin/report_conditional_eq_properties.py \
+    ./bin/report_service_fetch_credentials_usage.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.

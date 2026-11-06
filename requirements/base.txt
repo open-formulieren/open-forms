@@ -310,8 +310,6 @@ isodate==0.7.2
     #   zeep
 josepy==2.2.0
     # via mozilla-django-oidc
-jq==1.11.0
-    # via -r requirements/base.in
 jsonschema==4.26.0
     # via
     #   -r requirements/base.in

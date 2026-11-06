@@ -1,9 +1,10 @@
+import os
 from typing import Any
-from unittest import skip
+from unittest.mock import patch
 from urllib.parse import unquote
 
 from django.core.exceptions import SuspiciousOperation
-from django.test import SimpleTestCase, tag
+from django.test import SimpleTestCase, override_settings, tag
 
 import requests_mock
 from furl import furl
@@ -13,6 +14,7 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import FormVariableFactory
+from openforms.utils.jq_wrappers import JQExecutionError
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.models import _convert_to_string
@@ -406,8 +408,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         self.assertEqual(value, "https://httpbin.org/get")
 
-    @skip("This will go into an infinite loop")
-    @tag("dangerous", "gh-2744")
+    @tag("dangerous", "gh-2744", "ghsa-8qm5-429v-ppc3", "security-21")
+    @override_settings(OPEN_FORMS_JQ_TIMEOUT=0.5)
     @requests_mock.Mocker()
     def test_it_does_not_hang_on_infinite_jq_recursion(self, m):
         m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
@@ -421,13 +423,28 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = perform_service_fetch(var, FormioData())
-        value = result.value
-
-        self.assertEqual(value, "https://httpbin.org/get")
+        with self.assertRaises(JQExecutionError):
+            perform_service_fetch(var, FormioData())
 
     def test_it_raises_value_errors(self):
         var = FormVariableFactory.build()
 
         with self.assertRaises(ValueError):
             perform_service_fetch(var, FormioData())
+
+    @tag("dangerous", "ghsa-8qm5-429v-ppc3", "security-21", "security-46")
+    @patch.dict(os.environ, {"CTF_VAR": "captured"})
+    def test_it_cannot_read_the_environment(self):
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="get",
+                data_mapping_type=DataMappingTypes.jq,
+                mapping_expression="$ENV.CTF_VAR",
+            )
+        )
+
+        result = perform_service_fetch(var, FormioData())
+
+        assert result is not None
+        self.assertIsNone(result.value)
