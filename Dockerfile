@@ -122,6 +122,7 @@ COPY \
     ./bin/report_file_component_inconsistent_catalogues.py \
     ./bin/fix_disabled_logic_in_layout_components.py \
     ./bin/report_conditional_eq_properties.py \
+    ./bin/report_service_fetch_credentials_usage.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
