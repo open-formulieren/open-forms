@@ -43,7 +43,7 @@ jobs:
           echo "image-name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
       - name: Extract version info
         id: vars
-        uses: maykinmedia/open-api-workflows/actions/extract-version@31eaea25acd18bb681fe0d01b2452c3dd8d299b9 # v7.0.0
+        uses: maykinmedia/open-api-workflows/actions/extract-version@776c60ffef1d34cbdee5a2402322cae6278ec237 # v7.0.1
       - name: Extract SDK version info
         id: sdk-vars
         uses: ./.github/actions/extract-sdk-version
@@ -424,7 +424,7 @@ jobs:
 
   oas:
     name: OAS
-    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@31eaea25acd18bb681fe0d01b2452c3dd8d299b9 # v7.0.0
+    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@776c60ffef1d34cbdee5a2402322cae6278ec237 # v7.0.1
     with:
       python-version: '3.12'
       apt-packages: 'libxml2-16 libxmlsec1-1 libxmlsec1-openssl1 gdal-bin'
