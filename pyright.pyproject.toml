@@ -53,6 +53,7 @@ include = [
     "src/openforms/forms/import_export/serializers/base.py",
     "src/openforms/forms/import_export/structs.py",
     "src/openforms/forms/import_export/typing.py",
+    "src/openforms/forms/tests/import_export/",
     # Payments
     "src/openforms/payments/",
     # Products
