@@ -38,8 +38,8 @@ from ..factories import (
 
 class ExportTests(TestCase):
     def test_contains_expected_resources(self):
-        form, _ = FormFactory.create_batch(2, authentication_backend="demo")
-        form_definition, _ = FormDefinitionFactory.create_batch(2)
+        form = FormFactory.create(authentication_backend="demo")
+        form_definition = FormDefinitionFactory.create()
         FormStepFactory.create(form=form, form_definition=form_definition)
         FormStepFactory.create()
         FormLogicFactory.create(
