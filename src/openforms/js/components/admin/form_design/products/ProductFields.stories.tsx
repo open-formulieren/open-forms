@@ -25,7 +25,8 @@ export default {
             name: 'Local product',
             price: '100.00',
             information: '',
-            producttype: null,
+            producttypeUuid: null,
+            productSource: 'local',
           },
           {
             url: 'http://127.0.0.1:8000/api/v2/products/ed1d5103-772a-4205-a14f-2958020741ec',
@@ -33,7 +34,8 @@ export default {
             name: 'External product',
             price: null,
             information: '',
-            producttype: 'ed1d5103-772a-4205-a14f-2958020741ec',
+            producttypeUuid: 'ed1d5103-772a-4205-a14f-2958020741ec',
+            productSource: 'open_product',
           },
         ]),
       ],
@@ -60,7 +62,7 @@ export const LocalProduct: Story = {
         name: 'form.product',
         value: {
           url: 'http://127.0.0.1:8000/api/v2/products/42a7271c-9675-42ca-823d-459a5d8788e9',
-          producttype: null,
+          productSource: 'local',
         },
       },
     });
@@ -86,7 +88,7 @@ export const ExternalProduct: Story = {
         name: 'form.product',
         value: {
           url: 'http://127.0.0.1:8000/api/v2/products/ed1d5103-772a-4205-a14f-2958020741ec',
-          producttype: 'ed1d5103-772a-4205-a14f-2958020741ec',
+          productSource: 'open_product',
         },
       },
     });
