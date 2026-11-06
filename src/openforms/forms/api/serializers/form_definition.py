@@ -118,7 +118,7 @@ class FormDefinitionSerializer(
         #    for the dynamic formio configuration in the context of a submission.
         # 2. The serializers/API endpoints of :module:`openforms.forms.api` for
         #    'standalone' use/introspection.
-        is_export = self.context.get("is_export", False)
+        is_export = self.context.get("is_exporting", False)
 
         if not is_export:
             rewrite_formio_components_for_request(
