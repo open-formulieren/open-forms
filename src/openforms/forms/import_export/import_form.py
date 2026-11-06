@@ -129,6 +129,12 @@ def import_form_data(
     _import_form_logic_resources(
         data=artifact.form_logic, uuid_map=uuid_map, context=context
     )
+    # the missing call to imported_form.apply_logic_analysis() is deliberate - imported
+    # forms can be in broken-ish states (such as not having any steps), and that would
+    # crash during logic analysis.
+    # Forms imported are deactivated by default (except for the version restore flow),
+    # which requires a user to save the form in the admin interface to activate it,
+    # and that triggers full form validation that will report the problems.
     return imported_form
 
 
