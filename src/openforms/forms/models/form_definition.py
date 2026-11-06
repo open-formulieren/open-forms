@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import hashlib
-import json
 import uuid
 from copy import deepcopy
 from typing import TYPE_CHECKING
@@ -157,11 +155,6 @@ class FormDefinition(models.Model):
             .distinct()
             .order_by("name")
         )
-
-    def get_hash(self):
-        return hashlib.md5(
-            json.dumps(self.configuration, sort_keys=True).encode("utf-8")
-        ).hexdigest()
 
     @cached_property
     def configuration_wrapper(self) -> FormioConfigurationWrapper:

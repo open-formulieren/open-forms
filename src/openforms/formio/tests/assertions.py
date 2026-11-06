@@ -36,6 +36,15 @@ class FormioMixin:
                     self.fail(f"Could not find property with path '{key}' in component")
                 self.assertEqual(value, expected_value)
 
+    def assertFormioComponentPropertyAbsent(
+        self, configuration: JSONObject, key: str, property_name: str
+    ) -> None:
+        component = _get_component(configuration, key)
+        if component is None:
+            self.fail(f"Component with key '{key}' not found in configuration.")
+
+        self.assertNotIn(property_name, component)
+
     def assertComponentProperties(self, result, expected):
         for key, expected_value in expected.items():
             with self.subTest(key=key):
