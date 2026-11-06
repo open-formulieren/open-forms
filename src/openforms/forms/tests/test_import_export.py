@@ -28,6 +28,7 @@ from openforms.config.tests.factories import (
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.import_export.export_form import get_export_artifact
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
@@ -74,7 +75,6 @@ from ..import_export.service import (
     FormExportOptions,
     FormImportOptions,
     export_form,
-    form_to_json,
     import_form,
 )
 from ..models import (
@@ -152,15 +152,15 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
                     "formLogic.json",
                     "formVariables.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             forms = json.loads(f.read("forms.json"))
@@ -242,15 +242,15 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
                     "formLogic.json",
                     "formVariables.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             form_definitions = json.loads(f.read("formDefinitions.json"))
@@ -842,15 +842,15 @@ class ImportExportTests(TempdirMixin, TestCase):
         with zipfile.ZipFile(self.filepath, "r") as f:
             # None of the additional form configuration files should be in the exportdata
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
                     "formLogic.json",
                     "formVariables.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             forms = json.loads(f.read("forms.json"))
@@ -1007,8 +1007,8 @@ class ImportExportTests(TempdirMixin, TestCase):
         with zipfile.ZipFile(self.filepath, "r") as f:
             # All of the additional form configuration files should be in the exportdata
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
@@ -1019,7 +1019,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "wmtsTileLayers.json",
                     "yiviAttributeGroups.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             forms = json.loads(f.read("forms.json"))
@@ -1716,7 +1716,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             next_text_en="Some next step text translation",
         )
 
-        original_json = form_to_json(form.pk, export_options=FormExportOptions())
+        original_json = get_export_artifact(
+            form.pk, export_options=FormExportOptions()
+        ).as_resources_mapping(encode=False)
 
         # roundtrip
         with translation.override("en"):
@@ -1812,9 +1814,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(form_step.next_text, "Untranslated next step text")
 
         # inspect the exported data structure, configs etc.
-        imported_json = form_to_json(
+        imported_json = get_export_artifact(
             imported_form.pk, export_options=FormExportOptions()
-        )
+        ).as_resources_mapping(encode=False)
         expected_differences = {
             "forms": [
                 "uuid",  # import gets assigned a new one
@@ -1846,10 +1848,9 @@ class ImportExportTests(TempdirMixin, TestCase):
             return None if not v else v[0]
 
         # assert JSON is still equivalent
-        for part, json_string in original_json.items():
+        for part, expected_data in original_json.items():
             with self.subTest(part=part):
-                expected_data = json.loads(json_string)
-                imported_data = json.loads(imported_json[part])
+                imported_data = imported_json[part]
                 # they should have the same number of elements/keys to start with
                 self.assertEqual(len(imported_data), len(expected_data))
 
@@ -1969,7 +1970,8 @@ class ImportExportTests(TempdirMixin, TestCase):
             formstep__form_definition__configuration={"components": [component]},
         )
 
-        export_data = form_to_json(form.pk, export_options=FormExportOptions())
+        artifact = get_export_artifact(form.pk, export_options=FormExportOptions())
+        export_data = artifact.as_resources_mapping(encode=True)
 
         self.assertIsInstance(export_data, dict)
 
@@ -3185,15 +3187,15 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
                     "formLogic.json",
                     "formVariables.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             form_variables = json.loads(f.read("formVariables.json"))
@@ -4046,7 +4048,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(
             exc.exception.message,
-            "Something went wrong importing the wmsTileLayers.json data",
+            "Something went wrong importing the 'wmsTileLayers' data",
         )
         assert len(exc.exception.exceptions) == 1
         self.assertEqual(
@@ -4224,15 +4226,15 @@ class ExportObjectsAPITests(TempdirMixin, TestCase):
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
-                f.namelist(),
-                [
+                set(f.namelist()),
+                {
                     "forms.json",
                     "formSteps.json",
                     "formDefinitions.json",
                     "formLogic.json",
                     "formVariables.json",
                     f"{EXPORT_META_KEY}.json",
-                ],
+                },
             )
 
             forms = json.loads(f.read("forms.json"))

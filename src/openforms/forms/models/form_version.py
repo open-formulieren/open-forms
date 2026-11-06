@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import uuid as _uuid
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -10,47 +14,67 @@ from django.utils.translation import gettext_lazy as _
 
 from .form import Form
 
+if TYPE_CHECKING:
+    from ..import_export.service import Artifact
+
 User = get_user_model()
 
 
-class FormVersionManager(models.Manager):
+def get_version_export_blob(form: Form) -> Mapping[str, str]:
+    """
+    Get the export blob as plain strings rather than bytestrings.
+
+    The default export artifact encoding behaviour is to emit bytestrings, but those
+    can't be stored out-of-the-box in a ``models.JSONField``, so we convert those back
+    to plain strings. msgspec outputs utf-8 bytestrings.
+
+    # FIXME: see comment on model field
+    """
+    # circular dependencies
+    from ..import_export.service import (
+        AdditionalFormConfigurationOptions,
+        FormConfigurationOptions,
+        FormExportOptions,
+        get_export_artifact,
+    )
+
+    artifact = get_export_artifact(
+        form.id,
+        export_options=FormExportOptions(
+            form_configuration=[
+                FormConfigurationOptions.registration_backends,
+                FormConfigurationOptions.prefill,
+                FormConfigurationOptions.payment_backend,
+                FormConfigurationOptions.auth_backends,
+            ],
+            additional_form_configuration=[
+                AdditionalFormConfigurationOptions.product,
+                AdditionalFormConfigurationOptions.wms_tile_layers,
+                AdditionalFormConfigurationOptions.wmts_tile_layers,
+                AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            ],
+            remove_sensitive_content=False,
+        ),
+    )
+    resources = artifact.as_resources_mapping(encode=True)
+    return {key: value.decode() for key, value in resources.items()}
+
+
+class FormVersionManager(models.Manager["FormVersion"]):
     def create_for(
         self, form: Form, description="", user: AbstractBaseUser | None = None
-    ) -> "FormVersion":
+    ) -> FormVersion:
         """
         Create a new ``FormVersion`` record for a given form.
         """
-        # circular dependencies
-        from ..import_export.export_form import form_to_json
-        from ..import_export.service import (
-            AdditionalFormConfigurationOptions,
-            FormConfigurationOptions,
-            FormExportOptions,
-        )
-
-        form_json = form_to_json(
-            form.id,
-            export_options=FormExportOptions(
-                form_configuration=[
-                    FormConfigurationOptions.registration_backends,
-                    FormConfigurationOptions.prefill,
-                    FormConfigurationOptions.payment_backend,
-                    FormConfigurationOptions.auth_backends,
-                ],
-                additional_form_configuration=[
-                    AdditionalFormConfigurationOptions.product,
-                    AdditionalFormConfigurationOptions.wms_tile_layers,
-                    AdditionalFormConfigurationOptions.wmts_tile_layers,
-                    AdditionalFormConfigurationOptions.yivi_attribute_groups,
-                ],
-                remove_sensitive_content=False,
-            ),
-        )
         if not description:
             version_number = self.filter(form=form).count() + 1
             description = _("Version {number}").format(number=version_number)
         return self.create(
-            form=form, export_blob=form_json, user=user, description=description
+            form=form,
+            export_blob=get_version_export_blob(form),
+            user=user,
+            description=description,
         )
 
 
@@ -69,6 +93,8 @@ class FormVersion(models.Model):
         to="forms.Form",
         on_delete=models.CASCADE,
     )
+    # TODO: ensure we store plain JSON and not double-encoded stuff - this requires the
+    # version restore to be adapted though, and the factory model must be updated too
     export_blob = models.JSONField(
         help_text=_(
             "The form, form definitions and form steps that make up this version, saved as JSON data."
@@ -117,3 +143,8 @@ class FormVersion(models.Model):
     def __str__(self):
         timestamp = localize(localtime(self.created))
         return f"{self.form.admin_name} ({timestamp})"
+
+    def get_import_artifact(self) -> Artifact:
+        from ..import_export.service import Artifact
+
+        return Artifact.from_raw_data(self.export_blob, needs_decode=True)

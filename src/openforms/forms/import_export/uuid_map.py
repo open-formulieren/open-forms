@@ -1,6 +1,9 @@
 from collections.abc import MutableMapping
 from uuid import UUID
 
+from openforms.typing import JSONValue
+from openforms.utils.helpers import recursively_apply_function
+
 
 class UUIDMap:
     """
@@ -22,6 +25,9 @@ class UUIDMap:
         for old, new in self.mapping.items():
             data = data.replace(old, new)
         return data
+
+    def apply_to[T: JSONValue](self, obj: T) -> T:
+        return recursively_apply_function(obj, self.apply_to_data)  # pyright: ignore[reportReturnType]
 
     def add(self, old_uuid: str | None, new_uuid: str | UUID | None) -> None:
         """
