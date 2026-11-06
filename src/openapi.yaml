@@ -7903,10 +7903,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          allOf:
-          - $ref: '#/components/schemas/NestedProduct'
+          type: string
+          format: uri
           nullable: true
-          description: Product related information inside a object.
+          description: Product related information inside an object.
         slug:
           type: string
           maxLength: 100
@@ -9982,30 +9982,6 @@ components:
       - index
       - url
       - uuid
-    NestedProduct:
-      type: object
-      properties:
-        url:
-          type: string
-          format: uri
-          readOnly: true
-        producttype:
-          type: string
-          format: uuid
-          nullable: true
-          title: Producttype ID
-          description: Open Product producttype UUID.
-        productSource:
-          allOf:
-          - $ref: '#/components/schemas/ProductSourceEnum'
-          description: |-
-            The available types of the product. It can be a local product created in the admin interface or an external one.
-
-            * `local` - Local
-            * `open_product` - Open product
-      required:
-      - producttype
-      - url
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -10287,10 +10263,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          allOf:
-          - $ref: '#/components/schemas/NestedProduct'
+          type: string
+          format: uri
           nullable: true
-          description: Product related information inside a object.
+          description: Product related information inside an object.
         slug:
           type: string
           maxLength: 100
@@ -10745,15 +10721,22 @@ components:
           type: string
           description: Information text to be displayed in the confirmation page and
             confirmation email.
-        producttype:
+        producttypeUuid:
           type: string
           format: uuid
           nullable: true
           title: Producttype ID
-          description: External producttype UUID.
+          description: Open Product producttype UUID.
+        productSource:
+          allOf:
+          - $ref: '#/components/schemas/ProductSourceEnum'
+          description: |-
+            The available types of the product. It can be a local product created in the admin interface or an external one.
+
+            * `local` - Local
+            * `open_product` - Open product
       required:
       - name
-      - producttype
       - url
       - uuid
     ProductSourceEnum:

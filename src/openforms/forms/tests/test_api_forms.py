@@ -409,7 +409,7 @@ class FormsAPITests(APITestCase):
             response_data["product"],
             {
                 "url": f"http://testserver{product_url}",
-                "producttype": str(product_uuid),
+                "productSource": ProductSourceChoices.open_product,
             },
         )
 

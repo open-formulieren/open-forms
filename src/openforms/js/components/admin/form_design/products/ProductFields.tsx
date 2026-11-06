@@ -15,7 +15,7 @@ import {PRODUCTS_ENDPOINT} from '../constants';
 
 interface SelectedProduct {
   url: string;
-  producttype: string | null;
+  productSource: 'local' | 'open_product';
 }
 
 export interface ProductFieldProps {
@@ -57,7 +57,7 @@ const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange})
               const value = event.target.value || null; // use empty string or null
               const product = !!value && products.find(({url}) => url === value);
               const selectedValue = product
-                ? {url: product.url, producttype: product.producttype}
+                ? {url: product.url, productSource: product.productSource}
                 : value;
               onChange({target: {name: event.target.name, value: selectedValue ?? ''}});
             }}
