@@ -4068,7 +4068,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
                     "product": {
                         "url": "http://testserver/api/v2/products/20523058-a69b-4d8e-b58d-b6a9291e3b66",
-                        "producttype": None,
+                        "product_source": "local",
                     },
                 }
             ],

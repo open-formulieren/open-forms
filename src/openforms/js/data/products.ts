@@ -4,5 +4,6 @@ export interface Product {
   name: string;
   price: string | null;
   information: string;
-  producttype: string | null;
+  producttypeUuid: string | null;
+  productSource: 'local' | 'open_product';
 }

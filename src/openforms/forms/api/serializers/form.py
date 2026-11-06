@@ -200,26 +200,28 @@ class HelpDialogSerializer(serializers.Serializer):
         fields = ("content", "image")
 
 
-# Note: this serializer should not be used to expose other Open Product related
-# fields as this might lead to hard-to-debug (performance) issues later on.
-class NestedProductSerializer(serializers.HyperlinkedModelSerializer):
-    producttype = serializers.UUIDField(
-        source="producttype_uuid",
-        label=_("Producttype ID"),
-        help_text=_("Open Product producttype UUID."),
-        allow_null=True,
-    )
+class ProductReferenceField(serializers.HyperlinkedRelatedField):
+    """
+    Custom field for the product.
 
-    class Meta:
-        model = Product
-        fields = ("url", "producttype", "product_source")
+    We need to expose the ``product_source`` to the frontend so we have to manually
+    handle this. We receive the same structure so we have to also get the url from the
+    nested object and retrieve the product instance.
+    """
 
-        extra_kwargs = {
-            "url": {
-                "view_name": "api:product-detail",
-                "lookup_field": "uuid",
-            },
+    def to_representation(self, value):
+        return {
+            "url": super().to_representation(value),
+            "product_source": value.product_source,
         }
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict):
+            data = data.get("url")
+        return super().to_internal_value(data)
+
+    def get_choices(self, cutoff=None):
+        return {}
 
 
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
@@ -273,11 +275,14 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the theme in the Open Forms API"),
     )
-    product = NestedProductSerializer(
+    product = ProductReferenceField(
         label=_("product"),
-        help_text=_("Product related information inside a object."),
+        help_text=_("Product related information inside an object."),
+        queryset=Product.objects.all(),
         required=False,
         allow_null=True,
+        view_name="api:product-detail",
+        lookup_field="uuid",
     )
     payment_backend = serializers.ChoiceField(
         choices=[],
@@ -460,9 +465,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
-    # TODO: retrieve and set product based on validated data.
-    # Validated data however currently does not seem to include any data which
-    # we can use to determine the product.
     @transaction.atomic()
     def create(self, validated_data):
         confirmation_email_template = validated_data.pop(
@@ -491,16 +493,15 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             FormAuthenticationBackend(form=instance, **backend)
             for backend in auth_backends
         )
-        if product is not None:
-            Product.objects.create(**product)
+
+        # this is needed because this serializer is used for writing too by our new
+        # import-export functionality
+        if product:
             instance.product = product
-            instance.save(update_fields=["product"])
+            instance.save()
 
         return instance
 
-    # TODO: retrieve and set product based on validated data.
-    # Validated data however currently does not seem to include any data which
-    # we can use to determine the product.
     @transaction.atomic()
     def update(self, instance, validated_data):
         confirmation_email_template = validated_data.pop(
@@ -533,17 +534,12 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 FormAuthenticationBackend(form=instance, **backend_config)
                 for backend_config in auth_backends
             )
-        if product is not serializers.empty:
-            if product is None:
-                instance.product = None
-                instance.save(update_fields=["product"])
-            elif instance.product:
-                for attr, value in product.items():
-                    setattr(instance.product, attr, value)
-                instance.product.save()
-            else:
-                product = Product.objects.create(**product)
-                instance.product = product
+
+        # this is needed because this serializer is used for writing too by our new
+        # import-export functionality
+        if product:
+            instance.product = product
+            instance.save()
 
         return instance
 

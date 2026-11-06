@@ -5,8 +5,8 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.products.constants import ProductSourceChoices
 
+from ..constants import ProductSourceChoices
 from .factories import ProductFactory
 
 
@@ -46,7 +46,8 @@ class ProductListEndpointTests(APITestCase):
                     "name": "sample",
                     "price": "10.00",
                     "information": "",
-                    "producttype": None,
+                    "producttypeUuid": None,
+                    "productSource": ProductSourceChoices.local,
                 }
             ],
         )
@@ -93,7 +94,8 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "name": self.product.name,
                 "price": "15.00",
                 "information": "",
-                "producttype": None,
+                "producttypeUuid": None,
+                "productSource": ProductSourceChoices.local,
             },
         )
 
@@ -125,6 +127,7 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "name": product.name,
                 "price": None,
                 "information": "",
-                "producttype": str(product_uuid),
+                "producttypeUuid": str(product_uuid),
+                "productSource": ProductSourceChoices.open_product,
             },
         )
