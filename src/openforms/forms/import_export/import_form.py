@@ -40,7 +40,7 @@ from .serializers import (
     FormStepImportSerializer,
     FormVariableImportSerializer,
 )
-from .structs import Artifact, ShallowJSONObject
+from .structs import Artifact, ShallowJSONObject, ZipReadable
 from .uuid_map import UUIDMap
 
 EXPECTED_RESOURCES = (
@@ -58,7 +58,7 @@ EXPECTED_RESOURCES = (
 
 @transaction.atomic
 def import_form(
-    import_file: Path | str,
+    import_file: Path | str | ZipReadable,
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:
