@@ -20,6 +20,8 @@ from typing import (  # Any because we don't want msgspec to deeply decode conte
 
 from django.conf import settings
 from django.utils import timezone
+from django.utils.encoding import force_str
+from django.utils.functional import Promise
 from django.utils.safestring import SafeString
 
 import msgspec
@@ -53,6 +55,8 @@ def _enc_hook(obj: object) -> object:
             return str(obj)
         case SafeString():
             return obj[:]
+        case Promise():
+            return force_str(obj, strings_only=True)
         case _:  # pragma: no cover
             raise NotImplementedError(f"Objects of type {type(obj)} are not supported")
 
