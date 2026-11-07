@@ -52,6 +52,8 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
+    from openforms.emails.models import ConfirmationEmailTemplate
+
     from . import (
         FormAuthenticationBackend,
         FormLogic,
@@ -459,6 +461,7 @@ class Form(models.Model):
     registration_backends: Manager[FormRegistrationBackend]
     formlogic_set: Manager[FormLogic]
     formversion_set: Manager[FormVersion]
+    confirmation_email_template: ConfirmationEmailTemplate  # may raise DoesNotExist
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
