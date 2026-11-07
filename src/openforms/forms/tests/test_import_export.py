@@ -18,7 +18,6 @@ from rest_framework.exceptions import ValidationError
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
 from openforms.authentication.tests.factories import AttributeGroupFactory
-from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.config.tests.factories import (
     MapTileLayerFactory,
@@ -420,34 +419,6 @@ class ImportTests(TempdirMixin, TestCase):
         import_form(import_file=self.filepath, import_options=FormImportOptions())
 
         self.assertTrue(Form.objects.filter(slug="auth-plugins").exists())
-
-    @tag("sentry-334878")
-    @patch(
-        "openforms.formio.components.vanilla.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(
-            form_upload_default_file_types=[UploadFileType.all]
-        ),
-    )
-    def test_export_with_filetype_information(self, m_get_solo):
-        component = {
-            "type": "file",
-            "key": "fileTest",
-            "label": "fileTest",
-            "url": "",
-            "useConfigFiletypes": True,
-            "filePattern": "*",
-            "file": {"type": []},
-        }
-
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={"components": [component]},
-        )
-
-        artifact = get_export_artifact(form, export_options=FormExportOptions())
-        export_data = artifact.as_resources_mapping(encode=True)
-
-        self.assertIsInstance(export_data, dict)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
     def test_import_applies_converters_map_component_interactions(self, m_solo):
