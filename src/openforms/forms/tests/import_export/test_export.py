@@ -4,6 +4,7 @@ from io import BytesIO
 
 from django.http import HttpResponse
 from django.test import TestCase, tag
+from django.utils.translation import gettext_lazy
 
 import msgspec
 from tablib import Dataset
@@ -880,3 +881,31 @@ class ExportTests(TestCase):
                     additional_form_configuration=["some_unknown_option"],  # pyright: ignore[reportArgumentType]
                 ),
             )
+
+    @tag("sentry-334878")
+    def test_export_does_not_crash_on_lazy_translatable_strings(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Text field",
+                    }
+                ],
+            },
+        )
+        export = get_export_artifact(form, export_options=FormExportOptions())
+        # simulate some kind of dynamic mutations to the JSON field as part of the
+        # serialization process - note that this is normally skipped during exporting
+        export.form_definitions[0]["configuration"]["components"][0]["label"] = (
+            gettext_lazy("A lazy translated string")
+        )
+
+        try:
+            export.as_resources_mapping(encode=True)
+        except NotImplementedError as exc:
+            raise self.failureException(
+                "Exports must support lazy translated strings"
+            ) from exc
