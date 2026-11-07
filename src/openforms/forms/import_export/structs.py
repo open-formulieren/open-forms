@@ -83,8 +83,8 @@ class ZipWritable(Protocol):
     def close(self) -> None: ...
 
 
-class _ZipReadable(Protocol):
-    # effectively the same as _ZipReadable from the typeshed
+class ZipReadable(Protocol):
+    # effectively the same as ZipReadable from the typeshed
     def seek(self, offset: int, whence: int = 0, /) -> int: ...
     def read(self, n: int = -1, /) -> bytes: ...
 
@@ -158,7 +158,7 @@ class Artifact(msgspec.Struct, kw_only=True, rename="camel"):
         return msgspec.convert(raw_data, type=cls, strict=True, dec_hook=_dec_hook)
 
     @classmethod
-    def from_zip(cls, file: str | PathLike[str] | _ZipReadable) -> Self:
+    def from_zip(cls, file: str | PathLike[str] | ZipReadable) -> Self:
         with zipfile.ZipFile(file, "r") as zip_file:
             namelist = zip_file.namelist()
             raw_data = {
