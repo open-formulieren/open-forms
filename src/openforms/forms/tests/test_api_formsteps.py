@@ -1072,17 +1072,26 @@ class FormStepsAPITranslationTests(APITestCase):
             },
         )
 
-    def test_detail_non_staff_no_translations(self):
-        """
-        Translations for different languages than the active language should not be returned for non-staff users
-        """
+    def test_detail_non_staff_cannot_access_detail_endpoint(self):
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
+        )
+        user = UserFactory.create(user_permissions=["change_form"])
+        self.client.force_login(user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotIn("translations", response.data)
+
+    def test_detail_anonymous_user_cannot_access_detail_endpoint(self):
         url = reverse(
             "api:form-steps-detail",
             kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
         )
         response = self.client.get(url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn("translations", response.data)
 
     def test_create_with_translations(self):
