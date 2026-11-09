@@ -7,6 +7,7 @@ from zgw_consumers.models import Service
 from openforms.api.validators import ModelValidator
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.validators import (
+    HeaderValidator,
     validate_mapping_expression,
     validate_request_body,
 )
@@ -22,6 +23,7 @@ class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
             "Additions and overrides for the HTTP request headers as defined in the Service."
         ),
         required=False,
+        validators=[HeaderValidator()],
     )
     query_params = serializers.DictField(
         child=serializers.ListField(child=serializers.CharField()),

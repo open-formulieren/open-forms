@@ -3008,6 +3008,86 @@ class FormEndpointVariableTests(APITestCase):
                 service_fetch_configuration.name, "Service fetch configuration 2"
             )
 
+    def test_cannot_create_service_configuration_with_disallowed_headers(self):
+        form_definition_uuid = uuid4()
+        service = ServiceFactory.create()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [],
+                        },
+                        "translations": {
+                            "nl": {
+                                "name": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                    "serviceFetchConfiguration": {
+                        "name": "Service fetch configuration 1",
+                        "service": service.uuid,
+                        "path": "/foobar",
+                        "method": ServiceFetchMethods.get,
+                        "headers": {
+                            "Authorization": "Secret",
+                        },
+                        "body": None,
+                        "dataMappingType": "",
+                        "mappingExpression": None,
+                        "cacheTimeout": None,
+                    },
+                },
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "jsonLogicTrigger": True,
+                    "is_advanced": True,
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "fetch-from-service",
+                                "value": "",
+                            },
+                            "variable": "extra_var",
+                        },
+                    ],
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        error = response_data["invalidParams"][0]
+        self.assertEqual(
+            error["reason"],
+            _(
+                "The following authentication credentials were detected in the headers: {headers}. "
+                "Authentication credentials must be configured on the service."
+            ).format(headers=", ".join(["authorization"])),
+        )
+
     def test_update_recreates_variables(self):
         form = FormFactory.create()
         form_step_1_definition_uuid = UUID("7284fcde-0cde-4cb4-b2e5-1e472fceccfb")

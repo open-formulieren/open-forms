@@ -7,7 +7,11 @@ from rest_framework import serializers
 from openforms.api.validators import ModelValidator
 
 from ..models import ServiceFetchConfiguration
-from ..validators import validate_mapping_expression, validate_request_body
+from ..validators import (
+    HeaderValidator,
+    validate_mapping_expression,
+    validate_request_body,
+)
 
 
 class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,6 +21,7 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
             "Additions and overrides for the HTTP request headers as defined in the Service."
         ),
         required=False,
+        validators=[HeaderValidator()],
     )
     query_params = serializers.DictField(
         child=serializers.ListField(child=serializers.CharField()),
