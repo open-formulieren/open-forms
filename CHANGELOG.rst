@@ -29,6 +29,81 @@ To upgrade to 4.1, please:
 
 .. todo:: Rest of the release notes in due time.
 
+4.1.0-alpha.2 (2026-11-09)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+You have to be on at least 4.0 before you can upgrade to 4.1.
+
+New features
+------------
+
+* [:backend:`6725`] Updated Product model to prepare for Open Product APIs integration.
+* [:backend:`6724`] Added Open Product Configuration model preparing for the integration
+  with Open Product APIs.
+* [:backend:`5374`] Added support for preloading authentication identifiers (like BSN)
+  when employees fill out forms on behalf of a customer so that they don't have to type
+  over those details.
+* [:backend:`6618`] Added support for oauth2 flows where the client credentials are
+  submitted in the body instead of the Basic Auth header. The mechanism to use can be
+  configured per-service.
+* [:backend:`6430`] Introduced new form import options:
+  
+  - You can now de-select parts of form to import, like registration backends, prefill,
+    authentication, product, map layers, attribute groups...
+
+Bugfixes
+--------
+
+* [:backend:`6893`] Fixed some translations only being partially applied.
+* [:backend:`6876`] Fixed wrong default values for outgoing request logging configuration.
+  This is now disabled by default and properly documented along with all the other
+  available options.
+* Fixed an issue where a service's server certificate bundle wasn't used for verification
+  when additional root certificates are added to the instance's trust store.
+* [:backend:`6867`] Fixed paid but not-yet-registered submissions being treated as
+  incomplete submissions, causing them to be deleted faster than expected.
+* Fixed remaining wrong default value for select component with a data migration.
+* [:backend:`6683`] Fixed a UI crash when configuring service fetch before a target
+  variable is selected.
+
+Project maintenance
+-------------------
+
+* [:backend:`6903`] Pinned ubuntu to 26.04 and updated affected packages in CI.
+* Cleaned up the multiple admin login options code.
+* Restructured/updated the developer documentation entrypoint to separate between internal
+  and third party developers.
+* [:backend:`6263`] Added documentation for Open Object API integration.
+* Updated github actions.
+* Added dependabot configuration for automatic github actions updates (weekly).
+* Made form variables order in export functionality deterministic.
+* [:backend:`6430`] Substantially refactored the form import code for better maintainability.
+* [:backend:`6690`] Converted part of the backend JS code to TS (like auth mode module, 
+  utils, exceptions and many more).  
+* Ensure that admin CSS changes are automatically applied while the application is running.
+* [:backend:`6287`] Removed leftover JCC SOAP code (appointments).
+* Updated dependencies to their latest security/feature releases:
+
+  - open-product-client
+  - dnspython
+  - tornado
+  - maykin-common
+  - opentelemetry API
+  - vitest
+  - storybook
+  - djangorestframework
+  - brotli
+  - pillow
+  - zgw-consumers
+  - certifi
+  - maykin-2fa
+  - django-admin-index
+
 4.0.7 (2026-10-30)
 ==================
 

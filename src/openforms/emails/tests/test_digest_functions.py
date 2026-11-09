@@ -1307,6 +1307,7 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
         self.assertEqual(broken_configuration, [])
 
 
+@override_settings(LANGUAGE_CODE="en")
 class OpenProductBrokenConfigurationTests(OFVCRMixin, TestCase):
     """
     This test case requires the Open Product container to be running.
