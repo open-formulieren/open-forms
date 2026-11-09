@@ -20,6 +20,14 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         cls.staff_user_without_perms = StaffUserFactory.create()
         cls.admin_user = StaffUserFactory(user_permissions=["forms.change_form"])
 
+    def test_service_fetch_configuration_list_is_forbidden_for_anonymous_users(self):
+        endpoint = reverse("api:servicefetchconfiguration-list")
+        self.client.force_authenticate(user=None)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_service_fetch_configuration_list_is_forbidden_for_normal_users(self):
         endpoint = reverse("api:servicefetchconfiguration-list")
         self.client.force_authenticate(user=self.user)
@@ -58,6 +66,41 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         self.assertEqual(
             response.json(), {"count": 0, "next": None, "previous": None, "results": []}
         )
+
+    def test_service_fetch_configuration_detail_is_forbidden_for_anonymous_users(self):
+        config = ServiceFetchConfigurationFactory.create()
+        endpoint = reverse(
+            "api:servicefetchconfiguration-detail", kwargs={"pk": config.pk}
+        )
+        self.client.force_authenticate(user=None)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_service_fetch_configuration_detail_is_forbidden_for_normal_users(self):
+        config = ServiceFetchConfigurationFactory.create()
+        endpoint = reverse(
+            "api:servicefetchconfiguration-detail", kwargs={"pk": config.pk}
+        )
+        self.client.force_authenticate(user=self.user_with_perms)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_service_fetch_configuration_detail_is_forbidden_for_staff_users_without_perms(
+        self,
+    ):
+        config = ServiceFetchConfigurationFactory.create()
+        endpoint = reverse(
+            "api:servicefetchconfiguration-detail", kwargs={"pk": config.pk}
+        )
+        self.client.force_authenticate(user=self.staff_user_without_perms)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_service_fetch_configuration_have_the_right_properties(self):
         config = ServiceFetchConfigurationFactory.create(
