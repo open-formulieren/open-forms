@@ -128,6 +128,59 @@ class FormVariableViewsetTest(APITestCase):
         )
         self.assertEqual(fetch_config.headers, {"X-Header": "someValue"})
 
+    def test_cannot_create_inline_service_fetch_with_credentials_in_headers(self):
+        designer = StaffUserFactory.create(user_permissions=["change_form"])
+        service = ServiceFactory.create(
+            api_type=APITypes.orc,
+            api_root="http://testserver/api/v2",
+            auth_type=AuthTypes.no_auth,
+        )
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver{form_path}"
+        form_definition = form.formstep_set.get().form_definition
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver{form_definition_path}"
+        form_variables_path = reverse(
+            "api:form-variables", kwargs={"uuid_or_slug": form.uuid}
+        )
+
+        self.client.force_authenticate(designer)
+        response = self.client.put(
+            form_variables_path,
+            data=[
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "x",
+                    "key": "x",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.object,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.post,
+                        "headers": {"authorization": "someValue"},
+                    },
+                }
+            ],
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response_data["invalidParams"][0]
+        self.assertEqual(
+            error["reason"],
+            _(
+                "The following authentication credentials were detected in the headers: {headers}. "
+                "Authentication credentials must be configured on the service."
+            ).format(headers=", ".join(["authorization"])),
+        )
+
     def test_it_updates_inline_service_fetch_configs(self):
         designer = StaffUserFactory.create(user_permissions=["change_form"])
         service = ServiceFactory.create(
