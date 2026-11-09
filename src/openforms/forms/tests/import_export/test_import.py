@@ -10,14 +10,16 @@ from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework.exceptions import ValidationError
 from rest_framework.reverse import reverse
 from tablib import Dataset
+from unittest_parametrize import ParametrizedTestCase, parametrize
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup
 from openforms.authentication.tests.factories import AttributeGroupFactory
-from openforms.config.models import MapTileLayer, MapWMSTileLayer
+from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.config.tests.factories import (
     MapTileLayerFactory,
     MapWMSTileLayerFactory,
+    ThemeFactory,
 )
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
@@ -26,6 +28,7 @@ from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
 from openforms.prefill.constants import IdentifierRoles
+from openforms.products.models import Product
 from openforms.products.tests.factories import ProductFactory
 from openforms.variables.constants import (
     DataMappingTypes,
@@ -45,13 +48,14 @@ from ...import_export.service import (
 )
 from ...models import Form, FormDefinition, FormStep, FormVariable
 from ..factories import (
+    CategoryFactory,
     FormDefinitionFactory,
     FormFactory,
     FormVariableFactory,
 )
 
 
-class ImportTests(FormioMixin, TestCase):
+class ImportTests(FormioMixin, ParametrizedTestCase, TestCase):
     def test_exported_zip_file_can_be_imported_without_errors(self):
         # create a form with registration backend, prefill, payment backend & auth
         # backends
@@ -534,11 +538,14 @@ class ImportTests(FormioMixin, TestCase):
                 self.assertEqual(fd.name, "Test form definition")
             with translation.override("nl"):
                 self.assertEqual(fd.name, "Testformulierdefinitie")
-            # a form variable is created for the component
-            form_var_qs = form.formvariable_set.filter(
-                key="test-key", source=FormVariableSources.component
+
+            # form variables are created for the component
+            component_variable_keys = set(
+                form.formvariable_set.filter(
+                    source=FormVariableSources.component
+                ).values_list("key", flat=True)
             )
-            self.assertTrue(form_var_qs.exists())
+            self.assertEqual(component_variable_keys, {"test-key", "textfield", "map"})
 
         with self.subTest(feature="map layers"):
             map = components[2]
@@ -1060,6 +1067,598 @@ class ImportTests(FormioMixin, TestCase):
 
             with self.subTest("verify roundtrip", part=part):
                 self.assertEqual(imported_data, expected_data)
+
+    def test_unknown_domains_in_wysiwyg_content_are_removed(self):
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        config.save()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+        artifact = Artifact(
+            forms=[
+                {
+                    "name": "Test form",
+                    "slug": "my-slug",
+                    "registration_backends": [
+                        {
+                            "backend": "email",
+                            "key": "email",
+                            "name": "email",
+                            "options": {
+                                "to_emails": ["some@email.com"],
+                                "email_content_template_html": (
+                                    "<p>test https://google.com <a href='https://www.go"
+                                    "ogle.com'>Google</a> https://allowed.com test</p>"
+                                ),
+                                "email_content_template_text": (
+                                    "test https://google.com https://allowed.com test"
+                                ),
+                            },
+                        }
+                    ],
+                    "confirmation_email_template": {
+                        "translations": {
+                            "nl": {
+                                "subject": "Test",
+                                "content": (
+                                    "<p>email content https://google.com <a href='https"
+                                    "://www.google.com'>Google</a> https://allowed.com<"
+                                    "/p><p>{% appointment_information %}</p><p>{% payme"
+                                    "nt_information %}</p>"
+                                ),
+                                "cosign_subject": "Cosign test",
+                                "cosign_content": (
+                                    "<p>cosign email content https://google.com <a href"
+                                    "='https://www.google.com'>Google</a> https://allow"
+                                    "ed.com</p><p>{% payment_information %}</p><p>{% co"
+                                    "sign_information %}</p>"
+                                ),
+                            },
+                        },
+                    },
+                }
+            ],
+            form_definitions=[],
+            form_steps=[],
+            form_variables=[],
+            form_logic=[],
+        )
+
+        form = import_form_data(artifact, import_options=FormImportOptions())
+
+        assert form is not None
+        with self.subTest("email registration backend"):
+            options = form.registration_backends.get().options
+            # The email registration templates should NOT contain the "google.com" domain,
+            # but they SHOULD contain the "allowed.com" domain.
+            self.assertNotIn("google.com", options["email_content_template_html"])
+            self.assertNotIn("google.com", options["email_content_template_text"])
+            self.assertIn("allowed.com", options["email_content_template_html"])
+            self.assertIn("allowed.com", options["email_content_template_text"])
+
+        with self.subTest("confirmation email template"):
+            # The confirmation and cosign email templates should not contain the "google.com"
+            # domain, but they should contain the "allowed.com" domain
+            confirmation_templates = form.confirmation_email_template
+            self.assertNotIn("google.com", confirmation_templates.content)
+            self.assertNotIn("google.com", confirmation_templates.cosign_content)
+            self.assertIn("allowed.com", confirmation_templates.content)
+            self.assertIn("allowed.com", confirmation_templates.cosign_content)
+
+    def test_import_form_exclude_all_possible_features(self):
+        # during import, deselect all features/additional form configuration despite the
+        # information being present in the import artifact
+        assert not Form.objects.exists()
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+        # integration test that covers the happy flow of form imports where every
+        # aspect is imported
+        merchant = WorldlineMerchantFactory.create()
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(identifier="objects")
+        artifact = Artifact(
+            forms=[
+                {
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Test form",
+                    "slug": "test-form",
+                    "auth_backends": [
+                        {
+                            "backend": "yivi_oidc",
+                            "options": {
+                                "authentication_options": [AuthAttribute.bsn],
+                                "additional_attributes_groups": [
+                                    "8e8f000c-8cad-4908-b7b8-f5634327a8b0",
+                                ],
+                            },
+                        },
+                    ],
+                    "registration_backends": [
+                        {
+                            "name": "Email",
+                            "key": "smtp",
+                            "backend": "email",
+                            "options": {
+                                "to_emails": ["foo@bar.baz"],
+                                "attach_files_to_email": None,
+                            },
+                        }
+                    ],
+                    "product": reverse(
+                        "api:product-detail",
+                        kwargs={"uuid": "368eae85-7047-46f8-8f70-60ca26069cc1"},
+                    ),
+                    "payment_backend": "worldline",
+                    "payment_backend_options": {"merchant": merchant.pspid},
+                }
+            ],
+            form_definitions=[
+                {
+                    "uuid": "35bb5a63-d559-4350-b98e-f066980b8ff2",
+                    "name": "Test form definition",
+                    "slug": "test-form-definition",
+                    "configuration": {
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "test-key",
+                                "label": "test-key",
+                                "prefill": {
+                                    "plugin": "demo",
+                                    "attribute": "random_number",
+                                    "identifier_role": IdentifierRoles.authorizee,
+                                },
+                            },
+                            {
+                                "label": "Map",
+                                "key": "map",
+                                "type": "map",
+                                "useConfigDefaultMapSettings": False,
+                                "interactions": {
+                                    "marker": True,
+                                    "polygon": False,
+                                    "polyline": False,
+                                },
+                                "tileLayerIdentifier": "pdok-basis",
+                                "overlays": [
+                                    {
+                                        "url": "",
+                                        "type": "wms",
+                                        "uuid": "baa21641-422e-48b8-8ce0-68c314c9713a",
+                                        "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                        "layers": ["pand", "verblijfsobject"],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                }
+            ],
+            form_steps=[
+                {
+                    "uuid": "1e9ee006-cc5e-45e1-ab65-17f7fac5ce10",
+                    "index": 0,
+                    "slug": "step-1",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "35bb5a63-d559-4350-b98e-f066980b8ff2"
+                    ),
+                }
+            ],
+            form_variables=[
+                # user defined variables with prefill
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Variable with prefill",
+                    "key": "variable_demo_prefill",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                    "prefill_plugin": "demo",
+                    "prefill_attribute": "random_string",
+                    "prefill_identifier_role": IdentifierRoles.authorizee,
+                },
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Objects prefill",
+                    "key": "variable_objects_prefill",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.object,
+                    "prefill_plugin": "objects_api",
+                    "prefill_options": {
+                        "objects_api_group": objects_api_group.identifier,
+                        "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 3,
+                        "variables_mapping": [
+                            {
+                                "variable_key": "lastName",
+                                "target_path": ["name", "last.name"],
+                            },
+                            {"variable_key": "age", "target_path": ["age"]},
+                        ],
+                        "auth_attribute_path": ["bsn"],
+                    },
+                },
+            ],
+            form_logic=[],
+            product=Dataset(
+                (
+                    "368eae85-7047-46f8-8f70-60ca26069cc1",
+                    "A product",
+                    "10,00",
+                    "",
+                ),
+                headers=("uuid", "name", "price", "information"),
+            ),
+            wms_tile_layers=Dataset(
+                (
+                    "baa21641-422e-48b8-8ce0-68c314c9713a",
+                    "BAG",
+                    "https://example.com",
+                ),
+                headers=("uuid", "name", "url"),
+            ),
+            wmts_tile_layers=Dataset(
+                ("pdok-basis", "PDOK basis", "https://example.com"),
+                headers=("identifier", "label", "url"),
+            ),
+            yivi_attribute_groups=Dataset(
+                (
+                    "8e8f000c-8cad-4908-b7b8-f5634327a8b0",
+                    "some attributes",
+                    "",
+                    "foo,bar",
+                ),
+                headers=("uuid", "name", "description", "attributes"),
+            ),
+        )
+
+        form = import_form_data(
+            artifact,
+            # deselect every thing that can be deselected
+            import_options=FormImportOptions(
+                form_configuration=[],
+                additional_form_configuration=[],
+                category=None,
+                theme=None,
+            ),
+        )
+
+        assert form is not None
+        step = None
+
+        with self.subTest(feature="form product"):
+            self.assertIsNone(form.product)
+
+        with self.subTest(feature="registration"):
+            self.assertFalse(form.registration_backends.exists())
+
+        with self.subTest(feature="authentication"):
+            self.assertFalse(form.auth_backends.exists())
+            self.assertFalse(AttributeGroup.objects.exists())
+
+        with self.subTest(feature="payment"):
+            self.assertFalse(Product.objects.exists())
+            self.assertEqual(form.payment_backend, "")
+            self.assertEqual(form.payment_backend_options, {})
+
+        with self.subTest(feature="form steps (prefill)"):
+            # we expect the single form step and definition to be imported
+            step = form.formstep_set.get()
+            fd = step.form_definition
+
+            self.assertEqual(len(fd.configuration["components"]), 2)
+
+            self.assertFormioComponent(
+                fd.configuration,
+                "test-key",
+                {
+                    "prefill": {
+                        "plugin": "",
+                        "attribute": "",
+                        "identifier_role": IdentifierRoles.authorizee,
+                    }
+                },
+            )
+
+        with self.subTest(feature="map layers"):
+            self.assertFalse(MapTileLayer.objects.exists())
+            self.assertFalse(MapWMSTileLayer.objects.exists())
+
+            self.assertFormioComponent(
+                fd.configuration,
+                "map",
+                {
+                    "tileLayerIdentifier": "",
+                    "overlays": [
+                        {
+                            "url": "",
+                            "type": "wms",
+                            "uuid": "",
+                            "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                            "layers": [],
+                        },
+                    ],
+                },
+            )
+
+        with self.subTest(feature="variables (prefill)"):
+            user_defined_variables = {
+                variable.key: variable
+                for variable in form.formvariable_set.filter(
+                    source=FormVariableSources.user_defined
+                )
+            }
+
+            udv_1 = user_defined_variables["variable_demo_prefill"]
+            self.assertEqual(udv_1.prefill_plugin, "")
+            self.assertEqual(udv_1.prefill_attribute, "")
+            self.assertEqual(udv_1.prefill_options, {})
+            self.assertEqual(udv_1.prefill_identifier_role, IdentifierRoles.authorizee)
+
+            udv_2 = user_defined_variables["variable_objects_prefill"]
+            self.assertEqual(udv_2.prefill_plugin, "")
+            self.assertEqual(udv_2.prefill_attribute, "")
+            self.assertEqual(udv_2.prefill_options, {})
+            self.assertEqual(udv_2.prefill_identifier_role, IdentifierRoles.main)
+
+    def test_import_form_additional_resources_matches_objects_with_other_ids(self):
+        """
+        Assert that supporting resources are matched despite having different UUIDs.
+
+        When moving forms between different environments, it's likely the content that's
+        semantically identical has different database IDs/UUIDs. The import flow must
+        perform deep matching.
+        """
+        MapTileLayer.objects.all().delete()
+        MapWMSTileLayer.objects.all().delete()
+        product = ProductFactory.create(
+            uuid="e1b75e84-b9af-47a5-965b-0c823d8f2391",
+            name="a product",
+            price=Decimal("4.20"),
+            information="",
+        )
+        AttributeGroupFactory.create(
+            uuid="a9966d1d-210c-47c6-9c25-2d2ccc445961",
+            name="group-to-match",
+            description="",
+            attributes=["attr1", "attr2"],
+        )
+        MapTileLayerFactory.create(
+            identifier="pdok-different",
+            label="PDOK",
+            url="https://example.com",
+        )
+        MapWMSTileLayerFactory.create(
+            uuid="cc89ac8c-c479-46bb-8b88-1777b4e853ff",
+            name="wms-layer",
+            url="https://example.com",
+        )
+        artifact = Artifact(
+            forms=[
+                {
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Test form",
+                    "slug": "test-form",
+                    "active": True,
+                    "is_deleted": False,
+                    "maintenance_mode": False,
+                    "auth_backends": [
+                        {
+                            "backend": "yivi_oidc",
+                            "options": {
+                                "authentication_options": [AuthAttribute.bsn],
+                                "additional_attributes_groups": [
+                                    "8e8f000c-8cad-4908-b7b8-f5634327a8b0",
+                                ],
+                            },
+                        },
+                    ],
+                    "product": reverse(
+                        "api:product-detail",
+                        kwargs={"uuid": "368eae85-7047-46f8-8f70-60ca26069cc1"},
+                    ),
+                }
+            ],
+            form_definitions=[
+                {
+                    "uuid": "35bb5a63-d559-4350-b98e-f066980b8ff2",
+                    "name": "Test form definition",
+                    "slug": "test-form-definition",
+                    "configuration": {
+                        "components": [
+                            {
+                                "label": "Map",
+                                "key": "map",
+                                "type": "map",
+                                "useConfigDefaultMapSettings": False,
+                                "interactions": {
+                                    "marker": True,
+                                    "polygon": False,
+                                    "polyline": False,
+                                },
+                                "tileLayerIdentifier": "pdok-basis",
+                                "overlays": [
+                                    {
+                                        "url": "",
+                                        "type": "wms",
+                                        "uuid": "baa21641-422e-48b8-8ce0-68c314c9713a",
+                                        "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                        "layers": ["pand", "verblijfsobject"],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                }
+            ],
+            form_steps=[
+                {
+                    "uuid": "1e9ee006-cc5e-45e1-ab65-17f7fac5ce10",
+                    "index": 0,
+                    "slug": "step-1",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "35bb5a63-d559-4350-b98e-f066980b8ff2"
+                    ),
+                }
+            ],
+            form_variables=[],
+            form_logic=[],
+            product=Dataset(
+                (
+                    "368eae85-7047-46f8-8f70-60ca26069cc1",
+                    "a product",
+                    "4,20",
+                    "",
+                ),
+                headers=("uuid", "name", "price", "information"),
+            ),
+            wms_tile_layers=Dataset(
+                (
+                    "baa21641-422e-48b8-8ce0-68c314c9713a",
+                    "wms-layer",
+                    "https://example.com",
+                ),
+                headers=("uuid", "name", "url"),
+            ),
+            wmts_tile_layers=Dataset(
+                ("pdok-basis", "PDOK", "https://example.com"),
+                headers=("identifier", "label", "url"),
+            ),
+            yivi_attribute_groups=Dataset(
+                (
+                    "8e8f000c-8cad-4908-b7b8-f5634327a8b0",
+                    "group-to-match",
+                    "",
+                    "attr1,attr2",
+                ),
+                headers=("uuid", "name", "description", "attributes"),
+            ),
+        )
+
+        form = import_form_data(
+            artifact,
+            import_options=FormImportOptions(
+                additional_form_configuration=list(AdditionalFormConfigurationOptions),
+            ),
+        )
+
+        assert form is not None
+        # check that no new data was created
+
+        with self.subTest("product"):
+            self.assertEqual(Product.objects.count(), 1)
+            self.assertEqual(form.product, product)
+
+        with self.subTest("yivi attribute groups"):
+            self.assertEqual(AttributeGroup.objects.count(), 1)
+            auth_backend = form.auth_backends.get()
+            self.assertEqual(
+                auth_backend.options["additional_attributes_groups"],
+                ["a9966d1d-210c-47c6-9c25-2d2ccc445961"],
+            )
+
+        with self.subTest("map layers"):
+            self.assertEqual(MapTileLayer.objects.count(), 1)
+            self.assertEqual(MapWMSTileLayer.objects.count(), 1)
+            configuration = form.formstep_set.get().form_definition.configuration
+            self.assertFormioComponent(
+                configuration,
+                "map",
+                {
+                    "tileLayerIdentifier": "pdok-different",
+                    "overlays": [
+                        {
+                            "url": "",
+                            "type": "wms",
+                            "uuid": "cc89ac8c-c479-46bb-8b88-1777b4e853ff",
+                            "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                            "layers": ["pand", "verblijfsobject"],
+                        },
+                    ],
+                },
+            )
+
+    def test_it_raises_when_incomplete_resource_data_is_provided(self):
+        artifact = Artifact(
+            forms=[{"name": "Test form", "slug": "my-slug"}],
+            form_definitions=[],
+            form_steps=[],
+            form_variables=[],
+            form_logic=[],
+            product=Dataset(("dummy",), headers=("unsupported",)),
+            yivi_attribute_groups=Dataset(("dummy",), headers=("unsupported",)),
+            wmts_tile_layers=Dataset(("dummy",), headers=("unsupported",)),
+            wms_tile_layers=Dataset(("dummy",), headers=("unsupported",)),
+        )
+        options = FormImportOptions(
+            additional_form_configuration=list(AdditionalFormConfigurationOptions),
+        )
+
+        # XXX: this should probably result in a proper validation error that's fed back
+        # to the user importing the form...
+        with self.assertRaises(
+            ExceptionGroup, msg=r"Something went wrong importing the '\w+' data"
+        ) as exc_context:
+            import_form_data(artifact, import_options=options)
+
+        exc_group = exc_context.exception
+        self.assertEqual(len(exc_group.exceptions), 1)
+
+    @parametrize(
+        ("import_other_category", "import_other_theme"),
+        [
+            (False, False),
+            (True, False),
+            (False, True),
+            (True, True),
+        ],
+    )
+    def test_theme_and_category_only_assigned_when_explicitly_provided(
+        self,
+        import_other_category: bool,
+        import_other_theme: bool,
+    ):
+        theme, other_theme = ThemeFactory.create_batch(2)
+        category, other_category = CategoryFactory.create_batch(2)
+        artifact = Artifact(
+            forms=[
+                {
+                    "name": "Test form",
+                    "slug": "my-slug",
+                    # always include the references
+                    "category": reverse(
+                        "api:categories-detail", kwargs={"uuid": category.uuid}
+                    ),
+                    "theme": reverse("api:themes-detail", kwargs={"uuid": theme.uuid}),
+                }
+            ],
+            form_definitions=[],
+            form_steps=[],
+            form_variables=[],
+            form_logic=[],
+        )
+
+        form = import_form_data(
+            artifact,
+            import_options=FormImportOptions(
+                additional_form_configuration=list(AdditionalFormConfigurationOptions),
+                category=other_category if import_other_category else None,
+                theme=other_theme if import_other_theme else None,
+            ),
+        )
+
+        assert form is not None
+
+        with self.subTest("category"):
+            if import_other_category:
+                self.assertEqual(form.category, other_category)
+            else:
+                self.assertIsNone(form.category)
+
+        with self.subTest("theme"):
+            if import_other_theme:
+                self.assertEqual(form.theme, other_theme)
+            else:
+                self.assertIsNone(form.theme)
 
 
 class ComponentConversionTests(FormioMixin, TestCase):
@@ -1724,3 +2323,376 @@ class StUFZDSConversionTests(TestCase):
                 },
             ],
         )
+
+
+class DisableNextConversionTests(TestCase):
+    @tag("gh-6254")
+    def test_disable_next_action_gets_form_step_uuid_assigned_during_import(self):
+        artifact = Artifact(
+            forms=[
+                {
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Test form",
+                    "slug": "test-form",
+                }
+            ],
+            form_definitions=[
+                {
+                    "uuid": "35bb5a63-d559-4350-b98e-f066980b8ff2",
+                    "name": "Form definition 1",
+                    "slug": "form-definition-1",
+                    "configuration": {
+                        "components": [
+                            {"type": "checkbox", "label": "Checkbox", "key": "checkbox"}
+                        ],
+                    },
+                },
+                {
+                    "uuid": "e5435f10-ec90-4af9-bffc-5cb4a3cbf586",
+                    "name": "Form definition 2",
+                    "slug": "form-definition-2",
+                    "configuration": {
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "label": "Textfield",
+                                "key": "textfield",
+                            },
+                            {
+                                "type": "date",
+                                "label": "Date",
+                                "key": "date",
+                                "prefill": {
+                                    "plugin": "stufbg",
+                                    "attribute": "geboortedatum",
+                                    "identifierRole": "main",
+                                },
+                            },
+                        ],
+                    },
+                },
+                {
+                    "uuid": "f706bdc1-75b9-4dad-a656-f245cd8d7e67",
+                    "name": "Form definition 3",
+                    "slug": "form-definition-3",
+                    "configuration": {
+                        "components": [
+                            {"type": "time", "label": "Time", "key": "time"}
+                        ],
+                    },
+                },
+            ],
+            form_steps=[
+                {
+                    "uuid": "1e9ee006-cc5e-45e1-ab65-17f7fac5ce10",
+                    "index": 0,
+                    "slug": "step-1",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "35bb5a63-d559-4350-b98e-f066980b8ff2"
+                    ),
+                },
+                {
+                    "uuid": "eabe0ef4-a477-4a46-b3b9-e3ad35855aee",
+                    "index": 1,
+                    "slug": "step-2",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "e5435f10-ec90-4af9-bffc-5cb4a3cbf586"
+                    ),
+                },
+                {
+                    "uuid": "4dd64658-cbff-4e02-9b35-08fc71a40e41",
+                    "index": 2,
+                    "slug": "step-3",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "f706bdc1-75b9-4dad-a656-f245cd8d7e67"
+                    ),
+                },
+            ],
+            form_variables=[
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "user_defined",
+                    "key": "user_defined",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                },
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "user_defined_prefill",
+                    "key": "user_defined_prefill",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.date,
+                    "prefill_plugin": "stufbg",
+                    "prefill_attribute": "geboortedatum",
+                    "prefill_identifier_role": IdentifierRoles.main,
+                },
+            ],
+            form_logic=[
+                {
+                    "uuid": "af9cbc0d-af10-47a9-9a65-4ba41f05a549",
+                    "order": 0,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"==": [{"var": "checkbox"}, True]},
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                },
+                {
+                    "uuid": "e2ef49a3-4809-4806-9855-5f3d54c67c70",
+                    "order": 1,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"==": [{"var": "date"}, "2000-01-01"]},
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                },
+                {
+                    "uuid": "077c1cce-314e-4beb-83f9-baad5b90edda",
+                    "order": 2,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {
+                        "or": [
+                            {"==": [{"var": "textfield"}, "foo"]},
+                            {"==": [{"var": "checkbox"}, True]},
+                        ]
+                    },
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                    "is_advanced": True,
+                },
+                {
+                    "uuid": "a9d323a4-ddd4-441f-8eef-4a512a01c822",
+                    "order": 3,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"==": [{"var": "user_defined"}, "foo"]},
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                    "is_advanced": True,
+                },
+                {
+                    "uuid": "fa42b4f3-5229-43e7-9165-07fb4dc81bbe",
+                    "order": 4,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {
+                        "and": [
+                            {"==": [{"var": "user_defined_prefill"}, "2000-01-01"]},
+                            {"==": [{"var": "textfield"}, "foo"]},
+                        ]
+                    },
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                    "is_advanced": True,
+                },
+                {
+                    "uuid": "897d9602-211d-49f6-acd0-04efb8e33fbb",
+                    "order": 5,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"==": [{"var": "checkbox"}, True]},
+                    "actions": [
+                        {
+                            "action": {"type": "disable-next"},
+                            "form_step_uuid": "eabe0ef4-a477-4a46-b3b9-e3ad35855aee",  # step 2
+                        },
+                    ],
+                    "is_advanced": True,
+                },
+            ],
+        )
+
+        form = import_form_data(artifact, import_options=FormImportOptions())
+
+        assert form is not None
+        imported_steps = list(form.formstep_set.all())
+        imported_rules = list(form.formlogic_set.all())
+
+        with self.subTest("Single input variable"):
+            # Only "checkbox" from the first step is in the trigger
+            rule = imported_rules[0]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+
+        with self.subTest(
+            "First step is added as well if field has prefill configuration"
+        ):
+            # Components with prefill specified will have a value set upon submission
+            # creation, this means executing the rule on the first step has an effect on
+            # whether the user can continue. Therefore, even though the input trigger
+            # contains "date" from step 2, we need to assign step 1 as well to ensure no
+            # changes in behavior.
+            rule = imported_rules[1]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("Logic trigger contains input variables from multiple steps"):
+            # The logic trigger contains fields from steps 1 and 2, so ensure we add a
+            # disable-next action for both
+            rule = imported_rules[2]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("With user-defined variable"):
+            # The logic trigger only contains a user-defined variable, and the rule does
+            # not have the "trigger_from_step" defined, so we cannot resolve a step.
+            # Ensure we assign the first step as a best guess.
+            rule = imported_rules[3]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+
+        with self.subTest(
+            "First step is added as well when user-defined variable has prefill "
+            "configuration"
+        ):
+            # The trigger contains "textfield" from the second step, and a user-defined
+            # variable with prefill. Ensure that we add the first and second step in
+            # this case, because prefilled data are available upon submission creation.
+            rule = imported_rules[4]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("Already configured disable-next action is left alone"):
+            # According to our analysis, the first step should be assigned to this
+            # action, but the second was already configured, so we leave it be.
+            rule = imported_rules[5]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+
+    def test_it_takes_trigger_from_step_into_account(self):
+        artifact = Artifact(
+            forms=[
+                {
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Test form",
+                    "slug": "test-form",
+                }
+            ],
+            form_definitions=[
+                {
+                    "uuid": "35bb5a63-d559-4350-b98e-f066980b8ff2",
+                    "name": "Form definition 1",
+                    "slug": "form-definition-1",
+                    "configuration": {
+                        "components": [
+                            {"type": "checkbox", "label": "Checkbox", "key": "checkbox"}
+                        ],
+                    },
+                },
+                {
+                    "uuid": "e5435f10-ec90-4af9-bffc-5cb4a3cbf586",
+                    "name": "Form definition 2",
+                    "slug": "form-definition-2",
+                    "configuration": {
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "label": "Textfield",
+                                "key": "textfield",
+                            },
+                        ],
+                    },
+                },
+                {
+                    "uuid": "f706bdc1-75b9-4dad-a656-f245cd8d7e67",
+                    "name": "Form definition 3",
+                    "slug": "form-definition-3",
+                    "configuration": {
+                        "components": [
+                            {"type": "time", "label": "Time", "key": "time"},
+                        ],
+                    },
+                },
+            ],
+            form_steps=[
+                {
+                    "uuid": "1e9ee006-cc5e-45e1-ab65-17f7fac5ce10",
+                    "index": 0,
+                    "slug": "step-1",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "35bb5a63-d559-4350-b98e-f066980b8ff2"
+                    ),
+                },
+                {
+                    "uuid": "eabe0ef4-a477-4a46-b3b9-e3ad35855aee",
+                    "index": 1,
+                    "slug": "step-2",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "e5435f10-ec90-4af9-bffc-5cb4a3cbf586"
+                    ),
+                },
+                {
+                    "uuid": "4dd64658-cbff-4e02-9b35-08fc71a40e41",
+                    "index": 2,
+                    "slug": "step-3",
+                    "form_definition": (
+                        "http://testserver/api/v2/form-definitions/"
+                        "f706bdc1-75b9-4dad-a656-f245cd8d7e67"
+                    ),
+                },
+            ],
+            form_variables=[],
+            form_logic=[
+                {
+                    "uuid": "af9cbc0d-af10-47a9-9a65-4ba41f05a549",
+                    "order": 0,
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "is_advanced": True,
+                    "json_logic_trigger": {
+                        "or": [
+                            {"==": [{"var": "checkbox"}, True]},
+                            {"==": [{"var": "textfield"}, "foo"]},
+                            {"==": [{"var": "time"}, "12:34"]},
+                        ]
+                    },
+                    "trigger_from_step": (
+                        "/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/"
+                        "eabe0ef4-a477-4a46-b3b9-e3ad35855aee"
+                    ),
+                    "actions": [
+                        {"action": {"type": "disable-next"}, "form_step_uuid": ""}
+                    ],
+                },
+            ],
+        )
+
+        form = import_form_data(artifact, import_options=FormImportOptions())
+
+        assert form is not None
+        _, step2, step3 = form.formstep_set.order_by("order")
+        rule = form.formlogic_set.get()
+        # The trigger also contains "checkbox" from step 1, but it shouldn't be
+        # included in the actions because the "trigger_from_step" is set to step 2.
+        self.assertEqual(len(rule.actions), 2)
+        self.assertEqual(rule.actions[0]["form_step_uuid"], str(step2.uuid))
+        self.assertEqual(rule.actions[1]["form_step_uuid"], str(step3.uuid))
+        self.assertEqual(rule.actions[1]["action"]["type"], "disable-next")
