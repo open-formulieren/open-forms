@@ -58,6 +58,8 @@ class HeaderValidator:
         re.VERBOSE,
     )
 
+    disallowed_headers: set[str] = {"authorization", "x-api-key", "api-key"}
+
     def __call__(self, value: Mapping[str, str] | JSONValue) -> None:
         if value is None:
             return
@@ -120,6 +122,17 @@ class HeaderValidator:
                         "{header!s}: header '{header!s}' contains characters that are not allowed."
                     ).format(header=field_name)
                 )
+
+        forbidden_headers = {
+            header.lower() for header in value
+        } & self.disallowed_headers
+        if forbidden_headers:
+            errors.append(
+                _(
+                    "The following authentication credentials were detected in the headers: {headers}. "
+                    "Authentication credentials must be configured on the service."
+                ).format(headers=", ".join(forbidden_headers))
+            )
 
         if errors:
             raise ValidationError(errors)
