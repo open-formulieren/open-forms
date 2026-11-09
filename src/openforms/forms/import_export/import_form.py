@@ -186,7 +186,6 @@ def _import_additional_form_configuration_data(
             # If the old identifier is not present, then something is wrong with the
             # import data
             old_identifier: str | None = result.row_values.get(identifier_field)
-            assert old_identifier is not None
 
             new_identifier: str | UUID | None = None
             match result.import_type:
