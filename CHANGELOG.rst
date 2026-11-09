@@ -45,43 +45,44 @@ New features
 * [:backend:`6725`] Updated Product model to prepare for Open Product APIs integration.
 * [:backend:`6724`] Added Open Product Configuration model preparing for the integration
   with Open Product APIs.
-* [:backend:`5374`] Now the organization employees have the ability to initiate a form on
-  behald of a person/company using external identifier. The authentication details for
-  this can be pre-loaded in Open Forms.
+* [:backend:`5374`] Added support for preloading authentication identifiers (like BSN)
+  when employees fill out forms on behalf of a customer so that they don't have to type
+  over those details.
 * [:backend:`6618`] Added support for oauth2 flows where the client credentials are
-  submitted in the body or in the Basic Auth header, according to the user's choice.
+  submitted in the body instead of the Basic Auth header. The mechanism to use can be
+  configured per-service.
 * [:backend:`6430`] Introduced new form import options:
   
-  - The user can now select between several options (including products, categories etc.
-    or excluding form confuguration data like registration backends etc.)
-  - Separate concerns like form versioning and form import.
-  - Capture and show errors in process.
+  - You can now de-select parts of form to import, like registration backends, prefill,
+    authentication, product, map layers, attribute groups...
 
 Bugfixes
 --------
 
-* [:backend:`6893`] Fixed not picked up translations because of illegal characters.
-* [:backend:`6876`] Fixed wrong environment variable for outgoing requests. This is now
-  disabled by default and properly documented along with all the other available options.
-* [:backend:`6867`] Paid and incomplete submissions are given a proper amount of time
-  before they are deleted.
+* [:backend:`6893`] Fixed some translations only being partially applied.
+* [:backend:`6876`] Fixed wrong default values for outgoing request logging configuration.
+  This is now disabled by default and properly documented along with all the other
+  available options.
+* Fixed an issue where a service's server certificate bundle wasn't used for verification
+  when additional root certificates are added to the instance's trust store.
+* [:backend:`6867`] Fixed paid but not-yet-registered submissions being treated as
+  incomplete submissions, causing them to be deleted faster than expected.
 * Fixed remaining wrong default value for select component with a data migration.
-* [:backend:`6683`] Fixed crash in Service fetch configuration when no variable was
-  selected.
+* [:backend:`6683`] Fixed a UI crash when configuring service fetch before a target
+  variable is selected.
 
 Project maintenance
 -------------------
 
-- [:backend:`6903`] Pinned ubuntu to 26.04 and updated affected packages in CI.
+* [:backend:`6903`] Pinned ubuntu to 26.04 and updated affected packages in CI.
 * Cleaned up the multiple admin login options code.
 * Restructured/updated the developer documentation entrypoint to separate between internal
   and third party developers.
 * [:backend:`6263`] Added documentation for Open Object API integration.
-* Fixed wrong server certificates used for verification when ``REQUESTS_CA_BUNDLE`` is
-  set as an environment variable (zgw-consumers).
 * Updated github actions.
 * Added dependabot configuration for automatic github actions updates (weekly).
 * Made form variables order in export functionality deterministic.
+* [:backend:`6430`] Substantially refactored the form import code for better maintainability.
 * [:backend:`6690`] Converted part of the backend JS code to TS (like auth mode module, 
   utils, exceptions and many more).  
 * Ensure that admin CSS changes are automatically applied while the application is running.
