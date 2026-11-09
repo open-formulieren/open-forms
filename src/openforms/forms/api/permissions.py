@@ -1,4 +1,10 @@
+from django.db.models import Model
+
 from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.request import Request
+from rest_framework.views import APIView
+
+from openforms.forms.models import Form, FormDefinition
 
 
 class FormAPIPermissions(BasePermission):
@@ -45,3 +51,22 @@ class FormAPIPermissions(BasePermission):
                 return True
             else:
                 return False
+
+    def has_object_permission(
+        self, request: Request, view: APIView, obj: Model
+    ) -> bool:
+        is_staff_user = request.user.is_authenticated and request.user.is_staff
+        has_change_permission = is_staff_user and request.user.has_perm(
+            "forms.change_form"
+        )
+
+        # staff users with the right permissions can do anything
+        if is_staff_user and has_change_permission:
+            return True
+
+        view_action = getattr(view, "action", "")
+        return (
+            request.method in SAFE_METHODS
+            and view_action == "retrieve"
+            and isinstance(obj, (Form, FormDefinition))
+        )
