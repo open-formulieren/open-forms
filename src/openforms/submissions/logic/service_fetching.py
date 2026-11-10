@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
-import jq
 import structlog
 from json_logic import UNDEFINED_VALUE, jsonLogic
 from zgw_consumers.client import build_client
@@ -12,6 +11,7 @@ from zgw_consumers.client import build_client
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormVariable
 from openforms.typing import JSONObject, JSONValue
+from openforms.utils.jq_wrappers import run_jq
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -79,7 +79,7 @@ def perform_service_fetch(
     match fetch_config.data_mapping_type, fetch_config.mapping_expression:
         case DataMappingTypes.jq, expression:
             # XXX raise warning if len(result) > 1 ?
-            value = jq.compile(expression).input(raw_value).first()
+            value = run_jq(expression, raw_value)
         case DataMappingTypes.json_logic, expression:
             value = jsonLogic(expression, raw_value, use_var_undefined=True)
             # variables are returned as UNDEFINED_VALUE when use_var_undefined is set to
