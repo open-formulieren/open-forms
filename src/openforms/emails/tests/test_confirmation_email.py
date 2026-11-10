@@ -11,6 +11,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from privates.test import temp_private_root
+
 from openforms.appointments.constants import AppointmentDetailsStatus
 from openforms.appointments.contrib.demo.plugin import DemoAppointment
 from openforms.appointments.tests.factories import (
@@ -24,6 +26,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
 from openforms.submissions.utils import send_confirmation_email
@@ -104,6 +107,7 @@ class FixedCancelAndChangeLinkPlugin(DemoAppointment):
 
 
 @override_settings(CACHES=NOOP_CACHES)
+@temp_private_root()
 class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_validate_content_syntax(self):
         email = ConfirmationEmailTemplate(subject="foo", content="{{{}}}")
@@ -224,6 +228,12 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                     }
                 ],
             },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.submissionstep_set.first(),
+            _data_path="file",
+            component_key="file",
+            original_name="my-image.jpg",
         )
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_email_template("{% confirmation_summary %}", context)
