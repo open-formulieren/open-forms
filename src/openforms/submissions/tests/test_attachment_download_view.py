@@ -12,7 +12,8 @@ from openforms.accounts.tests.factories import (
 )
 from openforms.utils.tests.auth_assert import AuthAssertMixin
 
-from .factories import SubmissionFileAttachmentFactory
+from ..constants import SUBMISSIONS_SESSION_KEY
+from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 
 
 @temp_private_root()
@@ -165,6 +166,12 @@ class SubmissionAttachmentDownloadTest(WebTest):
 
 @temp_private_root()
 class PermissionTests(AuthAssertMixin, WebTest):
+    def setUp(self) -> None:
+        super().setUp()
+
+        # Needed so that when we get self.app.session we get a session object and not a dict
+        self.app.get("/", status=403)
+
     def test_not_authenticated(self):
         submission_file_attachment = SubmissionFileAttachmentFactory.create(
             submission_step__submission__completed=True,
@@ -209,7 +216,7 @@ class PermissionTests(AuthAssertMixin, WebTest):
 
                 self.assertEqual(response.status_code, 403)
 
-    def test_sufficient_permissions(self):
+    def test_staff_user_with_sufficient_permissions(self):
         user = StaffUserFactory.create(
             user_permissions=["submissions.view_submissionfileattachment"]
         )
@@ -223,6 +230,49 @@ class PermissionTests(AuthAssertMixin, WebTest):
         )
         url = furl(path).add({"hash": submission_file_attachment.content_hash})
 
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_with_sufficient_permissions_but_wrong_submission_in_session(self):
+        user = UserFactory.create(
+            user_permissions=["submissions.view_submissionfileattachment"]
+        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
+        # Create a submission that is unrelated to the submission_file_attachment
+        submission = SubmissionFactory.create()
+
+        # Add the unrelated submission to session data
+        session = self.app.session
+        session.update({SUBMISSIONS_SESSION_KEY: [str(submission.uuid)]})
+        session.save()
+
+        path = reverse(
+            "submissions:attachment-download",
+            kwargs={"uuid": submission_file_attachment.uuid},
+        )
+        url = furl(path).add({"hash": submission_file_attachment.content_hash})
+        response = self.app.get(url, user=user, status=403)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_with_sufficient_permissions_and_related_submission_in_session(self):
+        user = UserFactory.create(
+            user_permissions=["submissions.view_submissionfileattachment"]
+        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
+        submission = submission_file_attachment.submission_step.submission
+
+        # Add the submission related to the submission_file_attachment to session
+        session = self.app.session
+        session.update({SUBMISSIONS_SESSION_KEY: [str(submission.uuid)]})
+        session.save()
+
+        path = reverse(
+            "submissions:attachment-download",
+            kwargs={"uuid": submission_file_attachment.uuid},
+        )
+        url = furl(path).add({"hash": submission_file_attachment.content_hash})
         response = self.app.get(url, user=user)
 
         self.assertEqual(response.status_code, 200)

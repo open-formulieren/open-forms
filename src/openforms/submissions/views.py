@@ -31,9 +31,9 @@ from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import audit_logger
 from openforms.prefill.service import prefill_variables
 from openforms.tokens import BaseTokenGenerator
-from openforms.typing import is_authenticated_request
 from openforms.utils.helpers import obfuscate
 
+from .api.permissions import owns_submission
 from .constants import COSIGN_VERIFICATION_SESSION_KEY
 from .cosigning import send_cosign_otp
 from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
@@ -254,12 +254,6 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
     file_field = "content"
     permission_required = "submissions.view_submissionfileattachment"
 
-    def has_permission(self):
-        assert is_authenticated_request(self.request)
-        if not self.request.user.is_staff:
-            return False
-        return super().has_permission()
-
     def get_object(self, queryset=None):
         assert queryset is None, "Code path with explicit queryset not supported"
         log = logger.bind(
@@ -275,10 +269,21 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
 
         # cache the object for future lookups
         if not hasattr(self, "_object"):
-            obj = super().get_object(queryset=queryset)
+            obj: SubmissionFileAttachment = super().get_object(queryset=queryset)
 
             if not constant_time_compare(obj.content_hash, content_hash):
                 log.warning("invalid_content_hash", download_blocked=True)
+                raise PermissionDenied(_("File access denied."))
+
+            # Either the user is a staff user or the related submission uuid is present
+            # in the session. Otherwise, the user isn't allowed access to the file.
+            if not self.request.user.is_staff and not owns_submission(
+                self.request, obj.submission_step.submission.uuid
+            ):
+                log.warning(
+                    "submission_reference_missing_in_session_data",
+                    download_blocked=True,
+                )
                 raise PermissionDenied(_("File access denied."))
 
             self._object = obj
