@@ -347,7 +347,7 @@ jobs:
       - docker_build
 
     # do not run in forks
-    if: github.event_name == 'push' || ! github.event.pull_request.head.repo.fork
+    if: ${{ github.repository == 'open-formulieren/open-forms' && (github.event_name == 'push' || !github.event.pull_request.head.repo.fork) }}
 
     permissions:
       security-events: write

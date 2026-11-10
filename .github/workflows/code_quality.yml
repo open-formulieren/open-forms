@@ -126,7 +126,7 @@ jobs:
       actions: read
 
     # do not run in forks
-    if: github.event_name == 'push' || ! github.event.pull_request.head.repo.fork
+    if: ${{ github.repository == 'open-formulieren/open-forms' && (github.event_name == 'push' || !github.event.pull_request.head.repo.fork) }}
 
     steps:
       - name: Checkout repository
