@@ -732,7 +732,7 @@ class Form(models.Model):
 
     @transaction.atomic
     def restore_old_version(
-        self, form_version_uuid: str, user: User | None = None
+        self, form_version_uuid: str | UUID, user: User | None = None
     ) -> None:
         from ..import_export.service import (
             AdditionalFormConfigurationOptions,
