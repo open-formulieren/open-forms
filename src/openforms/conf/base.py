@@ -744,6 +744,10 @@ CUSTOMER_INTERACTIONS_USE_REFERENCE_FOR_STANDARD_ADDRESS = config(
 )
 
 
+OPEN_FORMS_JQ_TIMEOUT: float = config(
+    "OPEN_FORMS_JQ_TIMEOUT", default=2.0
+)  # in seconds
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #

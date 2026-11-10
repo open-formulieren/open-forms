@@ -7,11 +7,11 @@ from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
-import jq
 from rest_framework.validators import ValidationError as DRFValidationError
 
 from openforms.forms.api.validators import JsonLogicValidator
 from openforms.typing import JSONValue
+from openforms.utils.jq_wrappers import JQExecutionError, validate_jq
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 
@@ -227,18 +227,16 @@ def validate_mapping_expression(configuration: "ServiceFetchConfiguration") -> N
             )
 
         try:
-            jq.compile(expression)
-        except ValueError as e:
+            validate_jq(expression)
+        except JQExecutionError as exc:
             raise ValidationError(
                 {
                     "mapping_expression": ValidationError(
-                        _("The expression could not be compiled ({err}).").format(
-                            err=str(e)
-                        ),
+                        _("This is not a valid jq expression."),
                         code="jq_invalid",
                     )
                 }
-            ) from e
+            ) from exc
 
     elif mapping_type == DataMappingTypes.json_logic:
         try:
