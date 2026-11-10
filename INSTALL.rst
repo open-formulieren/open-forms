@@ -30,6 +30,7 @@ You need the following libraries and/or programs:
 * `gettext`_
 * `gdal-bin`_ (should pull in ``libgeos``)
 * `chromedriver`_
+* `jq`_
 
 You will also need the following operating-system libraries:
 
@@ -52,6 +53,7 @@ You will also need the following operating-system libraries:
 .. _gettext: https://www.gnu.org/software/gettext/
 .. _gdal-bin: https://docs.djangoproject.com/en/3.2/ref/contrib/gis/gdal/
 .. _chromedriver: https://chromedriver.chromium.org/downloads
+.. _jq: https://jqlang.org/
 
 
 Getting started

@@ -507,10 +507,6 @@ josepy==2.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc
-jq==1.11.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 jsonschema==4.26.0
     # via
     #   -c requirements/base.txt

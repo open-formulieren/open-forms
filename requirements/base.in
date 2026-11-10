@@ -10,7 +10,6 @@ maykin-json-logic-py
 networkx # graphs for logic analysis
 jsonschema
 jsonschema_specifications
-jq
 lxml
 lxml-html-clean
 msgspec
