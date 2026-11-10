@@ -4,6 +4,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 from furl import furl
 from privates.test import temp_private_root
+from unittest_parametrize import ParametrizedTestCase, parametrize
 
 from openforms.accounts.tests.factories import (
     StaffUserFactory,
@@ -17,7 +18,7 @@ from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 
 
 @temp_private_root()
-class SubmissionAttachmentDownloadTest(WebTest):
+class SubmissionAttachmentDownloadTest(ParametrizedTestCase, WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -26,21 +27,23 @@ class SubmissionAttachmentDownloadTest(WebTest):
             SuperUserFactory.create()
         )  # user with all permissions, tests non-permission related behaviour
 
-    def test_incomplete_submission_404(self):
+    @parametrize("completed", [True, False])
+    def test_available_regardless_of_submission_completion(self, completed: bool):
         submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=False,
+            submission_step__submission__completed=completed,
         )
+
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
         )
-        url = furl(path).add({"hash": "dummy-hash"})
+        url = furl(path).add({"hash": submission_file_attachment.content_hash})
 
-        response = self.app.get(url, user=self.super_user, status=404)
+        response = self.app.get(url, user=self.super_user)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
-    def test_submission_not_registered_yet_404(self):
+    def test_available_regardless_of_submission_registration_status(self):
         submission_file_attachments = [
             SubmissionFileAttachmentFactory.create(
                 submission_step__submission__completed=True,
@@ -54,6 +57,10 @@ class SubmissionAttachmentDownloadTest(WebTest):
                 submission_step__submission__completed=True,
                 submission_step__submission__registration_in_progress=True,
             ),
+            SubmissionFileAttachmentFactory.create(
+                submission_step__submission__completed=True,
+                submission_step__submission__registration_success=True,
+            ),
         ]
 
         for submission_file_attachment in submission_file_attachments:
@@ -62,17 +69,14 @@ class SubmissionAttachmentDownloadTest(WebTest):
                     "submissions:attachment-download",
                     kwargs={"uuid": submission_file_attachment.uuid},
                 )
-                url = furl(path).add({"hash": "dummy-hash"})
+                url = furl(path).add({"hash": submission_file_attachment.content_hash})
 
-                response = self.app.get(url, user=self.super_user, status=404)
+                response = self.app.get(url, user=self.super_user)
 
-                self.assertEqual(response.status_code, 404)
+                self.assertEqual(response.status_code, 200)
 
     def test_valid_preconditions_missing_hash_403(self):
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=True,
-            submission_step__submission__registration_success=True,
-        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
@@ -83,10 +87,7 @@ class SubmissionAttachmentDownloadTest(WebTest):
         self.assertEqual(response.status_code, 403)
 
     def test_valid_preconditions_invalid_hash_403(self):
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=True,
-            submission_step__submission__registration_success=True,
-        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
@@ -99,10 +100,7 @@ class SubmissionAttachmentDownloadTest(WebTest):
 
     @override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
     def test_nginx_sendfile_response(self):
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=True,
-            submission_step__submission__registration_success=True,
-        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
@@ -143,8 +141,6 @@ class SubmissionAttachmentDownloadTest(WebTest):
         for filename, escaped in tests:
             with self.subTest(filename=filename, escaped=escaped):
                 submission_file_attachment = SubmissionFileAttachmentFactory.create(
-                    submission_step__submission__completed=True,
-                    submission_step__submission__registration_success=True,
                     file_name="",
                     original_name=filename,
                 )
@@ -188,10 +184,7 @@ class PermissionTests(AuthAssertMixin, WebTest):
         self.assertLoginRequired(response, str(url), target_status_code=302)
 
     def test_insufficient_permissions(self):
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=True,
-            submission_step__submission__registration_success=True,
-        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
@@ -220,10 +213,7 @@ class PermissionTests(AuthAssertMixin, WebTest):
         user = StaffUserFactory.create(
             user_permissions=["submissions.view_submissionfileattachment"]
         )
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed=True,
-            submission_step__submission__registration_success=True,
-        )
+        submission_file_attachment = SubmissionFileAttachmentFactory.create()
         path = reverse(
             "submissions:attachment-download",
             kwargs={"uuid": submission_file_attachment.uuid},
