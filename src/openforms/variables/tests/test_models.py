@@ -73,7 +73,9 @@ class ServiceFetchConfigurationTests(SimpleTestCase):
         )
 
         valid_expression.clean()
-        with self.assertRaisesMessage(ValidationError, "asdf"):
+        with self.assertRaisesMessage(
+            ValidationError, "This is not a valid jq expression."
+        ):
             invalid_expression.clean()
 
     def test_json_logic_mapping_expression_validation(self):
