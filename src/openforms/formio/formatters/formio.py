@@ -8,6 +8,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import structlog
 
+from ..rendering.default import SubmissionAttachmentData
 from ..typing import (
     Component,
     OptionDict,
@@ -88,9 +89,9 @@ class FileFormatter(FormatterBase):
         else:
             return _("attachment: %s") % formatted
 
-    def format(self, component: Component, value: dict) -> str:
+    def format(self, component: Component, value: SubmissionAttachmentData) -> str:
         # this is only valid for display to the user (because filename component option, dedupe etc)
-        return value["originalName"]
+        return value["original_name"]
 
 
 class TextAreaFormatter(FormatterBase):

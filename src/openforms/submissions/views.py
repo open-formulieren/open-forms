@@ -34,7 +34,7 @@ from openforms.tokens import BaseTokenGenerator
 from openforms.typing import is_authenticated_request
 from openforms.utils.helpers import obfuscate
 
-from .constants import COSIGN_VERIFICATION_SESSION_KEY, RegistrationStatuses
+from .constants import COSIGN_VERIFICATION_SESSION_KEY
 from .cosigning import send_cosign_otp
 from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
 from .forms import CosignOTPForm, SearchSubmissionForCosignForm
@@ -247,13 +247,7 @@ class DownloadSubmissionReportView(PrivateMediaView):
 
 
 class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
-    # only consider finished submissions (those are eligible for further processing)
-    # and submissions that have been successfully registered with the registration
-    # backend
-    queryset = SubmissionFileAttachment.objects.filter(
-        submission_step__submission__completed_on__isnull=False,
-        submission_step__submission__registration_status=RegistrationStatuses.success,
-    )
+    queryset = SubmissionFileAttachment.objects.all()
     # expose UUIDs in URLs instead of enumeration-attack susceptible PKs
     slug_field = "uuid"
     slug_url_kwarg = "uuid"
