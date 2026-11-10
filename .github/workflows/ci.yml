@@ -346,6 +346,9 @@ jobs:
       - setup
       - docker_build
 
+    # do not run in forks
+    if: github.event_name == 'push' || ! github.event.pull_request.head.repo.fork
+
     permissions:
       security-events: write
 
