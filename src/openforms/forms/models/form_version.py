@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid as _uuid
 from collections.abc import Mapping
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -134,7 +134,7 @@ class FormVersion(models.Model):
         default=get_app_git_sha,
     )
 
-    objects = FormVersionManager()
+    objects: ClassVar[FormVersionManager] = FormVersionManager()  # pyright: ignore[reportIncompatibleVariableOverride]
 
     class Meta:
         verbose_name = _("form version")
