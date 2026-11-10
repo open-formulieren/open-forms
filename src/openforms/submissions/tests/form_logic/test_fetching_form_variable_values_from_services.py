@@ -1,5 +1,7 @@
+import os
 from typing import Any
 from unittest import skip
+from unittest.mock import patch
 from urllib.parse import unquote
 
 from django.core.exceptions import SuspiciousOperation
@@ -431,3 +433,20 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         with self.assertRaises(ValueError):
             perform_service_fetch(var, FormioData())
+
+    @tag("dangerous", "ghsa-", "security-21", "security-46")
+    @patch.dict(os.environ, {"CTF_VAR": "captured"})
+    def test_it_cannot_read_the_environment(self):
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="get",
+                data_mapping_type=DataMappingTypes.jq,
+                mapping_expression="$ENV.CTF_VAR",
+            )
+        )
+
+        result = perform_service_fetch(var, FormioData())
+
+        assert result is not None
+        self.assertIsNone(result.value)
