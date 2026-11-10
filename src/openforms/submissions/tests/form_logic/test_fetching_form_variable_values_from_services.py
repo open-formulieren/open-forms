@@ -1,6 +1,5 @@
 import os
 from typing import Any
-from unittest import skip
 from unittest.mock import patch
 from urllib.parse import unquote
 
@@ -408,7 +407,6 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         self.assertEqual(value, "https://httpbin.org/get")
 
-    @skip("This will go into an infinite loop")
     @tag("dangerous", "gh-2744")
     @requests_mock.Mocker()
     def test_it_does_not_hang_on_infinite_jq_recursion(self, m):
