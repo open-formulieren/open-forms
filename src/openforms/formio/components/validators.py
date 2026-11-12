@@ -1,6 +1,10 @@
+import re
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+
+from openforms.utils.base64_image import decode_base64_image
 
 
 class EmailVerificationValidator:
@@ -31,8 +35,20 @@ class EmailVerificationValidator:
 
 class Base64PNGImageValidator:
     def __call__(self, value: str):
-        prefix = "data:image/png;base64,"
-        if not value.startswith(prefix):
+        pattern = r"^data:image/png;base64,(.+)$"
+        match = re.match(pattern, value)
+        if not match:
             raise serializers.ValidationError(
                 _("Value must be a Base64 encoded PNG data URL."), code="invalid"
+            )
+
+        # Normalize data to the base64 encoded content
+        data = match.group(1)
+        extension = decode_base64_image(data)[1]
+
+        # Validate that the determined extension is PNG
+        if extension != ".png":
+            raise serializers.ValidationError(
+                _("Invalid file type '{ext}'.").format(ext=extension),
+                code="invalid",
             )
