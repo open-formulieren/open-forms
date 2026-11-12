@@ -98,6 +98,7 @@ export default defineConfig(({mode}) => {
     resolve: {
       tsconfigPaths: true,
       alias: {
+        '@static': resolve(import.meta.dirname, 'src/openforms/static'),
         'compiled-lang': resolve(jsRoot, 'compiled-lang'),
         components: resolve(jsRoot, 'components'),
         hooks: resolve(jsRoot, 'hooks'),
