@@ -1,6 +1,3 @@
-import base64
-import binascii
-import mimetypes
 import uuid
 from collections.abc import Collection
 from typing import ClassVar
@@ -8,10 +5,11 @@ from typing import ClassVar
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.translation import gettext_lazy as _
 
-import magic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SkipField, empty
+
+from openforms.utils.base64_image import decode_base64_image
 
 
 class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
@@ -115,36 +113,7 @@ class Base64ImageField(serializers.ImageField):
 
         assert data
         data = cast(str, data)  # pyright infers Literal[""] from the parent types...
-
-        # decode as base64 - note that this loads the entire file into memory so
-        # appropriate memory constraints limits should be set.
-        try:
-            file_data: bytes = base64.b64decode(data, validate=True)
-        except (TypeError, binascii.Error, ValueError):
-            raise ValidationError(
-                _("Failed to decode the (image) file data."),
-                code="invalid",
-            )
-
-        # guess the mime type from the first 2KiB & validate
-        mime_type: str = magic.from_buffer(file_data[:2048], mime=True)
-        if not mime_type:  # pragma: no cover / I don't know how to test this
-            raise ValidationError(
-                _("Could not detect the file content type."), code="invalid"
-            )
-
-        # get the extension from the mime type
-        extension: str | None = mimetypes.guess_extension(mime_type)
-        if extension is None:  # pragma: no cover / I don't know how to test this
-            raise ValidationError(
-                _(
-                    "Could not determine an extension for the content type {mime_type}."
-                ).format(mime_type=mime_type),
-                code="invalid",
-            )
-
-        assert extension.startswith(".")
-        extension = extension.lower()
+        (content, extension, mime_type) = decode_base64_image(data)
         if extension not in self.ALLOWED_EXTENSIONS:
             raise ValidationError(
                 _("Invalid file type '{ext}'.").format(ext=extension),
@@ -154,7 +123,7 @@ class Base64ImageField(serializers.ImageField):
         file = SimpleUploadedFile(
             # generate a file name
             name=f"{uuid.uuid4()}{extension}",
-            content=file_data,
+            content=content,
             content_type=mime_type,
         )
 

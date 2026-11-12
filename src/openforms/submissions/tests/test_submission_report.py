@@ -3,8 +3,9 @@ from datetime import timedelta
 from unittest.mock import patch
 from uuid import UUID
 
+from django.core.exceptions import SuspiciousOperation
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
@@ -695,6 +696,32 @@ class DownloadSubmissionReportTests(APITestCase):
         report.refresh_from_db()
         self.assertEqual(report.task_id, "some-id")
         self.assertEqual(SubmissionReport.objects.count(), 1)
+
+    @tag("dangerous", "ghsa-9wxh-2452-43g8", "security-44")
+    @patch("celery.app.task.Task.request")
+    def test_submitting_non_data_url_for_signature_component_should_not_result_in_submission_report(
+        self, mock_request
+    ):
+        mock_request.id = "some-id"
+        image_url = "http://example.com/image.png"
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "type": "signature",
+                    "key": "signature",
+                    "label": "Signature",
+                },
+            ],
+            submitted_data={
+                "signature": image_url,
+            },
+        )
+
+        with self.assertRaises(SuspiciousOperation):
+            generate_submission_report(submission.id)
+
+        self.assertRaises(ValueError, lambda: submission.report.content.path)
 
 
 @temp_private_root()

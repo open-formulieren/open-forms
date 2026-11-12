@@ -30,7 +30,6 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.components.validators import EmailVerificationValidator
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.form_logic import process_visibility
 from openforms.typing import JSONObject, JSONValue
@@ -78,6 +77,7 @@ from ..typing import (
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
 from .utils import _normalize_pattern, sanitize_file_name
+from .validators import Base64PNGImageValidator, EmailVerificationValidator
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -984,7 +984,11 @@ class Signature(BasePlugin[Component]):
     def build_serializer_field(self, component: Component) -> serializers.CharField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        return serializers.CharField(required=required, allow_blank=not required)
+        return serializers.CharField(
+            required=required,
+            allow_blank=not required,
+            validators=[Base64PNGImageValidator()],
+        )
 
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
