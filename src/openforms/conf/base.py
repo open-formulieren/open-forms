@@ -538,7 +538,11 @@ LOGGING = {
         },
         "log_outgoing_requests": {
             "handlers": (
-                ["console", "save_outgoing_requests"] if LOG_OUTGOING_REQUESTS else []
+                # always wire up the database handler - it determines at run-time if the
+                # log should be stored or not. The console logging is driven by the
+                # global configuration at deployment time.
+                ["save_outgoing_requests"]
+                + (["console"] if LOG_OUTGOING_REQUESTS else [])
             ),
             "level": "DEBUG",
             "propagate": False,
