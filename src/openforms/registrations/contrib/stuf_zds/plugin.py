@@ -235,17 +235,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             **options,
             "omschrijving": submission.form.admin_name,
         }
-        with get_client(options=zaak_options) as client:
-            # obtain a zaaknummer & save it - first, check if we have an intermediate result
-            # from earlier attempts. if we do, do not generate a new number
-            zaak_id = execute_unless_result_exists(
-                client.create_zaak_identificatie,
-                submission,
-                "intermediate.zaaknummer",
-                default="",
-            )
-
-        return PreRegistrationResult(reference=zaak_id)
+        return PreRegistrationResult(reference=submission.pk)
 
     def get_extra_data(
         self, submission: Submission, options: RegistrationOptions
