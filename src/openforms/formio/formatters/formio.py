@@ -1,6 +1,7 @@
 from datetime import time
 from typing import Any
 
+from django.core.exceptions import SuspiciousOperation
 from django.template.defaultfilters import linebreaksbr, time as fmt_time, yesno
 from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
@@ -160,9 +161,8 @@ class SignatureFormatter(FormatterBase):
         if not self.as_html:
             return text
 
-        assert value.startswith("data:image/"), (
-            "Expected 'data:' URI with image mime type"
-        )
+        if not value.startswith("data:image/"):
+            raise SuspiciousOperation("Expected 'data:' URI with image mime type")
 
         # max-width is required for e-mail styling where it may overflow a table cell
         return format_html(
