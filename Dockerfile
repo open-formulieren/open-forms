@@ -128,7 +128,6 @@ COPY --from=backend-build /usr/local/bin/maykin-common /usr/local/bin/maykin-com
 
 # copy frontend build statics
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
-COPY --from=frontend-build /app/node_modules/@fortawesome/fontawesome-free/webfonts /app/node_modules/@fortawesome/fontawesome-free/webfonts
 
 # Include SDK files. Collectstatic produces both the versions with and without hash
 # in the STATICFILES_ROOT
