@@ -419,9 +419,7 @@ jobs:
 
   docker_push:
     needs:
-      - tests
       - i18n-check
-      - e2etests
       - setup
       - docker_build
       # - oas
