@@ -235,17 +235,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             **options,
             "omschrijving": submission.form.admin_name,
         }
-        with get_client(options=zaak_options) as client:
-            # obtain a zaaknummer & save it - first, check if we have an intermediate result
-            # from earlier attempts. if we do, do not generate a new number
-            zaak_id = execute_unless_result_exists(
-                client.create_zaak_identificatie,
-                submission,
-                "intermediate.zaaknummer",
-                default="",
-            )
-
-        return PreRegistrationResult(reference=zaak_id)
+        return PreRegistrationResult(reference=f"open-formulieren-{submission.pk}")
 
     def get_extra_data(
         self, submission: Submission, options: RegistrationOptions
@@ -575,16 +565,13 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 result=True,
             )
 
-            doc_id = execute_unless_result_exists(
-                client.create_document_identificatie,
-                submission,
-                "intermediate.document_nummers.pdf-report",
-                default="",
-            )
             submission_report = SubmissionReport.objects.get(submission=submission)
             execute_unless_result_exists(
                 partial(
-                    client.create_zaak_document, zaak_id, doc_id, submission_report
+                    client.create_zaak_document,
+                    zaak_id,
+                    f"open-formulieren-{submission.pk}",
+                    submission_report,
                 ),
                 submission,
                 "intermediate.documents_created.pdf-report",
@@ -593,17 +580,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             )
 
             for attachment in submission.attachments:
-                attachment_doc_id = execute_unless_result_exists(
-                    client.create_document_identificatie,
-                    submission,
-                    f"intermediate.document_nummers.{attachment.id}",  # type: ignore
-                    default="",
-                )
                 execute_unless_result_exists(
                     partial(
                         client.create_zaak_attachment,
                         zaak_id,
-                        attachment_doc_id,
+                        f"open-formulieren-attachment-{submission.pk}",
                         attachment,
                     ),
                     submission,
@@ -722,16 +703,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             # Zaak ID reserved during the pre-registration phase
             zaak_id = submission.public_registration_reference
 
-            doc_id = execute_unless_result_exists(
-                client.create_document_identificatie,
-                submission,
-                f"intermediate.confirmation_emails.{message_id}.document_id",
-            )
             execute_unless_result_exists(
                 partial(
                     client.create_confirmation_email_attachment,
                     zaak_id,
-                    doc_id,
+                    f"open-formulieren-{submission.pk}",
                     content,
                 ),
                 submission,
