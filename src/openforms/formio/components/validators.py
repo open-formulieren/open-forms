@@ -27,3 +27,12 @@ class EmailVerificationValidator:
 
         if not has_verification:
             raise serializers.ValidationError(error_format, code="unverified")
+
+
+class Base64PNGImageValidator:
+    def __call__(self, value: str):
+        prefix = "data:image/png;base64,"
+        if not value.startswith(prefix):
+            raise serializers.ValidationError(
+                _("Value must be a Base64 encoded PNG data URL."), code="invalid"
+            )
