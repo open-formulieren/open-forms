@@ -1,5 +1,8 @@
-from collections.abc import Mapping
+import zipfile
+from collections.abc import Collection, Mapping
+from io import BytesIO
 from os import PathLike
+from uuid import UUID
 
 from django.http.response import HttpResponseBase
 
@@ -20,7 +23,7 @@ from .serializers import (
     FormStepExportSerializer,
     FormVariableExportSerializer,
 )
-from .structs import Artifact
+from .structs import Artifact, ZipWritable
 
 
 def export_form(
@@ -29,19 +32,35 @@ def export_form(
     archive_name: str | PathLike[str] | None = None,
     response: HttpResponseBase | None = None,
 ):
-    artifact = get_export_artifact(form_id, export_options)
+    form = Form.objects.get(pk=form_id)
+    artifact = get_export_artifact(form, export_options)
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
     artifact.write_zip(target=outfile)  # pyright: ignore[reportArgumentType]
     return outfile
 
 
-def get_export_artifact(form_id: int, export_options: FormExportOptions) -> Artifact:
+def export_multiple_forms(
+    form_uuids: Collection[str | UUID],
+    export_options: FormExportOptions,
+    target: ZipWritable,
+) -> None:
+    forms = Form.objects.filter(uuid__in=form_uuids)
+
+    # resulting container zip file that will contain the nested export zips
+    with zipfile.ZipFile(target, "w") as out_file:
+        for form in forms:
+            artifact = get_export_artifact(form, export_options)
+            single_export = BytesIO()
+            artifact.write_zip(single_export)
+            out_file.writestr(f"form_{form.slug}.zip", single_export.getvalue())
+
+
+def get_export_artifact(form: Form, export_options: FormExportOptions) -> Artifact:
     """
     Prepare a single form export artifact.
     """
-    form = Form.objects.get(pk=form_id)
-    form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
+    form_steps = FormStep.objects.filter(form__pk=form.pk).select_related(
         "form_definition"
     )
     form_definitions = [form_step.form_definition for form_step in form_steps]

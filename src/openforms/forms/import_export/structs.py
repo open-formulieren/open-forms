@@ -20,6 +20,8 @@ from typing import (  # Any because we don't want msgspec to deeply decode conte
 
 from django.conf import settings
 from django.utils import timezone
+from django.utils.encoding import force_str
+from django.utils.functional import Promise
 from django.utils.safestring import SafeString
 
 import msgspec
@@ -53,6 +55,8 @@ def _enc_hook(obj: object) -> object:
             return str(obj)
         case SafeString():
             return obj[:]
+        case Promise():
+            return force_str(obj, strings_only=True)
         case _:  # pragma: no cover
             raise NotImplementedError(f"Objects of type {type(obj)} are not supported")
 
@@ -83,8 +87,8 @@ class ZipWritable(Protocol):
     def close(self) -> None: ...
 
 
-class _ZipReadable(Protocol):
-    # effectively the same as _ZipReadable from the typeshed
+class ZipReadable(Protocol):
+    # effectively the same as ZipReadable from the typeshed
     def seek(self, offset: int, whence: int = 0, /) -> int: ...
     def read(self, n: int = -1, /) -> bytes: ...
 
@@ -158,7 +162,7 @@ class Artifact(msgspec.Struct, kw_only=True, rename="camel"):
         return msgspec.convert(raw_data, type=cls, strict=True, dec_hook=_dec_hook)
 
     @classmethod
-    def from_zip(cls, file: str | PathLike[str] | _ZipReadable) -> Self:
+    def from_zip(cls, file: str | PathLike[str] | ZipReadable) -> Self:
         with zipfile.ZipFile(file, "r") as zip_file:
             namelist = zip_file.namelist()
             raw_data = {
@@ -175,7 +179,7 @@ class Artifact(msgspec.Struct, kw_only=True, rename="camel"):
 
     @overload
     def as_resources_mapping(
-        self, *, encode: Literal[False]
+        self, *, encode: Literal[False] = False
     ) -> Mapping[str, Sequence[JSONObject]]: ...
 
     def as_resources_mapping(

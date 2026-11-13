@@ -131,7 +131,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
     def get_is_bulk_import(self, import_file):
         with zipfile.ZipFile(import_file, "r") as file:
             names_list = file.namelist()
-        return all([name.endswith(".zip") for name in names_list])
+        return all(name.endswith(".zip") for name in names_list)
 
     def form_valid(self, form):
         import_file = form.cleaned_data["file"]
