@@ -98,6 +98,11 @@ export default defineConfig(({mode}) => {
     resolve: {
       tsconfigPaths: true,
       alias: {
+        '@static': resolve(import.meta.dirname, 'src/openforms/static'),
+        '@fa-webfonts': resolve(
+          import.meta.dirname,
+          'node_modules/@fortawesome/fontawesome-free/webfonts'
+        ),
         'compiled-lang': resolve(jsRoot, 'compiled-lang'),
         components: resolve(jsRoot, 'components'),
         hooks: resolve(jsRoot, 'hooks'),
