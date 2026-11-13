@@ -1019,6 +1019,11 @@
     "description": "\"!=\" operator description",
     "originalDefault": "is not equal to"
   },
+  "FurkIg": {
+    "defaultMessage": "Only \"Use linked product price\" mode is allowed when an external product is selected.",
+    "description": "Warning message that informs the user can only select certain price logic modes when an external product is selected.",
+    "originalDefault": "Only \"Use linked product price\" mode is allowed when an external product is selected."
+  },
   "FyNxJn": {
     "defaultMessage": "Text",
     "description": "Interpolation expression field label",
