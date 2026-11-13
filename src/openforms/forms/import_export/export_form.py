@@ -1,5 +1,8 @@
-from collections.abc import Mapping
+import zipfile
+from collections.abc import Collection, Mapping
+from io import BytesIO
 from os import PathLike
+from uuid import UUID
 
 from django.http.response import HttpResponseBase
 
@@ -20,7 +23,7 @@ from .serializers import (
     FormStepExportSerializer,
     FormVariableExportSerializer,
 )
-from .structs import Artifact
+from .structs import Artifact, ZipWritable
 
 
 def export_form(
@@ -35,6 +38,22 @@ def export_form(
     assert outfile, "Either response or archive_name must be provided"
     artifact.write_zip(target=outfile)  # pyright: ignore[reportArgumentType]
     return outfile
+
+
+def export_multiple_forms(
+    form_uuids: Collection[str | UUID],
+    export_options: FormExportOptions,
+    target: ZipWritable,
+) -> None:
+    forms = Form.objects.filter(uuid__in=form_uuids)
+
+    # resulting container zip file that will contain the nested export zips
+    with zipfile.ZipFile(target, "w") as out_file:
+        for form in forms:
+            artifact = get_export_artifact(form, export_options)
+            single_export = BytesIO()
+            artifact.write_zip(single_export)
+            out_file.writestr(f"form_{form.slug}.zip", single_export.getvalue())
 
 
 def get_export_artifact(form: Form, export_options: FormExportOptions) -> Artifact:
