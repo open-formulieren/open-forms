@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Iterable
 
-from django.db.models import Count, F
+from openforms.plugins.registry import (
+    VENDOR_HINT_METRIC_LABEL,
+    BaseRegistry,
+    MetricLabels,
+)
 
-from openforms.plugins.registry import BaseRegistry
-
-from .base import BasePlugin
+from .base import BasePlugin, EmptyOptions
 
 
 class Registry(BaseRegistry[BasePlugin]):
@@ -22,18 +25,45 @@ class Registry(BaseRegistry[BasePlugin]):
                 "Please specify 'configuration_options' attribute for plugin class."
             )
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
-        from openforms.forms.models import Form
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, MetricLabels]]:
+        from openforms.forms.models import Form, FormRegistrationBackend
 
-        qs = (
-            Form.objects.live()
-            .values(plugin=F("registration_backends__backend"))
-            .values("plugin")
-            .annotate(count=Count("*"))
-        )
-        usage_counts: dict[str, int] = {item["plugin"]: item["count"] for item in qs}
+        usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)
+
+        active_registration_backends = FormRegistrationBackend.objects.filter(
+            form__in=Form.objects.live()
+        ).iterator()
+
+        for backend in active_registration_backends:
+            if backend.backend not in self:
+                continue
+            plugin = self[backend.backend]
+
+            raw_options = getattr(
+                backend, "configuration", getattr(backend, "options", {})
+            )
+            if plugin.configuration_options is not EmptyOptions:
+                serializer = plugin.configuration_options(data=raw_options or {})
+                serializer.is_valid(raise_exception=True)
+                options = serializer.validated_data
+            else:
+                options = raw_options or {}
+
+            vendor_hint = plugin.get_vendor_hint(options)
+
+            usage_counts[(plugin, vendor_hint)] += 1
+
         for plugin in self:
-            yield plugin, usage_counts.get(plugin.identifier, 0)
+            plugin_usages = {k: v for k, v in usage_counts.items() if k[0] == plugin}
+
+            if not plugin_usages:
+                yield plugin, 0, {}
+            else:
+                for (p, vendor_hint), count in plugin_usages.items():
+                    tags = (
+                        {VENDOR_HINT_METRIC_LABEL: vendor_hint} if vendor_hint else {}
+                    )
+                    yield p, count, tags
 
 
 # Sentinel to provide the default registry. You an easily instantiate another

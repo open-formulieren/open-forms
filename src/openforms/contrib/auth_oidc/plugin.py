@@ -42,6 +42,14 @@ class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
     provides_auth: ClassVar[Sequence[AuthAttribute]]
     oidc_plugin_identifier: ClassVar[str]
 
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        try:
+            oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
+            config = oidc_plugin.get_config()
+            return config.oidc_provider.oidc_op_authorization_endpoint or None
+        except Exception:
+            return None
+
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
     ) -> HttpResponseRedirect:

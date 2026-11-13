@@ -42,6 +42,14 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
     options = CommunicationPreferencesSerializer
     rerun_on_submission_resume = True
 
+    def get_vendor_hint(self, options: CommunicationPreferencesOptions) -> str | None:
+        try:
+            return options[
+                "customer_interactions_api_group"
+            ].customer_interactions_service.api_root
+        except (KeyError, AttributeError):
+            return None
+
     @classmethod
     def get_prefill_values_from_options(
         cls,
