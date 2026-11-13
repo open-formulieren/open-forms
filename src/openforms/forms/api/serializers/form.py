@@ -200,28 +200,49 @@ class HelpDialogSerializer(serializers.Serializer):
         fields = ("content", "image")
 
 
-class ProductReferenceField(serializers.HyperlinkedRelatedField):
+class NestedProductSerializer(serializers.ModelSerializer):
     """
-    Custom field for the product.
-
-    We need to expose the ``product_source`` to the frontend so we have to manually
-    handle this. We receive the same structure so we have to also get the url from the
-    nested object and retrieve the product instance.
+    Expose the product reference and additional metadata directly to the frontend.
     """
 
-    def to_representation(self, value):
-        return {
-            "url": super().to_representation(value),
-            "product_source": value.product_source,
-        }
+    url = serializers.HyperlinkedIdentityField(
+        view_name="api:product-detail", lookup_field="uuid"
+    )
+
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Product
+        fields = ("url", "product_source")
+
+    def get_fields(self):
+        fields = super().get_fields()
+        # also required for writing, this makes it show up in the docs
+        fields["url"].read_only = False
+        return fields
+
+
+@extend_schema_field(NestedProductSerializer)
+class NestedProductField(serializers.HyperlinkedRelatedField):
+    def __init__(self, **kwargs):
+        kwargs["view_name"] = "api:product-detail"
+        kwargs["lookup_field"] = "uuid"
+        kwargs["queryset"] = Product.objects.all()
+        super().__init__(**kwargs)
+
+    def use_pk_only_optimization(self):
+        return False
+
+    def to_representation(self, value):  # pyright: ignore[reportIncompatibleMethodOverride]
+        return NestedProductSerializer(value, context=self.context).data
 
     def to_internal_value(self, data):
-        if isinstance(data, dict):
-            data = data.get("url")
-        return super().to_internal_value(data)
-
-    def get_choices(self, cutoff=None):
-        return {}
+        if not isinstance(data, dict):
+            self.fail("incorrect_type", data_type=type(data).__name__)
+        if not (url := data.get("url")):
+            raise serializers.ValidationError({"url": _("This field is required.")})
+        try:
+            return super().to_internal_value(url)
+        except serializers.ValidationError as exc:
+            raise serializers.ValidationError({"url": exc.detail})
 
 
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
@@ -275,14 +296,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the theme in the Open Forms API"),
     )
-    product = ProductReferenceField(
+    product = NestedProductField(
         label=_("product"),
         help_text=_("Product related information inside an object."),
-        queryset=Product.objects.all(),
         required=False,
         allow_null=True,
-        view_name="api:product-detail",
-        lookup_field="uuid",
     )
     payment_backend = serializers.ChoiceField(
         choices=[],
