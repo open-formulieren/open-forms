@@ -18,6 +18,7 @@ from .map import Map
 from .np_family_members import NpFamilyMembers
 from .number import Number
 from .partners import Partners
+from .phone_number import PhoneNumber
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -25,6 +26,7 @@ __all__ = [  # noqa: RUF022
     "Email",
     "Date",
     "DateTime",
+    "PhoneNumber",
     "File",
     "Number",
     "Checkbox",
@@ -54,6 +56,7 @@ type AnyComponent = (
     Email
     | Date
     | DateTime
+    | PhoneNumber
     | File
     | Number
     | Checkbox
