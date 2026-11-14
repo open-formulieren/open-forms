@@ -22,6 +22,7 @@ from rest_framework import ISO_8601, serializers
 from rest_framework.fields import get_error_detail
 from rest_framework.request import Request
 
+from of_datetime_utils import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.api.geojson import (
     GeoJsonGeometryPolymorphicSerializer,
     GeoJsonGeometryTypes,
@@ -41,7 +42,6 @@ from openforms.prefill.contrib.family_members.plugin import (
 )
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue, VariableValue
-from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator

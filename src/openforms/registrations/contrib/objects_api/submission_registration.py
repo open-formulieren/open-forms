@@ -12,6 +12,7 @@ from typing import (
 
 import structlog
 
+from of_datetime_utils import datetime_in_amsterdam
 from openforms.contrib.objects_api.clients import (
     DocumentenClient,
     get_catalogi_client,
@@ -41,7 +42,6 @@ from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
 from openforms.typing import VariableValue
-from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.utils import get_variables_for_context
 
