@@ -193,13 +193,16 @@ class WYSIWYGNode(ComponentNode):
         return content_without_tags.rstrip()
 
 
+class SubmissionAttachmentData(TypedDict):
+    url: str
+    size: int
+    original_name: str
+    display_name: str
+
+
 @register("file")
 class FileNode(ComponentNode):
-    @property
-    def display_value(self) -> str:
-        if self.mode != RenderModes.registration:
-            return super().display_value
-
+    def _get_submission_attachments_data(self) -> list[SubmissionAttachmentData]:
         # determine the data path to this file component, from the root of the
         # submission data
         data_path = f"{self.path}.{self.key}" if self.path else self.key
@@ -210,7 +213,7 @@ class FileNode(ComponentNode):
             for attachment in self.renderer.submission.attachments
             if attachment.data_path == data_path
         ]
-        files: list[tuple[furl, str]] = []
+        files: list[SubmissionAttachmentData] = []
 
         for attachment in attachments:
             display_name = attachment.get_display_name()
@@ -222,16 +225,42 @@ class FileNode(ComponentNode):
             )
             url = furl(download_link)
             url.args["hash"] = attachment.content_hash
-            files.append((url, display_name))
+            files.append(
+                {
+                    "url": str(url),
+                    "size": attachment.content.size,
+                    "display_name": display_name,
+                    "original_name": attachment.original_name,
+                }
+            )
+
+        return files
+
+    @property
+    def display_value(self) -> str:
+        if self.mode != RenderModes.registration:
+            return super().display_value
+
+        files: list[SubmissionAttachmentData] = self._get_submission_attachments_data()
 
         if self.as_html:
             return format_html_join(
                 ", ",
                 '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
-                files,
+                ((file["url"], file["display_name"]) for file in files),
             )
         else:
-            return ", ".join(f"{link} ({display})" for link, display in files)
+            return ", ".join(
+                f"{file['url']} ({file['display_name']})" for file in files
+            )
+
+    @property
+    def value(self) -> list[SubmissionAttachmentData]:
+        value = super().value
+        if not value:
+            return []
+
+        return self._get_submission_attachments_data()
 
 
 @register("editgrid")
