@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from .base_component import supports_multiple
 from .components import (
+    BSN,
     AddressNL,
     AnyComponent,
 )
@@ -21,5 +22,6 @@ __all__ = [  # noqa: RUF022
     "supports_multiple",
     "get_template_trace_context",
     # Special fields
+    "BSN",
     "AddressNL",
 ]
