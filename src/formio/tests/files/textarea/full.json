@@ -1,0 +1,69 @@
+{
+  "autocomplete": "name",
+  "autoExpand": false,
+  "clearOnHide": true,
+  "conditional": {
+    "eq": null,
+    "show": null,
+    "when": null
+  },
+  "defaultValue": "",
+  "description": "A description",
+  "disabled": false,
+  "errors": {
+    "maxLength": "Een maximale lengte.",
+    "required": "Je moet een waarde opgeven!!!"
+  },
+  "faqItems": [
+    {
+      "content": "<p>Informational content</p>",
+      "id": "123",
+      "label": "Extra info",
+      "openForms": {
+        "translations": {
+          "nl": {
+            "content": "<p>Informatieinhoud</p>",
+            "label": "Extra info"
+          }
+        }
+      }
+    }
+  ],
+  "hidden": false,
+  "id": "yejak",
+  "isSensitiveData": false,
+  "key": "someInput",
+  "label": "Some input",
+  "multiple": false,
+  "openForms": {
+    "translations": {
+      "nl": {
+        "description": "bar",
+        "label": "foo"
+      }
+    }
+  },
+  "placeholder": "",
+  "registration": {
+    "attribute": ""
+  },
+  "rows": 3,
+  "showCharCount": true,
+  "showInEmail": false,
+  "showInPDF": true,
+  "showInSummary": true,
+  "tooltip": "A tooltip",
+  "translatedErrors": {
+    "nl": {
+      "maxLength": "Een maximale lengte.",
+      "required": "Je moet een waarde opgeven!!!"
+    }
+  },
+  "type": "textarea",
+  "validate": {
+    "maxLength": 20,
+    "pattern": "",
+    "plugins": [],
+    "required": false
+  }
+}
