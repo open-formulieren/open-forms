@@ -12,7 +12,15 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import parsers, permissions, response, status, views, viewsets
+from rest_framework import (
+    mixins,
+    parsers,
+    permissions,
+    response,
+    status,
+    views,
+    viewsets,
+)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
@@ -226,17 +234,6 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
 
 
 @extend_schema_view(
-    list=extend_schema(
-        summary=_("List forms"),
-        description=_(
-            "List the active forms, including the pointers to the form steps. "
-            "Form steps are included in order as they should appear.\n\n"
-            "**Warning: the response data depends on user permissions**\n\n"
-            "Non-staff users receive a subset of all the documented fields. The fields "
-            "reserved for staff users are used for internal form configuration. These "
-            "are: \n\n{admin_fields}"
-        ).format(admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN),
-    ),
     retrieve=extend_schema(
         summary=_("Retrieve form details"),
         parameters=[
@@ -265,15 +262,6 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
             "forced by setting a language cookie and reflected in the Content-Language "
             "response header. Normal HTTP Content Negotiation rules apply."
         ).format(admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN),
-    ),
-    create=extend_schema(summary=_("Create form")),
-    update=extend_schema(
-        summary=_("Update all details of a form"),
-        parameters=[UUID_OR_SLUG_PARAMETER],
-    ),
-    partial_update=extend_schema(
-        summary=_("Update given details of a form"),
-        parameters=[UUID_OR_SLUG_PARAMETER],
     ),
     destroy=extend_schema(
         summary=_("Mark form as deleted"),
@@ -318,7 +306,9 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
         },
     ),
 )
-class FormViewSet(viewsets.ModelViewSet):
+class FormViewSet(
+    mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
+):
     """
     Manage forms.
 

@@ -6,9 +6,9 @@ from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactor
 from openforms.middleware import CSRF_TOKEN_HEADER_NAME, IS_FORM_DESIGNER_HEADER_NAME
 
 
-class CSRFTokenMiddleware(TestCase):
+class CSRFTokenMiddlewareTests(TestCase):
     def test_csrftoken_in_header_api_endpoint(self):
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url)
 
@@ -20,7 +20,7 @@ class CSRFTokenMiddleware(TestCase):
         self.assertNotIn(CSRF_TOKEN_HEADER_NAME, response.headers)
 
     def test_csrftoken_in_header_api_endpoint_with_subpath(self):
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url, SCRIPT_NAME="/of")
 
@@ -34,7 +34,7 @@ class CSRFTokenMiddleware(TestCase):
 
 class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_not_authenticated(self):
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url)
 
@@ -48,7 +48,7 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_superuser(self):
         user = SuperUserFactory.create()
         self.client.force_login(user=user)
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url)
 
@@ -58,7 +58,7 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_staff_without_permissions(self):
         user = StaffUserFactory.create()
         self.client.force_login(user=user)
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url)
 
@@ -68,7 +68,7 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_staff_with_permissions(self):
         user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_login(user=user)
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url)
 
@@ -83,7 +83,7 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_staff_with_permissions_with_subpath(self):
         user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_login(user=user)
-        url = reverse("api:form-list")
+        url = reverse("api:ping")
 
         response = self.client.get(url, SCRIPT_NAME="/of")
 

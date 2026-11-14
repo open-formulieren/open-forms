@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.models import Form
 
 from .factories import ThemeFactory
 
@@ -84,29 +83,3 @@ class ThemesAPITests(APITestCase):
         self.assertIn("url", data[0])
         self.assertIn("uuid", data[0])
         self.assertIn("name", data[0])
-
-    def test_create_form_with_theme(self):
-        user = UserFactory.create(is_staff=True, user_permissions=["change_form"])
-        theme = ThemeFactory.create()
-        theme_url = reverse("api:themes-detail", kwargs={"uuid": theme.uuid})
-        url = reverse("api:form-list")
-        self.client.force_authenticate(user=user)
-
-        data = {
-            "name": "Test Post Form",
-            "slug": "test-post-form",
-            "theme": theme_url,
-        }
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Form.objects.count(), 1)
-        form = Form.objects.get()
-        self.assertEqual(form.name, "Test Post Form")
-        self.assertEqual(form.theme, theme)
-
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["theme"], f"http://testserver{theme_url}")
