@@ -7,6 +7,7 @@ from .children import Children
 from .content import Content
 from .cosign import CosignV1, CosignV2
 from .currency import Currency
+from .customer_profile import CustomerProfile
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [  # noqa: RUF022
@@ -18,6 +19,7 @@ __all__ = [  # noqa: RUF022
     "CosignV2",
     "AddressNL",
     "Children",
+    "CustomerProfile",
     "CosignV1",
     # Layout
     "Content",
@@ -35,6 +37,7 @@ type AnyComponent = (
     | CosignV2
     | AddressNL
     | Children
+    | CustomerProfile
     | CosignV1
     # Layout
     | Content
