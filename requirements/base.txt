@@ -258,7 +258,7 @@ djangorestframework==3.18.3
     #   drf-spectacular
 djangorestframework-camel-case==1.4.2
     # via -r requirements/base.in
-dnspython==2.9.1
+dnspython==2.9.2
     # via django-health-check
 docutils==0.21.2
     # via django-setup-configuration
@@ -303,8 +303,6 @@ humanize==4.15.0
     # via flower
 idna==3.11
     # via requests
-importlib-metadata==8.7.1
-    # via opentelemetry-api
 inflection==0.5.1
     # via
     #   django-camunda
@@ -379,7 +377,7 @@ o365==2.1.9
     # via
     #   -r requirements/base.in
     #   django-o365mail
-oauthlib==3.3.1
+oauthlib==4.0.1
     # via requests-oauthlib
 onlinepayments-sdk-python3==7.1.0
     # via -r requirements/base.in
@@ -387,9 +385,10 @@ open-klant-client==0.8.0
     # via -r requirements/base.in
 openpyxl==3.1.5
     # via tablib
-opentelemetry-api==1.39.1
+opentelemetry-api==1.45.2
     # via
     #   maykin-common
+    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
@@ -402,17 +401,23 @@ opentelemetry-api==1.39.1
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-otlp==1.39.1
+opentelemetry-exporter-http-transport==0.66b2
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp==1.45.2
     # via maykin-common
-opentelemetry-exporter-otlp-proto-common==1.39.1
+opentelemetry-exporter-otlp-common==0.66b2
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.39.1
+opentelemetry-exporter-otlp-proto-common==1.45.2
+    # via
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.45.2
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.39.1
+opentelemetry-exporter-otlp-proto-http==1.45.2
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.60b1
+opentelemetry-instrumentation==0.66b2
     # via
     #   opentelemetry-instrumentation-celery
     #   opentelemetry-instrumentation-dbapi
@@ -421,34 +426,35 @@ opentelemetry-instrumentation==0.60b1
     #   opentelemetry-instrumentation-redis
     #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
-opentelemetry-instrumentation-celery==0.60b1
+opentelemetry-instrumentation-celery==0.66b2
     # via maykin-common
-opentelemetry-instrumentation-dbapi==0.60b1
+opentelemetry-instrumentation-dbapi==0.66b2
     # via opentelemetry-instrumentation-psycopg
-opentelemetry-instrumentation-django==0.60b1
+opentelemetry-instrumentation-django==0.66b2
     # via maykin-common
-opentelemetry-instrumentation-psycopg==0.60b1
+opentelemetry-instrumentation-psycopg==0.66b2
     # via maykin-common
-opentelemetry-instrumentation-redis==0.60b1
+opentelemetry-instrumentation-redis==0.66b2
     # via maykin-common
-opentelemetry-instrumentation-requests==0.60b1
+opentelemetry-instrumentation-requests==0.66b2
     # via maykin-common
-opentelemetry-instrumentation-wsgi==0.60b1
+opentelemetry-instrumentation-wsgi==0.66b2
     # via opentelemetry-instrumentation-django
-opentelemetry-proto==1.39.1
+opentelemetry-proto==1.45.2
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-resource-detector-containerid==0.60b1
     # via maykin-common
-opentelemetry-sdk==1.39.1
+opentelemetry-sdk==1.45.2
     # via
     #   maykin-common
+    #   opentelemetry-exporter-otlp-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-resource-detector-containerid
-opentelemetry-semantic-conventions==0.60b1
+opentelemetry-semantic-conventions==0.66b2
     # via
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-celery
@@ -458,7 +464,7 @@ opentelemetry-semantic-conventions==0.60b1
     #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
-opentelemetry-util-http==0.60b1
+opentelemetry-util-http==0.66b2
     # via
     #   opentelemetry-instrumentation-django
     #   opentelemetry-instrumentation-requests
@@ -573,6 +579,7 @@ requests==2.33.0
     #   msal
     #   o365
     #   onlinepayments-sdk-python3
+    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-http
     #   requests-file
     #   requests-oauthlib
@@ -617,7 +624,7 @@ six==1.17.0
     #   mail-parser
     #   orderedmultidict
     #   python-dateutil
-soupsieve==2.9.2
+soupsieve==4.1.1
     # via beautifulsoup4
 sqids==0.5.2
     # via -r requirements/base.in
@@ -638,7 +645,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.6
+tornado==6.6.1
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
@@ -718,7 +725,5 @@ zeep==4.3.2
     # via -r requirements/base.in
 zgw-consumers==1.2.1
     # via -r requirements/base.in
-zipp==3.23.0
-    # via importlib-metadata
 zopfli==0.4.1
     # via fonttools
