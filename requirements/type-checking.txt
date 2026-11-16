@@ -445,7 +445,7 @@ djangorestframework-camel-case==1.4.2
     #   -r requirements/ci.txt
 djangorestframework-stubs==3.16.8
     # via -r requirements/type-checking.in
-dnspython==2.9.1
+dnspython==2.9.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -693,7 +693,7 @@ o365==2.1.9
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-o365mail
-oauthlib==3.3.1
+oauthlib==4.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -710,7 +710,7 @@ openpyxl==3.1.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -758,7 +758,7 @@ opentelemetry-exporter-otlp-proto-http==1.45.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.66b1
+opentelemetry-instrumentation==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -769,32 +769,32 @@ opentelemetry-instrumentation==0.66b1
     #   opentelemetry-instrumentation-redis
     #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
-opentelemetry-instrumentation-celery==0.66b1
+opentelemetry-instrumentation-celery==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-instrumentation-dbapi==0.66b1
+opentelemetry-instrumentation-dbapi==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   opentelemetry-instrumentation-psycopg
-opentelemetry-instrumentation-django==0.66b1
+opentelemetry-instrumentation-django==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-instrumentation-psycopg==0.66b1
+opentelemetry-instrumentation-psycopg==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-instrumentation-redis==0.66b1
+opentelemetry-instrumentation-redis==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-instrumentation-requests==0.66b1
+opentelemetry-instrumentation-requests==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-instrumentation-wsgi==0.66b1
+opentelemetry-instrumentation-wsgi==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -810,7 +810,7 @@ opentelemetry-resource-detector-containerid==0.60b1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-opentelemetry-sdk==1.45.1
+opentelemetry-sdk==1.45.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -818,7 +818,7 @@ opentelemetry-sdk==1.45.1
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-resource-detector-containerid
-opentelemetry-semantic-conventions==0.66b1
+opentelemetry-semantic-conventions==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -830,7 +830,7 @@ opentelemetry-semantic-conventions==0.66b1
     #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
-opentelemetry-util-http==0.66b1
+opentelemetry-util-http==0.66b2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1142,7 +1142,7 @@ sortedcontainers==2.4.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   hypothesis
-soupsieve==2.9.2
+soupsieve==4.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1244,7 +1244,7 @@ tinyhtml5==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-tornado==6.6
+tornado==6.6.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
