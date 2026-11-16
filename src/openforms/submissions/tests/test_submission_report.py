@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest.mock import patch
 from uuid import UUID
 
+from django.core.exceptions import SuspiciousOperation
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings, tag
 
@@ -717,7 +718,7 @@ class DownloadSubmissionReportTests(APITestCase):
             },
         )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SuspiciousOperation):
             generate_submission_report(submission.id)
 
         self.assertRaises(ValueError, lambda: submission.report.content.path)
