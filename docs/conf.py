@@ -12,10 +12,11 @@ import django
 
 sys.path.insert(0, os.path.abspath("../src"))
 os.environ["LOG_OUTGOING_REQUESTS"] = "false"
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.ci")
 
-import openforms  # noqa isort:skip
+import openforms  # isort:skip
 
-from openforms.setup import setup_env  # noqa isort:skip
+from openforms.setup import setup_env  # isort:skip
 
 setup_env()
 django.setup()
