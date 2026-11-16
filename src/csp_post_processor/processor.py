@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 
 from django.http import HttpRequest
 from django.utils.safestring import SafeString, mark_safe
@@ -59,6 +60,10 @@ WYSIWYG_ALLOWED_TAGS: set[str] = {
 _TAGS_WITH_STYLE = [
     # these will have _STYLE_ATTRS added to the allowed tag/attr map below
     "a",
+    "b",
+    "em",
+    "i",
+    "strong",
     "p",
     "figure",
     "img",
@@ -169,7 +174,11 @@ class SafeStringWrapper(SafeString):
 
 
 def get_html_id(node):
-    return str(id(node))  # CPython: memory address, so should be unique enough
+    # Don't use ``id(node)`` here: lxml creates a new Python proxy object for every
+    # element while iterating and frees it again afterwards, so CPython reuses the same
+    # memory address (and thus the same ``id()``) for the next element. That results in
+    # multiple elements sharing one HTML id, with only the last style being kept.
+    return uuid.uuid4().hex
 
 
 def post_process_html(
