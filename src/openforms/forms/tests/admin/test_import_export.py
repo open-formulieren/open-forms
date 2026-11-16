@@ -1,6 +1,6 @@
 import json
 from io import BytesIO
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 from zipfile import ZipFile
 
 from django.test import TestCase, override_settings, tag
@@ -154,11 +154,10 @@ class FormAdminExportTests(ParametrizedTestCase, TestCase):
             response = self.client.post(admin_url, data=post_data)
 
         self.assertEqual(response.status_code, 200)
-        mock_export_form.assert_called_once()
-        options_passed_to_export = mock_export_form.call_args.kwargs["export_options"]
-        self.assertEqual(
-            options_passed_to_export,
-            FormExportOptions(
+        mock_export_form.assert_called_once_with(
+            ANY,
+            response=ANY,
+            export_options=FormExportOptions(
                 remove_sensitive_content=export_options["remove_sensitive_content"],
                 form_configuration=export_options["form_configuration"],
                 additional_form_configuration=export_options[
