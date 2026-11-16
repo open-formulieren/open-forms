@@ -17,11 +17,12 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.config.tests.factories import ThemeFactory
-from openforms.forms.admin.tasks import process_forms_export
-from openforms.forms.import_export.constants import FormConfigurationOptions
-from openforms.forms.models.form import FormsExport
-from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
+
+from ...admin.tasks import process_forms_export
+from ...import_export.service import FormConfigurationOptions
+from ...models import FormsExport
+from ..factories import FormFactory
 
 
 @disable_admin_mfa()
