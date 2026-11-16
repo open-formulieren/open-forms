@@ -1,7 +1,5 @@
 import io
-import json
 from unittest.mock import ANY, patch
-from zipfile import ZipFile
 
 from django.core.files import File
 from django.test import TestCase, override_settings
@@ -20,7 +18,11 @@ from openforms.config.tests.factories import ThemeFactory
 from openforms.utils.urls import build_absolute_uri
 
 from ...admin.tasks import process_forms_export
-from ...import_export.service import FormConfigurationOptions
+from ...import_export.service import (
+    FormConfigurationOptions,
+    FormExportOptions,
+    get_export_artifact,
+)
 from ...models import FormsExport
 from ..factories import FormFactory
 
@@ -333,54 +335,22 @@ class TestImportView(WebTest):
 
     @patch("openforms.forms.admin.views.import_form")
     def test_single_import(self, m_import):
+        form = FormFactory.create()
         file = io.BytesIO()
-        with ZipFile(file, mode="w") as zf:
-            with zf.open("forms.json", "w") as f:
-                f.write(
-                    json.dumps(
-                        [
-                            {
-                                "uuid": "b8315e1d-3134-476f-8786-7661d8237c51",
-                                "name": "Form 000",
-                                "internal_name": "Form internal",
-                                "slug": "bed",
-                                "product": None,
-                                "authentication_backends": ["digid"],
-                            }
-                        ]
-                    ).encode("utf-8")
-                )
-
-            with zf.open("formSteps.json", "w") as f:
-                f.write(b"[]")
-
-            with zf.open("formDefinitions.json", "w") as f:
-                f.write(b"[]")
-
-            with zf.open("formLogic.json", "w") as f:
-                f.write(b"[]")
-
+        artifact = get_export_artifact(form, FormExportOptions())
+        artifact.write_zip(target=file)
         user = SuperUserFactory.create()
         response = self.app.get(reverse("admin:forms_import"), user=user)
 
-        self.assertEqual(200, response.status_code)
-
         html_form = response.form
-        file.seek(0)
-        html_form["file"] = (
-            "file.zip",
-            file.read(),
-        )
+        html_form["file"] = ("file.zip", file.getvalue())
         submission_response = html_form.submit("_import")
 
         self.assertEqual(302, submission_response.status_code)
-        m_import.assert_called()
+        m_import.assert_called_once()
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))
 
-        self.assertEqual(1, len(messages))
-        self.assertEqual(
-            "Form successfully imported!",
-            messages[0].message,
-        )
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].message, "Form successfully imported!")
