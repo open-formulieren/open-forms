@@ -356,11 +356,6 @@ STATIC_ROOT = BASE_DIR / "static"
 # Additional locations of static files
 STATICFILES_DIRS = [
     DJANGO_PROJECT_DIR / "static",
-    # font-awesome fonts
-    (
-        "fonts",
-        BASE_DIR / "node_modules" / "@fortawesome" / "fontawesome-free" / "webfonts",
-    ),
 ]
 
 # List of finder classes that know how to find static files in
