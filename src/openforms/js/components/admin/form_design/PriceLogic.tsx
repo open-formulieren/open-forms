@@ -7,10 +7,11 @@ import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
-import {FieldChangeEvent, FormVariable} from '@/components/types';
+import type {FormVariable} from '@/components/data/form-variables';
+import type {FieldChangeEvent} from '@/types';
 import {getTranslatedChoices} from '@/utils/i18n';
 
-import {WarningIcon} from '../icons';
+import {InfoIcon, WarningIcon} from '../icons';
 
 const PRICING_MODES = {
   static: 'static',
@@ -120,8 +121,14 @@ export const PriceLogic: React.FC<PriceLogicProps> = ({
       'Only "Use linked product price" mode is allowed when an external product is selected.',
   });
   // Pass the WarningIcon component down to the PricingMode component so that the Field
-  // component can pass the name and id attributes correctly to it's child element.
-  const warning = isExternalProduct ? <WarningIcon text={externalProductWarningText} /> : undefined;
+  // component can pass the name and id attributes correctly to its child element.
+  const warning =
+    pricingMode === PRICING_MODES.variable ? (
+      <WarningIcon text={externalProductWarningText} />
+    ) : (
+      <InfoIcon text={externalProductWarningText} />
+    );
+
   return (
     <Fieldset
       title={

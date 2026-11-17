@@ -6,6 +6,8 @@ import type {
 } from '@open-formulieren/types';
 import React from 'react';
 
+import type {FormVariable} from '@/components/data/form-variables';
+
 // Stores the TinyMCE library URL to load
 const TinyMceContext = React.createContext<string>('');
 TinyMceContext.displayName = 'TinyMceContext';
@@ -23,34 +25,6 @@ FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 interface ButtonText {
   readonly resolved: string;
   value: string;
-}
-
-interface FormVariable {
-  form: string;
-  formDefinition?: string | null;
-  name: string;
-  key: string;
-  source: 'component' | 'user_defined' | 'static';
-  isSensitiveData?: boolean;
-  serviceFetchConfiguration?: JSONObject | null;
-  prefillPlugin?: string;
-  prefillAttribute?: string;
-  prefillIdentifierRole?: 'main' | 'authorizee';
-  dataType:
-    | 'string'
-    | 'boolean'
-    | 'object'
-    | 'array'
-    | 'int'
-    | 'float'
-    | 'datetime'
-    | 'time'
-    | 'date'
-    | 'partners'
-    | 'children'
-    | 'editgrid';
-  initialValue?: JSONValue;
-  _id?: string;
 }
 
 // Form configuration options context - as it's being edited in the admin UI.

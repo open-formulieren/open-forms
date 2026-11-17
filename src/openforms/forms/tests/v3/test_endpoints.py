@@ -5619,24 +5619,11 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
                     "formDefinition": {
                         "uuid": form_definition_uuid,
                         "configuration": {
-                            "components": [
-                                {
-                                    "type": "textfield",
-                                    "key": "component1",
-                                    "label": "component1",
-                                    "hidden": False,
-                                    "clearOnHide": True,
-                                },
-                            ],
+                            "components": [],
                         },
                         "translations": {
-                            "en": {
-                                "name": "Form configuration 1",
-                                "internalName": "Form configuration 1",
-                            },
                             "nl": {
                                 "name": "Form configuratie 1",
-                                "internalName": "Form configuratie 1",
                             },
                         },
                     },
@@ -5644,7 +5631,6 @@ class FormEndpointPricingLogicTests(ParametrizedTestCase, APITestCase):
             ],
             "translations": {
                 "nl": {"name": "Create form"},
-                "en": {"name": "Create form"},
             },
             "priceVariableKey": "price",
             "variables": [

@@ -7903,8 +7903,8 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
           nullable: true
           description: Product related information inside an object.
         slug:
@@ -9982,6 +9982,22 @@ components:
       - index
       - url
       - uuid
+    NestedProduct:
+      type: object
+      description: Expose the product reference and additional metadata directly to
+        the frontend.
+      properties:
+        url:
+          type: string
+          format: uri
+        productSource:
+          allOf:
+          - $ref: '#/components/schemas/ProductSourceEnum'
+          description: |-
+            The available types of the product. It can be a local product created in the admin interface or an external one.
+
+            * `local` - Local
+            * `open_product` - Open product
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -10263,8 +10279,8 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
           nullable: true
           description: Product related information inside an object.
         slug:
@@ -10721,12 +10737,6 @@ components:
           type: string
           description: Information text to be displayed in the confirmation page and
             confirmation email.
-        producttypeUuid:
-          type: string
-          format: uuid
-          nullable: true
-          title: Producttype ID
-          description: Open Product producttype UUID.
         productSource:
           allOf:
           - $ref: '#/components/schemas/ProductSourceEnum'

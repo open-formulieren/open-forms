@@ -46,7 +46,6 @@ class ProductListEndpointTests(APITestCase):
                     "name": "sample",
                     "price": "10.00",
                     "information": "",
-                    "producttypeUuid": None,
                     "productSource": ProductSourceChoices.local,
                 }
             ],
@@ -94,7 +93,6 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "name": self.product.name,
                 "price": "15.00",
                 "information": "",
-                "producttypeUuid": None,
                 "productSource": ProductSourceChoices.local,
             },
         )
@@ -127,7 +125,6 @@ class ProductRetrieveEndpointTests(APITestCase):
                 "name": product.name,
                 "price": None,
                 "information": "",
-                "producttypeUuid": str(product_uuid),
                 "productSource": ProductSourceChoices.open_product,
             },
         )

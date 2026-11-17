@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
-import {components} from 'react-select';
 import type {OptionProps} from 'react-select';
+import {components} from 'react-select';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {
@@ -10,12 +10,13 @@ import {
   groupVariablesBySource,
 } from 'components/admin/form_design/variables/utils';
 
-import {FieldChangeEvent, FormVariable} from '@/components/types';
+import {FormVariable} from '@/components/data/form-variables';
+import type {FieldChangeEvent} from '@/types';
 
 import {SelectWithoutFormik} from './ReactSelect';
 
 interface VariableData {
-  value: any;
+  value: string;
   label: string;
   formDefinitionName: string;
 }
@@ -54,7 +55,7 @@ interface VariableSelectionProps {
   value: string | string[];
   onChange: (event: FieldChangeEvent) => void;
   includeStaticVariables?: boolean;
-  filter?: (...args: any[]) => boolean;
+  filter?: (variable: FormVariable) => boolean;
 }
 
 type VariableSource = 'component' | 'user_defined' | 'static';
@@ -75,7 +76,7 @@ const VariableSelection: React.FC<VariableSelectionProps> = ({
   const {formSteps, formVariables, staticVariables} = useContext(FormContext);
   const intl = useIntl();
 
-  let formDefinitionsNames: Record<string, string> = {};
+  const formDefinitionsNames: Record<string, string> = {};
   formSteps.forEach(step => {
     const formDefinitionsIndex = step.formDefinition || step._generatedId;
     if (!formDefinitionsIndex) {

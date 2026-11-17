@@ -239,11 +239,7 @@ def validate_price_variable(form: Form):
 
     error: ErrorDetail | None = None
     product = form.product
-    if (
-        product
-        and product.product_source != ProductSourceChoices.local
-        and variable_key
-    ):
+    if product and product.product_source != ProductSourceChoices.local:
         error = ErrorDetail(
             _("Price variable cannot be specified using external products."),
             code="invalid",

@@ -1,5 +1,5 @@
 from collections.abc import Mapping, Sequence
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from openforms.typing import JSONObject
 
@@ -104,8 +104,8 @@ class AuthBackendData(TypedDict):
 
 
 class ProductData(TypedDict):
-    producttype: str
     url: str
+    product_source: Literal["local", "open_product"]
 
 
 class FormData(TypedDict, total=False):

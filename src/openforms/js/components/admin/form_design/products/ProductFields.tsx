@@ -9,7 +9,8 @@ import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
-import {FieldChangeEvent, Product} from '@/components/types';
+import type {Product} from '@/components/data/products';
+import type {FieldChangeEvent} from '@/types';
 
 import {PRODUCTS_ENDPOINT} from '../constants';
 
@@ -25,15 +26,11 @@ export interface ProductFieldProps {
 
 const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange}) => {
   const {loading, value: products = []} = useAsync(async (): Promise<Product[]> => {
-    try {
-      const response = await get(PRODUCTS_ENDPOINT);
-      if (!response.ok) {
-        throw new Error('Error loading products');
-      }
-      return response.data;
-    } catch (e) {
+    const response = await get(PRODUCTS_ENDPOINT);
+    if (!response.ok) {
       throw new Error('Error loading products');
     }
+    return response.data;
   });
 
   if (loading) {
@@ -56,10 +53,8 @@ const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange})
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const value = event.target.value || null; // use empty string or null
               const product = !!value && products.find(({url}) => url === value);
-              const selectedValue = product
-                ? {url: product.url, productSource: product.productSource}
-                : value;
-              onChange({target: {name: event.target.name, value: selectedValue ?? ''}});
+              const selectedValue = product ?? '';
+              onChange({target: {name: event.target.name, value: selectedValue}});
             }}
             allowBlank
           />
