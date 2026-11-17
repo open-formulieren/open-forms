@@ -235,8 +235,17 @@ class GlobalConfirmationEmailTests(TestCase):
         with self.assertRaisesRegex(
             ValidationError,
             _("Missing required template-tag {tag}").format(
-                tag="{% appointment_information %}"
+                tag="{% appointment_information %}, {% payment_information %}"
             ),
+        ):
+            config.full_clean()
+
+    def test_validate_content_forbidden_tags(self):
+        config = GlobalConfiguration.get_solo()
+        config.confirmation_email_content = "{% appointment_information %} {% payment_information %} {% autoescape on %}aa{% endautoescape %}"
+        with self.assertRaisesRegex(
+            ValidationError,
+            _("Forbidden template-tag found: {tag}").format(tag="{% autoescape %}"),
         ):
             config.full_clean()
 

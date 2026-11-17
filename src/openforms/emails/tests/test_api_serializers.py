@@ -39,7 +39,7 @@ class ConfirmationTemplateSerializerTests(TestCase):
                 errors["content"],
                 code="invalid",
                 message=_("Missing required template-tag {tag}").format(
-                    tag="{% appointment_information %}"
+                    tag="{% appointment_information %}, {% payment_information %}"
                 ),
             )
             self.assertIsNotNone(content_error)
