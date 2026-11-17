@@ -549,7 +549,7 @@ mail-cleaner==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-mail-parser==4.1.4
+mail-parser==4.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1017,7 +1017,6 @@ six==1.17.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   furl
-    #   mail-parser
     #   orderedmultidict
     #   python-dateutil
 soupsieve==4.1.1
