@@ -624,7 +624,7 @@ mail-cleaner==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-mail-parser==4.1.4
+mail-parser==4.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1127,7 +1127,6 @@ six==1.17.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   furl
-    #   mail-parser
     #   orderedmultidict
     #   python-dateutil
 smmap==5.0.2
