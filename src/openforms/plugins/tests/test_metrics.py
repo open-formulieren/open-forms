@@ -16,7 +16,7 @@ class PluginRegistryMetricTests(MetricsAssertMixin, TestCase):
 
         with self.subTest("modules reported"):
             modules = {
-                observation.attributes["openforms.plugin.module"]
+                str(observation.attributes["openforms.plugin.module"])
                 for observation in result
                 if observation.attributes
             }
