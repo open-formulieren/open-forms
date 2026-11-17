@@ -343,7 +343,7 @@ lxml-html-clean==0.4.5
     # via -r requirements/base.in
 mail-cleaner==2.0.0
     # via -r requirements/base.in
-mail-parser==4.1.4
+mail-parser==4.11.0
     # via django-yubin
 markdown-it-py==4.0.0
     # via rich
@@ -626,7 +626,6 @@ shellingham==1.5.4
 six==1.17.0
     # via
     #   furl
-    #   mail-parser
     #   orderedmultidict
     #   python-dateutil
 soupsieve==4.1.1
