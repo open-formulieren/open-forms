@@ -21,3 +21,15 @@ class SandboxBackendTests(SimpleTestCase):
         result = sandbox_render(template, {"foo": "baz"})
 
         self.assertEqual(result, "baz bar")
+
+    def test_template_rejects_safe_filter(self):
+        template = "{{ foo|safe }}"
+
+        with self.assertRaises(TemplateSyntaxError):
+            sandbox_render(template, {"foo": "baz"})
+
+    def test_template_rejects_safeseq_filter(self):
+        template = "{{ foo|safeseq }}"
+
+        with self.assertRaises(TemplateSyntaxError):
+            sandbox_render(template, {"foo": ["baz"]})

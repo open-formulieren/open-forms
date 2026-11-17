@@ -66,15 +66,37 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
         invalid = [
             (
                 "",
-                _("Missing required template-tag {tag}").format(
-                    tag=r"\{% csrf_token %}"
-                ),
+                _("Missing required template-tag {tag}").format(tag="{% csrf_token %}"),
             ),
             (
                 "{% load i18n %} aa {{ aa.bb.cc }}",
-                _("Missing required template-tag {tag}").format(
-                    tag=r"\{% csrf_token %}"
-                ),
+                _("Missing required template-tag {tag}").format(tag="{% csrf_token %}"),
+            ),
+        ]
+        for text, message in invalid:
+            with self.subTest(f"invalid: {text}"):
+                with self.assertRaisesRegex(ValidationError, message):
+                    validator(text)
+
+    def test_forbidden_tags(self):
+        validator = DjangoTemplateValidator(backend=f"{__name__}.django_backend")
+
+        valid = [
+            "{%csrf_token%}",
+            "{% load i18n %} aa {% csrf_token %} {{ aa.bb.cc }}",
+        ]
+        for text in valid:
+            with self.subTest(f"valid: {text}"):
+                validator(text)
+
+        invalid = [
+            (
+                "{% autoescape on %} aa {% endautoescape %}",
+                _("Forbidden template-tag found: {tag}").format(tag="{% autoescape %}"),
+            ),
+            (
+                "{% autoescape on %} aa {{ aa.bb.cc }} {% endautoescape %}",
+                _("Forbidden template-tag found: {tag}").format(tag="{% autoescape %}"),
             ),
         ]
         for text, message in invalid:

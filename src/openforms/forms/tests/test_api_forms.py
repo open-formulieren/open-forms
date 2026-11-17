@@ -1884,7 +1884,7 @@ class FormsAPITranslationTests(APITestCase):
                     "name": "confirmationEmailTemplate.translations.en.content",
                     "code": "invalid",
                     "reason": _("Missing required template-tag {tag}").format(
-                        tag="{% appointment_information %}"
+                        tag="{% appointment_information %}, {% payment_information %}"
                     ),
                 }
             ],
