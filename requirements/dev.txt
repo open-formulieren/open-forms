@@ -267,7 +267,7 @@ django-colorfield==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-cookie-consent==1.0.0
+django-cookie-consent==2.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -392,7 +392,7 @@ django-simple-certmanager==2.5.0
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.5.1
+django-solo==2.8.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

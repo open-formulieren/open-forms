@@ -230,6 +230,25 @@ browsers to only connect over HTTPS to Open Forms, preferably with the
 Managing SSL certificates is outside of the scope of the application - Open Forms should
 only be deployed behind a secured reverse proxy and/or load balancer.
 
+
+Redis
+-----
+
+Open Forms depends on :ref:`Redis <installation_redis>` for various subsystems.
+
+Operators hosting Open Forms should take care to properly secure the (network) access
+to Redis. Failing to do so can lead to session hijacking or other security incidents.
+
+Redis must only be reachable by the web containers (Django), Celery workers and Celery 
+beat, and never from outside the cluster or host, because anyone who can reach it can
+read, write and flush data. Additionally, it's recommended to require authentication.
+
+* In case you use multi-tenant Kubernetes environments, make sure you define proper
+  network policies that block traffic between pods, e.g. from other namespaces.
+
+* For simple Docker infrastructure you'll most likely want to set up isolated docker
+  networks for each tenant.
+
 .. _CORS: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 .. _XSS: https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting
 .. _SameSite on MDN: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite

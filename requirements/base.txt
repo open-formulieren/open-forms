@@ -161,7 +161,7 @@ django-capture-tag==1.0
     # via -r requirements/base.in
 django-colorfield==0.14.0
     # via -r requirements/base.in
-django-cookie-consent==1.0.0
+django-cookie-consent==2.0.1
     # via -r requirements/base.in
 django-cors-headers==4.9.0
     # via -r requirements/base.in
@@ -228,7 +228,7 @@ django-simple-certmanager==2.5.0
     #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.5.1
+django-solo==2.8.0
     # via
     #   -r requirements/base.in
     #   django-camunda

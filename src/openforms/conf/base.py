@@ -101,17 +101,26 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_DEFAULT', default='localhost:6379/0')}",
+        # adding a prefix will produce something like ofjson:1:foo which can be useful for
+        # our upcoming changes regarding the serializer default to JSON. Existing instances
+        # can update their caches by making sure we will have fresh JSON serializable
+        # data
+        "PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         },
     },
     "axes": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_AXES', default='localhost:6379/0')}",
+        # same applies here for the prefix, as in the default CACHE above
+        "PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         },
     },
     # TODO: rename to 'redis-locks' and get rid of portalocker in favour of plain
@@ -119,9 +128,12 @@ CACHES = {
     "portalocker": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_PORTALOCKER', default='localhost:6379/4')}",
+        # same applies here for the prefix, as in the default CACHE above
+        "PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": False,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         },
     },
     "solo": {
