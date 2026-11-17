@@ -20,7 +20,12 @@ from openforms.utils.tests.cache import clear_caches
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
-from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionStepFactory
+from .factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+    SubmissionReportFactory,
+    SubmissionStepFactory,
+)
 
 
 @temp_private_root()
@@ -507,7 +512,7 @@ class DownloadSubmissionReportTests(APITestCase):
                 "components": components,
             },
         )
-        SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create(
             submission=report.submission,
             form_step=report.submission.form.formstep_set.get(),
             data={
@@ -571,6 +576,12 @@ class DownloadSubmissionReportTests(APITestCase):
                 "timekey": "23:50",
                 "interpolkey": True,
             },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            _data_path="filekey",
+            component_key="filekey",
+            original_name="download(2).pdf",
         )
 
         # create report
