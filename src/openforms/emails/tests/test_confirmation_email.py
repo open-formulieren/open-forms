@@ -230,7 +230,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             },
         )
         SubmissionFileAttachmentFactory.create(
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=submission.submissionstep_set.get(),  # pyright: ignore[reportAttributeAccessIssue]
             _component_data_path="file",
             original_name="my-image.jpg",
         )
