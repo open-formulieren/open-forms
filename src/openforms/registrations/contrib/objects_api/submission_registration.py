@@ -183,9 +183,10 @@ def register_submission_attachment(
     document_options: DocumentOptions = {
         "informatieobjecttype": default_document_type,
         "organisatie_rsin": options.get("organisatie_rsin", ""),
-        "ontvangstdatum": datetime_in_amsterdam(submission.completed_on)
-        .date()
-        .isoformat(),
+        "ontvangstdatum": (
+            datetime_in_amsterdam(submission.completed_on).date().isoformat()
+        ),
+        "titel": attachment.get_display_name(),
     }
 
     # look up registration overrides for the component that this file was
@@ -206,7 +207,7 @@ def register_submission_attachment(
 
     attachment_document = create_attachment_document(
         client=documents_client,
-        name=submission.form.name,
+        name="",  # ignored, a title is always provided via document_options
         submission_attachment=attachment,
         options=document_options,
         language=attachment.submission_step.submission.language_code,  # assume same as submission
