@@ -120,7 +120,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         with self.assertRaisesRegex(
             ValidationError,
             _("Missing required template-tag {tag}").format(
-                tag="{% appointment_information %}"
+                tag="{% appointment_information %}, {% payment_information %}"
             ),
         ):
             email.full_clean()

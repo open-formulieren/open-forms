@@ -162,6 +162,7 @@ class EmailRegistration(BasePlugin[Options]):
                 "rendering_text": True,
                 **extra_context,
             },
+            disable_autoescape=True,
         )
         # post process since the mail template has html markup and django escaped entities
         text_content = strip_tags_plus(text_content, keep_leading_whitespace=True)

@@ -1,7 +1,24 @@
 from collections.abc import Callable
 
+from django.template import Library
 from django.template.backends.django import DjangoTemplates
 from django.utils.functional import SimpleLazyObject
+
+BLOCKED_FILTERS = {"safe", "safeseq"}
+
+
+def _strip_filters(library: Library) -> Library:
+    """
+    Remove the blocked filters from the class they are defined in.
+    """
+    clean = Library()
+    clean.tags = dict(library.tags)
+    clean.filters = {
+        filter_key: filter_value
+        for filter_key, filter_value in library.filters.items()
+        if filter_key not in BLOCKED_FILTERS
+    }
+    return clean
 
 
 class SandboxedDjangoTemplates(DjangoTemplates):
@@ -37,6 +54,10 @@ class SandboxedDjangoTemplates(DjangoTemplates):
             ],
         )
         super().__init__(params)
+
+        self.engine.template_builtins = [
+            _strip_filters(lib) for lib in self.engine.template_builtins
+        ]
 
     def get_templatetag_libraries(self, custom_libraries: dict) -> dict:
         """
