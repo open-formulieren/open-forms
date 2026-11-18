@@ -14,6 +14,57 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.8 (2026-11-24)
+==================
+
+Bugfix and security fixes release.
+
+**Security**
+
+This patch fixes 1 medium and 4 low security findings, discovered by Ray Sabee (
+`Whitehat Security <https://www.whitehatsecurity.nl/>`_) after inviting them to take
+a look at Open Forms.
+
+Details are available in the linked security advisories on Github.
+
+* [:ghsa:`GHSA-7562-xx74-pf65`, medium] Fixed service fetch configurations being
+  readable to unauthenticated users.
+* [:ghsa:`GHSA-9wxh-2452-43g8`, low] Fixed SSRF through the Signature component.
+* [:ghsa:`GHSA-8qm5-429v-ppc3`, low] Fixed possible DoS and env-leaking via
+  employee-supplied jq expressions in service fetch.
+* [:ghsa:`GHSA-8xq9-fg5h-jcgr`, low] Fixed unsafe default cache serializer which could
+  lead to cache poisoning with malicious payloads.
+* [:ghsa:`GHSA-xfh4-2jjc-hg36`, low] Fixed form designers being able to disable HTML
+  escaping in user-supplied templates.
+* Upgraded dependencies to their latest security releases:
+
+  - Django
+  - dnspython
+  - mail-parser
+  - oauthlib
+  - opentelemetry-api
+  - pyasn1
+  - soupsieve
+  - tornado
+
+A detection script is added in this patch that reports service fetch configurations with
+unsafe configuration. In an app container, execute:
+
+.. code-block:: bash
+
+  # in the container via ``docker exec`` or ``kubectl exec``:
+  python /app/bin/bin/report_service_fetch_credentials_usage.py
+
+**Bugfixes**
+
+* [:backend:`6911`] Fixed the Objects API registration not using the file name as
+  default for the ``title`` of a registered submission attachment.
+* [:backend:`#6888`] Fixed cosigners not being able to download submission attachments
+  on the overview page.
+* [:backend:`6924`] Fixed template expressions for component default values not being
+  evaluated.
+* [:backend:`6903`] Fixed CI builds due to Github actions rolling out Ubuntu 26.04.
+
 4.0.7 (2026-10-30)
 ==================
 
