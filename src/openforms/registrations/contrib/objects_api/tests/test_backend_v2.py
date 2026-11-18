@@ -364,11 +364,13 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
                 "531f6c1a-97f7-478c-85f0-67d2f23661c7",
             )
+            self.assertEqual(attachment_1["titel"], "attachment1.jpg")
             self.assertEqual(
                 attachment_2_1["informatieobjecttype"],
                 "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
                 "531f6c1a-97f7-478c-85f0-67d2f23661c7",
             )
+            self.assertEqual(attachment_2_1["titel"], "attachment2_1.jpg")
 
     def test_mapping_file_components_container_variable(self):
         submission = SubmissionFactory.from_components(
