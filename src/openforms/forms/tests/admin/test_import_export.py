@@ -68,15 +68,15 @@ class FormAdminExportTests(WebTest):
         zf = ZipFile(BytesIO(response.content))
 
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -130,15 +130,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -254,15 +254,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -363,15 +363,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -507,15 +507,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -645,15 +645,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -770,8 +770,8 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
@@ -782,7 +782,7 @@ class FormAdminExportTests(WebTest):
                 "wmtsTileLayers.json",
                 "yiviAttributeGroups.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         exported_product = json.loads(zf.read("product.json"))
@@ -906,15 +906,15 @@ class FormAdminExportTests(WebTest):
 
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
-            zf.namelist(),
-            [
+            set(zf.namelist()),
+            {
                 "forms.json",
                 "formSteps.json",
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
                 f"{EXPORT_META_KEY}.json",
-            ],
+            },
         )
 
         exported_forms = json.loads(zf.read("forms.json"))
