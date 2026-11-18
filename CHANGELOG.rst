@@ -14,6 +14,34 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.16 (2026-11-24), unreleased
+===============================
+
+Bugfix release.
+
+**Security**
+
+* Upgraded dependencies to their latest security releases:
+
+  - Django
+  - dnspython
+  - mail-parser
+  - oauthlib
+  - opentelemetry-api
+  - pyasn1
+  - soupsieve
+  - tornado
+
+**Bugfixes**
+
+* [:backend:`6911`] Fixed the Objects API registration not using the file name as
+  default for the ``title`` of a registered submission attachment.
+* [:backend:`#6888`] Fixed cosigners not being able to download submission attachments
+  on the overview page.
+* [:backend:`6903`] Fixed CI builds due to Github actions rolling out Ubuntu 26.04.
+* [:backend:`6900`] Deleted the Camunda test setup to make CI pass because Camunda
+  removed their container images from Docker Hub.
+
 3.5.15 (2026-10-30)
 ===================
 
