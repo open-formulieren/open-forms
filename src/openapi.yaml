@@ -7903,10 +7903,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
           nullable: true
-          description: URL to the product in the Open Forms API
+          description: Product related information inside an object.
         slug:
           type: string
           maxLength: 100
@@ -9982,6 +9982,22 @@ components:
       - index
       - url
       - uuid
+    NestedProduct:
+      type: object
+      description: Expose the product reference and additional metadata directly to
+        the frontend.
+      properties:
+        url:
+          type: string
+          format: uri
+        productSource:
+          allOf:
+          - $ref: '#/components/schemas/ProductSourceEnum'
+          description: |-
+            The available types of the product. It can be a local product created in the admin interface or an external one.
+
+            * `local` - Local
+            * `open_product` - Open product
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -10263,10 +10279,10 @@ components:
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
-          type: string
-          format: uri
+          allOf:
+          - $ref: '#/components/schemas/NestedProduct'
           nullable: true
-          description: URL to the product in the Open Forms API
+          description: Product related information inside an object.
         slug:
           type: string
           maxLength: 100
@@ -10721,10 +10737,26 @@ components:
           type: string
           description: Information text to be displayed in the confirmation page and
             confirmation email.
+        productSource:
+          allOf:
+          - $ref: '#/components/schemas/ProductSourceEnum'
+          description: |-
+            The available types of the product. It can be a local product created in the admin interface or an external one.
+
+            * `local` - Local
+            * `open_product` - Open product
       required:
       - name
       - url
       - uuid
+    ProductSourceEnum:
+      enum:
+      - local
+      - open_product
+      type: string
+      description: |-
+        * `local` - Local
+        * `open_product` - Open product
     PublicForm:
       type: object
       properties:

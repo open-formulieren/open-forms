@@ -179,7 +179,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                 ],
             )
             self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
-            self.assertEqual(forms[0]["product"], "")
+            self.assertIsNone(forms[0]["product"])
 
             form_definitions = json.loads(f.read("formDefinitions.json"))
             self.assertEqual(len(form_definitions), 1)
@@ -859,7 +859,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(len(forms), 1)
 
             # Assert product is not in exportdata
-            self.assertEqual(forms[0]["product"], "")
+            self.assertIsNone(forms[0]["product"])
             # Assert theme and category are in exportdata
             self.assertIsNotNone(forms[0]["theme"])
             self.assertIsNotNone(forms[0]["category"])
@@ -2377,7 +2377,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(authentication_backends[1].backend, "demo")
         self.assertEqual(authentication_backends[1].form, imported_form)
-        self.assertEqual(authentication_backends[1].options, None)
+        self.assertIsNone(authentication_backends[1].options)
 
     def test_import_form_with_old_authentication_backend_options(
         self,
@@ -2456,7 +2456,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(authentication_backends[0].backend, "demo")
         self.assertEqual(authentication_backends[0].form, imported_form)
-        self.assertEqual(authentication_backends[0].options, None)
+        self.assertIsNone(authentication_backends[0].options)
 
         self.assertEqual(authentication_backends[1].backend, "digid")
         self.assertEqual(authentication_backends[1].form, imported_form)
@@ -2544,13 +2544,13 @@ class ImportExportTests(TempdirMixin, TestCase):
         # will remain
         self.assertEqual(authentication_backends[2].backend, "eherkenning")
         self.assertEqual(authentication_backends[2].form, imported_form)
-        self.assertEqual(authentication_backends[2].options, None)
+        self.assertIsNone(authentication_backends[2].options)
 
         # Plugins that exist in `authentication_backends`, but not in `auth_backends`,
         # will be added
         self.assertEqual(authentication_backends[3].backend, "digid_oidc")
         self.assertEqual(authentication_backends[3].form, imported_form)
-        self.assertEqual(authentication_backends[3].options, None)
+        self.assertIsNone(authentication_backends[3].options)
 
     def test_import_form_with_auth_backends(
         self,
@@ -2592,7 +2592,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(authentication_backends[0].backend, "demo")
         self.assertEqual(authentication_backends[0].form, imported_form)
-        self.assertEqual(authentication_backends[0].options, None)
+        self.assertIsNone(authentication_backends[0].options)
 
         self.assertEqual(authentication_backends[1].backend, "digid")
         self.assertEqual(authentication_backends[1].form, imported_form)
@@ -4066,7 +4066,10 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "internal_name": "Test Form Internal 1",
                     "slug": "test-form",
                     "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
-                    "product": "http://testserver/api/v2/products/20523058-a69b-4d8e-b58d-b6a9291e3b66",
+                    "product": {
+                        "url": "http://testserver/api/v2/products/20523058-a69b-4d8e-b58d-b6a9291e3b66",
+                        "product_source": "local",
+                    },
                 }
             ],
             "product": [

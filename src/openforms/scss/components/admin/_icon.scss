@@ -12,6 +12,10 @@
     color: #e17000;
   }
 
+  @include bem.modifier('info') {
+    color: #2196f3;
+  }
+
   @include bem.modifier('no-pointer') {
     cursor: default;
   }

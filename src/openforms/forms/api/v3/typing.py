@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Literal, NotRequired, TypedDict
 from uuid import UUID
 
-from openforms.appointments.base import Product
 from openforms.config.models import Theme
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
 from openforms.formio.typing import FormioConfiguration
 from openforms.prefill.constants import IdentifierRoles
+from openforms.products.models import Product
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import (
     DataMappingTypes,
