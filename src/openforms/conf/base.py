@@ -125,8 +125,8 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         },
-        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     },
     # TODO: rename to 'redis-locks' and get rid of portalocker in favour of plain
     # redis locks?
@@ -138,8 +138,8 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": False,
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
         },
-        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
     },
     "solo": {
         "BACKEND": "openforms.utils.cache.RequestProxyCache",
