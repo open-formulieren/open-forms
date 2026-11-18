@@ -12,6 +12,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {useImmerReducer} from 'use-immer';
 
 import Loader from 'components/admin/Loader';
+import ErrorList from 'components/admin/forms/ErrorList';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import {WarningIcon} from 'components/admin/icons';
@@ -1224,6 +1225,9 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     },
     {count: numRulesWithProblems}
   );
+  const nonFieldErrors = state.validationErrors
+    .filter(([field]) => field === 'nonFieldErrors')
+    .map(([_, message]) => message);
 
   return (
     <ValidationErrorsProvider errors={state.validationErrors}>
@@ -1256,6 +1260,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           />
         </div>
       ) : null}
+
+      {nonFieldErrors.length > 0 && (
+        <div className="fetch-error">
+          <ErrorList>{nonFieldErrors}</ErrorList>
+        </div>
+      )}
 
       <FormContext.Provider
         value={{
