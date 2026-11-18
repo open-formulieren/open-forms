@@ -68,10 +68,11 @@ class ProductConfigurationAdminTests(OFVCRMixin, WebTest):
         form_submit_response = form.submit().follow()
 
         self.assertEqual(form_submit_response.status_code, 200)
-        self.assertContains(
-            form_submit_response,  # pyright: ignore[reportArgumentType]
-            _("ProductConfiguration object (1) was changed successfully."),
-            html=True,
+        self.assertIn(
+            _(
+                "The product api configuration “ProductConfiguration object (1)” was changed successfully."
+            ),
+            form_submit_response.text,
         )
 
     def test_wrong_labels_provided(self):

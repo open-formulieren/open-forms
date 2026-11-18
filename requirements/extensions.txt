@@ -354,7 +354,7 @@ django-simple-certmanager==4.0.0
     #   -r requirements/base.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.5.1
+django-solo==2.8.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

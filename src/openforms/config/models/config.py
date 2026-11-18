@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Self
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -740,3 +741,12 @@ class GlobalConfiguration(SingletonModel):
             self.cosign_request_template, backend=openforms_backend
         )
         return "form_url" in variables_used
+
+    # TODO
+    # workaround until it's fixed in the django-solo library
+    @classmethod
+    def get_solo(cls) -> Self:
+        obj = super().get_solo()
+        if obj._state.db is None:
+            obj._state.db = "default"
+        return obj

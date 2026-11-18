@@ -380,7 +380,7 @@ django-simple-certmanager==4.0.0
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.5.1
+django-solo==2.8.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
