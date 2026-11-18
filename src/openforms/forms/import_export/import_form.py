@@ -40,7 +40,7 @@ from .serializers import (
     FormStepImportSerializer,
     FormVariableImportSerializer,
 )
-from .structs import Artifact, ShallowJSONObject
+from .structs import Artifact, ShallowJSONObject, ZipReadable
 from .uuid_map import UUIDMap
 
 EXPECTED_RESOURCES = (
@@ -58,7 +58,7 @@ EXPECTED_RESOURCES = (
 
 @transaction.atomic
 def import_form(
-    import_file: Path | str,
+    import_file: Path | str | ZipReadable,
     import_options: FormImportOptions,
     existing_form_instance: Form | None = None,
 ) -> Form | None:
@@ -129,6 +129,12 @@ def import_form_data(
     _import_form_logic_resources(
         data=artifact.form_logic, uuid_map=uuid_map, context=context
     )
+    # the missing call to imported_form.apply_logic_analysis() is deliberate - imported
+    # forms can be in broken-ish states (such as not having any steps), and that would
+    # crash during logic analysis.
+    # Forms imported are deactivated by default (except for the version restore flow),
+    # which requires a user to save the form in the admin interface to activate it,
+    # and that triggers full form validation that will report the problems.
     return imported_form
 
 
@@ -180,7 +186,6 @@ def _import_additional_form_configuration_data(
             # If the old identifier is not present, then something is wrong with the
             # import data
             old_identifier: str | None = result.row_values.get(identifier_field)
-            assert old_identifier is not None
 
             new_identifier: str | UUID | None = None
             match result.import_type:

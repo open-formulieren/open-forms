@@ -312,12 +312,10 @@ class FormAdmin(
                 export_options = json.loads(request.POST.get("export_options", "{}"))
                 serializer = FormAPIExportRequestSerializer(data=export_options)
                 serializer.is_valid(raise_exception=True)
-            except (json.JSONDecodeError, serializers.ValidationError) as exc:
+            except (json.JSONDecodeError, serializers.ValidationError):
                 self.message_user(
                     request,
-                    _("Something went wrong while exporting form {}: {}").format(
-                        obj, exc
-                    ),
+                    _("Something went wrong while exporting form {}").format(obj),
                     level=messages.ERROR,
                 )
                 return HttpResponseRedirect(

@@ -5,6 +5,8 @@ from typing import Any
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import serializers
+
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.data import Action
 from openforms.submissions.models import Submission
@@ -20,6 +22,10 @@ CALLBACKS = {
 }
 
 
+class DemoOptions(serializers.Serializer):
+    foo = serializers.CharField(required=False)
+
+
 @register("demo")
 class DemoPrefill(BasePlugin):
     verbose_name = _("Demo")
@@ -30,6 +36,7 @@ class DemoPrefill(BasePlugin):
         AuthAttribute.pseudo,
         AuthAttribute.employee_id,
     )
+    options = DemoOptions
 
     @staticmethod
     def get_available_attributes():
