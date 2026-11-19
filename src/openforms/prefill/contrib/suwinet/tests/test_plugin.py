@@ -1,9 +1,13 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.test import SimpleTestCase
+
 from privates.test import temp_private_root
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from soap.tests.factories import SoapServiceFactory
+from suwinet.models import SuwinetConfig
 from suwinet.tests.factories import SuwinetConfigFactory
 from suwinet.tests.test_client import SuwinetTestCase
 
@@ -178,3 +182,19 @@ class SuwinetPrefillTests(SuwinetTestCase):
 
         # still returns empty values
         self.assertEqual(values, {})
+
+
+class SuwinetVendorHintTests(SimpleTestCase):
+    @patch("suwinet.models.SuwinetConfig.get_solo")
+    def test_get_vendor_hint_uses_service_url(self, get_solo):
+        get_solo.return_value = SuwinetConfig(
+            service=SoapServiceFactory.build(url="https://soap.example/suwinet")
+        )
+        plugin = SuwinetPrefill("suwinet")
+        serializer = plugin.options(data={})
+        serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            plugin.get_vendor_hint(serializer.validated_data),
+            "https://soap.example/suwinet",
+        )

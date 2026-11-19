@@ -1,11 +1,15 @@
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from maykin_common.vcr import VCRMixin
 from privates.test import temp_private_root
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
 from openforms.authentication.tests.factories import AuthInfoFactory
+from openforms.contrib.kvk.models import KVKConfig
 from openforms.contrib.kvk.tests.base import KVKTestMixin, load_json_mock
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -169,3 +173,20 @@ class KVKPrefillTests(KVKTestMixin, VCRMixin, TestCase):
         )
 
         self.assertEqual(values, {})
+
+
+class KVKVendorHintTests(SimpleTestCase):
+    @patch("openforms.contrib.kvk.models.KVKConfig.get_solo")
+    def test_get_vendor_hint_uses_configured_service_api_root(self, get_solo):
+        get_solo.return_value = KVKConfig(
+            profile_service=ServiceFactory.build(api_root="https://kvk.example/api/"),
+            branch_profile_service=None,
+        )
+        plugin = KVK_KVKNumberPrefill("kvk-kvknumber")
+        serializer = plugin.options(data={})
+        serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            plugin.get_vendor_hint(serializer.validated_data),
+            "https://kvk.example/api/",
+        )
