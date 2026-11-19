@@ -1487,3 +1487,271 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
         self.assertEqual(
             expected, response.json()["logicRules"][0]["actions"][0]["action"]["value"]
         )
+
+    @tag("gh-6924")
+    def test_variable_injection_also_updates_component_variables(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "{{ foo }}",
+                        "defaultValue": "{{ foo }}",
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="bar",
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": None,
+            "configuration": {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "bar",
+                        "defaultValue": "bar",
+                    },
+                ]
+            },
+            "data": {"textfield": "bar"},
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    @tag("gh-6924")
+    def test_variable_injection_does_not_override_user_input(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield1",
+                        "label": "Textfield 1",
+                        "defaultValue": "{{ foo }}",
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "repeatingGroup",
+                        "label": "Repeating Group",
+                        "groupLabel": "Item",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield2",
+                                "label": "Textfield 2",
+                                "defaultValue": "{{ foo }}",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="bar",
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={
+                "textfield1": "user input",
+                "repeatingGroup": [
+                    {
+                        "textfield2": "{{ foo }}"  # Some joker entered the raw initial value
+                    }
+                ],
+            },
+        )
+
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": str(submission_step.uuid),  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": None,
+            "configuration": {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield1",
+                        "label": "Textfield 1",
+                        "defaultValue": "bar",
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "repeatingGroup",
+                        "label": "Repeating Group",
+                        "groupLabel": "Item",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield2",
+                                "label": "Textfield 2",
+                                "defaultValue": "bar",
+                            },
+                        ],
+                    },
+                ]
+            },
+            "data": {
+                "textfield1": "user input",
+                "repeatingGroup": [{"textfield2": "{{ foo }}"}],
+            },
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    @tag("gh-6924")
+    def test_variable_injection_does_not_override_user_input_with_nested_keys(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "baz.textfield1",
+                        "label": "Textfield 1",
+                        "defaultValue": "{{ foo }}",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="bar",
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={
+                "baz": {"textfield1": "user input"},
+            },
+        )
+
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": str(submission_step.uuid),  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": None,
+            "configuration": {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "baz.textfield1",
+                        "label": "Textfield 1",
+                        "defaultValue": "bar",
+                    },
+                ]
+            },
+            "data": {"baz": {"textfield1": "user input"}},
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    @tag("gh-6924")
+    def test_variable_injection_does_not_override_clear_on_hide(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "{{ foo }}",
+                        "defaultValue": "{{ foo }}",
+                        "clearOnHide": True,
+                        "hidden": True,
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="bar",
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": None,
+            "configuration": {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "bar",
+                        "defaultValue": "bar",
+                        "clearOnHide": True,
+                        "hidden": True,
+                    },
+                ]
+            },
+            "data": {},
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
