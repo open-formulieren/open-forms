@@ -115,6 +115,12 @@ def evaluate_form_logic(
     )
     data_for_evaluation.update(data_for_visible_state)
 
+    # This data is used to determine which component variables shouldn't be updated
+    # during variable injection.
+    user_data = submission_variables_state.get_data(
+        include_unsaved=False, submission_step=step
+    )
+
     # Update data for evaluation.
     step_variables = submission_variables_state.get_variables_in_submission_step(
         step, include_unsaved=True
@@ -181,7 +187,7 @@ def evaluate_form_logic(
         mutation.apply(step, config_wrapper)
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_for_evaluation)
+    inject_variables(config_wrapper, data_for_evaluation, user_data)
 
     # 7.3 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
