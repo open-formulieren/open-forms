@@ -245,7 +245,7 @@ django-colorfield==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-cookie-consent==1.0.0
+django-cookie-consent==2.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
