@@ -46,7 +46,7 @@ jobs:
         uses: maykinmedia/open-api-workflows/actions/extract-version@776c60ffef1d34cbdee5a2402322cae6278ec237 # v7.0.1
       - name: Extract SDK version info
         id: sdk-vars
-        uses: ./.github/actions/extract-sdk-version
+        uses: $/.github/actions/extract-sdk-version
         with:
           backend-version: ${{ steps.vars.outputs.version }}
 
@@ -75,7 +75,7 @@ jobs:
           persist-credentials: false
           submodules: true
       - name: Set up backend environment
-        uses: ./.github/actions/setup-backend
+        uses: $/.github/actions/setup-backend
 
       - name: Start CI docker services
         run: |
@@ -163,7 +163,7 @@ jobs:
           persist-credentials: false
           submodules: true
       - name: Set up backend environment
-        uses: ./.github/actions/setup-backend
+        uses: $/.github/actions/setup-backend
 
       - name: Start CI docker services
         run: |
@@ -244,7 +244,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up backend environment
-        uses: ./.github/actions/setup-backend
+        uses: $/.github/actions/setup-backend
 
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
@@ -329,7 +329,7 @@ jobs:
           - env: extensions
             extensions: 'token_exchange,prefill_haalcentraalhr'
             image-tag-prefix: 'all-extensions-'
-    uses: ./.github/workflows/build-image.yml
+    uses: $/.github/workflows/build-image.yml
     with:
       # see https://github.com/orgs/community/discussions/26671
       image-name: ${{ needs.setup.outputs.image-name }}
@@ -512,7 +512,7 @@ jobs:
     needs:
       - setup
       - docker_push
-    uses: ./.github/workflows/dockerhub-description.yml
+    uses: $/.github/workflows/dockerhub-description.yml
     with:
       image_name: ${{ needs.setup.outputs.image-name }}
     secrets:
