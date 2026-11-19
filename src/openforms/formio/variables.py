@@ -93,19 +93,23 @@ def get_configuration_template_syntax_errors(
 
 
 def inject_variables(
-    configuration: FormioConfigurationWrapper, values: FormioData
+    configuration: FormioConfigurationWrapper,
+    values: FormioData,
+    dirty_values: list[str],
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
 
     Takes a Formio configuration and fully resolved variable state (mapping of variable
     name to its value as a Python object). The configuration is iterated over and every
-    component is checked for properties that can be templated. Note that the
-    configuration is mutated in the process!
+    component is checked for properties that can be templated. The values for component
+    variables, that aren't entered by users, are also resolved and updated. Note that the
+    configuration and values are mutated in the process!
 
     :param configuration: A dictionary containing the static Formio configuration (from
       the form designer)
     :param values: A mapping of variable key to its value (Python native objects)
+    :param dirty_values: A list of component variable keys that contain user input.
     :returns: None - this function mutates the datastructures in place
 
     .. todo:: Support getting non-string based configuration from variables, such as
@@ -122,6 +126,15 @@ def inject_variables(
 
             try:
                 templated_value = render(property_value, values.data)
+                # Update the component variable along the defaultValue, but only if the
+                # component variable is part of `values` (regarding clearOnHide) and if
+                # there isn't already user-input for the component variable.
+                if (
+                    property_name == "defaultValue"
+                    and component["key"] in values
+                    and component["key"] not in dirty_values
+                ):
+                    values[component["key"]] = templated_value
             except TemplateSyntaxError as exc:
                 logger.debug(
                     "formio.template_evaluation_failure",
