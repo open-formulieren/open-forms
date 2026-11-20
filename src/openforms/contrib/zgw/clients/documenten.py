@@ -6,9 +6,9 @@ from django.core.files import File
 
 from zgw_consumers.nlx import NLXClient
 
+from of_datetime_utils import get_today
 from openforms.contrib.client import LoggingMixin
 from openforms.translations.utils import to_iso639_2b
-from openforms.utils.date import get_today
 
 type DocumentStatus = Literal[
     "in_bewerking",

@@ -7,6 +7,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 
+from of_datetime_utils import datetime_in_amsterdam
 from openforms.api.views.mixins import ListMixin
 from openforms.contrib.zgw.api.serializers import (
     CaseTypeProductSerializer,
@@ -18,7 +19,6 @@ from openforms.contrib.zgw.api.views import (
     BaseDocumentTypesListView,
 )
 from openforms.contrib.zgw.products_and_services import resolve_case_type_products
-from openforms.utils.date import datetime_in_amsterdam
 
 from .filters import (
     APIGroupQueryParamsSerializer,

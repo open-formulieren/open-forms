@@ -1,0 +1,13 @@
+{
+  "html": "<div>Will need to be properly {{ field_errors }} structured.</div>",
+  "id": "iitral8",
+  "key": "someKey",
+  "openForms": {
+    "translations": {
+      "nl": {
+        "html": "<div>NL translation</div>"
+      }
+    }
+  },
+  "type": "softRequiredErrors"
+}

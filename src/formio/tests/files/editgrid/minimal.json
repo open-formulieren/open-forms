@@ -1,0 +1,7 @@
+{
+  "type": "editgrid",
+  "key": "editgrid",
+  "label": "Repeating group",
+  "groupLabel": "Item",
+  "components": []
+}

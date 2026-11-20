@@ -1,0 +1,9 @@
+{
+  "type": "select",
+  "key": "select",
+  "label": "Select",
+  "openForms": {
+    "dataSrc": "variable",
+    "itemsExpression": "someVar"
+  }
+}
