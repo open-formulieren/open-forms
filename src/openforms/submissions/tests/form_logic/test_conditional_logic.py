@@ -855,59 +855,6 @@ class ConditionalLogicTests(TestCase):
         self.assertEqual(step.unsaved_data, {})
         self.assertTrue(state.variables["file"].is_undefined)
 
-    def test_non_registered_components(self):
-        """
-        Ensure conditional logic evaluation does not crash when non-registered
-        components are used
-        """
-        submission = SubmissionFactory.from_components(
-            components_list=[
-                {
-                    "type": "6ea64a10-7f04-470b-b3e1-2a247771ad74",
-                    "key": "nonRegisteredComponentTrigger",
-                    "label": "Non-registered trigger",
-                },
-                {
-                    "type": "6ea64a10-7f04-470b-b3e1-2a247771ad74",
-                    "key": "nonRegisteredComponentFollower",
-                    "hidden": False,
-                    "conditional": {
-                        "show": False,
-                        "when": "nonRegisteredComponentTrigger",
-                        "eq": "hide",
-                    },
-                    "clearOnHide": True,
-                },
-            ],
-        )
-        step = submission.submissionstep_set.get()
-
-        # Note that this unsaved data is technically not possible, because the frontend
-        # will not send hidden fields to the backend, but it does prove that the backend
-        # code follows the behaviour of the frontend.
-        evaluate_form_logic(
-            submission,
-            step,
-            FormioData(
-                {
-                    "nonRegisteredComponentTrigger": "hide",
-                    "nonRegisteredComponentFollower": "clear me",
-                }
-            ),
-        )
-
-        state = submission.variables_state
-        data = state.get_data(include_static_variables=False, include_unsaved=True)
-        self.assertEqual(
-            data,
-            {
-                "nonRegisteredComponentTrigger": "hide",
-                "nonRegisteredComponentFollower": None,
-            },
-        )
-        self.assertEqual(step.unsaved_data, {})
-        self.assertTrue(state.variables["nonRegisteredComponentFollower"].is_undefined)
-
     @tag("gh-6140")
     def test_fieldset_inside_editgrid(self):
         """

@@ -57,9 +57,9 @@ class FailHook(BasePlugin[FailHookComponent]):
 
 
 register = ComponentRegistry()
-register("noHook")(NoHook)
-register("hook")(Hook)
-register("failHook")(FailHook)
+register("textfield")(NoHook)
+register("bsn")(Hook)
+register("email")(FailHook)
 
 
 class PreRegistrationTaskTests(TestCase):
@@ -73,7 +73,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_task(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
@@ -98,7 +98,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_task_fail(self):
         failed_hook_component: Component = {
             "key": "failedHook",
-            "type": "failHook",
+            "type": "email",
             "label": "Failed Hook",
             "validate": {"required": False},
         }
@@ -123,7 +123,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_preregistration_task_skipped(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
@@ -153,13 +153,13 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_group(self):
         no_hook_component: Component = {
             "key": "withoutHook",
-            "type": "nohook",
+            "type": "textfield",
             "label": "Without Hook",
             "validate": {"required": False},
         }
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
@@ -189,13 +189,13 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_group_failed(self):
         no_hook_component: Component = {
             "key": "withoutHook",
-            "type": "nohook",
+            "type": "textfield",
             "label": "Without Hook",
             "validate": {"required": False},
         }
         failed_hook_component: Component = {
             "key": "failedHook",
-            "type": "failHook",
+            "type": "email",
             "label": "Failed Hook",
             "validate": {"required": False},
         }
@@ -226,13 +226,13 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_group_one_component_succeed_and_another_failed(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
         failed_hook_component: Component = {
             "key": "failedHook",
-            "type": "failHook",
+            "type": "email",
             "label": "Failed Hook",
             "validate": {"required": False},
         }
@@ -263,7 +263,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_pre_registration_group_component_failed_retried_and_succeed(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
@@ -301,7 +301,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_process_pre_registration_task_succeed(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
@@ -324,7 +324,7 @@ class PreRegistrationTaskTests(TestCase):
     def test_process_pre_registration_task_failed(self):
         failed_hook_component: Component = {
             "key": "failedHook",
-            "type": "failHook",
+            "type": "email",
             "label": "Failed Hook",
             "validate": {"required": False},
         }
@@ -349,13 +349,13 @@ class PreRegistrationTaskTests(TestCase):
     def test_process_pre_registration_task_one_component_succeeded_another_failed(self):
         hook_component: Component = {
             "key": "withHook",
-            "type": "hook",
+            "type": "bsn",
             "label": "With Hook",
             "validate": {"required": False},
         }
         failed_hook_component: Component = {
             "key": "failedHook",
-            "type": "failHook",
+            "type": "email",
             "label": "Failed Hook",
             "validate": {"required": False},
         }

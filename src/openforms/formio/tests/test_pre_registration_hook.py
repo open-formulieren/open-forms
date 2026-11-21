@@ -64,7 +64,7 @@ class TextFieldPreRegistrationHookTests(TestCase):
     def test_textfield_has_hook(self):
         text_component = {
             "key": "someText",
-            "type": "textField",
+            "type": "textfield",
             "label": "some text",
         }
 
@@ -73,7 +73,7 @@ class TextFieldPreRegistrationHookTests(TestCase):
     def test_textfield_apply_hook(self):
         text_component = {
             "key": "someText",
-            "type": "textField",
+            "type": "textfield",
             "label": "some text",
         }
         submission = SubmissionFactory.from_components([text_component])
