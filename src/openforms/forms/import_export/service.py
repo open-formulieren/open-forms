@@ -6,7 +6,6 @@ Anything else is considered private API.
 """
 
 from .constants import (
-    EXPORT_META_KEY,
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
 )
@@ -17,7 +16,6 @@ from .structs import Artifact
 from .typing import FormExportOptionsData, FormImportOptionsData
 
 __all__ = [
-    "EXPORT_META_KEY",
     "AdditionalFormConfigurationOptions",
     "Artifact",
     "FormConfigurationOptions",
