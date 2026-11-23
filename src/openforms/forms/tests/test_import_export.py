@@ -2316,11 +2316,6 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "type": "map",
                     "label": "Map",
                     "useConfigDefaultMapSettings": True,
-                    "defaultZoom": 8,
-                    "initialCenter": {
-                        "lat": 55.123,
-                        "lng": 56.456,
-                    },
                     "interactions": {
                         "marker": True,
                         "polygon": False,
@@ -2332,11 +2327,6 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "type": "map",
                     "label": "Map",
                     "useConfigDefaultMapSettings": True,
-                    "defaultZoom": 8,
-                    "initialCenter": {
-                        "lat": 55.123,
-                        "lng": 56.456,
-                    },
                     "interactions": {
                         "marker": False,
                         "polygon": True,
