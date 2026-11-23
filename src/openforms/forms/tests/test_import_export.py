@@ -1717,7 +1717,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
         original_json = get_export_artifact(
-            form.pk, export_options=FormExportOptions()
+            form, export_options=FormExportOptions()
         ).as_resources_mapping(encode=False)
 
         # roundtrip
@@ -1815,7 +1815,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         # inspect the exported data structure, configs etc.
         imported_json = get_export_artifact(
-            imported_form.pk, export_options=FormExportOptions()
+            imported_form, export_options=FormExportOptions()
         ).as_resources_mapping(encode=False)
         expected_differences = {
             "forms": [
@@ -1970,7 +1970,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             formstep__form_definition__configuration={"components": [component]},
         )
 
-        artifact = get_export_artifact(form.pk, export_options=FormExportOptions())
+        artifact = get_export_artifact(form, export_options=FormExportOptions())
         export_data = artifact.as_resources_mapping(encode=True)
 
         self.assertIsInstance(export_data, dict)
