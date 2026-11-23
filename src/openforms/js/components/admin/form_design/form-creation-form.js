@@ -1276,6 +1276,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
             authBackends: state.form.authBackends,
             payment: state.form.payment,
             product: state.form.product,
+            showProductDetails: state.form.showProductDetails,
           },
           components: availableComponents,
           formSteps: state.formSteps,

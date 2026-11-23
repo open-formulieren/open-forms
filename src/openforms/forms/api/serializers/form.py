@@ -433,6 +433,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "brp_personen_request_options",
             "help_callout_page",
             "help_dialog",
+            "show_product_details",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -470,6 +471,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_report_download_link_title",
             "help_callout_page",
             "help_dialog",
+            "show_product_details",
         )
         extra_kwargs = {
             "uuid": {
@@ -866,3 +868,19 @@ class FormJsonSchemaOptionsSerializer(serializers.Serializer):
                 description=str(field.help_text),
             )
         ]
+
+
+class FormProductDetailsSerializer(serializers.Serializer):
+    product_name = serializers.CharField(
+        read_only=True,
+        help_text=_("The local or external product's name."),
+    )
+    product_content = serializers.ListField(
+        child=CSPPostProcessedHTMLField(
+            read_only=True,
+            help_text=_(
+                "The local or external product's details. In case of external we fetch "
+                "the content from the external source."
+            ),
+        )
+    )

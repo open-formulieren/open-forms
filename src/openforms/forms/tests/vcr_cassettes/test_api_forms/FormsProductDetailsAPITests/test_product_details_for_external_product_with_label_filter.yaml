@@ -1,0 +1,51 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - nl
+    method: GET
+    uri: http://localhost:8006/producttypen/api/v1/producttypen/9903945d-b639-49da-85ed-7305817f47ad/content?labels=Eisen
+  response:
+    body:
+      string: '[{"uuid":"a34f4e7c-026e-40eb-91a4-0540a6682519","taal":"nl","content":"Lorem
+        ipsum dolor sit amet\\, consectetur adipiscing elit\\. Vestibulum porttitor
+        pulvinar magna\\, at maximus diam maximus ut\\. Pellentesque facilisis bibendum
+        felis et mollis\\. Mauris at augue ligula\\. Mauris viverra tempor eros\\,
+        eu consequat risus lobortis scelerisque\\. Nam et luctus sapien\\. Vestibulum
+        feugiat vestibulum arcu\\, a eleifend purus pharetra et\\. Sed scelerisque
+        volutpat molestie\\. Mauris dapibus ex vel turpis condimentum\\, non rhoncus
+        nulla hendrerit\\. Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin
+        ac sapien\\. Praesent gravida est ipsum\\, a commodo risus vulputate eu\\.
+        Quisque sollicitudin ex in leo fermentum aliquet\\.","aanvullende_informatie":"","labels":["Eisen"]}]'
+    headers:
+      API-version:
+      - 1.7.0
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Language:
+      - nl
+      Content-Length:
+      - '794'
+      Content-Security-Policy:
+      - 'default-src ''self''; object-src ''none''; frame-src ''self''; img-src ''self''
+        data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        font-src ''self'' fonts.gstatic.com; base-uri ''self''; worker-src ''self''
+        blob:; script-src ''self'' ''unsafe-inline''; form-action ''self''; frame-ancestors
+        ''none'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept-Language, origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

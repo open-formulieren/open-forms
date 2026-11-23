@@ -491,6 +491,12 @@
       "value": "Reguliere expressie"
     }
   ],
+  "1X20g+": [
+    {
+      "type": 0,
+      "value": "Whether the product details (content) will be shown on the form start page."
+    }
+  ],
   "1cMfAA": [
     {
       "type": 0,
@@ -5592,6 +5598,12 @@
     {
       "type": 0,
       "value": "Selecteer ten minste één digitaal adrestype."
+    }
+  ],
+  "XLhD5p": [
+    {
+      "type": 0,
+      "value": "Show product details on form start"
     }
   ],
   "XMV3t2": [

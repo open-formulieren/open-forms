@@ -4,6 +4,7 @@ import factory
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from ..constants import ProductSourceChoices
 from ..models import Product
 
 
@@ -13,6 +14,15 @@ class ProductFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Product
+
+    class Params:
+        is_open_product = factory.Trait(
+            uuid="9903945d-b639-49da-85ed-7305817f47ad",
+            name="open product",
+            product_source=ProductSourceChoices.open_product,
+            price=None,
+            producttype_uuid="9903945d-b639-49da-85ed-7305817f47ad",
+        )
 
 
 class OpenProductServiceFactory(ServiceFactory):
