@@ -38,6 +38,7 @@ from openforms.variables.constants import (
 )
 
 from ...constants import FormTypeChoices
+from ...import_export.exceptions import FormImportError
 from ...import_export.service import (
     AdditionalFormConfigurationOptions,
     Artifact,
@@ -2738,3 +2739,33 @@ class AppointmentsV4ConversionTests(TestCase):
 
         assert form is not None
         self.assertEqual(form.type, FormTypeChoices.appointment)
+
+    def test_import_raises_import_error_when_zero_or_multiple_forms_are_being_imported(
+        self,
+    ):
+        # no forms
+        with self.assertRaisesMessage(
+            FormImportError,
+            "The export artifact must contain exactly one form.",
+        ):
+            artifact = Artifact(forms=[])
+            import_form_data(artifact, import_options=FormImportOptions())
+
+        # multiple forms
+        with self.assertRaisesMessage(
+            FormImportError,
+            "The export artifact must contain exactly one form.",
+        ):
+            artifact = Artifact(
+                forms=[
+                    {
+                        "name": "form 1",
+                        "slug": "form-1",
+                    },
+                    {
+                        "name": "form 2",
+                        "slug": "form-2",
+                    },
+                ]
+            )
+            import_form_data(artifact, import_options=FormImportOptions())

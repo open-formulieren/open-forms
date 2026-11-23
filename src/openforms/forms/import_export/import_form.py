@@ -31,7 +31,7 @@ from ..models import (
 from ._mock_request import get_mock_request as _get_mock_request
 from .constants import AdditionalFormConfigurationOptions
 from .datastructures import FormImportOptions
-from .exceptions import ImportError
+from .exceptions import FormImportError
 from .resources import ADDITIONAL_FORM_CONFIGURATION_RESOURCES
 from .serializers import (
     FormDefinitionImportSerializer,
@@ -104,7 +104,7 @@ def import_form_data(
     )
 
     if not len(forms_data := artifact.forms) == 1:
-        raise ImportError("The export artifact must contain exactly one form.")
+        raise FormImportError("The export artifact must contain exactly one form.")
 
     imported_form = _import_form_resource(
         data=forms_data,
