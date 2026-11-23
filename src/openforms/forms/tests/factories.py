@@ -267,14 +267,14 @@ class FormStepFactory(factory.django.DjangoModelFactory):
 
 class FormVersionFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
-    export_blob = {}
+    export_blob = {}  # can't be null
 
     class Meta:
         model = "forms.FormVersion"
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):
-        obj.export_blob = get_version_export_blob(obj.form)
+        obj.export_blob = extracted or get_version_export_blob(obj.form)
         obj.save()
 
 
