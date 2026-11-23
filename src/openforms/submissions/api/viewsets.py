@@ -1,6 +1,7 @@
 import contextlib
 from uuid import UUID
 
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Exists, OuterRef
 from django.utils import timezone
@@ -19,6 +20,7 @@ from rest_framework.response import Response
 from openforms.accounts.models import User
 from openforms.api import pagination
 from openforms.api.authentication import AnonCSRFSessionAuthentication
+from openforms.api.exceptions import Conflict
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
@@ -74,6 +76,11 @@ from .serializers import (
     SubmissionSuspensionSerializer,
 )
 from .validation import SubmissionCompletionSerializer
+
+
+def _get_completion_lock_key(submission: Submission):
+    return f"_complete_endpoint_called:{str(submission.uuid)}"
+
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -144,20 +151,36 @@ class SubmissionViewSet(
         return None
 
     def get_object(self) -> Submission:
-        if not hasattr(self, "_get_object_cache"):
+        if is_cached := hasattr(self, "_get_object_cache"):
+            submission = self._get_object_cache
+        else:
             submission = super().get_object()
-
             with cleanup_deactivated_form_session(self.request, submission):
                 check_form_status(self.request, submission.form)
-
             self._get_object_cache = submission
-            # on the fly, calculate the price if it's not set yet (required for overview screen)
-            if submission.completed_on is None:
-                # price calculation may rely on logic rules before the 'current step',
-                # so we must force full logic rule evaluation
+
+        if self.action == "_complete" and not cache.add(
+            _get_completion_lock_key(submission), True, timeout=300
+        ):
+            raise Conflict(
+                detail=_("This submission is already being completed."),
+                code="submission-already-being-completed",
+            )
+
+        if not is_cached and submission.completed_on is None:
+            # on the fly, calculate the price if it's not set yet (required for overview
+            # screen)
+            # price calculation may rely on logic rules before the 'current step',
+            # so we must force full logic rule evaluation
+            try:
                 check_submission_logic(submission, evaluate_all_rules=True)
                 submission.calculate_price(save=False)
-        return self._get_object_cache
+            except:
+                if self.action == "_complete":
+                    cache.delete(_get_completion_lock_key(submission))
+                raise
+
+        return submission
 
     @transaction.atomic
     @structlog.contextvars.bound_contextvars(submission_committed=False)
@@ -356,37 +379,44 @@ class SubmissionViewSet(
 
         ---
         """
+        # Sets a key in the cache to track whether this endpoint has been called for
+        # this submission already
         submission = self.get_object()
-        if submission.form.submission_allowed != SubmissionAllowedChoices.yes:
-            raise PermissionDenied(
-                detail=_("Submission is not enabled for this form."),
-                code="submission-not-allowed",
+
+        try:
+            if submission.form.submission_allowed != SubmissionAllowedChoices.yes:
+                raise PermissionDenied(
+                    detail=_("Submission is not enabled for this form."),
+                    code="submission-not-allowed",
+                )
+
+            # prepare the submission with evaluated logic so that its state can be
+            # validated
+            submission.load_execution_state()
+            check_submission_logic(submission, evaluate_all_rules=True)
+
+            # validate the input + submission state
+            serializer = SubmissionCompletionSerializer(
+                data={
+                    # the statement checkboxes don't run validation if they're not
+                    # provided as input data, but it's weird to require these fields to
+                    # be sent in the body if configuration dictates that any of them is
+                    # not required - it would be logical to not send that data in the
+                    # first place. So, we default them to what that implies: there has
+                    # not been an explicit acceptance of the statement checkbox.
+                    "privacy_policy_accepted": False,
+                    "statement_of_truth_accepted": False,
+                    **request.data,
+                },
+                context={"request": self.request, "submission": submission},
             )
+            serializer.is_valid(raise_exception=True)
 
-        # prepare the submission with evaluated logic so that its state can be validated
-        submission.load_execution_state()
-        check_submission_logic(submission, evaluate_all_rules=True)
-
-        # validate the input + submission state
-        serializer = SubmissionCompletionSerializer(
-            data={
-                # the statement checkboxes don't run validation if they're not provided as
-                # input data, but it's weird to require these fields to be sent in the body
-                # if configuration dictates that any of them is not required - it would be logical
-                # to not send that data in the first place. So, we default them to what that
-                # implies: there has not been an explicit acceptance of the statement
-                # checkbox.
-                "privacy_policy_accepted": False,
-                "statement_of_truth_accepted": False,
-                **request.data,
-            },
-            context={"request": self.request, "submission": submission},
-        )
-        serializer.is_valid(raise_exception=True)
-
-        # all is fine, we can complete it
-        status_url = self._complete_submission(submission)
-        serializer.save(status_url=status_url)
+            # all is fine, we can complete it
+            status_url = self._complete_submission(submission)
+            serializer.save(status_url=status_url)
+        finally:
+            cache.delete(_get_completion_lock_key(submission))
 
         return Response(serializer.data)
 
