@@ -148,8 +148,7 @@ class SubmissionSummaryRendererTests(TestCase):
         # 3. Get form variables
         # 4. Get submission variables
         # 5. Get form logic
-        # 6. Get auth info
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             self.submission.render_summary_page()
 
     def test_editgrid_summary(self):
