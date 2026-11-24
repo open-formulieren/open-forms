@@ -166,13 +166,14 @@ class CatalogiClient(LoggingMixin, NLXClient):
 
         if self._api_version is None:
             cache_key = f"ZGW|catalogi|version|{self.base_url}"
-            self._api_version = self.cache.get_or_set(
+            _api_version = self.cache.get_or_set(
                 cache_key,
                 default=_lookup_version,
                 timeout=CATALOGI_VERSION_LOOKUP_CACHE_TIMEOUT,
             )
+            assert _api_version is not None
+            self._api_version = tuple(_api_version)
 
-        assert self._api_version is not None
         return self._api_version
 
     def _determine_api_version(self, response: Response) -> CatalogiAPIVersion:
