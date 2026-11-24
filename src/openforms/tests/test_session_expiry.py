@@ -31,7 +31,7 @@ from ..accounts.tests.factories import SuperUserFactory
 from .utils import NOOP_CACHES
 
 SESSION_CACHES = deepcopy(NOOP_CACHES)
-SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+SESSION_CACHES["session"] = {"BACKEND": "openforms.tests.cache.JSONLocMemCache"}
 
 
 class SessionTestView(APIView):

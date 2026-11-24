@@ -11,7 +11,6 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.date import TIMEZONE_AMS, get_today
-from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....base import AppointmentDetails, CustomerDetails, Location, Product
@@ -19,7 +18,7 @@ from ....exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
 from ..client import Location as RawLocation
 from ..constants import CustomerFields
 from ..exceptions import GracefulJccRestException, JccRestException
-from ..models import JccRestConfig
+from ..models import JccRestConfig, get_default_components
 from ..plugin import JccRestPlugin
 
 
@@ -69,9 +68,13 @@ class PluginTests(OFVCRMixin, TestCase):
     def setUp(self):
         super().setUp()
 
+        config = JccRestConfig.get_solo()
+        config.configuration = get_default_components()  # force correct language
+        config.save()
+
         # The token requests are cached, so have to make sure cache is emptied to enable
         # testing the individual (and reverse) methods
-        self.addCleanup(clear_caches)
+        self.addCleanup(JccRestConfig.clear_cache)
 
     @classmethod
     def setUpTestData(cls):

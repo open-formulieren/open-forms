@@ -494,7 +494,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     SESSION_CACHE_ALIAS="session",
     CACHES={
         **settings.CACHES,
-        "session": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "session": {"BACKEND": "openforms.tests.cache.JSONLocMemCache"},
     },
 )
 class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):

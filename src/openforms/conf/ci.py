@@ -34,11 +34,11 @@ from .utils import mute_logging  # noqa isort:skip
 
 CACHES.update(
     {
-        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "default": {"BACKEND": "openforms.tests.cache.JSONLocMemCache"},
         # See: https://github.com/jazzband/django-axes/blob/master/docs/configuration.rst#cache-problems
-        "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
-        "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-        "catalogi_client": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+        "axes": {"BACKEND": "openforms.tests.cache.JSONDummyCache"},
+        "oidc": {"BACKEND": "openforms.tests.cache.JSONLocMemCache"},
+        "catalogi_client": {"BACKEND": "openforms.tests.cache.JSONDummyCache"},
     }
 )
 
