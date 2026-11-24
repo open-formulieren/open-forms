@@ -301,10 +301,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
-        if (component_type := component["type"]) not in self:
-            return
-
-        plugin = self[component_type]
+        plugin = self[component["type"]]
         plugin.apply_visibility(
             component,
             data,
@@ -323,12 +320,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         Mutating the config in place allows dynamic configurations (because of logic,
         for example) to work.
         """
-        # if there is no plugin registered for the component, return the input
-        if (component_type := component["type"]) not in self:
-            return
-
-        # invoke plugin if exists
-        plugin = self[component_type]
+        plugin = self[component["type"]]
         plugin.mutate_config_dynamically(component, submission, data)
 
     def update_config_for_request(self, component: Component, request: Request) -> None:
@@ -451,10 +443,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         """
         Determine if a given component has a pre-registration hook.
         """
-        if (component_type := component["type"]) not in self:
-            return False
-
-        return self[component_type].pre_registration_hook is not None
+        return self[component["type"]].pre_registration_hook is not None
 
     def apply_pre_registration_hook(
         self, component: Component, submission: Submission

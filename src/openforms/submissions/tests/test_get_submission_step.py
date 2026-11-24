@@ -243,7 +243,9 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 {
                     "type": "file",
                     "key": "file",
-                    "storage": "url",
+                    "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "url": "",  # must be set dynamically
                 }
             ]

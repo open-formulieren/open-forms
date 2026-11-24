@@ -319,7 +319,13 @@ class FormDesignerRegressionTests(E2ETestCase):
                 name="Form definition 1",
                 slug="form-definition-1",
                 configuration={
-                    "components": [{"key": "textfield", "type": "textfield"}]
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "textfield",
+                        }
+                    ]
                 },
             )
             FormStepFactory.create(form=form, form_definition=fd1)
@@ -330,7 +336,13 @@ class FormDesignerRegressionTests(E2ETestCase):
                 slug="form-definition-2",
                 is_reusable=True,
                 configuration={
-                    "components": [{"key": "textfield", "type": "textfield"}]
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "textfield",
+                        }
+                    ]
                 },
             )
             return form

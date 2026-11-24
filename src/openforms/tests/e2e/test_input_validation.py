@@ -734,9 +734,8 @@ class SingleLicenseplateTests(ValidationsTestCase):
             "key": "regexPatternLicenseplate",
             "label": "Regex pattern licenseplate",
             "validate": {
-                "pattern": r"^[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}$"
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"
             },
-            "errors": {"pattern": "Ongeldig Nederlands kenteken"},
         }
 
         self.assertValidationIsAligned(
@@ -900,15 +899,10 @@ class SingleFileTests(ValidationsTestCase):
             "key": "unknownFile",
             "label": "Unknown File",
             "validate": {"required": True},
-            "storage": "url",
             "file": {
                 "name": "",
-                "type": [
-                    "",
-                ],
-                "allowedTypesLabels": [
-                    "*",
-                ],
+                "type": ["*"],
+                "allowedTypesLabels": ["*"],
             },
             "filePattern": "",
         }
