@@ -95,7 +95,7 @@ def get_configuration_template_syntax_errors(
 def inject_variables(
     configuration: FormioConfigurationWrapper,
     values: FormioData,
-    dirty_values: list[str],
+    keys_with_user_input: Collection[str],
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
@@ -109,7 +109,8 @@ def inject_variables(
     :param configuration: A dictionary containing the static Formio configuration (from
       the form designer)
     :param values: A mapping of variable key to its value (Python native objects)
-    :param dirty_values: A list of component variable keys that contain user input.
+    :param keys_with_user_input: A collection of component variable keys that contain
+      user input.
     :returns: None - this function mutates the datastructures in place
 
     .. todo:: Support getting non-string based configuration from variables, such as
@@ -132,7 +133,7 @@ def inject_variables(
                 if (
                     property_name == "defaultValue"
                     and component["key"] in values
-                    and component["key"] not in dirty_values
+                    and component["key"] not in keys_with_user_input
                 ):
                     values[component["key"]] = templated_value
             except TemplateSyntaxError as exc:

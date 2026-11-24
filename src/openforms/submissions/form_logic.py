@@ -122,7 +122,7 @@ def evaluate_form_logic(
             include_unsaved=False, submission_step=step
         )
     )
-    variables_with_user_input = [key for key in submitted_step_variables]
+    variables_with_user_input = set(submitted_step_variables)
 
     # Update data for evaluation.
     step_variables = submission_variables_state.get_variables_in_submission_step(
@@ -136,6 +136,8 @@ def evaluate_form_logic(
         for key in step_variables:
             if key not in unsaved_data:
                 data_for_evaluation.pop(key)
+            else:
+                variables_with_user_input.add(key)
 
     # Initial data used to create a data difference at the end
     initial_data = deepcopy(data_for_evaluation)
@@ -193,7 +195,7 @@ def evaluate_form_logic(
     inject_variables(
         configuration=config_wrapper,
         values=data_for_evaluation,
-        dirty_values=variables_with_user_input,
+        keys_with_user_input=variables_with_user_input,
     )
 
     # 7.3 Handle custom formio types
