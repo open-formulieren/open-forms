@@ -23,6 +23,7 @@ class Order(TypedDict):
 class CheckoutInput(TypedDict):
     returnUrl: str
     variant: NotRequired[str]
+    locale: str
 
 
 class CheckoutDetails(TypedDict):

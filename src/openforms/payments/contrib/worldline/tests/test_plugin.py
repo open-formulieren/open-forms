@@ -144,6 +144,8 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             )
 
             self.assertNotIn("Test title", response.text)
+            # make sure the default(nl) language is used
+            self.assertIn("Uw betaling is geaccepteerd", response.text)
 
             # we need another arbitrary request
             request = factory.get("/foo")

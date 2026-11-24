@@ -9,7 +9,7 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.crypto import constant_time_compare
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import get_language, gettext, gettext_lazy as _
 
 import sentry_sdk
 import structlog
@@ -137,11 +137,12 @@ def _generate_checkout_input(
     payment_plugin: "WorldlinePaymentPlugin",
 ) -> CheckoutInput:
     return_url = payment_plugin.get_return_url(request, payment)
+    language_code = get_language()
 
     if variant := options.get("variant"):
-        return {"returnUrl": return_url, "variant": variant}
+        return {"returnUrl": return_url, "variant": variant, "locale": language_code}
 
-    return {"returnUrl": return_url}
+    return {"returnUrl": return_url, "locale": language_code}
 
 
 @register("worldline")
