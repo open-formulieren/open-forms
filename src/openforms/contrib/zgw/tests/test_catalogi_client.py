@@ -422,7 +422,7 @@ class CatalogiClientCachingTests(TestCase):
 
         cache = caches["catalogi_client"]
         cache_key = "ZGW|catalogi|version|https://dummy/catalogi/api/v1"
-        self.assertEqual(cache.get(cache_key), (1, 2, 3))
+        self.assertEqual(cache.get(cache_key), [1, 2, 3])
 
         # Do another request to a random endpoint, not expecting this to increase the
         # mocker's request history but using the cached value instead.

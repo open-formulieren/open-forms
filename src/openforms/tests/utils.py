@@ -14,7 +14,7 @@ from django.conf import settings
 import structlog
 
 NOOP_CACHES = {
-    name: {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
+    name: {"BACKEND": "openforms.tests.cache.JSONDummyCache"}
     for name in settings.CACHES.keys()
 }
 

@@ -19,7 +19,7 @@ from ..clients.bag import AddressResult
 from ..models import KadasterApiConfig
 
 CACHES = settings.CACHES.copy()
-CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+CACHES["default"] = {"BACKEND": "openforms.tests.cache.JSONLocMemCache"}
 
 
 @override_settings(CACHES=CACHES)

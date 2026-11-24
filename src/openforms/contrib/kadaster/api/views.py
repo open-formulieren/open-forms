@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from django.core.cache import cache
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +14,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.views.mixins import ListMixin
 from openforms.contrib.kadaster.clients.bag import AddressResult, build_address_result
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
+from openforms.typing import JSONObject
 
 from ..clients import get_bag_client, get_locatieserver_client
 from .serializers import (
@@ -72,18 +75,25 @@ class AddressAutocompleteView(APIView):
         # check the cache so we avoid hitting the remote API too often (and risk
         # of being throttled, see #1832)
         cache_key = f"BAG|get_address|{postcode}|{number}"
+        # TODO: this might benefit from msgspec structs intead of dataclasses for cache
+        # serialization/deserialization
         # `cache.get(...)` returns `None` if the key does not exist.
-        address_data = cache.get(cache_key)
-        if address_data is None:
+        _address_data: JSONObject | None = cache.get(cache_key)
+        if _address_data is None:
             address_data = lookup_address(postcode, number)
+
             # If address data is still `None`, the request to look up the address has
             # failed for whatever reason, so we shouldn't add it to the cache.
             if address_data is not None:
-                cache.set(cache_key, address_data, ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT)
+                cache.set(
+                    cache_key, asdict(address_data), ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT
+                )
             else:
                 # Make sure we return an empty address result instead of `None`
                 # (see #4430).
                 address_data = build_address_result(postcode, number)
+        else:
+            address_data = AddressResult(**_address_data)  # pyright: ignore[reportArgumentType]
 
         return Response(GetStreetNameAndCityViewResultSerializer(address_data).data)
 

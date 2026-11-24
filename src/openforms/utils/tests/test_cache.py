@@ -11,11 +11,11 @@ from django.urls import path
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": "openforms.tests.cache.JSONLocMemCache",
             "LOCATION": "default",
         },
         "extra": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": "openforms.tests.cache.JSONLocMemCache",
             "LOCATION": "extra",
         },
         "proxy1": {"BACKEND": "openforms.utils.cache.RequestProxyCache"},
@@ -144,7 +144,7 @@ def test_view(view):
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": "openforms.tests.cache.JSONLocMemCache",
             "LOCATION": "default",
         },
         "proxy": {"BACKEND": "openforms.utils.cache.RequestProxyCache"},
