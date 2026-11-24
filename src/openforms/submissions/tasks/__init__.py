@@ -7,6 +7,7 @@ from django.utils import timezone
 import structlog
 from celery import chain
 from celery.result import AsyncResult
+from celery_once import QueueOnce
 
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
@@ -120,7 +121,7 @@ def retry_processing_submissions():
         on_post_submission_event(submission.pk, PostSubmissionEvents.on_retry)
 
 
-@app.task()
+@app.task(base=QueueOnce)
 def finalise_completion(submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.

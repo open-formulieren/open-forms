@@ -29,7 +29,7 @@ from .service import get_registration_plugin
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task()
+@app.task(base=QueueOnce)
 def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     submission = Submission.objects.get(id=submission_id)
     form = submission.form
@@ -182,11 +182,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     log.info("completed")
 
 
-@app.task(
-    base=QueueOnce,
-    ignore_result=False,
-    once={"graceful": True},  # do not spam error monitoring
-)
+@app.task(base=QueueOnce, ignore_result=False)
 def register_submission(submission_id: int, event: PostSubmissionEvents | str) -> None:
     """
     Attempt to register the submission with the configured backend.
@@ -474,7 +470,7 @@ def execute_component_pre_registration(
     )
 
 
-@app.task(bind=True)
+@app.task(bind=True, base=QueueOnce)
 def execute_component_pre_registration_group(task, submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
@@ -489,7 +485,7 @@ def execute_component_pre_registration_group(task, submission_id: int) -> None:
     return task.replace(task_group)
 
 
-@app.task
+@app.task(base=QueueOnce)
 def process_component_pre_registration(submission_id: int) -> None:
     submission: Submission = Submission.objects.get(id=submission_id)
 

@@ -1,6 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 import structlog
+from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.logging import audit_logger
@@ -13,7 +14,7 @@ __all__ = ["generate_submission_report"]
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task(bind=True)
+@app.task(bind=True, base=QueueOnce)
 def generate_submission_report(task, submission_id: int) -> None:
     log = logger.bind(
         action="submissions.generate_submission_report", submission_id=submission_id

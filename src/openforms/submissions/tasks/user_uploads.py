@@ -2,6 +2,8 @@ from datetime import timedelta
 
 from django.conf import settings
 
+from celery_once import QueueOnce
+
 from openforms.celery import app
 
 from ..attachments import (
@@ -18,7 +20,7 @@ __all__ = [
 ]
 
 
-@app.task(ignore_result=True)
+@app.task(base=QueueOnce, ignore_result=True)
 def cleanup_temporary_files_for(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
     cleanup_submission_temporary_uploaded_files(submission)
