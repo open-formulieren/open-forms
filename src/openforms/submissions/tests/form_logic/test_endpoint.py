@@ -1380,3 +1380,37 @@ class CheckLogicEndpointTests(
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             step_data = response.json()["data"]
             self.assertEqual(step_data["valueSetByLogic"], "kaas")
+
+    @tag("gh-6924")
+    def test_logic_evaluation_does_not_override_unsaved_user_input(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "defaultValue": "foo",
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        assert isinstance(submission, Submission)
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        # Perform logic check
+        response = self.client.post(endpoint, data={"data": {"textfield": "bar"}})
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        step_data = response.json()["step"]
+        # Assert that the prefill data is empty
+        self.assertEqual({}, step_data["data"])
