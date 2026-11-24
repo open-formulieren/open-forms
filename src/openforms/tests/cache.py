@@ -49,7 +49,7 @@ class JSONLocMemCache(JSONMixin, LocMemCache):
         with self._lock:
             if self._has_expired(key):
                 self._delete(key)
-                raise ValueError("Key '%s' not found" % key)
+                raise ValueError(f"Key '{key}' not found")
             pickled = self._cache[key]
             value = JSON_DECODER.decode(pickle.loads(pickled))
             new_value = value + delta
