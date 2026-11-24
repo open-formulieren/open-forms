@@ -121,18 +121,20 @@ def inject_variables(
                 case [str(), *_]:
                     property_value = [s for s in property_value if isinstance(s, str)]
 
-            try:
-                templated_value = render(property_value, values.data)
-            except TemplateSyntaxError as exc:
-                logger.debug(
-                    "formio.template_evaluation_failure",
-                    template=property_value,
-                    exc_info=exc,
-                )
-                # keep the original value on error
-                continue
+            component[property_name] = resolve_template(property_value, values)
 
-            component[property_name] = templated_value
+
+def resolve_template(value: JSONValue, variables: FormioData) -> JSONValue:
+    try:
+        return render(value, variables.data)
+    except TemplateSyntaxError as exc:
+        logger.debug(
+            "formio.template_evaluation_failure",
+            template=value,
+            exc_info=exc,
+        )
+        # keep the original value on error
+        return value
 
 
 def extract_variables_from_template_properties(component: Component) -> set[str]:

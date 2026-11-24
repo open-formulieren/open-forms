@@ -33,7 +33,11 @@ from .utils import (
     get_branch_representation,
     iter_components,
 )
-from .variables import extract_variables_from_template_properties, inject_variables
+from .variables import (
+    extract_variables_from_template_properties,
+    inject_variables,
+    resolve_template,
+)
 from .visibility import is_hidden, process_visibility
 
 if TYPE_CHECKING:
@@ -46,6 +50,7 @@ __all__ = [
     "normalize_value_for_component",
     "iter_components",
     "inject_variables",
+    "resolve_template",
     "format_value",
     "rewrite_formio_components_for_request",
     "FormioConfigurationWrapper",
