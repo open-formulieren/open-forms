@@ -94,10 +94,10 @@ LOGGING["loggers"].update(
 # https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
 CACHES.update(
     {
-        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-        "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
-        "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-        "catalogi_client": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+        "default": {"BACKEND": "openforms.tests.cache.JSONLocMemCache"},
+        "axes": {"BACKEND": "openforms.tests.cache.JSONDummyCache"},
+        "oidc": {"BACKEND": "openforms.tests.cache.JSONLocMemCache"},
+        "catalogi_client": {"BACKEND": "openforms.tests.cache.JSONDummyCache"},
     }
 )
 
