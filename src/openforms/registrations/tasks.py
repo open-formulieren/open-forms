@@ -45,7 +45,8 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     audit_log = audit_logger.bind(**structlog.get_context(log))
 
     if not submission.completed_on:
-        # This should never happen. Pre-registration shouldn't be attempted for a submission that is not complete.
+        # This should never happen. Pre-registration shouldn't be attempted for a
+        # submission that is not complete.
         log.error("submission_not_completed")
         return
 
@@ -108,7 +109,8 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
                 raise exc
             return
 
-        # If we are retrying, then an internal registration reference has been set. We keep track of it.
+        # If we are retrying, then an internal registration reference has been set. We
+        # keep track of it.
         if event == PostSubmissionEvents.on_retry:
             if not submission.registration_result:
                 submission.registration_result = {}
