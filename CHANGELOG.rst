@@ -14,6 +14,46 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.9 (2026-11-24)
+==================
+
+Hotfix release.
+
+* The "unsafe default cache serializer" fix broke in code paths that cache data that
+  wasn't compatible with JSON-serialization yet.
+
+.. warning::
+
+    It's recommended to flush the caches after deploying this update, as the cache
+    data format effectively changes. In the redis container, you can do this with:
+
+    .. code-block:: bash
+
+        redis-cli flushall
+
+    Note that this will also delete ongoing user sessions - apologies for the
+    inconvenience.
+
+3.5.17 (2026-11-24)
+===================
+
+Hotfix release.
+
+* The "unsafe default cache serializer" fix broke in code paths that cache data that
+  wasn't compatible with JSON-serialization yet.
+
+.. warning::
+
+    It's recommended to flush the caches after deploying this update, as the cache
+    data format effectively changes. In the redis container, you can do this with:
+
+    .. code-block:: bash
+
+        redis-cli flushall
+
+    Note that this will also delete ongoing user sessions - apologies for the
+    inconvenience.
+
 4.0.8 (2026-11-24)
 ==================
 
