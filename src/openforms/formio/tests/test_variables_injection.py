@@ -99,9 +99,7 @@ class VariableInjectionTests(SimpleTestCase):
         configuration = deepcopy(CONFIGURATION)
         variables = deepcopy(VARIABLES)
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), variables, FormioData()
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), variables)
 
         lookup_table = {comp["key"]: comp for comp in configuration["components"]}
 
@@ -112,13 +110,6 @@ class VariableInjectionTests(SimpleTestCase):
         date1 = lookup_table["date1"]
         number1 = lookup_table["number1"]
         checkbox1 = lookup_table["checkbox1"]
-
-        text1_variable = variables["text1"]
-        text2_variable = variables["text2"]
-        textfield_multi_variable = variables["textfieldMulti"]
-        date1_variable = variables["date1"]
-        number1_variable = variables["number1"]
-        checkbox1_variable = variables["checkbox1"]
 
         with self.subTest("HTML content"):
             self.assertEqual(
@@ -135,22 +126,18 @@ class VariableInjectionTests(SimpleTestCase):
 
         with self.subTest("Stringified default value"):
             self.assertEqual(text1["defaultValue"], "123")
-            self.assertEqual(text1_variable, "123")
 
         with self.subTest("Stringified default value (float)"):
             # localized! Formio seems to handle localized values correctly
             self.assertEqual(text2["defaultValue"], "123,45")
-            self.assertEqual(text2_variable, "123,45")
 
         with self.subTest("Default values with multiple=true"):
             # localized! Formio seems to handle localized values correctly
             self.assertEqual(textfield_multi["defaultValue"], ["123", "123,5"])
-            self.assertEqual(textfield_multi_variable, ["123", "123,5"])
 
         with self.subTest("Builtin template filters"):
             self.assertEqual(date1["label"], "Het is vandaag dinsdag")
             self.assertEqual(date1["defaultValue"], "16-08-2022")
-            self.assertEqual(date1_variable, "16-08-2022")
 
         # questionable but convenient formio behaviour - it parses the string as a number
         with self.subTest("Number default floatformat, unlocalized"):
@@ -159,12 +146,10 @@ class VariableInjectionTests(SimpleTestCase):
             # as the use_l10n parameter is not passed down inside of floatformat. This is fixed
             # in newer django versions than 3.2. For now, we can accept localized values.
             self.assertEqual(number1["defaultValue"], "0,30")
-            self.assertEqual(number1_variable, "0,30")
 
         # questionable but convenient formio behaviour - it parses the string as a boolean
         with self.subTest("Checkbox default value boolean-ish"):
             self.assertEqual(checkbox1["defaultValue"], "true")
-            self.assertEqual(checkbox1_variable, "true")
 
     def test_custom_libraries_not_available(self):
         configuration = {
@@ -177,9 +162,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), FormioData(), FormioData()
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["label"],
@@ -197,9 +180,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), FormioData(), FormioData()
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["label"],
@@ -228,9 +209,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), FormioData(), FormioData()
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["html"],
@@ -285,9 +264,7 @@ class VariableInjectionTests(SimpleTestCase):
         }
 
         inject_variables(
-            FormioConfigurationWrapper(configuration),
-            FormioData({"var": "foo"}),
-            FormioData(),
+            FormioConfigurationWrapper(configuration), FormioData({"var": "foo"})
         )
 
         self.assertEqual(configuration["components"][0]["values"][0]["label"], "1")
@@ -308,17 +285,13 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
         variables = FormioData({"foo": "bar", "textfield": "{{ foo }}"})
-        user_input = FormioData()
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), variables, user_input
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), variables)
 
         lookup_table = {comp["key"]: comp for comp in configuration["components"]}
         text = lookup_table["textfield"]
 
         self.assertEqual(text["defaultValue"], "bar")
-        self.assertEqual(variables.data, {"foo": "bar", "textfield": "bar"})
 
     def test_doesnt_change_component_variables_with_user_input(self):
         configuration = {
@@ -332,12 +305,8 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
         variables = FormioData({"foo": "bar", "textfield": "{{ foo }}"})
-        # For some reason, the user entered the template tag as input
-        user_input = FormioData({"textfield": "{{ foo }}"})
 
-        inject_variables(
-            FormioConfigurationWrapper(configuration), variables, user_input
-        )
+        inject_variables(FormioConfigurationWrapper(configuration), variables)
 
         lookup_table = {comp["key"]: comp for comp in configuration["components"]}
         text = lookup_table["textfield"]
