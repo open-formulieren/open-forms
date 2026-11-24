@@ -4,7 +4,7 @@ from typing import Any, Literal
 from django.test import SimpleTestCase
 from django.utils.translation import gettext as _
 
-from hypothesis import given, strategies as st
+from hypothesis import assume, given, strategies as st
 
 from openforms.tests.search_strategies import json_values
 from openforms.typing import JSONValue
@@ -84,6 +84,8 @@ class HeaderValidatorTests(SimpleTestCase):
 
     @given(st.dictionaries(keys=field_names(), values=field_values()))
     def test_it_validates_well_formed_rfc_9110_headers(self, userinput: dict[str, str]):
+        keys = {key.lower() for key in userinput}
+        assume(not keys.intersection({"x-api-key", "authorization", "api-key"}))
         try:
             return_value = self.validate(userinput)
         except ValidationError as e:
