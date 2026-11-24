@@ -85,7 +85,9 @@ class ReferenceListsClient(APIClient):
             for record in all_data
         ]
 
-    def get_items_for_table(self, code: str, current_language: str) -> list[TableItem]:
+    def _get_items_for_table(
+        self, code: str, current_language: str
+    ) -> list[APITableItem]:
         response = self.get(
             "items",
             params={"tabel__code": code},
@@ -94,6 +96,16 @@ class ReferenceListsClient(APIClient):
         response.raise_for_status()
         data = response.json()
         all_data: list[APITableItem] = list(pagination_helper(self, data))
+        return all_data
+
+    def get_items_for_table_cached(self, code: str) -> list[TableItem]:
+        current_language = get_language()
+        raw_result: list[APITableItem] | None = cache.get_or_set(
+            key=f"reference_lists|get_items_for_table|code:{code}|language:{current_language}",
+            default=partial(self._get_items_for_table, code, current_language),
+            timeout=REFERENCE_LISTS_LOOKUP_CACHE_TIMEOUT,
+        )
+        assert raw_result is not None
         return [
             TableItem(
                 code=record["code"],
@@ -104,15 +116,5 @@ class ReferenceListsClient(APIClient):
                     else datetime.fromisoformat(datestr)
                 ),
             )
-            for record in all_data
+            for record in raw_result
         ]
-
-    def get_items_for_table_cached(self, code: str) -> list[TableItem]:
-        current_language = get_language()
-        result = cache.get_or_set(
-            key=f"reference_lists|get_items_for_table|code:{code}|language:{current_language}",
-            default=partial(self.get_items_for_table, code, current_language),
-            timeout=REFERENCE_LISTS_LOOKUP_CACHE_TIMEOUT,
-        )
-        assert result is not None
-        return result

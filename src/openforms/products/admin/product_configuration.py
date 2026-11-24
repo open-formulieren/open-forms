@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.core.cache import cache
 from django.utils.translation import gettext as _
 
+import msgspec
 from openproduct_client.structs.base import PaginatedResponseBody
 from openproduct_client.structs.product_type import ContentLabel
 from solo.admin import SingletonModelAdmin
@@ -31,15 +32,15 @@ class ProductConfigurationForm(forms.ModelForm):
 
         with get_open_product_client(form_service) as client:
             # django types do not help us here (ANY | None)
-            result: PaginatedResponseBody[ContentLabel] | None = cache.get_or_set(
+            cached_result = cache.get_or_set(
                 key=f"content_labels|get_content_labels|{form_service.slug}",
-                default=client.content_label.list,
+                default=lambda: msgspec.to_builtins(client.content_label.list()),
                 timeout=CONTENT_LABELS_LOOKUP_CACHE_TIMEOUT,
             )
-
-            assert result is not None
-
-            results = result.results
+            assert cached_result is not None
+            results = msgspec.convert(
+                cached_result, type=PaginatedResponseBody[ContentLabel]
+            ).results
             fetched_labels = {item.naam for item in results}
             unknown_labels = [
                 label for label in form_labels if label not in fetched_labels
