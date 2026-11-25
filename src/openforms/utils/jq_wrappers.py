@@ -58,7 +58,11 @@ def validate_jq(expression: str) -> None:
     except OSError as exc:  # pragma: no cover
         raise JQExecutionError("could not execute jq") from exc
 
-    if result.returncode != 0:
+    # exit code 3 is a compile error. At this point we only care for valid expression,
+    # so syntactically correct jq expression will have exit code != 3
+    is_invalid_syntax = result.returncode == 3
+
+    if is_invalid_syntax:
         raise JQInvalidExpressionError(f"invalid jq expression: {result.stderr[:4000]}")
 
 
