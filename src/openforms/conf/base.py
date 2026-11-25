@@ -105,7 +105,7 @@ CACHES = {
         # our upcoming changes regarding the serializer default to JSON. Existing instances
         # can update their caches by making sure we will have fresh JSON serializable
         # data
-        "PREFIX": "ofjson",
+        "KEY_PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
@@ -116,7 +116,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_AXES', default='localhost:6379/0')}",
         # same applies here for the prefix, as in the default CACHE above
-        "PREFIX": "ofjson",
+        "KEY_PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
@@ -129,7 +129,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_PORTALOCKER', default='localhost:6379/4')}",
         # same applies here for the prefix, as in the default CACHE above
-        "PREFIX": "ofjson",
+        "KEY_PREFIX": "ofjson",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": False,
