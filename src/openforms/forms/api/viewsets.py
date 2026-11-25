@@ -1,4 +1,5 @@
 import inspect
+from collections.abc import Sequence
 from uuid import UUID
 
 from django.conf import settings
@@ -12,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from openproduct_client.structs.product_type import ContentParams, NestedContentElement
 from rest_framework import parsers, permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
@@ -21,6 +23,9 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.products.client import get_open_product_client
+from openforms.products.constants import ProductSourceChoices
+from openforms.products.models import Product, ProductConfiguration
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.utils.urls import is_admin_request, reverse_plus
@@ -55,6 +60,7 @@ from .serializers import (
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
     FormLogicSerializer,
+    FormProductDetailsSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVariableListSerializer,
@@ -67,6 +73,7 @@ from .serializers.form import (
     FormJsonSchemaOptionsSerializer,
 )
 from .serializers.logic.form_logic import FormLogicListSerializer
+from .types import ProductDetails
 
 logger = structlog.get_logger(__name__)
 
@@ -821,4 +828,78 @@ class FormsImportAPIView(views.APIView):
                     request=request,
                 )
             },
+        )
+
+
+class FormProductDetailsView(views.APIView):
+    serializer_class = FormProductDetailsSerializer
+    permission_classes = [FormAPIPermissions]
+
+    def _get_product_details(self, product: Product) -> ProductDetails:
+        """
+        Return product details based on the product source.
+        """
+        # for now we only have to do with Open Product APIs so we base our results
+        # only on this integration when we have an external product
+        is_local = product.product_source == ProductSourceChoices.local
+        if is_local:
+            product_details: ProductDetails = {
+                "product_name": product.name,
+                "product_content": [product.information],
+            }
+        else:
+            product_config = ProductConfiguration.get_solo()
+            with get_open_product_client() as client:
+                # make type checker happy
+                assert isinstance(product_config.content_labels, list)
+
+                product_type_content_list: Sequence[NestedContentElement] = (
+                    client.product_type.list_content(
+                        product.uuid,
+                        params=ContentParams(labels=product_config.content_labels),
+                    )
+                )
+
+                content = [element.content for element in product_type_content_list]
+
+                product_details: ProductDetails = {
+                    "product_name": product.name,
+                    "product_content": content,
+                }
+
+        return product_details
+
+    @extend_schema(
+        summary=_("Retrieve product content"),
+        tags=["forms"],
+        responses={
+            status.HTTP_200_OK: FormProductDetailsSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+        },
+    )
+    def get(self, request: Request, form_uuid: str, *args, **kwargs) -> Response:
+        """
+        Retrieve the product details.
+
+        Based on the product source we either return the name and the information (local)
+        or the content elements for the external one.
+        """
+        try:
+            form = Form.objects.get(uuid=form_uuid)
+        except Form.DoesNotExist:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        product: Product = form.product
+        if not product:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FormProductDetailsSerializer(
+            instance=self._get_product_details(product)
+        )
+        return Response(
+            status=status.HTTP_200_OK,
+            data=serializer.data,
         )

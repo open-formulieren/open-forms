@@ -47,6 +47,7 @@ interface FormContextType {
      * API resource URL to the product.
      */
     product: string | null;
+    showProductDetails: boolean;
     authBackends: {
       backend: string;
       options: JSONObject | null;
@@ -136,6 +137,7 @@ const FormContext = React.createContext<FormContextType>({
       options: {},
     },
     product: null,
+    showProductDetails: true,
     authBackends: [],
   },
   components: {},

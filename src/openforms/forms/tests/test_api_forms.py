@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
+from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
@@ -22,7 +23,9 @@ from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.products.constants import ProductSourceChoices
-from openforms.products.tests.factories import ProductFactory
+from openforms.products.models import ProductConfiguration
+from openforms.products.tests.factories import OpenProductServiceFactory, ProductFactory
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..api.serializers import FormSerializer
 from ..constants import FormTypeChoices, StatementCheckboxChoices
@@ -2365,3 +2368,156 @@ class FormsAPITranslationTests(APITestCase):
                 self.assertEqual(response.headers["Content-Language"], language)
                 data = response.json()
                 self.assertEqual(expected, data["helpCalloutPage"]["content"])
+
+
+class FormsProductDetailsAPITests(OFVCRMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.user = UserFactory.create(is_staff=True, is_superuser=True)
+        cls.opt_service = OpenProductServiceFactory.create(for_test_docker_compose=True)
+        cls.product_config = ProductConfiguration.get_solo()
+        cls.product_config.open_product_service = cls.opt_service
+        cls.product_config.save()
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(cache.clear)
+        self.addCleanup(ProductConfiguration.clear_cache)
+
+    def test_unauthorized_user_is_rejected(self):
+        product = ProductFactory.create(is_open_product=True)
+        form = FormFactory.create(product=product)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": form.uuid})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_missing_form_returns_bad_request(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": uuid.uuid4()})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_product_returns_not_found(self):
+        self.client.force_authenticate(user=self.user)
+
+        form = FormFactory.create(product=None)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": form.uuid})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_product_details_retrieved_for_external_product(self):
+        self.client.force_authenticate(user=self.user)
+
+        product = ProductFactory.create(is_open_product=True)
+        form = FormFactory.create(product=product)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": form.uuid})
+        )
+
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["productName"], "open product")
+        self.assertEqual(len(response_data["productContent"]), 2)
+        self.assertEqual(
+            response_data["productContent"],
+            [
+                "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\."
+                " Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\."
+                " Pellentesque facilisis bibendum felis et mollis\\."
+                " Mauris at augue ligula\\."
+                " Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\."
+                " Nam et luctus sapien\\."
+                " Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\."
+                " Sed scelerisque volutpat molestie\\."
+                " Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\."
+                " Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\."
+                " Praesent gravida est ipsum\\, a commodo risus vulputate eu\\."
+                " Quisque sollicitudin ex in leo fermentum aliquet\\."
+                "",
+                "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\."
+                " Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\."
+                " Pellentesque facilisis bibendum felis et mollis\\."
+                " Mauris at augue ligula\\."
+                " Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\."
+                " Nam et luctus sapien\\."
+                " Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\."
+                " Sed scelerisque volutpat molestie\\."
+                " Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\."
+                " Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\."
+                " Praesent gravida est ipsum\\, a commodo risus vulputate eu\\."
+                " Quisque sollicitudin ex in leo fermentum aliquet\\."
+                "",
+            ],
+        )
+
+    def test_product_details_for_external_product_with_label_filter(self):
+        self.client.force_authenticate(user=self.user)
+
+        # assign a label to the Product Configuration
+        self.product_config.content_labels = ["Eisen"]
+        self.product_config.save()
+
+        product = ProductFactory.create(is_open_product=True)
+        form = FormFactory.create(product=product)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": form.uuid})
+        )
+
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["productName"], "open product")
+        self.assertEqual(len(response_data["productContent"]), 1)
+        self.assertEqual(
+            response_data["productContent"],
+            [
+                "Lorem ipsum dolor sit amet\\, consectetur adipiscing elit\\."
+                " Vestibulum porttitor pulvinar magna\\, at maximus diam maximus ut\\."
+                " Pellentesque facilisis bibendum felis et mollis\\."
+                " Mauris at augue ligula\\."
+                " Mauris viverra tempor eros\\, eu consequat risus lobortis scelerisque\\."
+                " Nam et luctus sapien\\."
+                " Vestibulum feugiat vestibulum arcu\\, a eleifend purus pharetra et\\."
+                " Sed scelerisque volutpat molestie\\."
+                " Mauris dapibus ex vel turpis condimentum\\, non rhoncus nulla hendrerit\\."
+                " Mauris ipsum odio\\, dapibus quis rutrum nec\\, sollicitudin ac sapien\\."
+                " Praesent gravida est ipsum\\, a commodo risus vulputate eu\\."
+                " Quisque sollicitudin ex in leo fermentum aliquet\\."
+                "",
+            ],
+        )
+
+    def test_product_details_retrieved_for_local_product(self):
+        self.client.force_authenticate(user=self.user)
+
+        product = ProductFactory.create(
+            name="local product", information="Lorem ipsum dolor sit amet."
+        )
+        form = FormFactory.create(product=product)
+
+        response = self.client.get(
+            reverse("api:forms-product-details", kwargs={"form_uuid": form.uuid})
+        )
+
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["productName"], "local product")
+        self.assertEqual(
+            response_data["productContent"], ["Lorem ipsum dolor sit amet."]
+        )

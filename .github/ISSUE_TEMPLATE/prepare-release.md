@@ -59,6 +59,7 @@ assignees: sergei-maertens
 
     - [ ] `openforms.forms.tests.test_import_export`
     - [ ] `openforms.forms.tests.test_json_schema.GenerateJsonSchemaReferenceListsTests`
+    - [ ] `openforms.forms.tests.test_api_forms.FormsProductDetailsAPITests`
 
   - Payments:
 

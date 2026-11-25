@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
 import Loader from 'components/admin/Loader';
+import {FormContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import {Checkbox} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
@@ -25,6 +27,8 @@ export interface ProductFieldProps {
 }
 
 const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange}) => {
+  const {form} = useContext(FormContext);
+
   const {loading, value: products = []} = useAsync(async (): Promise<Product[]> => {
     const response = await get(PRODUCTS_ENDPOINT);
     if (!response.ok) {
@@ -36,6 +40,13 @@ const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange})
   if (loading) {
     return <Loader />;
   }
+
+  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, currentValue: boolean) => {
+    const {
+      target: {name},
+    } = event;
+    onChange({target: {name, value: !currentValue}});
+  };
 
   const productChoices = products.map(product => [product.url, product.name]);
   return (
@@ -59,6 +70,27 @@ const ProductFields: React.FC<ProductFieldProps> = ({selectedProduct, onChange})
             allowBlank
           />
         </Field>
+      </FormRow>
+      <FormRow>
+        <Checkbox
+          name="form.showProductDetails"
+          label={
+            <FormattedMessage
+              defaultMessage="Show product details on form start"
+              description="Show product details on form start label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Whether the product details (content) will be shown on the form start page."
+              description="Show product details on form start text"
+            />
+          }
+          checked={form.showProductDetails}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onCheckboxChange(event, form.showProductDetails)
+          }
+        />
       </FormRow>
     </Fieldset>
   );

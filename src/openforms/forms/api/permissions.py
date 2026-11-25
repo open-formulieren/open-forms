@@ -23,9 +23,10 @@ class FormAPIPermissions(BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
+        view_action = getattr(view, "action", "")
 
         # x) anybody can read detail
-        if request.method in SAFE_METHODS and view.action in ("detail", "retrieve"):
+        if request.method in SAFE_METHODS and view_action in ("detail", "retrieve"):
             return True
 
         # 4) anon users can only read detail (with above)
@@ -39,7 +40,7 @@ class FormAPIPermissions(BasePermission):
             # 3) non-staff with view_form can only list
             elif (
                 not user.is_staff
-                and view.action == "list"
+                and view_action == "list"
                 and user.has_perm("forms.view_form")
             ):
                 return True

@@ -232,6 +232,7 @@ class FormSerializer(serializers.ModelSerializer):
             "brp_personen_request_options",
             "help_callout_page",
             "help_dialog",
+            "show_product_details",
         )
         extra_kwargs = {
             "uuid": {  # retrieved from the context passed through from the view

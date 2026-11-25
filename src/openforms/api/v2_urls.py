@@ -16,6 +16,7 @@ from openforms.contrib.reference_lists.api.views import (
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
 from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
+    FormProductDetailsView,
     FormsImportAPIView,
     FormStepViewSet,
     FormVersionViewSet,
@@ -99,6 +100,11 @@ urlpatterns = [
                 path("submissions/", include("openforms.submissions.api.urls")),
                 path("analytics/", include("openforms.analytics_tools.api.urls")),
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
+                path(
+                    "forms/<uuid:form_uuid>/forms-product-details",
+                    FormProductDetailsView.as_view(),
+                    name="forms-product-details",
+                ),
                 path("prefill/", include("openforms.prefill.api.urls")),
                 path("validation/", include("openforms.validations.api.urls")),
                 path(

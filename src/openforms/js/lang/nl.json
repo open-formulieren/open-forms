@@ -125,6 +125,11 @@
     "description": "Link label to open registration options modal",
     "originalDefault": "Configure options"
   },
+  "1X20g+": {
+    "defaultMessage": "Whether the product details (content) will be shown on the form start page.",
+    "description": "Show product details on form start text",
+    "originalDefault": "Whether the product details (content) will be shown on the form start page."
+  },
   "1cMfAA": {
     "defaultMessage": "Product",
     "description": "Label for additionalFormConfiguration product input",
@@ -2068,6 +2073,11 @@
     "defaultMessage": "Authenticatie automatische login",
     "description": "Auto-login field label",
     "originalDefault": "Authentication automatic login"
+  },
+  "XLhD5p": {
+    "defaultMessage": "Show product details on form start",
+    "description": "Show product details on form start label",
+    "originalDefault": "Show product details on form start"
   },
   "XNqV97": {
     "defaultMessage": "Onderwerp",

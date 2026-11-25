@@ -436,6 +436,16 @@ class Form(models.Model):
         upload_to="forms/help-dialog/",
     )
 
+    # products
+    show_product_details = models.BooleanField(
+        verbose_name=_("Show product details on the form"),
+        default=True,
+        help_text=_(
+            "When enabled the product details (name and information/content) will be "
+            "shown on the start page of the form."
+        ),
+    )
+
     # feature flags
     # DeprecationWarning: remove in OF 4.1
     new_logic_evaluation_enabled = models.BooleanField(

@@ -1923,6 +1923,73 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/forms/{form_uuid}/forms-product-details:
+    get:
+      operationId: forms_forms_product_details_retrieve
+      description: |-
+        Retrieve the product details.
+
+        Based on the product source we either return the name and the information (local)
+        or the content elements for the external one.
+      summary: Retrieve product content
+      parameters:
+      - in: path
+        name: form_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormProductDetails'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
@@ -8118,6 +8185,11 @@ components:
           title: Help dialog configuration
           description: When the nested content field is not empty, the SDK should
             render help controls to assist the user filling out the form.
+        showProductDetails:
+          type: boolean
+          title: Show product details on the form
+          description: When enabled the product details (name and information/content)
+            will be shown on the start page of the form.
       required:
       - communicationPreferencesPortalUrl
       - cosignHasLinkInEmail
@@ -8791,6 +8863,23 @@ components:
       required:
       - backend
       - options
+    FormProductDetails:
+      type: object
+      properties:
+        productName:
+          type: string
+          readOnly: true
+          description: The local or external product's name.
+        productContent:
+          type: array
+          items:
+            type: string
+            readOnly: true
+            description: The local or external product's details. In case of external
+              we fetch the content from the external source.
+      required:
+      - productContent
+      - productName
     FormRegistrationBackend:
       type: object
       properties:
@@ -9202,6 +9291,11 @@ components:
           title: Help dialog configuration
           description: When the nested content field is not empty, the SDK should
             render help controls to assist the user filling out the form.
+        showProductDetails:
+          type: boolean
+          title: Show product details on the form
+          description: When enabled the product details (name and information/content)
+            will be shown on the start page of the form.
       required:
       - loginRequired
       - slug
@@ -10494,6 +10588,11 @@ components:
           title: Help dialog configuration
           description: When the nested content field is not empty, the SDK should
             render help controls to assist the user filling out the form.
+        showProductDetails:
+          type: boolean
+          title: Show product details on the form
+          description: When enabled the product details (name and information/content)
+            will be shown on the start page of the form.
     PatchedFormDefinition:
       type: object
       properties:
