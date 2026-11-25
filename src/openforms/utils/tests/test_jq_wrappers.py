@@ -15,6 +15,7 @@ from ..jq_wrappers import (
 class JQWrappersTestCase(SimpleTestCase):
     def test_validate_jq_success(self):
         validate_jq(".foo")
+        validate_jq(".data[]")
 
     def test_validate_jq_invalid_expression(self):
         with self.assertRaises(JQInvalidExpressionError):
