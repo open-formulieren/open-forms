@@ -8,7 +8,7 @@ import structlog
 from openforms.plugins.registry import (
     VENDOR_HINT_METRIC_LABEL,
     BaseRegistry,
-    MetricLabels,
+    PluginUsageReport,
 )
 
 from .base import BasePlugin
@@ -29,7 +29,7 @@ class Registry(BaseRegistry[BasePlugin]):
                 "Please specify 'configuration_options' attribute for plugin class."
             )
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, MetricLabels]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form, FormRegistrationBackend
 
         usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)

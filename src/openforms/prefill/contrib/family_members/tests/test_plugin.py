@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.test import TestCase, SimpleTestCase
 
 import requests_mock
 import time_machine
@@ -959,7 +959,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         )
 
 
-class FamilyMembersVendorHintTests(TestCase):
+class FamilyMembersVendorHintTests(SimpleTestCase):
     def _get_options(self, plugin: FamilyMembersPrefill):
         serializer = plugin.options(
             data={
@@ -978,19 +978,20 @@ class FamilyMembersVendorHintTests(TestCase):
         get_global_solo.return_value = GlobalConfiguration(
             family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
         )
-        get_hc_solo.return_value = HaalCentraalConfig(
-            brp_personen_service=ServiceFactory.build(
-                api_root="https://brp.example/api/"
+
+        with self.subTest("with service configured"):
+            get_hc_solo.return_value = HaalCentraalConfig(
+                brp_personen_service=ServiceFactory.build(
+                    api_root="https://brp.example/api/"
+                )
             )
-        )
+            self.assertEqual(
+                plugin.get_vendor_hint(options), "https://brp.example/api/"
+            )
 
-        self.assertEqual(
-            plugin.get_vendor_hint(options),
-            "https://brp.example/api/",
-        )
-
-        get_hc_solo.return_value = HaalCentraalConfig(brp_personen_service=None)
-        self.assertIsNone(plugin.get_vendor_hint(options))
+        with self.subTest("without service configured"):
+            get_hc_solo.return_value = HaalCentraalConfig(brp_personen_service=None)
+            self.assertIsNone(plugin.get_vendor_hint(options))
 
     @patch("openforms.config.models.GlobalConfiguration.get_solo")
     @patch("stuf.stuf_bg.models.StufBGConfig.get_solo")
@@ -1000,16 +1001,15 @@ class FamilyMembersVendorHintTests(TestCase):
         get_global_solo.return_value = GlobalConfiguration(
             family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
         )
-        get_stuf_solo.return_value = StufBGConfig(
-            service=StufServiceFactory.build(
-                soap_service__url="https://soap.example/bg"
+
+        with self.subTest("with service configured"):
+            get_stuf_solo.return_value = StufBGConfig(
+                service=StufServiceFactory.build(
+                    soap_service__url="https://soap.example/bg"
+                )
             )
-        )
+            self.assertEqual(plugin.get_vendor_hint(options), "https://soap.example/bg")
 
-        self.assertEqual(
-            plugin.get_vendor_hint(options),
-            "https://soap.example/bg",
-        )
-
-        get_stuf_solo.return_value = StufBGConfig(service=None)
-        self.assertIsNone(plugin.get_vendor_hint(options))
+        with self.subTest("without service configured"):
+            get_stuf_solo.return_value = StufBGConfig(service=None)
+            self.assertIsNone(plugin.get_vendor_hint(options))

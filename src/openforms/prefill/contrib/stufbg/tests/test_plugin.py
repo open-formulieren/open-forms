@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase, tag
+from django.test import SimpleTestCase, TestCase, tag
 
 from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.models import Submission
@@ -393,7 +393,7 @@ class StufBGHelpersTests(StUFBGAssertionsMixin, TestCase):
             self.assertFalse(is_empty_wrapped_response(xml_obj))
 
 
-class StufBgVendorHintTests(TestCase):
+class StufBgVendorHintTests(SimpleTestCase):
     @patch("stuf.stuf_bg.models.StufBGConfig.get_solo")
     def test_get_vendor_hint_uses_soap_endpoint(self, get_solo):
         get_solo.return_value = StufBGConfig(

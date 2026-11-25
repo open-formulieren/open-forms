@@ -7,11 +7,11 @@ from openforms.forms.constants import FormTypeChoices
 from openforms.plugins.registry import (
     VENDOR_HINT_METRIC_LABEL,
     BaseRegistry,
-    MetricLabels,
+    PluginUsageReport,
 )
 
 if TYPE_CHECKING:
-    from .base import BasePlugin
+    pass
 
 
 class Registry(BaseRegistry["BasePlugin"]):
@@ -21,7 +21,7 @@ class Registry(BaseRegistry["BasePlugin"]):
 
     module = "appointments"
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, MetricLabels]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form
 
         from .models import AppointmentsConfig

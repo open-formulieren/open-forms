@@ -5,7 +5,10 @@ from collections.abc import Iterable
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form, FormLogic
-from openforms.plugins.registry import BaseRegistry, PluginUsageReport
+from openforms.plugins.registry import (
+    BaseRegistry,
+    PluginUsageReport,
+)
 
 from .base import BasePlugin
 

@@ -10,7 +10,7 @@ from rest_framework.request import Request
 from openforms.plugins.registry import (
     VENDOR_HINT_METRIC_LABEL,
     BaseRegistry,
-    MetricLabels,
+    PluginUsageReport,
 )
 
 if TYPE_CHECKING:
@@ -61,33 +61,35 @@ class Registry(BaseRegistry["BasePlugin"]):
             options.append(info)
         return options
 
-    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int, MetricLabels]]:
+    def report_plugin_usage(self) -> Iterable[PluginUsageReport]:
         from openforms.forms.models import Form, FormAuthenticationBackend
 
         usage_counts: dict[tuple[BasePlugin, str | None], int] = defaultdict(int)
 
-        active_auth_backends = FormAuthenticationBackend.objects.filter(
-            form__in=Form.objects.live()
-        ).iterator()
+        active_auth_backends = (
+            FormAuthenticationBackend.objects.filter(form__in=Form.objects.live())
+            .prefetch_related("form__uuid")
+            .iterator(chunk_size=100)
+        )
 
         for auth_backend in active_auth_backends:
             if auth_backend.backend not in self:
                 logger.warning(
                     "ignore_unknown_plugin",
                     plugin_id=auth_backend.backend,
+                    form_uuid=str(auth_backend.form.uuid),
                 )
                 continue
             plugin = self[auth_backend.backend]
             if plugin.configuration_options:
-                serializer = plugin.configuration_options(
-                    data=auth_backend.options or {}
-                )
-                serializer.is_valid(raise_exception=True)
-                options = serializer.validated_data
-            else:
-                options = auth_backend.options or {}
-
-            vendor_hint = plugin.get_vendor_hint(options)
+                serializer = plugin.configuration_options(data=auth_backend.options or {})
+                # Don't raise exceptions here to avoid (possibly) spamming our error
+                # monitoring if the configuration is invalid.
+                if serializer.is_valid():
+                    vendor_hint = plugin.get_vendor_hint(serializer.validated_data)
+                else:
+                    logger.warning("invalid_options")
+                    vendor_hint = None
 
             usage_counts[(plugin, vendor_hint)] += 1
 
