@@ -14,6 +14,13 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.19 (2026-11-26)
+===================
+
+Hotfix release.
+
+* Fixed missing jq dependency in the Docker file.
+
 3.5.18 (2026-11-26)
 ===================
 
