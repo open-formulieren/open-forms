@@ -95,10 +95,15 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         gettext \
         shared-mime-info \
         libpcre3 \
+        # invoked via subprocess as opposed to using the python lib, due to DoS concerns
+        jq \
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
+
+# Verify that jq is installed at the expected location
+RUN test -x /usr/bin/jq
 
 WORKDIR /app
 COPY ./bin/docker_start.sh /start.sh
