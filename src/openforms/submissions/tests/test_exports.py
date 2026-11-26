@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 from django.test import TestCase, tag
 from django.utils import timezone
@@ -6,11 +7,15 @@ from django.utils import timezone
 import time_machine
 from privates.test import temp_private_root
 
+from openforms.formio.rendering.nodes import ComponentNode
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..exports import create_submission_export
 from ..models import Submission
+from ..rendering.constants import RenderModes
+from ..rendering.nodes import FormNode
+from ..rendering.renderer import Renderer
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -19,6 +24,33 @@ from .factories import (
 
 
 class ExportTests(TestCase):
+    def test_export_empty_queryset(self):
+        dataset = create_submission_export(Submission.objects.none())
+
+        self.assertEqual(len(dataset), 0)
+        self.assertIsNone(dataset.headers)
+
+    def test_export_keeps_value_for_duplicate_field(self):
+        submission = SubmissionFactory.create()
+        renderer = Renderer(submission, mode=RenderModes.export, as_html=False)
+        nodes = [FormNode(renderer=renderer)]
+        nodes.extend(
+            ComponentNode(
+                renderer=renderer,
+                component={"type": "textfield", "key": "field"},
+                step_data={"field": value},
+            )
+            for value in (None, "Test", None)
+        )
+        with patch(
+            "openforms.submissions.exports.iter_submission_data_nodes",
+            return_value=iter(nodes),
+        ):
+            dataset = create_submission_export(Submission.objects.all())
+
+        self.assertEqual(dataset.headers, ["Formuliernaam", "Inzendingdatum", "field"])
+        self.assertEqual(dataset.dict[0]["field"], "Test")
+
     @time_machine.travel("2022-05-09T13:00:00Z", tick=False)
     def test_complex_formio_configuration(self):
         """
@@ -188,6 +220,26 @@ class ExportTests(TestCase):
                 "Some value",
             ),
         )
+
+    def test_export_with_user_defined_variable_not_present_in_all_submissions(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        submission_1, submission_2 = SubmissionFactory.create_batch(2, form=form)
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            value={"nested": "value"},
+            submission=submission_2,
+            form_variable__user_defined=True,
+        )
+
+        dataset = create_submission_export(
+            Submission.objects.filter(
+                pk__in=[submission_1.pk, submission_2.pk]
+            ).order_by("pk")
+        )
+
+        self.assertEqual(len(dataset), 2)
+        self.assertIsNone(dataset.dict[0]["ud1"])
+        self.assertEqual(dataset.dict[1]["ud1"], {"nested": "value"})
 
     @tag("gh-2117")
     @time_machine.travel("2022-05-09T13:00:00Z", tick=False)
