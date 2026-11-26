@@ -14,6 +14,14 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.10 (2026-11-26)
+===================
+
+Hotfix release.
+
+* Fixed not being able to save valid jq expressions in service fetch configurations.
+* Fixed incorrect cache configurations.
+
 4.0.9 (2026-11-24)
 ==================
 
