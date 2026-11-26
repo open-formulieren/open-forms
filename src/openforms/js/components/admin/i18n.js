@@ -1,9 +1,9 @@
 const loadLocaleData = async locale => {
   switch (locale) {
     case 'nl':
-      return await import('../../compiled-lang/nl.json').default;
+      return (await import('../../compiled-lang/nl.json')).default;
     default:
-      return await import('../../compiled-lang/en.json').default;
+      return (await import('../../compiled-lang/en.json')).default;
   }
 };
 
