@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.test import TestCase, SimpleTestCase
 
 import requests_mock
 import time_machine
@@ -26,7 +26,8 @@ from stuf.stuf_bg.tests.mixins import StUFBGAssertionsMixin
 from stuf.tests.factories import StufServiceFactory
 
 from ....registry import register
-from ..plugin import PLUGIN_IDENTIFIER
+from ..constants import FamilyMembersTypeChoices
+from ..plugin import PLUGIN_IDENTIFIER, FamilyMembersPrefill
 
 plugin = register[PLUGIN_IDENTIFIER]
 
@@ -956,3 +957,59 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
         )
+
+
+class FamilyMembersVendorHintTests(SimpleTestCase):
+    def _get_options(self, plugin: FamilyMembersPrefill):
+        serializer = plugin.options(
+            data={
+                "type": FamilyMembersTypeChoices.partners,
+                "mutable_data_form_variable": "partners",
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+    @patch("openforms.config.models.GlobalConfiguration.get_solo")
+    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
+    def test_get_vendor_hint_haal_centraal(self, get_hc_solo, get_global_solo):
+        plugin = FamilyMembersPrefill(PLUGIN_IDENTIFIER)
+        options = self._get_options(plugin)
+        get_global_solo.return_value = GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        )
+
+        with self.subTest("with service configured"):
+            get_hc_solo.return_value = HaalCentraalConfig(
+                brp_personen_service=ServiceFactory.build(
+                    api_root="https://brp.example/api/"
+                )
+            )
+            self.assertEqual(
+                plugin.get_vendor_hint(options), "https://brp.example/api/"
+            )
+
+        with self.subTest("without service configured"):
+            get_hc_solo.return_value = HaalCentraalConfig(brp_personen_service=None)
+            self.assertIsNone(plugin.get_vendor_hint(options))
+
+    @patch("openforms.config.models.GlobalConfiguration.get_solo")
+    @patch("stuf.stuf_bg.models.StufBGConfig.get_solo")
+    def test_get_vendor_hint_stuf_bg(self, get_stuf_solo, get_global_solo):
+        plugin = FamilyMembersPrefill(PLUGIN_IDENTIFIER)
+        options = self._get_options(plugin)
+        get_global_solo.return_value = GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
+        )
+
+        with self.subTest("with service configured"):
+            get_stuf_solo.return_value = StufBGConfig(
+                service=StufServiceFactory.build(
+                    soap_service__url="https://soap.example/bg"
+                )
+            )
+            self.assertEqual(plugin.get_vendor_hint(options), "https://soap.example/bg")
+
+        with self.subTest("without service configured"):
+            get_stuf_solo.return_value = StufBGConfig(service=None)
+            self.assertIsNone(plugin.get_vendor_hint(options))

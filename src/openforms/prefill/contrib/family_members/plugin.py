@@ -13,12 +13,14 @@ from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.checks import (
     check_config as check_haal_centraal_config,
 )
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.submissions.models import Submission
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
 from openforms.typing import JSONEncodable, JSONObject
 from stuf.stuf_bg.checks import check_config as check_stuf_bg_config
+from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...exceptions import PrefillSkipped
@@ -65,6 +67,21 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
     verbose_name = _("Family members")
     requires_auth = (AuthAttribute.bsn,)
     options = FamilyMembersOptionsSerializer
+
+    def get_vendor_hint(self, options: FamilyMemberOptions) -> str | None:
+        config = GlobalConfiguration.get_solo()
+        match config.family_members_data_api:
+            case FamilyMembersDataAPIChoices.haal_centraal:
+                hc_config = HaalCentraalConfig.get_solo()
+                if hc_config.brp_personen_service:
+                    return hc_config.brp_personen_service.api_root
+            case FamilyMembersDataAPIChoices.stuf_bg:
+                stuf_config = StufBGConfig.get_solo()
+                if stuf_config.service:
+                    return stuf_config.service.soap_service.url
+            case _:  # pragma: no cover
+                assert_never(config.family_members_data_api)
+        return None
 
     @classmethod
     def get_prefill_values_from_options(

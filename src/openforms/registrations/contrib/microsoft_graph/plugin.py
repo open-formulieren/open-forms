@@ -32,6 +32,9 @@ class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
     verbose_name = _("Microsoft Graph (OneDrive/SharePoint)")
     configuration_options = MicrosoftGraphOptionsSerializer
 
+    def get_vendor_hint(self, options: MicrosoftGraphOptions) -> str | None:
+        return "https://graph.microsoft.com/v1.0"
+
     @staticmethod
     def _get_folder_name(
         submission: Submission, options: MicrosoftGraphOptions

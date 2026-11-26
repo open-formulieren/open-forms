@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase, tag
+from django.test import SimpleTestCase, TestCase, tag
 
 from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.models import Submission
@@ -391,3 +391,21 @@ class StufBGHelpersTests(StUFBGAssertionsMixin, TestCase):
 
             # response validation not needed for the fault
             self.assertFalse(is_empty_wrapped_response(xml_obj))
+
+
+class StufBgVendorHintTests(SimpleTestCase):
+    @patch("stuf.stuf_bg.models.StufBGConfig.get_solo")
+    def test_get_vendor_hint_uses_soap_endpoint(self, get_solo):
+        get_solo.return_value = StufBGConfig(
+            service=StufServiceFactory.build(
+                soap_service__url="https://soap.example/bg"
+            )
+        )
+        plugin = StufBgPrefill("stufbg")
+        serializer = plugin.options(data={})
+        serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            plugin.get_vendor_hint(serializer.validated_data),
+            "https://soap.example/bg",
+        )

@@ -42,6 +42,18 @@ class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
     provides_auth: ClassVar[Sequence[AuthAttribute]]
     oidc_plugin_identifier: ClassVar[str]
 
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
+        config = oidc_plugin.get_config()
+        # Avoid spamming our error monitoring if there is no OIDC provider configured.
+        # Note that this shouldn't happen in practice, as it would indicate a poorly
+        # configured authentication backend.
+        return (
+            None
+            if config.oidc_provider is None
+            else config.oidc_provider.oidc_op_authorization_endpoint or None
+        )
+
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
     ) -> HttpResponseRedirect:

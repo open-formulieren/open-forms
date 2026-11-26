@@ -181,3 +181,10 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
 
     def get_visible(self, form: Form | None) -> bool:
         return True
+
+    def get_vendor_hint(self, options: OptionsT) -> str | None:
+        """
+        Extract the vendor hint (e.g., api root, service URL or SOAP endpoint)
+        from the plugin options.
+        """
+        return None
