@@ -66,10 +66,3 @@ General purpose strategies
 .. automodule:: openforms.tests.search_strategies
    :members:
    :undoc-members:
-
-Formio component strategies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: openforms.formio.tests.search_strategies
-   :members:
-   :undoc-members:
