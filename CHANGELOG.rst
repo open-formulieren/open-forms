@@ -14,6 +14,29 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.19 (2026-11-26)
+===================
+
+Hotfix release.
+
+* Fixed missing jq dependency in the Docker file.
+
+4.0.10 (2026-11-26)
+===================
+
+Hotfix release.
+
+* Fixed not being able to save valid jq expressions in service fetch configurations.
+* Fixed incorrect cache configurations.
+
+3.5.18 (2026-11-26)
+===================
+
+Hotfix release.
+
+* Fixed not being able to save valid jq expressions in service fetch configurations.
+* Fixed incorrect cache configurations.
+
 4.0.9 (2026-11-24)
 ==================
 
@@ -195,7 +218,7 @@ New features
   submitted in the body instead of the Basic Auth header. The mechanism to use can be
   configured per-service.
 * [:backend:`6430`] Introduced new form import options:
-  
+
   - You can now de-select parts of form to import, like registration backends, prefill,
     authentication, product, map layers, attribute groups...
 
@@ -226,8 +249,8 @@ Project maintenance
 * Added dependabot configuration for automatic github actions updates (weekly).
 * Made form variables order in export functionality deterministic.
 * [:backend:`6430`] Substantially refactored the form import code for better maintainability.
-* [:backend:`6690`] Converted part of the backend JS code to TS (like auth mode module, 
-  utils, exceptions and many more).  
+* [:backend:`6690`] Converted part of the backend JS code to TS (like auth mode module,
+  utils, exceptions and many more).
 * Ensure that admin CSS changes are automatically applied while the application is running.
 * [:backend:`6287`] Removed leftover JCC SOAP code (appointments).
 * Updated dependencies to their latest security/feature releases:
@@ -592,7 +615,7 @@ New features
 * [:backend:`6515`] Optimized the validation of ZGW APIs registration plugin configuration.
 * [:backend:`6210`] Added extra backend validation for single-step type of forms.
 * [:backend:`3941`] Optimized the saving of forms in the admin and improved the user
-  experience when there are validation errors by validating as much as possible in one go. 
+  experience when there are validation errors by validating as much as possible in one go.
 
 Bugfixes
 --------
@@ -616,7 +639,7 @@ Project maintenance
   - gitpython
   - Tornado
   - DRF
-  - WebOb 
+  - WebOb
   - @open-formulieren/formio-builder
 
 
