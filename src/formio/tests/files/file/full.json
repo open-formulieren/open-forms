@@ -30,24 +30,20 @@
     "type": ["image/png", "application/pdf"]
   },
   "fileMaxSize": "10MB",
-  "filePattern": "image/png,application/pdf",
   "hidden": false,
   "id": "yejak",
   "isSensitiveData": true,
   "key": "someFile",
   "label": "Attachment",
-  "maxNumberOfFiles": null,
-  "multiple": false,
-  "of": {
+  "openForms": {
+    "useConfigFiletypes": false,
     "image": {
       "resize": {
         "apply": true,
         "height": 2000,
         "width": 2000
       }
-    }
-  },
-  "openForms": {
+    },
     "softRequired": true,
     "translations": {
       "nl": {
@@ -65,8 +61,8 @@
     }
   },
   "type": "file",
-  "useConfigFiletypes": false,
   "validate": {
-    "required": false
+    "required": false,
+    "maxLength": 1
   }
 }

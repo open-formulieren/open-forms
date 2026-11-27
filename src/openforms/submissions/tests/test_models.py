@@ -56,7 +56,6 @@ class SubmissionTests(TestCase):
                         "key": "sensitiveFile",
                         "label": "sensitiveFile",
                         "file": {"type": []},
-                        "filePattern": "",
                         "isSensitiveData": True,
                     },
                 ],

@@ -12,6 +12,7 @@ from ..migration_converters import (
     fix_empty_default_value,
     fix_file_default_value,
     fix_multiple_empty_default_value,
+    move_renamed_formio_properties,
     normalize_date_default_value,
     normalize_time_default_value,
     remove_default_value_translation,
@@ -1627,7 +1628,6 @@ class FileTests(SimpleTestCase):
             "label": "File",
             "defaultValue": None,
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1643,7 +1643,6 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": None,
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1658,7 +1657,6 @@ class FileTests(SimpleTestCase):
             "label": "File",
             "defaultValue": [],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1673,7 +1671,6 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1688,13 +1685,181 @@ class FileTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [None],
             "file": {"type": []},
-            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_move_image_resizing_options(self):
+        with self.subTest("modified"):
+            component: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "of": {
+                    "image": {
+                        "resize": {
+                            "apply": True,
+                            "width": 400,
+                            "height": 300,
+                        }
+                    }
+                },
+                "validate": {"maxLength": 1},
+            }
+
+            changed = move_renamed_formio_properties(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(
+                component["openForms"]["image"],
+                {
+                    "resize": {
+                        "apply": True,
+                        "width": 400,
+                        "height": 300,
+                    }
+                },
+            )
+
+        with self.subTest("not modified"):
+            component: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "of": {
+                    "image": {
+                        "resize": {
+                            "apply": True,
+                            "width": 400,
+                            "height": 300,
+                        }
+                    }
+                },
+                "openForms": {"image": {"resize": {"apply": False}}},
+                "validate": {"maxLength": 1},
+            }
+
+            changed = move_renamed_formio_properties(component)
+
+            self.assertFalse(changed)
+
+    def test_move_use_config_file_types(self):
+        with self.subTest("modified"):
+            component: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "validate": {"maxLength": 1},
+                "useConfigFiletypes": True,
+            }
+
+            changed = move_renamed_formio_properties(component)
+
+            self.assertTrue(changed)
+            self.assertTrue(component["openForms"]["useConfigFiletypes"])
+
+        with self.subTest("not modified"):
+            component: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "useConfigFiletypes": True,
+                "openForms": {"useConfigFiletypes": False},
+                "validate": {"maxLength": 1},
+            }
+
+            changed = move_renamed_formio_properties(component)
+
+            self.assertFalse(changed)
+
+    def test_map_file_number_uploads_allowed(self):
+        with self.subTest("only single file allowed 1"):
+            component1: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                # missing multiple is implicitly treated as 'false'
+            }
+
+            changed = move_renamed_formio_properties(component1)
+
+            self.assertTrue(changed)
+            self.assertEqual(component1["validate"]["maxLength"], 1)
+
+        with self.subTest("only single file allowed 2"):
+            component2: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "multiple": False,
+            }
+
+            changed = move_renamed_formio_properties(component2)
+
+            self.assertTrue(changed)
+            self.assertEqual(component2["validate"]["maxLength"], 1)
+
+        with self.subTest("multiple allowed but no limit set"):
+            component3: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "multiple": True,
+            }
+
+            changed = move_renamed_formio_properties(component3)
+
+            self.assertTrue(changed)
+            self.assertIsNone(component3["validate"]["maxLength"])
+
+        with self.subTest("multiple allowed with limit"):
+            component3: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "multiple": True,
+                "maxNumberOfFiles": 3,
+            }
+
+            changed = move_renamed_formio_properties(component3)
+
+            self.assertTrue(changed)
+            self.assertEqual(component3["validate"]["maxLength"], 3)
+
+        with self.subTest("validate.maxLength already set"):
+            component4: FileComponent = {
+                "key": "file",
+                "type": "file",
+                "label": "File",
+                "file": {"type": [], "allowedTypesLabels": []},
+                "url": "",
+                "multiple": True,
+                "maxNumberOfFiles": 3,
+                "validate": {"maxLength": 2},
+            }
+
+            changed = move_renamed_formio_properties(component4)
+
+            self.assertFalse(changed)
 
 
 class CheckboxTests(SimpleTestCase):

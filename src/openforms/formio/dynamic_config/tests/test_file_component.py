@@ -32,15 +32,13 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": True,
-            "filePattern": "*",
+            "openForms": {"useConfigFiletypes": True},
             "file": {"type": []},
         }
 
         wrapper = _get_dynamic_config(component)
 
         updated_component = wrapper["fileTest"]
-        self.assertEqual(updated_component["filePattern"], "image/png,application/pdf")
         self.assertNotEqual(updated_component["url"], "")
         self.assertEqual(
             updated_component["file"]["allowedTypesLabels"], [".png", ".pdf"]
@@ -57,15 +55,13 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": True,
-            "filePattern": "*",
+            "openForms": {"useConfigFiletypes": True},
             "file": {"type": []},
         }
 
         wrapper = _get_dynamic_config(component)
 
         updated_component = wrapper["fileTest"]
-        self.assertEqual(updated_component["filePattern"], "*")
         self.assertEqual(
             updated_component["file"]["allowedTypesLabels"], ["any filetype"]
         )
@@ -77,8 +73,7 @@ class FileComponentTests(TestCase):
             "key": "fileTest",
             "label": "fileTest",
             "url": "",
-            "useConfigFiletypes": False,
-            "filePattern": "*",
+            "openForms": {"useConfigFiletypes": False},
             "file": {"type": ["image/png"]},
         }
 

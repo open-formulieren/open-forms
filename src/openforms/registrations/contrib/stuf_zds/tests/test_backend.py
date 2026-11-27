@@ -3326,7 +3326,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     "type": "file",
                     "key": "field1",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             form__name="my-form",

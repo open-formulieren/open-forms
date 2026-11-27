@@ -89,7 +89,6 @@ class ConditionalLogicTests(TestCase):
                     },
                     "clearOnHide": True,
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "type": "textfield",
@@ -765,7 +764,6 @@ class ConditionalLogicTests(TestCase):
                     "key": "file",
                     "label": "file visible",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "type": "textfield",
@@ -840,7 +838,6 @@ class ConditionalLogicTests(TestCase):
                     "conditional": {"eq": "yes", "show": True, "when": "radio"},
                     "clearOnHide": True,
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
         )

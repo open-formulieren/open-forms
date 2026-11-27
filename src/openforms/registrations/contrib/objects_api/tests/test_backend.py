@@ -183,14 +183,12 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "key": "file_1",
                     "label": "file_1",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
                 {
                     "type": "file",
                     "key": "file_2",
                     "label": "file_2",
                     "file": {"type": []},
-                    "filePattern": "",
                 },
             ],
             completed=True,
@@ -505,7 +503,6 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "label": "attachment",
                     "file": {"type": []},
-                    "filePattern": "",
                 }
             ],
             submitted_data={
@@ -586,7 +583,6 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "key": "attachment",
                     "label": "attachment",
                     "file": {"type": []},
-                    "filePattern": "",
                 }
             ],
             submitted_data={
@@ -658,7 +654,6 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "key": "attachment",
                     "label": "attachment",
                     "file": {"type": []},
-                    "filePattern": "",
                 }
             ],
             submitted_data={

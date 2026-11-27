@@ -199,7 +199,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "label": "File",
                 "showInEmail": True,
                 "file": {"type": []},
-                "filePattern": "",
                 "url": "",
             }
         )

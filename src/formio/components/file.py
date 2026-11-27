@@ -5,7 +5,6 @@ from typing import Annotated, Literal
 
 import msgspec
 from msgspec import Meta
-from typing_extensions import deprecated
 
 from ..base_component import (
     BaseOpenFormsExtensions,
@@ -36,17 +35,15 @@ class ImageOptions(FormioStruct):
 type FileTranslatableProperties = Literal["label", "description", "tooltip"]
 
 
-@deprecated("Should be moved to openForms namespace")
-class LegacyFileExtensions(FormioStruct):
-    image: ImageOptions | msgspec.UnsetType = msgspec.UNSET
-
-
 class FileExtensions(BaseOpenFormsExtensions[FileTranslatableProperties]):
+    use_config_filetypes: bool = False
     soft_required: bool = False
+    image: ImageOptions | msgspec.UnsetType = msgspec.UNSET
 
 
 class FileValidate(FormioStruct):
     required: bool = False
+    max_length: int | None = 1  # mimicks old default of ``multiple = False``
 
 
 class FileOptions(FormioStruct):
@@ -63,13 +60,9 @@ class File(Component, tag="file"):
     faq_items: Sequence[FAQItem] = []
     file: FileOptions
     file_max_size: str = ""  # e.g. 10MB
-    file_pattern: str
     hidden: bool = False
     is_sensitive_data: bool = True
     label: str
-    max_number_of_files: int | None = None
-    multiple: bool = False
-    of: LegacyFileExtensions | msgspec.UnsetType = msgspec.UNSET
     open_forms: FileExtensions | msgspec.UnsetType = msgspec.UNSET
     show_in_email: bool = False
     show_in_pdf: bool = msgspec.field(name="showInPDF", default=True)
@@ -78,8 +71,12 @@ class File(Component, tag="file"):
     translated_errors: TranslatedErrors[FileValidatorKeys] | msgspec.UnsetType = (
         msgspec.UNSET
     )
-    use_config_filetypes: bool = False
     validate: FileValidate = msgspec.field(default_factory=FileValidate)
+
+    @property
+    def multiple(self) -> bool:
+        max_length = self.validate.max_length
+        return max_length is None or max_length > 1
 
     def render_templates(self, do_render: Callable[[str], str]) -> None:
         self.label = do_render(self.label)
