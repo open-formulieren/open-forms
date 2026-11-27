@@ -11,7 +11,7 @@ from rest_framework.test import APIRequestFactory
 
 from openforms.forms.constants import StatementCheckboxChoices
 from openforms.forms.tests.factories import FormFactory
-from openforms.submissions.constants import ProcessingStatuses
+from openforms.submissions.constants import PostSubmissionEvents, ProcessingStatuses
 from openforms.submissions.models import Submission
 from openforms.tests.e2e.base import E2ETestCase, browser_page
 from openforms.tests.e2e.database_sync_to_async import database_sync_to_async
@@ -59,7 +59,9 @@ class PaymentFlowTests(E2ETestCase):
         )
         await route.fulfill(response=response, json=json)
 
-    async def test_payment_flow(self):
+    @patch("openforms.utils.validators.allow_redirect_url", return_value=True)
+    @patch("openforms.payments.views.allow_redirect_url", return_value=True)
+    async def test_payment_flow(self, *mocks):
         async with browser_page() as page:
             form = await self.get_form_url()
             form_url = str(
@@ -72,30 +74,32 @@ class PaymentFlowTests(E2ETestCase):
             )
             await page.goto(form_url)
 
-            with (
-                patch(
-                    "openforms.utils.validators.allow_redirect_url", return_value=True
-                ),
-                patch("openforms.payments.views.allow_redirect_url", return_value=True),
-            ):
-                await page.wait_for_url(f"{form_url}startpagina")
+            await page.wait_for_url(f"{form_url}startpagina")
 
-                payment_step = page.get_by_role("link", name="Betalen")
+            payment_step = page.get_by_role("link", name="Betalen")
 
-                await expect(payment_step).to_be_visible()
+            await expect(payment_step).to_be_visible()
 
-                await page.get_by_role("button", name="Formulier starten").click()
-                await page.get_by_role("button", name="Volgende").click()
+            await page.get_by_role("button", name="Formulier starten").click()
+            await page.get_by_role("button", name="Volgende").click()
+
+            submission = await database_sync_to_async(Submission.objects.last)()
+            with patch(
+                "openforms.submissions.api.mixins.on_post_submission_event"
+            ) as m:
                 await page.get_by_role("button", name="Verzenden").click()
+                m.assert_called_with(submission.pk, PostSubmissionEvents.on_completion)
+            with patch("openforms.payments.views.on_post_submission_event") as m:
                 await page.get_by_role("button", name="Betalen").click()
-
-                await page.wait_for_url(f"{form_url}bevestiging")
-
-                # The reference won't be present because we are not running Celery
-                await expect(page.get_by_role("heading")).to_contain_text(
-                    "Bevestiging: "
+                m.assert_called_with(
+                    submission.pk, PostSubmissionEvents.on_payment_complete
                 )
 
-                payment_specific_text = page.get_by_text("De betaling is ontvangen.")
+            await page.wait_for_url(f"{form_url}bevestiging")
 
-                await expect(payment_specific_text).to_be_visible()
+            # The reference won't be present because we are not running Celery
+            await expect(page.get_by_role("heading")).to_contain_text("Bevestiging: ")
+
+            payment_specific_text = page.get_by_text("De betaling is ontvangen.")
+
+            await expect(payment_specific_text).to_be_visible()
