@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import tag
@@ -10,7 +11,11 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormRegistrationBackendFactory
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tasks import pre_registration
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+)
+from openforms.utils.tests.vcr import OFVCRMixin
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
@@ -18,6 +23,108 @@ from stuf.tests.factories import StufServiceFactory
 
 from ....exceptions import RegistrationFailed
 from ....tasks import register_submission
+from ..plugin import PLUGIN_IDENTIFIER, StufZDSRegistration
+from ..typing import RegistrationOptions
+
+TESTS_DIR = Path(__file__).parent.resolve()
+
+
+@tag("gh-6919")
+class IdempotencyTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost:82/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+
+    def test_pre_registering_twice_does_not_create_zaak_identificatie_again(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Textfield",
+                },
+            ],
+            completed_not_preregistered=True,
+            submitted_data={"textfield": "foo"},
+        )
+
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        plugin.pre_register_submission(submission, self.options)
+        self.assertEqual(len(self.cassette.requests), 1)
+
+        plugin.pre_register_submission(submission, self.options)
+        self.assertEqual(len(self.cassette.requests), 1)
+
+    def test_registering_twice_does_not_create_zaak_or_documents_again(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "single_file",
+                    "label": "Single file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+                {
+                    "type": "file",
+                    "key": "multiple_files",
+                    "label": "Multiple files",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "multiple": True,
+                },
+            ],
+            completed_not_preregistered=True,
+            with_report=True,
+            # in this case, actual file data is not relevant for registration
+            submitted_data={"single_file": [], "multiple_files": []},
+        )
+        submission_step = submission.steps[0]
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment1.jpg",
+            submission_variable__key="single_file",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2_1.jpg",
+            submission_variable__key="multiple_files",
+        )
+
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+        plugin.pre_register_submission(submission, self.options)
+        plugin.register_submission(submission, self.options)
+        # Breakdown:
+        # 1. Create zaak identification (pre-registration)
+        # 2. Create zaak
+        # 3. Create document identification for submission report
+        # 4. Create submission report document
+        # 5. Create document identification for attachment 1
+        # 6. Create attachment 1 document
+        # 7. Create document identification for attachment 2
+        # 8. Create attachment 2 document
+        self.assertEqual(len(self.cassette.requests), 8)
+
+        # Register again and ensure the number of requests stays the same
+        plugin.register_submission(submission, self.options)
+        self.assertEqual(len(self.cassette.requests), 8)
 
 
 @tag("gh-1183")
