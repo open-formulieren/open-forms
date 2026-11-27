@@ -16,8 +16,9 @@ class FormImportForm(forms.Form):
         required=True,
         help_text=_("Upload your exported ZIP-file."),
     )
-    form_configuration = forms.MultipleChoiceField(
+    form_configuration = forms.TypedMultipleChoiceField(
         label=_("Form configuration"),
+        coerce=FormConfigurationOptions,
         required=False,
         widget=forms.CheckboxSelectMultiple,
         initial=[
@@ -31,8 +32,9 @@ class FormImportForm(forms.Form):
             "Which form configuration should be included in the export file content."
         ),
     )
-    additional_form_configuration = forms.MultipleChoiceField(
+    additional_form_configuration = forms.TypedMultipleChoiceField(
         label=_("Additional form configuration"),
+        coerce=AdditionalFormConfigurationOptions,
         required=False,
         widget=forms.CheckboxSelectMultiple,
         choices=AdditionalFormConfigurationOptions.choices,

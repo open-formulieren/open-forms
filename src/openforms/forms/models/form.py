@@ -52,6 +52,8 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
+    from openforms.emails.models import ConfirmationEmailTemplate
+
     from . import (
         FormAuthenticationBackend,
         FormLogic,
@@ -78,6 +80,7 @@ class Form(models.Model):
     Form model, containing a list of order form steps.
     """
 
+    id: int  # auto-assigned by Django, assumes the record was saved to the DB
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     name = models.CharField(_("name"), max_length=150)
     internal_name = models.CharField(
@@ -458,6 +461,7 @@ class Form(models.Model):
     registration_backends: Manager[FormRegistrationBackend]
     formlogic_set: Manager[FormLogic]
     formversion_set: Manager[FormVersion]
+    confirmation_email_template: ConfirmationEmailTemplate  # may raise DoesNotExist
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
@@ -728,7 +732,7 @@ class Form(models.Model):
 
     @transaction.atomic
     def restore_old_version(
-        self, form_version_uuid: str, user: User | None = None
+        self, form_version_uuid: str | UUID, user: User | None = None
     ) -> None:
         from ..import_export.service import (
             AdditionalFormConfigurationOptions,
@@ -751,14 +755,13 @@ class Form(models.Model):
             form_version.uuid: form_version for form_version in form_versions
         }
         form_version = form_versions_mapping[form_version_uuid]
-        old_version_data = form_version.export_blob
 
         # when restoring a previous version, delete the current form configuration;
         # it will be replaced with the import data.
         self._delete_current_form_configuration()
 
         import_form_data(  # pyright: ignore[reportUnusedCallResult]
-            old_version_data,
+            form_version.get_import_artifact(),
             FormImportOptions(
                 form_configuration=list(FormConfigurationOptions),
                 additional_form_configuration=list(AdditionalFormConfigurationOptions),
