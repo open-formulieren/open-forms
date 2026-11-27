@@ -16,7 +16,10 @@ from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.contrib.objects_api.clients import get_documents_client
+from openforms.contrib.objects_api.clients import (
+    get_documents_client,
+    get_objects_client,
+)
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormVariableFactory
@@ -1693,3 +1696,152 @@ class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
                 ],
             },
         )
+
+
+@tag("gh-6919")
+class IdempotencyTests(OFVCRMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+
+    def _count_objects(self) -> int:
+        with get_objects_client(self.objects_api_group) as client:
+            response = client.get(
+                "objects",
+                params={
+                    "type": "http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
+                    "pageSize": 1,
+                },
+            )
+            response.raise_for_status()
+            return response.json()["count"]
+
+    def _count_documents(self) -> int:
+        with get_documents_client(self.objects_api_group) as client:
+            response = client.get(
+                "enkelvoudiginformatieobjecten",
+                params={"bronorganisatie": "000000000"},
+            )
+            response.raise_for_status()
+            return response.json()["count"]
+
+    def test_registering_twice_does_not_create_object_or_documents_again(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "single_file",
+                    "label": "Single file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+                {
+                    "type": "file",
+                    "key": "multiple_files",
+                    "label": "Multiple files",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "multiple": True,
+                },
+            ],
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
+            with_report=True,
+            # in this case, actual file data is not relevant for registration
+            submitted_data={"single_file": [], "multiple_files": []},
+        )
+        submission_step = submission.steps[0]
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment1.jpg",
+            submission_variable__key="single_file",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2_1.jpg",
+            submission_variable__key="multiple_files",
+        )
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_submission_report": "PDF Informatieobjecttype",
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                {
+                    "variable_key": "single_file",
+                    "target_path": ["single_file"],
+                },
+                {
+                    "variable_key": "multiple_files",
+                    "target_path": ["multiple_files"],
+                },
+            ],
+            "transform_to_list": [],
+            "use_empty_string_for_empty_datelike_variables": True,
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        n_objects_before = self._count_objects()
+        n_documents_before = self._count_documents()
+
+        first_result = plugin.register_submission(submission, v2_options)
+
+        n_objects_after_first_run = self._count_objects()
+        n_documents_after_first_run = self._count_documents()
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
+        attachment_document_urls = set(
+            ObjectsAPISubmissionAttachment.objects.filter(
+                submission_file_attachment__submission_step__submission=submission
+            ).values_list("document_url", flat=True)
+        )
+
+        with self.subTest("First run creates object and documents"):
+            self.assertEqual(n_objects_after_first_run - n_objects_before, 1)
+            # PDF report, CSV export and two attachments
+            self.assertEqual(n_documents_after_first_run - n_documents_before, 4)
+            self.assertTrue(registration_data.pdf_url)
+            self.assertTrue(registration_data.csv_url)
+            self.assertEqual(len(attachment_document_urls), 2)
+
+        # simulate the registration task running again for the same submission
+        submission.refresh_from_db()
+        second_result = plugin.register_submission(submission, v2_options)
+
+        with self.subTest("Second run does not create anything"):
+            self.assertEqual(self._count_objects(), n_objects_after_first_run)
+            self.assertEqual(self._count_documents(), n_documents_after_first_run)
+
+        with self.subTest("Second run returns the stored result"):
+            self.assertEqual(second_result["uuid"], first_result["uuid"])
+            self.assertEqual(second_result["url"], first_result["url"])
+
+        with self.subTest("Document references are unchanged"):
+            registration_data_after = ObjectsAPIRegistrationData.objects.get(
+                submission=submission
+            )
+            self.assertEqual(registration_data_after.pdf_url, registration_data.pdf_url)
+            self.assertEqual(registration_data_after.csv_url, registration_data.csv_url)
+            self.assertEqual(
+                set(
+                    ObjectsAPISubmissionAttachment.objects.filter(
+                        submission_file_attachment__submission_step__submission=submission
+                    ).values_list("document_url", flat=True)
+                ),
+                attachment_document_urls,
+            )

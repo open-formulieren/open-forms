@@ -7,9 +7,11 @@ sub-resource.
 The backend should perform total-form validation as part of this action.
 """
 
+from concurrent.futures.thread import ThreadPoolExecutor
 from decimal import Decimal
 from unittest.mock import patch
 
+from django.db import connections
 from django.test import override_settings, tag
 from django.utils import timezone
 
@@ -17,7 +19,7 @@ import time_machine
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APITransactionTestCase
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -35,6 +37,7 @@ from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.pricing import InvalidPrice
+from openforms.utils.tests.cache import clear_caches
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
 from ..form_logic import evaluate_form_logic
@@ -1335,3 +1338,162 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class SubmissionCompletionRetryTests(SubmissionsMixin, APITransactionTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
+    def test_retry_while_other_request_in_progress(self, m_on_post_submission_event):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "validate": {"required": True},
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"textfield": "foo"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = []
+            for _ in range(2):
+                future = executor.submit(
+                    self.client.post, endpoint, {"privacy_policy_accepted": True}
+                )
+                future.add_done_callback(lambda _: connections.close_all())
+                futures.append(future)
+
+            responses = [future.result() for future in futures]
+
+        self.assertEqual(responses[0].status_code, status.HTTP_200_OK)
+        self.assertEqual(responses[1].status_code, status.HTTP_409_CONFLICT)
+        m_on_post_submission_event.assert_called_once()
+
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
+    def test_retry_after_successful_completion(self, m_on_post_submission_event):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "validate": {"required": True},
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"textfield": "foo"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        # First completion attempt succeeds
+        response_1 = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response_1.status_code, status.HTTP_200_OK)
+
+        # Second does not, because the first one already succeeded
+        response_2 = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response_2.status_code, status.HTTP_403_FORBIDDEN)
+
+        m_on_post_submission_event.assert_called_once()
+
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
+    def test_retry_after_failed_completion(self, m_on_post_submission_event):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "validate": {"required": True},
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"textfield": ""},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        # Fails validation, because the textfield wasn't filled in
+        # Attempt 1
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Attempt 2 -> does not raise a 409
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        m_on_post_submission_event.assert_not_called()
+
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
+    def test_retry_is_possible_after_checking_logic_fails(
+        self, m_on_post_submission_event
+    ):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "validate": {"required": True},
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"textfield": "Some text"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        # Fails validation, because the textfield wasn't filled in
+        # Attempt 1
+        with (
+            patch(
+                "openforms.submissions.api.viewsets.check_submission_logic",
+                side_effect=ValueError("Crash :("),
+            ),
+            self.assertRaises(ValueError),
+        ):
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+            self.assertEqual(
+                response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        # Attempt 2 -> does not raise 409
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        m_on_post_submission_event.assert_called_once()

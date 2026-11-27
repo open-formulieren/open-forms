@@ -12,11 +12,7 @@ __all__ = ["maybe_register_appointment"]
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task(
-    base=QueueOnce,
-    ignore_result=False,
-    once={"graceful": True},  # do not spam error monitoring
-)
+@app.task(base=QueueOnce, ignore_result=False)
 def maybe_register_appointment(submission_id: int) -> None | str:
     """
     Register an appointment for the submission IF relevant.

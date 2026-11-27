@@ -17,10 +17,7 @@ __all__ = ["update_submission_payment_status"]
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task(
-    base=QueueOnce,
-    once={"graceful": True},  # do not spam error monitoring
-)
+@app.task(base=QueueOnce)
 def update_submission_payment_status(
     submission_id: int, event: PostSubmissionEvents
 ) -> None:

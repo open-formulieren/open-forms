@@ -7,6 +7,7 @@ from django.utils import timezone
 import structlog
 from celery import chain
 from celery.result import AsyncResult
+from celery_once import QueueOnce
 
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
@@ -34,11 +35,13 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # this can run any time because they have been claimed earlier
     cleanup_temporary_files_for.delay(submission_id)
 
-    # Register an appointment if the submission is for a form which is configured to create appointments.
+    # Register an appointment if the submission is for a form which is configured to
+    # create appointments.
     register_appointment_task = maybe_register_appointment.si(submission_id)
 
-    # Perform any pre-registration task specified by the registration plugin. If no registration plugin is configured,
-    # just set a submission reference (if it hasn't already been set)
+    # Perform any pre-registration task specified by the registration plugin. If no
+    # registration plugin is configured, just set a submission reference (if it hasn't
+    # already been set)
     pre_registration_task = pre_registration.si(submission_id, event)
 
     # Execute pre-registration hook specified in the Formio component plugin
@@ -49,7 +52,8 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
         submission_id
     )
 
-    # Generate the submission report. Contains information about the payment and co-sign status.
+    # Generate the submission report. Contains information about the payment and co-sign
+    # status.
     generate_report_task = generate_submission_report.si(submission_id)
 
     # Attempt registering submission
@@ -60,7 +64,8 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
         submission_id, event
     )
 
-    # Finalise completion: schedule confirmation emails and maybe hash identifying attributes
+    # Finalise completion: schedule confirmation emails and maybe hash identifying
+    # attributes
     finalise_completion_task = finalise_completion.si(submission_id)
 
     actions_chain = chain(
@@ -82,7 +87,8 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # NOTE - this is "risky" since we're running outside of the transaction (this code
     # should run in transaction.on_commit)!
     if event == PostSubmissionEvents.on_completion:
-        # Case in which an exception was raised that aborts the chain and the user has to try to resubmit the form.
+        # Case in which an exception was raised that aborts the chain and the user has
+        # to try to resubmit the form.
         PostCompletionMetadata.objects.filter(
             submission_id=submission_id,
             trigger_event=PostSubmissionEvents.on_completion,
@@ -115,20 +121,21 @@ def retry_processing_submissions():
         on_post_submission_event(submission.pk, PostSubmissionEvents.on_retry)
 
 
-@app.task()
+@app.task(base=QueueOnce)
 def finalise_completion(submission_id: int) -> None:
     """
     Schedule all the tasks that need to happen to finalize the submission completion.
 
     Finalization happens _after_ the confirmation screen is shown to the end-user.
     Showing this screen depends on all the previous registration tasks being completed,
-    so the :func:`on_post_submission_event` handler must kick this off AND have its own task ID
-    that finishes, which is checked in the submission status endpoint.
+    so the :func:`on_post_submission_event` handler must kick this off AND have its own
+    task ID that finishes, which is checked in the submission status endpoint.
     """
     submission = Submission.objects.get(id=submission_id)
     config = GlobalConfiguration.get_solo()
 
-    # The chain should retry if the (pre-)registration failed or if the payment status update failed.
+    # The chain should retry if the (pre-)registration failed or if the payment status
+    # update failed.
     has_registration_failure = (
         submission.registration_status == RegistrationStatuses.failed
         or (
@@ -142,8 +149,8 @@ def finalise_completion(submission_id: int) -> None:
             submission.registration_attempts < config.registration_attempt_limit
         )
 
-    # The task should not retry if the registration succeeded and, in the case that payment was required, the
-    # payment status update succeeded.
+    # The task should not retry if the registration succeeded and, in the case that
+    # payment was required, the payment status update succeeded.
     has_registration_success = (
         (
             submission.registration_status == RegistrationStatuses.success

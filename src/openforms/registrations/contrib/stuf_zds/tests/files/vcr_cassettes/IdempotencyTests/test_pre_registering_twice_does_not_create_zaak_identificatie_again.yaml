@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:genereerZaakIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+      \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>94af9848-7340-46e0-b9ba-3d03a8b4f7bc</StUF:referentienummer>\n<StUF:tijdstipBericht>20261127130451</StUF:tijdstipBericht>\n\n
+      \       <StUF:functie>genereerZaakidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerZaakIdentificatie_Di02>\n\n
+      \   </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1336'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/genereerZaakIdentificatie_Di02
+      User-Agent:
+      - python-requests/2.34.2
+    method: POST
+    uri: http://localhost:82/stuf-zds
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \   <soapenv:Header/>\n    <soapenv:Body>\n        <ZKN:genereerZaakIdentificatie_Du02\n
+        \               xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n                xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+        \           <ZKN:stuurgegevens>\n                <StUF:berichtcode>Du02</StUF:berichtcode>\n
+        \               <StUF:zender>\n                    <StUF:organisatie>KING</StUF:organisatie>\n
+        \                   <StUF:applicatie>STP</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:zender>\n                <StUF:ontvanger>\n                    <StUF:organisatie>ORG</StUF:organisatie>\n
+        \                   <StUF:applicatie>TTA</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:ontvanger>\n                <StUF:tijdstipBericht>20210520125824</StUF:tijdstipBericht>\n
+        \               <StUF:functie>genereerZaakidentificatie</StUF:functie>\n            </ZKN:stuurgegevens>\n
+        \           <ZKN:melding>melding</ZKN:melding>\n            <ZKN:zaak StUF:entiteittype=\"ZAK\"
+        StUF:functie=\"entiteit\">\n                <ZKN:identificatie>82015349d13683b1</ZKN:identificatie>\n
+        \           </ZKN:zaak>\n        </ZKN:genereerZaakIdentificatie_Du02>\n    </soapenv:Body>\n</soapenv:Envelope>\n\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1346'
+      Content-Type:
+      - text/xml
+      Date:
+      - Fri, 27 Nov 2026 13:04:51 GMT
+      Server:
+      - Werkzeug/3.1.9 Python/3.12.16
+    status:
+      code: 200
+      message: OK
+version: 1
