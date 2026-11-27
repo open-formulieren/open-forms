@@ -23,6 +23,7 @@ from openforms.formio.service import (
     get_component_empty_value,
     iter_components,
     normalize_value_for_component,
+    resolve_template,
 )
 from openforms.formio.typing import Component
 from openforms.forms.models.form_variable import FormVariable
@@ -228,6 +229,23 @@ class SubmissionValueVariablesState:
                 continue
             submission_value_variable.form_variable = all_form_variables[variable_key]
 
+        # Make a collection of all variable data. This is used when resolving templates
+        # in the initial values of variables.
+        data_for_evaluation = FormioData()
+        for variable in all_form_variables.values():
+            if variable.source == SubmissionValueVariableSources.sensitive_data_cleaner:
+                continue
+
+            # If we already have submitted data for this variable, use that. Otherwise,
+            # use its default value.
+            if variable.key in all_submission_variables:
+                submitted_variable = all_submission_variables[variable.key]
+                data_for_evaluation[variable.key] = submitted_variable.to_python()
+            else:
+                data_for_evaluation[variable.key] = variable.initial_value
+
+        data_for_evaluation.update(self.get_static_data())
+
         # finally, add in the unsaved variables from default values
         for variable_key, form_variable in all_form_variables.items():
             # if the key exists from the saved values in the DB, do nothing
@@ -240,9 +258,12 @@ class SubmissionValueVariablesState:
                 configuration = form_variable.form_definition.configuration_wrapper[
                     variable_key
                 ]
-                # If it does not have an initial value, make sure to set the empty
-                # component value.
-                if initial_value is None:
+                if initial_value is not None:
+                    # Resolve any templates used in the initial value
+                    initial_value = resolve_template(initial_value, data_for_evaluation)
+                else:
+                    # If it does not have an initial value, make sure to set the empty
+                    # component value.
                     initial_value = get_component_empty_value(configuration)
 
             # TODO Fill source field

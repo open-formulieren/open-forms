@@ -1500,7 +1500,19 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                         "key": "textfield",
                         "label": "{{ foo }}",
                         "defaultValue": "{{ foo }}",
-                    }
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                        "label": "textfield 2",
+                        "defaultValue": "default value",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield3",
+                        "label": "textfield 3",
+                        "defaultValue": "{{ textfield2 }}",
+                    },
                 ]
             },
         )
@@ -1534,9 +1546,91 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                         "label": "bar",
                         "defaultValue": "bar",
                     },
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                        "label": "textfield 2",
+                        "defaultValue": "default value",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield3",
+                        "label": "textfield 3",
+                        "defaultValue": "default value",
+                    },
                 ]
             },
-            "data": {"textfield": "bar"},
+            "data": {
+                "textfield": "bar",
+                "textfield2": "default value",
+                "textfield3": "default value",
+            },
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    @tag("gh-6924")
+    def test_variable_injection_updates_component_variables_across_steps(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "defaultValue": "",
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=step.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                        "label": "Textfield 2",
+                        "defaultValue": "{{ textfield }}",
+                    }
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        # Create submission for first form step
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"textfield": "user input"},
+        )
+
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step2.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step2.uuid),
+            "slug": step2.slug,
+            "defaultConfiguration": None,
+            "configuration": {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                        "label": "Textfield 2",
+                        "defaultValue": "user input",
+                    },
+                ]
+            },
+            "data": {"textfield2": "user input"},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
@@ -1632,7 +1726,11 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             },
             "data": {
                 "textfield1": "user input",
-                "repeatingGroup": [{"textfield2": "{{ foo }}"}],
+                "repeatingGroup": [
+                    {
+                        "textfield2": "{{ foo }}"  # The template should not be resolved, as it comes from user input
+                    }
+                ],
             },
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
