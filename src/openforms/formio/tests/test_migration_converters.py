@@ -19,6 +19,7 @@ from ..migration_converters import (
     remove_empty_min_max_validation_spec,
     remove_unused_error_keys,
     replace_empty_datepicker_properties,
+    set_openforms_datasrc,
 )
 from ..typing import (
     AddressNLComponent,
@@ -674,6 +675,35 @@ class SelectTests(SimpleTestCase):
         changed = remove_unused_error_keys(component)
 
         self.assertFalse(changed)
+
+    def test_add_missing_data_src(self):
+        with self.subTest("no datasrc"):
+            component: Component = {
+                "type": "select",
+                "key": "select",
+                "label": "Select",
+                "data": {"values": []},
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertTrue(changed)
+            assert "openForms" in component
+            assert "dataSrc" in component["openForms"]
+            self.assertEqual(component["openForms"]["dataSrc"], "manual")
+
+        with self.subTest("datasrc already set"):
+            component: Component = {
+                "type": "select",
+                "key": "select",
+                "label": "Select",
+                "data": {"values": []},
+                "openForms": {"dataSrc": "manual"},
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertFalse(changed)
 
 
 class TextTests(SimpleTestCase):
@@ -1618,6 +1648,35 @@ class RadioTests(SimpleTestCase):
             },
         )
 
+    def test_add_missing_data_src(self):
+        with self.subTest("no datasrc"):
+            component: Component = {
+                "type": "radio",
+                "key": "radio",
+                "label": "Radio",
+                "values": [],
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertTrue(changed)
+            assert "openForms" in component
+            assert "dataSrc" in component["openForms"]
+            self.assertEqual(component["openForms"]["dataSrc"], "manual")
+
+        with self.subTest("datasrc already set"):
+            component: Component = {
+                "type": "radio",
+                "key": "radio",
+                "label": "Radio",
+                "values": [],
+                "openForms": {"dataSrc": "manual"},
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertFalse(changed)
+
 
 class FileTests(SimpleTestCase):
     def test_none_as_default_value_does_change(self):
@@ -2135,7 +2194,7 @@ class SelectBoxTests(SimpleTestCase):
 
     def test_empty_errors(self):
         component: Component = {
-            "type": "phoneNumber",
+            "type": "selectboxes",
             "key": "telefoonnummer",
             "label": "Telefoonnummer",
             "errors": {},
@@ -2145,3 +2204,32 @@ class SelectBoxTests(SimpleTestCase):
 
         self.assertFalse(changed)
         self.assertEqual(component["errors"], {})
+
+    def test_add_missing_data_src(self):
+        with self.subTest("no datasrc"):
+            component: Component = {
+                "type": "selectboxes",
+                "key": "selectboxes",
+                "label": "Selectboxes",
+                "values": [],
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertTrue(changed)
+            assert "openForms" in component
+            assert "dataSrc" in component["openForms"]
+            self.assertEqual(component["openForms"]["dataSrc"], "manual")
+
+        with self.subTest("datasrc already set"):
+            component: Component = {
+                "type": "selectboxes",
+                "key": "selectboxes",
+                "label": "Selectboxes",
+                "values": [],
+                "openForms": {"dataSrc": "manual"},
+            }
+
+            changed = set_openforms_datasrc(component)
+
+            self.assertFalse(changed)

@@ -10,9 +10,10 @@ from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 import structlog
+from djangorestframework_camel_case.parser import CamelCaseMultiPartParser
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import parsers, permissions, response, status, views, viewsets
+from rest_framework import permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
@@ -26,8 +27,13 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
-from ..import_export.constants import FormConfigurationOptions
-from ..import_export.service import FormImportOptions, export_form, import_form
+from ..import_export.service import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+    FormImportOptions,
+    export_form,
+    import_form,
+)
 from ..json_schema import generate_json_schema
 from ..messages import add_success_message
 from ..models import (
@@ -772,7 +778,7 @@ class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericVie
 
 class FormsImportAPIView(views.APIView):
     serializer_class = FormAPIImportRequestSerializer
-    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
+    parser_classes = (CamelCaseMultiPartParser,)  # parsers.FormParser)
     authentication_classes = [TokenAuthentication]
     permission_classes = [FormAPIPermissions]
 
@@ -801,8 +807,13 @@ class FormsImportAPIView(views.APIView):
         form_instance = import_form(
             serializer.validated_data["file"],
             FormImportOptions(
-                form_configuration=form_configuration_options,
-                additional_form_configuration=additional_form_configuration_options,
+                form_configuration=[
+                    FormConfigurationOptions(opt) for opt in form_configuration_options
+                ],
+                additional_form_configuration=[
+                    AdditionalFormConfigurationOptions(opt)
+                    for opt in additional_form_configuration_options
+                ],
                 theme=serializer.validated_data.get("theme"),
                 category=serializer.validated_data.get("category"),
             ),

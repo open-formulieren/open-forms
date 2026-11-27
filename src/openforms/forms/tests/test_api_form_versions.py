@@ -1,23 +1,20 @@
-import datetime
+from datetime import UTC, datetime
 
 from django.urls import reverse
-from django.utils import translation
 
 import time_machine
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.formio.tests.assertions import FormioMixin
 
-from ..models import FormDefinition, FormLogic, FormStep, FormVersion
+from ..models import FormVersion
 from .factories import (
-    FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
-    FormStepFactory,
     FormVersionFactory,
 )
-from .utils import EXPORT_BLOB
 
 
 class FormVersionSaveAPITests(APITestCase):
@@ -32,10 +29,9 @@ class FormVersionSaveAPITests(APITestCase):
     def test_staff_required(self):
         # add the permissions to verify we specifically check is_staff
         user = UserFactory.create(
-            is_staff=False, user_permissions=["change_form", "view_form"]
+            is_staff=False, user_permissions=["forms.change_form", "forms.view_form"]
         )
         self.client.force_authenticate(user=user)
-
         form = FormFactory.create()
         url = reverse("api:form-versions-list", args=(form.uuid,))
 
@@ -46,75 +42,53 @@ class FormVersionSaveAPITests(APITestCase):
     def test_must_have_permission(self):
         user = StaffUserFactory.create()
         self.client.force_authenticate(user=user)
-
         form = FormFactory.create()
-
-        versions = FormVersion.objects.filter(form=form)
-
-        self.assertEqual(0, versions.count())
-
         url = reverse("api:form-versions-list", args=(form.uuid,))
+
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     @time_machine.travel("2020-12-11T10:53:19+01:00", tick=False)
     def test_save_version(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_authenticate(user=user)
         self.assertEqual(user.user_permissions.all().count(), 1)
-
         form = FormFactory.create()
-
         versions = FormVersion.objects.filter(form=form)
-
-        self.assertEqual(0, versions.count())
-
+        assert not versions.exists()
         url = reverse("api:form-versions-list", args=(form.uuid,))
+
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-        versions = FormVersion.objects.filter(form=form)
-
-        self.assertEqual(1, versions.count())
-
-        version = versions.first()
-
+        version = FormVersion.objects.get()
         self.assertEqual(form, version.form)
-        self.assertEqual(
-            datetime.datetime.strptime(
-                "2020-12-11T10:53:19+01:00", "%Y-%m-%dT%H:%M:%S%z"
-            ),
-            version.created,
-        )
+        self.assertEqual(version.created, datetime(2020, 12, 11, 9, 53, 19, tzinfo=UTC))
 
     def test_list_versions(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_authenticate(user=user)
-
-        form_1 = FormFactory.create()
-        form_2 = FormFactory.create()
-
+        form_1, form_2 = FormFactory.create_batch(2)
         FormVersionFactory.create(form=form_1)
         FormVersionFactory.create(form=form_2)
-
-        self.assertEqual(2, FormVersion.objects.all().count())
-
         url = reverse("api:form-versions-list", args=(form_1.uuid,))
+
         response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(1, len(response.data))
+        self.assertEqual(len(response.data), 1)  # filtered by the form from the UUID
 
 
-class FormVersionRestoreAPITests(APITestCase):
+class FormVersionRestoreAPITests(FormioMixin, APITestCase):
     def test_auth_required(self):
-        form = FormFactory.create()
-        form_version = FormVersionFactory.create(form=form)
+        form_version = FormVersionFactory.create()
         url = reverse(
             "api:form-versions-restore",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_version.uuid},
+            kwargs={
+                "form_uuid_or_slug": form_version.form.uuid,
+                "uuid": form_version.uuid,
+            },
         )
 
         response = self.client.post(url)
@@ -122,98 +96,84 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
     def test_must_be_staff_user(self):
-        user = UserFactory.create()
+        user = UserFactory.create(
+            user_permissions=["forms.change_form"], is_staff=False
+        )
         self.client.force_authenticate(user=user)
-
-        form = FormFactory.create()
-        form_version = FormVersionFactory.create(form=form)
-
+        form_version = FormVersionFactory.create()
         url = reverse(
             "api:form-versions-restore",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_version.uuid},
+            kwargs={
+                "form_uuid_or_slug": form_version.form.uuid,
+                "uuid": form_version.uuid,
+            },
         )
+
         response = self.client.post(url)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_restore_version(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+    def test_restore_version_reverts_from_export_blobs(self):
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_authenticate(user=user)
 
-        # create 'modifications' for a form (different slugs) to then restore the
-        # 'version' from EXPORT_BLOB
-        # This form definition is to be discarded (different UUID than the one in export)
-        form_definition = FormDefinitionFactory.create(
-            slug="test-definition-2",
-            configuration={
+        # set up a form and create a version for it to restore
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            slug="original-form-slug",
+            formstep__slug="original-step-slug",
+            formstep__form_definition__slug="original-fd-slug",
+            formstep__form_definition__configuration={
                 "components": [
                     {
-                        "test": "2",
-                        "key": "test-2",
-                        "label": "test-2",
                         "type": "textfield",
+                        "key": "originalTextfield",
+                        "label": "original text field",
                     }
                 ]
             },
-            is_reusable=True,
         )
-        form = FormFactory.create(name="Test Form 2")
-        FormStepFactory.create(
-            form=form,
-            form_definition=form_definition,
-            slug="test-step-2",  # ensure that slug does not match EXPORT_BLOB
+        FormLogicFactory.create(
+            form=form, is_advanced=True, json_logic_trigger=True, actions=[]
         )
-        FormLogicFactory.create(form=form)
-
-        version = FormVersion.objects.create(
-            form=form,
-            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
-            export_blob=EXPORT_BLOB,
-        )
-
+        form_version = FormVersionFactory.create(form=form)
+        # apply modifications to revert with the restore
+        form.slug = "modified-slug"
+        form.save()
+        step = form.formstep_set.get()
+        step.slug = "modified-slug"
+        step.save()
+        step.form_definition.slug = "modified-fd-slug"
+        step.form_definition.configuration = {"components": []}
+        step.form_definition.save()
+        form.formlogic_set.all().delete()
+        # prepare restore
         url = reverse(
             "api:form-versions-restore",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": version.uuid},
-        )
-
-        self.assertEqual(1, FormVersion.objects.all().count())
-        self.assertEqual(1, FormDefinition.objects.all().count())
-
-        response = self.client.post(url, data={"uuid": str(version.uuid)})
-
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-        form.refresh_from_db()
-
-        self.assertEqual(
-            2, FormVersion.objects.count()
-        )  # restore creates its own FormVersion
-        self.assertEqual("Test Form 1", form.name)
-        self.assertEqual("Test Form Internal 1", form.internal_name)
-        self.assertEqual(2, FormDefinition.objects.all().count())
-
-        form_steps = FormStep.objects.filter(form=form)
-        form_logic = FormLogic.objects.filter(form=form)
-
-        self.assertEqual(1, form_steps.count())
-        self.assertEqual(1, form_logic.count())
-
-        form_step = form_steps.get()
-        restored_form_definition = form_step.form_definition
-
-        with translation.override("en"):
-            self.assertEqual("Test Definition 1", restored_form_definition.name)
-            self.assertEqual("Test Definitie 1", restored_form_definition.name_nl)
-        self.assertEqual(
-            "Test Definition Internal 1", restored_form_definition.internal_name
-        )
-        self.assertEqual("test-step-1", form_step.slug)
-        self.assertEqual("test-definition-1", restored_form_definition.slug)
-        self.assertEqual(
-            {
-                "components": [
-                    {"key": "test", "label": "test", "test": "1", "type": "textfield"}
-                ]
+            kwargs={
+                "form_uuid_or_slug": form_version.form.uuid,
+                "uuid": form_version.uuid,
             },
-            restored_form_definition.configuration,
         )
+
+        # do the restore
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        form.refresh_from_db()
+        # restore creates its own FormVersion
+        self.assertEqual(FormVersion.objects.count(), 2)
+
+        self.assertEqual(form.slug, "original-form-slug")
+        step = form.formstep_set.get()
+        self.assertEqual(step.slug, "original-step-slug")
+        self.assertEqual(step.form_definition.slug, "original-fd-slug")
+        self.assertFormioComponent(
+            step.form_definition.configuration,
+            "originalTextfield",
+            {
+                "type": "textfield",
+                "label": "original text field",
+            },
+        )
+        self.assertEqual(form.formlogic_set.count(), 1)
